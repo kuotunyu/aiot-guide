@@ -1,0 +1,23 @@
+{
+  "lesson": "s1-11",
+  "drop": [],
+  "edits": {
+    "legacy-s1-4": {
+      "o": [
+        "RNN",
+        "CNN",
+        "GAN",
+        "線性迴歸"
+      ]
+    },
+    "legacy-s1-5": {
+      "o": [
+        "欠擬合（Underfitting）",
+        "過度擬合（Overfitting，又稱過擬合）",
+        "梯度消失",
+        "正規化"
+      ],
+      "e": "過度擬合（Overfitting，又稱過擬合）＝把訓練資料「背起來」而失去泛化能力；可用更多資料、簡化模型、Dropout 等緩解。"
+    }
+  }
+}

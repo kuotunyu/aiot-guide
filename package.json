@@ -1,0 +1,15 @@
+{
+  "name": "aiot-guide-quality-harness",
+  "private": true,
+  "scripts": {
+    "build": "python build.py",
+    "test:labs": "node scripts/run-lab-tests.mjs",
+    "check:static": "node scripts/static-check.mjs",
+    "test": "playwright test",
+    "check": "npm run build && npm run test:labs && npm run check:static && npm test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.55.0"
+  }
+}

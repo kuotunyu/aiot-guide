@@ -1,0 +1,15 @@
+{
+  "lesson": "s1-22",
+  "drop": [],
+  "edits": {
+    "legacy-s1-21": {
+      "e": "CoAP 是給受限裝置的輕量 REST 協定，使用 UDP（預設埠 5683），支援 GET/POST/PUT/DELETE 與 Observe。此處指 RFC 7252 的典型 UDP 傳輸；RFC 8323 另定義 TCP、TLS 及 WebSocket 傳輸。"
+    },
+    "legacy-s1-22": {
+      "e": "LoRa 走非授權 Sub-GHz（可自建私網）；NB-IoT 建構在電信商的授權頻段上（通常需支付電信資費、室內穿透佳）。"
+    },
+    "legacy-s1-26": {
+      "e": "IPv6 使用 128 位元位址，位址空間遠大於 32 位元的 IPv4；NAT 只能緩解位址不足，6LoWPAN 則讓低功耗裝置也能使用 IPv6。"
+    }
+  }
+}

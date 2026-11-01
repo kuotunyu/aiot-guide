@@ -1,0 +1,543 @@
+{
+ "id": "s1-22",
+ "title": "通訊與網路",
+ "subtitle": "替資料選合適的路與語言",
+ "summary": "裝置靠哪種無線技術連網、連上後用哪種協定交換資料。讀完能依距離、耗電與資料量做出選擇。",
+ "learn": [
+  "分清「連線技術」和「通訊協定」",
+  "依距離、資料量、供電與移動需求選無線技術",
+  "說出 RFID、NFC、BLE、Wi-Fi、Zigbee、NB-IoT、LoRaWAN、4G／5G 的定位",
+  "解釋 MQTT 的 Topic、QoS 與保留訊息",
+  "比較 MQTT、HTTP、CoAP、WebSocket 的適用情境"
+ ],
+ "bridge": "MQTT Broker 可對照成訊息佇列或事件匯流排，BLE 的 Service／Characteristic 可對照成 API 的資源與欄位。",
+ "sections": [
+  {
+   "id": "road-and-language",
+   "h": "先分清兩件事：路與語言",
+   "body": "<p>感測器要把資料送上雲端，得回答兩個問題。第一是走哪條<b>路</b>：Wi-Fi、藍牙、LoRa 還是 4G。第二是說什麼<b>語言</b>：連上之後資料怎麼包裝、怎麼交換，這套規則叫<b>通訊協定（protocol）</b>，例如 MQTT、HTTP。兩者可以自由搭配。</p><p>路和語言之間還有幾個基本角色：</p><ul><li><b>IP 位址</b>像門牌，指出是哪一台裝置。</li><li><b>port（埠）</b>像同一棟樓的房號，區分同一台裝置上的不同服務。</li><li><b>TCP</b> 像掛號信：先建立連線，保證送到且順序正確。</li><li><b>UDP</b> 像平信：不先連線也不保證送到，但負擔輕、速度快。</li></ul>",
+   "svg": "<svg viewBox=\"0 0 600 320\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"網路分層示意：語言、傳輸方式、門牌與路四層，資料由上往下包裝後送出\"><defs><marker id=\"s1-22-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"16\" y1=\"14\" x2=\"16\" y2=\"282\" class=\"la\" marker-end=\"url(#s1-22-1-arr)\"/><text x=\"34\" y=\"35\" class=\"tb\">語言</text><text x=\"34\" y=\"55\" class=\"ts\">應用層</text><rect x=\"175.0\" y=\"16\" width=\"96.5\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"223.25\" y=\"43.5\" class=\"tb tc\">MQTT</text><rect x=\"279.5\" y=\"16\" width=\"96.5\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"327.75\" y=\"43.5\" class=\"tb tc\">HTTP</text><rect x=\"384.0\" y=\"16\" width=\"96.5\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"432.25\" y=\"43.5\" class=\"tb tc\">WebSocket</text><rect x=\"488.5\" y=\"16\" width=\"96.5\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"536.75\" y=\"43.5\" class=\"tb tc\">CoAP</text><text x=\"34\" y=\"105\" class=\"tb\">寄送方式</text><text x=\"34\" y=\"125\" class=\"ts\">傳輸層</text><rect x=\"175.0\" y=\"86\" width=\"305.5\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"327.75\" y=\"113.5\" class=\"tb tc\">TCP：像掛號信</text><rect x=\"488.5\" y=\"86\" width=\"96.5\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"536.75\" y=\"104\" class=\"tb tc\">UDP</text><text x=\"536.75\" y=\"122\" class=\"ts tc\">像平信</text><text x=\"34\" y=\"175\" class=\"tb\">門牌</text><text x=\"34\" y=\"195\" class=\"ts\">網路層</text><rect x=\"175.0\" y=\"156\" width=\"410.0\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"380\" y=\"183.5\" class=\"tb tc\">IP 位址：找到哪一台裝置</text><text x=\"34\" y=\"245\" class=\"tb\">路</text><text x=\"34\" y=\"265\" class=\"ts\">連結層與無線電</text><rect x=\"175.0\" y=\"226\" width=\"75.6\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"212.8\" y=\"253.5\" class=\"tb tc\">Wi-Fi</text><rect x=\"258.6\" y=\"226\" width=\"75.6\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"296.4\" y=\"253.5\" class=\"tb tc\">藍牙</text><rect x=\"342.2\" y=\"226\" width=\"75.6\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"380\" y=\"253.5\" class=\"tb tc\">Zigbee</text><rect x=\"425.8\" y=\"226\" width=\"75.6\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"463.6\" y=\"253.5\" class=\"tb tc\">LoRa</text><rect x=\"509.4\" y=\"226\" width=\"75.6\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"547.2\" y=\"253.5\" class=\"tb tc\">4G/5G</text><text x=\"300\" y=\"306\" class=\"ts tc\">送出時由上往下層層包裝，對方收到後由下往上拆開</text></svg>",
+   "caption": "簡化的分層示意。藍牙、Zigbee、LoRa 的裝置常要經閘道器（gateway）轉換，才進入一般的 IP 網路。",
+   "predict": {
+    "q": "貨車探頭原本用 4G 傳 MQTT。換成 Wi-Fi 之後，MQTT 的程式要重寫嗎？",
+    "a": "通常不用。4G 和 Wi-Fi 是路，MQTT 是語言，換路不必換語言。"
+   }
+  },
+  {
+   "id": "wireless-map",
+   "h": "無線技術總覽：先問四個問題",
+   "body": "<p>選路先問四個問題：要傳<b>多遠</b>？資料<b>多大</b>？<b>電</b>從哪來？裝置<b>會不會移動</b>？答案大致落入三類：短距離（RFID、NFC、BLE、Wi-Fi、Zigbee）、低功耗廣域網路（NB-IoT、LoRaWAN、Sigfox）、行動網路（4G／5G）。</p><p>頻率越低，通常越能繞過障礙、傳得越遠，但能載的資料越少（速率以 <b>bps</b>，每秒位元數計算）。距離、耗電、速率很難同時都好，所以沒有「最好的無線技術」，只有最合適的選擇。</p>",
+   "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"無線技術定位圖：橫軸傳輸距離、縱軸資料速率，綠色低耗電、黃色耗電較高\"><defs><marker id=\"s1-22-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"300\" y=\"14\" width=\"18\" height=\"18\" rx=\"4\" class=\"ok\"/><text x=\"326\" y=\"29\" class=\"ts\">低耗電</text><rect x=\"400\" y=\"14\" width=\"18\" height=\"18\" rx=\"4\" class=\"warn\"/><text x=\"426\" y=\"29\" class=\"ts\">耗電較高</text><line x1=\"70\" y1=\"340\" x2=\"580\" y2=\"340\" class=\"la\" marker-end=\"url(#s1-22-2-arr)\"/><line x1=\"70\" y1=\"340\" x2=\"70\" y2=\"45\" class=\"la\" marker-end=\"url(#s1-22-2-arr)\"/><text x=\"80\" y=\"44\" class=\"ts\">資料量／速率</text><text x=\"12\" y=\"64\" class=\"ts\">速率高</text><text x=\"12\" y=\"334\" class=\"ts\">速率低</text><text x=\"110\" y=\"362\" class=\"ts tc\">公分</text><text x=\"205\" y=\"362\" class=\"ts tc\">公尺</text><text x=\"320\" y=\"362\" class=\"ts tc\">百公尺</text><text x=\"450\" y=\"362\" class=\"ts tc\">公里</text><text x=\"540\" y=\"362\" class=\"ts tc\">10 公里+</text><text x=\"325\" y=\"390\" class=\"ts tc\">傳輸距離 →</text><rect x=\"240\" y=\"70\" width=\"110\" height=\"36\" rx=\"8\" class=\"warn\"/><text x=\"295.0\" y=\"92.8\" class=\"tb tc\">Wi-Fi</text><text x=\"295\" y=\"126\" class=\"ts tc\">快，但耗電</text><rect x=\"430\" y=\"70\" width=\"130\" height=\"36\" rx=\"8\" class=\"warn\"/><text x=\"495.0\" y=\"92.8\" class=\"tb tc\">4G / 5G</text><text x=\"495\" y=\"126\" class=\"ts tc\">遠又快，走電信基地台</text><rect x=\"170\" y=\"165\" width=\"90\" height=\"36\" rx=\"8\" class=\"ok\"/><text x=\"215.0\" y=\"187.8\" class=\"tb tc\">BLE</text><text x=\"215\" y=\"220\" class=\"ts tc\">穿戴、Beacon</text><rect x=\"285\" y=\"200\" width=\"100\" height=\"36\" rx=\"8\" class=\"ok\"/><text x=\"335.0\" y=\"222.8\" class=\"tb tc\">Zigbee</text><text x=\"335\" y=\"255\" class=\"ts tc\">可 Mesh 接力</text><rect x=\"85\" y=\"240\" width=\"70\" height=\"36\" rx=\"8\" class=\"ok\"/><text x=\"120.0\" y=\"262.8\" class=\"tb tc\">NFC</text><rect x=\"110\" y=\"290\" width=\"80\" height=\"36\" rx=\"8\" class=\"ok\"/><text x=\"150.0\" y=\"312.8\" class=\"tb tc\">RFID</text><rect x=\"400\" y=\"250\" width=\"175\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"487.5\" y=\"270.8\" class=\"tb tc\">LoRa / Sigfox</text><text x=\"487.5\" y=\"292.8\" class=\"tb tc\">NB-IoT</text><text x=\"488\" y=\"325\" class=\"ts tc\">遠、省電，但很慢</text></svg>",
+   "caption": "常見用途的概略比較，不是距離或耗電保證；實際表現依頻段、模式與環境而定。",
+   "table": {
+    "head": [
+     "技術",
+     "典型距離",
+     "典型速率",
+     "耗電",
+     "常見用途"
+    ],
+    "rows": [
+     [
+      "NFC",
+      "10 公分內，實務約 4 公分",
+      "106–424 kbps",
+      "極低",
+      "感應支付、票證、碰一下配對"
+     ],
+     [
+      "RFID",
+      "公分到 10 公尺以上，依頻段",
+      "低",
+      "被動標籤免電池",
+      "物流倉儲、門禁、庫存盤點"
+     ],
+     [
+      "BLE",
+      "約數十公尺，依模式",
+      "1–2 Mbps",
+      "極低",
+      "手環、心率帶、門鎖、信標"
+     ],
+     [
+      "Zigbee",
+      "10–100 公尺，可接力延伸",
+      "250 kbps",
+      "低",
+      "全屋照明、廠內感測器網路"
+     ],
+     [
+      "Wi-Fi",
+      "室內數十公尺",
+      "數百 Mbps 以上",
+      "較高",
+      "網路攝影機、智慧音箱、掃地機器人"
+     ],
+     [
+      "NB-IoT／LoRaWAN／Sigfox",
+      "數公里到 10 公里以上",
+      "約 100 bps 到百餘 kbps（Sigfox 最低）",
+      "極低",
+      "水電表、停車格、農田監測"
+     ],
+     [
+      "4G／5G",
+      "基地台涵蓋範圍",
+      "高",
+      "較高",
+      "車隊、行動監控、無人機巡檢"
+     ]
+    ]
+   },
+   "lab": "wireless",
+   "more": {
+    "label": "無線電波共用空中的問題：衰減、碰撞與流量控制",
+    "body": "<ul><li><b>訊號衰減</b>：距離越遠訊號越弱，牆壁與金屬也會削弱訊號。</li><li><b>碰撞（collision）</b>：兩台裝置同時發送，訊號互相干擾。解法是輪流或分開使用頻道，例如先聽再說的 <b>CSMA/CA</b>、先問再送的 <b>RTS/CTS</b>，以及按時間、頻率、編碼切分的 <b>TDMA、FDMA、CDMA</b>。</li><li><b>流量控制</b>（flow control）：避免一方送太快、另一方來不及處理。最簡單的做法是<b>停止等待（Stop-and-Wait）</b>：每送一筆就等對方確認才送下一筆。效率不高，但不會漏接。</li></ul><p>裝置多了之後，網路本身也要好管理。<b>軟體定義網路（SDN）</b>把控制功能集中到軟體，可自動配置與動態調整頻寬，新增設備也容易擴充。</p>"
+   }
+  },
+  {
+   "id": "rfid-nfc",
+   "h": "RFID 與 NFC：讓物被看見，讓人與物互動",
+   "body": "<p><b>RFID（無線射頻識別）</b>用無線電讀取標籤，不必接觸也不必對準，這是它和條碼最大的不同。系統由三部分組成：<b>標籤（Tag）</b>存放唯一編號、<b>讀寫器（Reader）</b>發射訊號並讀資料、<b>後端系統</b>處理資料。</p><ul><li><b>被動式</b>：標籤沒有電池，靠讀寫器的電波取電，再把訊號反射回去（backscatter）。便宜，也最常見。</li><li><b>主動式</b>：標籤自帶電池主動發訊，距離遠但較貴。介於兩者之間的是<b>半被動式</b>。</li></ul><p><b>NFC（近場通訊）</b>由高頻 RFID 演變而來，固定使用 13.56 MHz。距離極短反而是安全優勢，因為比遠距技術不容易被側錄；但專用設備仍可能在較遠處竊聽，機敏資料還是要加密。</p><p>怎麼選：RFID 重在<b>大量、遠距識別物品</b>；NFC 重在<b>單一、近距、雙向互動</b>，適合人拿手機去碰。</p>",
+   "table": {
+    "head": [
+     "RFID 頻段",
+     "頻率",
+     "典型讀取距離",
+     "特色與應用"
+    ],
+    "rows": [
+     [
+      "LF 低頻",
+      "125–134 kHz",
+      "10 公分內",
+      "穿透力強，受水與金屬影響小；動物晶片、門禁卡"
+     ],
+     [
+      "HF 高頻",
+      "13.56 MHz",
+      "1 公尺內",
+      "圖書館、電子護照、智慧卡；NFC 也在此頻率"
+     ],
+     [
+      "UHF 超高頻",
+      "860–960 MHz",
+      "3–10 公尺以上",
+      "遠且快，防碰撞機制可同時讀數百個；物流、ETC、零售"
+     ],
+     [
+      "微波",
+      "2.45／5.8 GHz",
+      "10 公尺以上",
+      "資料量大但指向性強、易受干擾；部分行李追蹤"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "一整櫃貨箱通過倉庫門口，要一次讀完幾百個標籤。NFC 做得到嗎？",
+    "a": "不適合。NFC 約在 10 公分內一次碰一個。這個場景要用可一次讀多個的 UHF RFID。"
+   },
+   "more": {
+    "label": "金屬的影響，以及 NFC 的三種模式",
+    "body": "<p>金屬會反射電波，干擾標籤取電與回傳。常見對策是改用抗金屬標籤，或在標籤與金屬之間墊出距離；問題出在標籤旁的電磁環境，讀寫器發射得再強也不一定有用。</p><p>NFC 有三種模式：<b>卡片模擬</b>（手機當悠遊卡、行動支付）、<b>讀卡機</b>（讀取海報上的標籤）、<b>點對點</b>（交換資料，常用於碰一下完成藍牙或 Wi-Fi 配對）。</p>"
+   }
+  },
+  {
+   "id": "ble-wifi-zigbee",
+   "h": "藍牙、Wi-Fi、Zigbee：區域內的三種取捨",
+   "body": "<p><b>BLE（低功耗藍牙）</b>平常休眠，只在毫秒間醒來傳一點資料，鈕扣電池可用數年，手機也都支援。<b>經典藍牙</b>則持續傳大量資料，如耳機、車用免持。兩者都使用 2.4 GHz，不適合傳影片。</p><p><b>Wi-Fi（IEEE 802.11）</b>裝置有自己的 IP，能直接連雲端，也能傳影像，代價是耗電（連線時典型 100–300 mA）。2.4 GHz 穿牆較好但擁擠；5／6 GHz 快但穿牆差。<b>SSID</b> 是基地台（AP）的網路名稱。</p><p><b>Zigbee（IEEE 802.15.4）</b>低速（250 kbps）、低功耗，特色是<b>網狀網路（Mesh）</b>：訊號可由節點接力，路由器故障時若有替代路徑會自動繞路。手機通常沒有 Zigbee 晶片，要靠<b>閘道器</b>轉成 Wi-Fi 或乙太網路。</p>",
+   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Zigbee 網狀網路：路由器 A 故障時，終端裝置改經路由器 B 回到協調器\"><defs><marker id=\"s1-22-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"118\" width=\"120\" height=\"54\" rx=\"8\" class=\"acc\"/><text x=\"80.0\" y=\"138.8\" class=\"tb tc\">協調器</text><text x=\"80.0\" y=\"160.8\" class=\"tb tc\">（閘道器）</text><rect x=\"200\" y=\"40\" width=\"110\" height=\"54\" rx=\"8\" class=\"bad\"/><text x=\"255.0\" y=\"60.8\" class=\"tb tc\">路由器 A</text><text x=\"255.0\" y=\"82.8\" class=\"tb tc\">（故障）</text><rect x=\"200\" y=\"190\" width=\"110\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"255.0\" y=\"210.8\" class=\"tb tc\">路由器 B</text><text x=\"255.0\" y=\"232.8\" class=\"tb tc\">臥室插座</text><rect x=\"420\" y=\"40\" width=\"150\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"495.0\" y=\"60.8\" class=\"tb tc\">終端裝置</text><text x=\"495.0\" y=\"82.8\" class=\"tb tc\">門窗感測器</text><rect x=\"420\" y=\"190\" width=\"150\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"495.0\" y=\"210.8\" class=\"tb tc\">終端裝置</text><text x=\"495.0\" y=\"232.8\" class=\"tb tc\">溫濕度計</text><line x1=\"140\" y1=\"130\" x2=\"200\" y2=\"78\" class=\"ln dash\"/><line x1=\"420\" y1=\"67\" x2=\"310\" y2=\"67\" class=\"ln dash\"/><line x1=\"420\" y1=\"86\" x2=\"312\" y2=\"196\" class=\"la\" marker-end=\"url(#s1-22-4-arr)\"/><line x1=\"200\" y1=\"208\" x2=\"142\" y2=\"168\" class=\"la\" marker-end=\"url(#s1-22-4-arr)\"/><line x1=\"420\" y1=\"217\" x2=\"312\" y2=\"217\" class=\"ln\" marker-end=\"url(#s1-22-4-arr)\"/><text x=\"388\" y=\"152\" class=\"ts ta\">自癒：改走 B</text><text x=\"300\" y=\"282\" class=\"ts tc\">協調器每網只有 1 個｜路由器插電、幫忙轉送｜終端靠電池、常睡覺</text></svg>",
+   "caption": "有可用替代路徑時才可能繞路；協調器常兼任閘道器，但不一定如此。",
+   "table": {
+    "head": [
+     "Zigbee 角色",
+     "做什麼",
+     "典型硬體"
+    ],
+    "rows": [
+     [
+      "協調器 Coordinator",
+      "建立網路、分配位址、管理金鑰；每個網路只有 1 個",
+      "閘道器或 Hub，需常時供電"
+     ],
+     [
+      "路由器 Router",
+      "轉發封包、延伸範圍",
+      "插電設備：燈泡、插座"
+     ],
+     [
+      "終端裝置 End Device",
+      "只收發自己的資料，不轉發，多半在休眠",
+      "電池設備：門窗感測器、溫濕度計"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "冷藏庫內有 200 顆電池探頭要回報溫度。全部接 Wi-Fi 合適嗎？",
+    "a": "不合適。Wi-Fi 耗電，電池撐不久。讀值很少時，BLE 或 Zigbee 較省電，再由閘道器統一上網。"
+   },
+   "more": {
+    "label": "BLE 的運作、Wi-Fi 世代、Zigbee 干擾與 Matter",
+    "body": "<p><b>BLE 怎麼運作：</b><b>GAP</b> 管廣播與連線，周邊裝置（Peripheral，如手環）廣播「我在這」，中央裝置（Central，如手機）掃描後連線。連上後由 <b>GATT</b> 管資料：一個服務（Service，如心率服務）底下有多個特徵（Characteristic，如心率數值）。架構有點對點、廣播（Beacon，信標）、網狀（Mesh）三種。</p><ul><li>藍牙 5.0 速率達 2 Mbps，並有長距離模式（Coded PHY），理想環境可達數百公尺。5.1 加入 AoA／AoD（測量訊號到達或離開的角度），強化室內定位。</li><li>2.4 GHz 會與 Wi-Fi、微波爐互相干擾，藍牙靠跳頻（FHSS，快速在多個頻道間切換）緩解。</li></ul><p><b>Wi-Fi 世代：</b>大範圍場域可用多台 AP 共用同一 SSID，讓移動中的裝置切換（漫遊）。</p><ul><li><b>Wi-Fi 4（802.11n）</b>：便宜 IoT 模組的主流</li><li><b>Wi-Fi 5（802.11ac）</b>：標稱上限約 6.9 Gbps</li><li><b>Wi-Fi 6（802.11ax）</b>：TWT（約好時間才醒來收發）省電、OFDMA（把頻道切成小份，同時服務多台）改善多裝置擁塞</li><li><b>Wi-Fi 7（802.11be）</b>：標稱上限約 46 Gbps</li><li><b>Wi-Fi HaLow（802.11ah）</b>：1 GHz 以下頻段，可達約 1 公里</li></ul><p><b>Zigbee 補充：</b>常見版本同樣使用 2.4 GHz，穿牆能力與 Wi-Fi 相近，也容易受 Wi-Fi 干擾，規劃時可把閘道器與 Wi-Fi 路由器分開擺放或選用不同頻道。Zigbee 3.0 統一了應用層，改善跨品牌互通。</p><p><b>Matter</b> 是智慧家庭的互通標準，可跑在 Wi-Fi、Thread、乙太網路上，並用 BLE 協助配對；LoRa 這類長距離低速技術不在其中。<b>Thread</b> 是同樣基於 802.15.4 的低功耗網狀網路。</p>"
+   }
+  },
+  {
+   "id": "lpwan-cellular",
+   "h": "LPWAN 與 4G／5G：走出建築物之後",
+   "body": "<p><b>LPWAN（低功耗廣域網路）</b>的取捨很明確：用極低速率換取長距離與長電池壽命，一次只傳幾筆讀值，不能傳影音。</p><ul><li><b>NB-IoT（窄頻物聯網）</b>：由電信業者提供，用授權頻譜（政府發照、業者專用的頻率）與 SIM 卡。覆蓋深（地下室、人孔），但移動性有限，適合水電表、路燈這類固定裝置。</li><li><b>LoRa／LoRaWAN</b>：LoRa 是無線調變技術（把資料載到電波上的方式），LoRaWAN 是架在其上的網路協定。使用非授權頻段（不需執照、大家共用；台灣為 920–925 MHz），可自建閘道，空曠處典型可達 10 公里以上；缺點是頻寬極低、易受干擾。</li><li><b>Sigfox</b>：超窄頻，由營運商提供，只適合極少量的狀態回報。</li></ul><p><b>5G</b> 不只是更快的 4G，ITU 定義了三大場景：<b>eMBB</b> 增強型行動寬頻（目標峰值約 10–20 Gbps）、<b>mMTC</b> 海量機器通訊（目標每平方公里 100 萬裝置）、<b>URLLC</b> 超可靠低延遲（目標延遲約 1 毫秒、可靠度約 99.999%）。它不是低功耗、長距離的技術。</p>",
+   "svg": "<svg viewBox=\"0 0 600 262\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"NB-IoT 經電信基地台與核心網上雲；LoRaWAN 經自建閘道與網路伺服器上雲\"><defs><marker id=\"s1-22-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"20\" y=\"30\" class=\"th\">NB-IoT：使用電信網路與門號方案</text><rect x=\"15\" y=\"44\" width=\"110\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"70.0\" y=\"64.8\" class=\"tb tc\">感測器</text><text x=\"70.0\" y=\"86.8\" class=\"tb tc\">（插 SIM）</text><rect x=\"165\" y=\"44\" width=\"130\" height=\"54\" rx=\"8\" class=\"warn\"/><text x=\"230.0\" y=\"64.8\" class=\"tb tc\">電信基地台</text><text x=\"230.0\" y=\"86.8\" class=\"tb tc\">（授權頻譜）</text><rect x=\"335\" y=\"44\" width=\"115\" height=\"54\" rx=\"8\" class=\"warn\"/><text x=\"392.5\" y=\"75.8\" class=\"tb tc\">電信核心網</text><rect x=\"490\" y=\"44\" width=\"95\" height=\"54\" rx=\"8\" class=\"acc\"/><text x=\"537.5\" y=\"64.8\" class=\"tb tc\">雲端</text><text x=\"537.5\" y=\"86.8\" class=\"tb tc\">平台</text><line x1=\"125\" y1=\"71\" x2=\"163\" y2=\"71\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><line x1=\"295\" y1=\"71\" x2=\"333\" y2=\"71\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><line x1=\"450\" y1=\"71\" x2=\"488\" y2=\"71\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><text x=\"20\" y=\"140\" class=\"th\">LoRaWAN：可自建或使用既有網路</text><rect x=\"15\" y=\"154\" width=\"110\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"70.0\" y=\"174.8\" class=\"tb tc\">感測器</text><text x=\"70.0\" y=\"196.8\" class=\"tb tc\">LoRa 模組</text><rect x=\"165\" y=\"154\" width=\"130\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"230.0\" y=\"174.8\" class=\"tb tc\">LoRa 閘道</text><text x=\"230.0\" y=\"196.8\" class=\"tb tc\">（示例：自建）</text><rect x=\"335\" y=\"154\" width=\"115\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"392.5\" y=\"185.8\" class=\"tb tc\">網路伺服器</text><rect x=\"490\" y=\"154\" width=\"95\" height=\"54\" rx=\"8\" class=\"acc\"/><text x=\"537.5\" y=\"174.8\" class=\"tb tc\">雲端</text><text x=\"537.5\" y=\"196.8\" class=\"tb tc\">平台</text><line x1=\"125\" y1=\"181\" x2=\"163\" y2=\"181\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><line x1=\"295\" y1=\"181\" x2=\"333\" y2=\"181\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><line x1=\"450\" y1=\"181\" x2=\"488\" y2=\"181\" class=\"la\" marker-end=\"url(#s1-22-5-arr)\"/><text x=\"300\" y=\"245\" class=\"ts tc\">LoRa＝無線調變技術；LoRaWAN＝架在 LoRa 上的網路協定</text></svg>",
+   "caption": "兩條上雲路徑。LoRaWAN 可自建或使用既有網路，仍有設備、維運與可能的服務費用。",
+   "table": {
+    "head": [
+     "應用需求",
+     "適合的技術",
+     "情境舉例"
+    ],
+    "rows": [
+     [
+      "一天只傳幾筆，靠電池撐數年",
+      "NB-IoT／LoRaWAN",
+      "瓦斯表回報、垃圾桶滿溢偵測"
+     ],
+     [
+      "中等資料量，裝置會移動",
+      "LTE Cat.1",
+      "物流車軌跡、行動刷卡機"
+     ],
+     [
+      "連續影像，要即時看",
+      "LTE Cat.4／5G eMBB",
+      "施工現場直播、賽事轉播"
+     ],
+     [
+      "延遲可能造成危險",
+      "5G URLLC",
+      "遠端操控機械手臂、車輛協同避撞"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "冷藏貨車跑全台，除了溫度還要看車廂即時影像。NB-IoT 可以嗎？",
+    "a": "不行。NB-IoT 速率低、移動性有限，傳不了影像。這個需求要用高速行動網路。"
+   },
+   "more": {
+    "label": "4G LTE 的等級，以及工業用 SIM",
+    "body": "<p>4G LTE 分等級：<b>Cat.4／Cat.6</b> 下行 150 Mbps 以上（行動監控、數位看板）；<b>Cat.1</b> 約 10 Mbps，成本與耗電較低（公車動態、共享單車、POS 機）；低功耗一端則有 <b>LTE-M</b> 與 NB-IoT。</p><p>工業環境的 SIM 卡也有變化：<b>工業級 SIM</b> 耐高溫與振動；<b>eSIM</b> 焊在電路板上，可遠端切換電信業者；<b>iSIM</b> 直接整合進晶片。</p>"
+   }
+  },
+  {
+   "id": "mqtt",
+   "h": "MQTT：透過中間人的發布與訂閱",
+   "body": "<p>路通了之後要選語言。<b>MQTT</b> 是 IoT 最主流的協定之一，1999 年為監控輸油管線而設計，所以特別省：標頭（header，每筆資料附帶的控制資訊）最小 2 bytes，適合低頻寬與不穩定的網路。它走 <b>TCP</b>，預設 port 1883，加 TLS（傳輸途中加密的技術）時常用 8883。</p><p>運作方式像雜誌訂閱。<b>發布者（Publisher）</b>把訊息送到某個<b>主題（Topic）</b>，<b>代理（Broker）</b>再轉給訂閱該主題的<b>訂閱者（Subscriber）</b>。發布者和訂閱者都只連 Broker，彼此不知道對方存在。這種<b>解耦</b>讓新增接收端時不必更動感測器。</p>",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MQTT 發布訂閱：感測器發布到 topic，Broker 依訂閱轉送給 App 與資料庫\"><defs><marker id=\"s1-22-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"80\" y=\"26\" class=\"tb tc\">發布者 Publisher</text><text x=\"300\" y=\"26\" class=\"tb tc\">代理 Broker</text><text x=\"519\" y=\"26\" class=\"tb tc\">訂閱者 Subscriber</text><rect x=\"5\" y=\"50\" width=\"150\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"80.0\" y=\"72.3\" class=\"tb tc\">溫度感測器</text><text x=\"80.0\" y=\"91.9\" class=\"ts tc\">coldchain/A/temp</text><rect x=\"5\" y=\"170\" width=\"150\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"80.0\" y=\"192.3\" class=\"tb tc\">電力計</text><text x=\"80.0\" y=\"211.9\" class=\"ts tc\">coldchain/A/power</text><rect x=\"225\" y=\"100\" width=\"150\" height=\"74\" rx=\"8\" class=\"acc\"/><text x=\"300.0\" y=\"132.3\" class=\"tb tc\">Broker</text><text x=\"300.0\" y=\"151.9\" class=\"ts tc\">依 topic 過濾轉送</text><rect x=\"445\" y=\"50\" width=\"150\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"520.0\" y=\"72.3\" class=\"tb tc\">手機 App</text><text x=\"520.0\" y=\"91.9\" class=\"ts tc\">訂 coldchain/+/temp</text><rect x=\"445\" y=\"170\" width=\"150\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"520.0\" y=\"192.3\" class=\"tb tc\">雲端資料庫</text><text x=\"520.0\" y=\"211.9\" class=\"ts tc\">訂 coldchain/#</text><line x1=\"155\" y1=\"77\" x2=\"223\" y2=\"120\" class=\"la\" marker-end=\"url(#s1-22-6-arr)\"/><line x1=\"155\" y1=\"197\" x2=\"223\" y2=\"156\" class=\"la\" marker-end=\"url(#s1-22-6-arr)\"/><line x1=\"375\" y1=\"120\" x2=\"443\" y2=\"79\" class=\"la\" marker-end=\"url(#s1-22-6-arr)\"/><line x1=\"375\" y1=\"156\" x2=\"443\" y2=\"195\" class=\"la\" marker-end=\"url(#s1-22-6-arr)\"/><text x=\"190\" y=\"66\" class=\"ts tc\">publish</text><text x=\"410\" y=\"66\" class=\"ts tc\">推送</text><text x=\"20\" y=\"262\" class=\"ts\">+ 只代「一層」：coldchain/+/temp → A 庫、B 庫的 temp 都收到</text><text x=\"20\" y=\"286\" class=\"ts\"># 代「以下全部」且要放最後：coldchain/# → 冷鏈所有 topic</text><text x=\"300\" y=\"322\" class=\"tb tc\">兩邊都只連 Broker（都是 Client），彼此不認識＝解耦</text></svg>",
+   "caption": "感測器只管發布到 Topic，Broker 依訂閱條件（含萬用字元）轉送。",
+   "video": "mqtt-http",
+   "predict": {
+    "q": "平台運作後，要多加一支手機 App 接收超溫資料。要改所有探頭的程式嗎？",
+    "a": "不用。探頭只對 Broker 發布，App 向 Broker 訂閱就好，兩邊互不知道對方。"
+   },
+   "lab": "topic",
+   "after": "<p>還有三個常用機制：</p><ul><li><b>保留訊息（Retained）</b>：Broker 為該 Topic 保存最新一則，新訂閱者一連上就拿得到。</li><li><b>遺囑訊息（Last Will，LWT）</b>：連線時預先登記，裝置非正常斷線時由 Broker 代為發出。</li><li><b>Keep Alive</b>：定期確認連線還活著。</li></ul>"
+  },
+  {
+   "id": "qos-and-protocols",
+   "h": "QoS，以及 HTTP、CoAP、WebSocket 怎麼選",
+   "body": "<p><b>QoS（服務品質）</b>決定 MQTT 的送達保證，只有三級。<b>QoS 0</b> 最多一次，可能遺失；<b>QoS 1</b> 至少一次，可能重複；<b>QoS 2</b> 恰好一次，靠四步交換達成，開銷最大。頻繁的溫度讀值用 QoS 0 或 1 通常就夠。</p>",
+   "svg": "<svg viewBox=\"0 0 600 262\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MQTT QoS 0、1、2 的封包往返：0 只送不確認、1 等 PUBACK、2 四步握手\"><defs><marker id=\"s1-22-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"150\" y=\"20\" class=\"ts\">箭頭向右＝送出訊息，向左＝回覆確認</text><rect x=\"10\" y=\"34\" width=\"120\" height=\"52\" rx=\"8\" class=\"bad\"/><text x=\"70.0\" y=\"55.3\" class=\"tb tc\">QoS 0</text><text x=\"70.0\" y=\"74.9\" class=\"ts tc\">最多一次</text><text x=\"197\" y=\"54\" class=\"t tc\">PUBLISH</text><line x1=\"150\" y1=\"66\" x2=\"245\" y2=\"66\" class=\"la\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"150\" y=\"88\" class=\"ts\">送了就不管，可能遺失（不保證送達）</text><rect x=\"10\" y=\"114\" width=\"120\" height=\"52\" rx=\"8\" class=\"warn\"/><text x=\"70.0\" y=\"135.3\" class=\"tb tc\">QoS 1</text><text x=\"70.0\" y=\"154.9\" class=\"ts tc\">至少一次</text><text x=\"197\" y=\"134\" class=\"t tc\">PUBLISH</text><line x1=\"150\" y1=\"146\" x2=\"245\" y2=\"146\" class=\"la\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"304\" y=\"134\" class=\"t tc\">PUBACK</text><line x1=\"352\" y1=\"146\" x2=\"257\" y2=\"146\" class=\"ln\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"150\" y=\"168\" class=\"ts\">確認未完成，重送時可能重複</text><rect x=\"10\" y=\"194\" width=\"120\" height=\"52\" rx=\"8\" class=\"ok\"/><text x=\"70.0\" y=\"215.3\" class=\"tb tc\">QoS 2</text><text x=\"70.0\" y=\"234.9\" class=\"ts tc\">恰好一次</text><text x=\"197\" y=\"214\" class=\"t tc\">PUBLISH</text><line x1=\"150\" y1=\"226\" x2=\"245\" y2=\"226\" class=\"la\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"304\" y=\"214\" class=\"t tc\">PUBREC</text><line x1=\"352\" y1=\"226\" x2=\"257\" y2=\"226\" class=\"ln\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"411\" y=\"214\" class=\"t tc\">PUBREL</text><line x1=\"364\" y1=\"226\" x2=\"459\" y2=\"226\" class=\"la\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"518\" y=\"214\" class=\"t tc\">PUBCOMP</text><line x1=\"566\" y1=\"226\" x2=\"471\" y2=\"226\" class=\"ln\" marker-end=\"url(#s1-22-7-arr)\"/><text x=\"150\" y=\"248\" class=\"ts\">四步交換，協定範圍內恰好一次</text></svg>",
+   "caption": "QoS 只描述協定交換的送達語意；資料庫寫入與業務動作的去重仍需另外設計。",
+   "table": {
+    "head": [
+     "比較",
+     "MQTT",
+     "HTTP",
+     "CoAP",
+     "WebSocket"
+    ],
+    "rows": [
+     [
+      "傳輸層",
+      "TCP",
+      "TCP（HTTP/3 走 QUIC／UDP）",
+      "UDP",
+      "TCP"
+     ],
+     [
+      "通訊模式",
+      "發布／訂閱",
+      "請求／回應",
+      "請求／回應",
+      "全雙工長連線"
+     ],
+     [
+      "標頭",
+      "極小（最小 2 bytes）",
+      "大（常達數百 bytes）",
+      "小（4 bytes）",
+      "小"
+     ],
+     [
+      "即時性",
+      "高，主動推送",
+      "低，常需反覆詢問有無新資料（輪詢）",
+      "中",
+      "高，雙向"
+     ],
+     [
+      "可靠性",
+      "QoS 0／1／2",
+      "依賴 TCP",
+      "可選確認訊息",
+      "依賴 TCP"
+     ],
+     [
+      "適合",
+      "大量感測器、不穩網路",
+      "韌體更新、影像、Web",
+      "極低功耗微型裝置",
+      "即時雙向訊息"
+     ]
+    ]
+   },
+   "lab": "qos",
+   "after": "<p>MQTT 不是唯一的語言，其他協定各有適合的場合：</p><ul><li><b>HTTP</b>：請求／回應，客戶端問了伺服器才答。標頭常達數百 bytes，但生態成熟（RESTful API，用網址存取資料的常見介面），適合韌體下載、傳大圖與網頁介面。HTTPS 是 HTTP 加上 TLS 加密。</li><li><b>CoAP</b>：輕量版 HTTP，為受限裝置（記憶體與電力都很少的裝置）設計。基礎規格走 <b>UDP</b>，標頭 4 bytes，方法有 GET、POST、PUT、DELETE，並能選擇要求對方回覆確認。</li><li><b>WebSocket</b>：先用 HTTP 握手升級，之後維持一條<b>全雙工</b>（雙方可同時互傳）長連線，適合即時儀表板。</li></ul><p>選法：大量感測器持續回報、網路不穩，用 MQTT；偶爾傳大檔案或串接網頁服務，用 HTTP；電池極小、資料極少，用 CoAP；要即時雙向互動，用 WebSocket。</p>",
+   "more": {
+    "label": "其他會遇到的協定",
+    "body": "<p>AMQP 也是訊息佇列協定；FTP 傳檔、SMTP 寄信、SSH 遠端登入，各有用途，一般不用於感測資料回傳。</p>"
+   }
+  }
+ ],
+ "keypoints": [
+  "路與語言是兩層：Wi-Fi、LoRa 是路，MQTT、HTTP 是語言，可以搭配使用。",
+  "選無線技術先問四件事：多遠、多大、電從哪來、會不會移動。",
+  "RFID 讓物被看見，NFC 讓人與物互動。",
+  "BLE 省電傳小量，Wi-Fi 耗電傳影像，Zigbee 靠 Mesh 接力。",
+  "NB-IoT 走電信、LoRaWAN 可自建；兩者都遠、省電、慢。5G 三場景記 eMBB 快、mMTC 多、URLLC 準。",
+  "MQTT 三角色：Publisher、Broker、Subscriber；兩端都只連 Broker。",
+  "QoS 口訣：0 可能掉、1 可能重複、2 恰好一次。CoAP 基礎規格走 UDP，MQTT、WebSocket 與常見的 HTTP/1.1、HTTP/2 走 TCP。"
+ ],
+ "pitfalls": [
+  "MQTT 不是無線技術，也不會自動加密；加密要另外靠 TLS。",
+  "BLE 不屬於 LPWAN；NB-IoT 不適合傳影音；5G 不是低功耗、長距離技術。這幾個定位容易記混。",
+  "QoS 只有 0、1、2，沒有 3。只有 QoS 0 完全不保證送達；QoS 2 的恰好一次也僅限協定交換範圍。",
+  "保留訊息只存每個 Topic 最新一則，不是歷史資料庫；遺囑訊息只在非正常斷線時發出。發布者可以要求 Broker 保留訊息。",
+  "HTTP/1.1 預設是持久連線，回應後不一定斷線；部分教材寫法相反（如官方學習指引第 79 頁）；應考時留意題目的條件。",
+  "WebSocket 適合即時雙向訊息；實務上影音通話的媒體本身常用 WebRTC（瀏覽器之間直接傳影音的技術），WebSocket 多負責訊息與協調。CoAP 的方法與 HTTP 相近，基礎規格是 GET、POST、PUT、DELETE 四種。"
+ ],
+ "examples": [
+  {
+   "q": "一座果園占地約 4 公里見方，要在各處埋設土壤濕度感測器，每小時回報一筆讀值。感測器靠電池運作、希望數年免換，當地行動訊號不穩，業主願意自行架設接收設備。最合適的連線技術是？",
+   "o": [
+    "BLE",
+    "Wi-Fi",
+    "LoRaWAN",
+    "5G URLLC"
+   ],
+   "a": 2,
+   "think": "關鍵條件是距離數公里、資料極少、電池供電、可自建。BLE 和 Wi-Fi 距離不足，Wi-Fi 也太耗電；URLLC 為低延遲設計，既耗電又用不上。行動訊號不穩且能自建，正好指向 LoRaWAN。"
+  },
+  {
+   "q": "大樓水塔的液位感測器每 30 分鐘用 MQTT 發布一次讀值。管理員打開手機 App 時，希望不必等下一次發布，就立刻看到最新水位。應使用哪個機制？",
+   "o": [
+    "將 QoS 提高到 2",
+    "發布時設定保留訊息（Retained）",
+    "設定遺囑訊息（Last Will）",
+    "縮短 Keep Alive 間隔"
+   ],
+   "a": 1,
+   "think": "需求是新連上的訂閱者要馬上拿到最新值，這正是保留訊息的用途。QoS 管送達保證，Last Will 管非正常斷線通知，Keep Alive 管連線偵測，都無法讓新訂閱者取得先前的訊息。"
+  }
+ ],
+ "check": [
+  {
+   "q": "Wi-Fi 和 MQTT 分別回答什麼問題？",
+   "a": "Wi-Fi 回答裝置怎麼連上網，MQTT 回答連上後資料怎麼交換。"
+  },
+  {
+   "q": "被動式 RFID 標籤沒有電池，電力從哪裡來？",
+   "a": "天線接收讀寫器的電波，感應出電流取得能量。"
+  },
+  {
+   "q": "Zigbee 哪個角色每個網路只有一個？哪個角色不轉發？",
+   "a": "協調器只有一個；終端裝置不轉發。"
+  },
+  {
+   "q": "NB-IoT 和 LoRaWAN 在建網上最大的差別是什麼？",
+   "a": "NB-IoT 使用電信業者的網路與授權頻譜，LoRaWAN 用非授權頻段，可自建閘道。"
+  },
+  {
+   "q": "5G 的三大場景各自著重什麼？",
+   "a": "eMBB 高速率、mMTC 大量連接、URLLC 超可靠低延遲。"
+  },
+  {
+   "q": "MQTT 訂閱 coldchain/+/temp 和 coldchain/# 有什麼不同？",
+   "a": "前者只比對中間一層任意、結尾為 temp 的主題；後者比對 coldchain 以下全部主題。"
+  },
+  {
+   "q": "QoS 1 為什麼可能收到重複訊息？",
+   "a": "發送端沒等到確認就會重送，而原訊息可能其實已經送達。"
+  },
+  {
+   "q": "MQTT、HTTP、CoAP、WebSocket 中，哪個基礎規格走 UDP？",
+   "a": "CoAP。"
+  }
+ ],
+ "terms": [
+  {
+   "term": "RFID",
+   "en": "Radio Frequency Identification",
+   "def": "用無線電讀取標籤，以識別物品的技術。"
+  },
+  {
+   "term": "NFC",
+   "en": "Near Field Communication",
+   "def": "距離約 10 公分內、以 13.56 MHz 進行雙向互動的通訊技術。"
+  },
+  {
+   "term": "BLE",
+   "en": "Bluetooth Low Energy",
+   "def": "平常休眠、只在短時間醒來傳小量資料的省電藍牙。"
+  },
+  {
+   "term": "GATT",
+   "en": "Generic Attribute Profile",
+   "def": "BLE 連線後用服務與特徵來組織資料的規則。"
+  },
+  {
+   "term": "Zigbee",
+   "def": "基於 IEEE 802.15.4 的低速、低功耗區域網路，常以網狀方式組網。"
+  },
+  {
+   "term": "網狀網路",
+   "en": "Mesh",
+   "def": "節點可互相接力轉送，一條路斷了可能改走另一條的網路結構。"
+  },
+  {
+   "term": "SSID",
+   "en": "Service Set Identifier",
+   "def": "Wi-Fi 基地台的網路識別名稱。"
+  },
+  {
+   "term": "Matter",
+   "def": "智慧家庭互通標準，可跑在 Wi-Fi、Thread、乙太網路上。"
+  },
+  {
+   "term": "LPWAN",
+   "en": "Low-Power Wide-Area Network",
+   "def": "以低速率換取長距離與低功耗的廣域網路類別。"
+  },
+  {
+   "term": "NB-IoT",
+   "en": "Narrowband IoT",
+   "def": "電信業者以授權頻譜提供的窄頻物聯網服務。"
+  },
+  {
+   "term": "LoRaWAN",
+   "en": "Long Range Wide Area Network",
+   "def": "架在 LoRa 無線技術上、可自建閘道的廣域網路協定。"
+  },
+  {
+   "term": "URLLC",
+   "en": "Ultra-Reliable Low-Latency Communications",
+   "def": "5G 三大場景之一，追求極低延遲與高可靠度。"
+  },
+  {
+   "term": "eSIM",
+   "en": "Embedded SIM",
+   "def": "焊在電路板上、可遠端切換電信業者的 SIM。"
+  },
+  {
+   "term": "MQTT",
+   "en": "Message Queuing Telemetry Transport",
+   "def": "走 TCP、以發布／訂閱運作的輕量通訊協定。"
+  },
+  {
+   "term": "Broker",
+   "en": "Message Broker",
+   "def": "訊息代理。MQTT 中依 Topic 把訊息轉給訂閱者的中間人。"
+  },
+  {
+   "term": "Topic",
+   "def": "主題。MQTT 訊息的分類路徑，以斜線分層。"
+  },
+  {
+   "term": "QoS",
+   "en": "Quality of Service",
+   "def": "服務品質。MQTT 的送達保證等級，分為 0、1、2。"
+  },
+  {
+   "term": "保留訊息",
+   "en": "Retained Message",
+   "def": "Broker 為某 Topic 保存的最新一則訊息，供新訂閱者立即取得。"
+  },
+  {
+   "term": "CoAP",
+   "en": "Constrained Application Protocol",
+   "def": "為受限裝置設計的輕量協定，基礎規格走 UDP。"
+  },
+  {
+   "term": "WebSocket",
+   "def": "經 HTTP 握手升級後，維持全雙工長連線的協定。"
+  },
+  {
+   "term": "Wi-Fi",
+   "en": "IEEE 802.11",
+   "def": "以 IEEE 802.11 標準為基礎的無線區域網路技術，速率高、耗電也較高。"
+  },
+  {
+   "term": "LoRa",
+   "en": "Long Range",
+   "def": "長距離、低功耗、低速率的無線調變技術，屬於實體層；LoRaWAN 才是架在它上面、規定網路如何運作的協定。"
+  },
+  {
+   "term": "HTTP",
+   "en": "Hypertext Transfer Protocol",
+   "def": "超文字傳輸協定。網頁與 Web API 使用的規則，由用戶端發出請求、伺服器回應。"
+  }
+ ],
+ "case": {
+  "title": "本章跟著一家冷鏈物流業者走",
+  "body": "冷藏庫裡有溫度探頭，貨車在全台跑，貨箱每天進出倉。這些資料都要送上平台，超溫就要立刻通知。每一節都在替其中一個場景做選擇。"
+ },
+ "sources": [
+  [
+   "MQTT Version 5.0（OASIS 標準）",
+   "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
+  ],
+  [
+   "RFC 7252：CoAP",
+   "https://www.rfc-editor.org/rfc/rfc7252"
+  ],
+  [
+   "RFC 6455：WebSocket",
+   "https://www.rfc-editor.org/rfc/rfc6455"
+  ],
+  [
+   "RFC 9110：HTTP Semantics",
+   "https://www.rfc-editor.org/rfc/rfc9110"
+  ],
+  [
+   "LoRa Alliance：什麼是 LoRaWAN",
+   "https://lora-alliance.org/about-lorawan/"
+  ],
+  [
+   "3GPP：NB-IoT 標準化完成（Release 13）",
+   "https://www.3gpp.org/news-events/3gpp-news/nb-iot-complete"
+  ],
+  [
+   "ITU-R M.2083：5G 願景與使用場景",
+   "https://www.itu.int/rec/R-REC-M.2083"
+  ],
+  [
+   "Bluetooth SIG：技術總覽",
+   "https://www.bluetooth.com/learn-about-bluetooth/tech-overview/"
+  ],
+  [
+   "Wi-Fi Alliance：認識 Wi-Fi",
+   "https://www.wi-fi.org/discover-wi-fi"
+  ],
+  [
+   "NFC Forum：認識 NFC",
+   "https://nfc-forum.org/learn/"
+  ]
+ ]
+}

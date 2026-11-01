@@ -1,0 +1,524 @@
+{
+ "id": "s1-11",
+ "title": "AI 基礎概念",
+ "subtitle": "讓感測資料變成現場判斷",
+ "summary": "從零認識機器如何從資料學會判斷、模型怎麼放進小裝置，以及 AI 該放邊緣或雲端、如何負責任地使用。",
+ "learn": [
+  "說明模型如何從資料學會判斷，以及訓練與推論的差別",
+  "分辨三種學習方式、分類與迴歸，並看懂準確率的陷阱",
+  "解釋量化、剪枝與知識蒸餾如何讓模型放進小型裝置",
+  "依延遲、資料量、連線與模型大小，決定 AI 放邊緣或雲端並挑選硬體",
+  "指出導入 AI 時的偏差、隱私、可解釋性與責任問題"
+ ],
+ "prereq": "本章不需要 AI 背景，只先認識三個名詞。<b>微控制器（MCU）</b>是一顆晶片就具備運算與記憶體的小電腦，記憶體常只有 KB 級，靠電池也能運作。<b>閘道器（Gateway）</b>是現場收集資料、再轉送上網的轉接站，像社區的收發室。<b>邊緣（Edge）</b>指靠近資料產生處的運算位置，相對於遠端機房的雲端。",
+ "bridge": "可以把本章看成把 MLOps 搬到資源受限的硬體上：重點從模型分數轉向量化、硬體相容與現場維運。",
+ "case": {
+  "title": "替冷鏈公司加上會判斷的 AI",
+  "body": "壓縮機若在半夜故障，整庫貨品都可能報廢。公司想從溫度與振動資料提早發現異常，也要決定判斷該放在冷藏庫現場還是雲端平台。本章從機器怎麼學開始，一路走到部署與責任歸屬。"
+ },
+ "sections": [
+  {
+   "id": "ai-in-aiot",
+   "h": "機器學習在做什麼：從寫規則到從資料學",
+   "predict": {
+    "q": "壓縮機快壞時振動會變，但怎麼變很難用文字描述。要讓程式判斷，把規則一條條寫死可行嗎？",
+    "a": "很難，因為規則本身說不清楚。機器學習改走另一條路：給程式大量資料和當時的結果，讓它自己整理出規律。"
+   },
+   "body": "<p><b>AIoT（Artificial Intelligence of Things，人工智慧物聯網）</b>可以想成一個人的分工：感測器是感官，通訊與平台是神經，<b>人工智慧（Artificial Intelligence, AI）</b>負責分析與判斷。AI 不只在雲端運行，也逐步延伸到閘道器與 MCU 這類端側裝置。</p><p>一般程式由人寫好規則，例如「溫度高於 −15°C 就告警」。規則說得清楚時，這樣做最好。<b>機器學習（Machine Learning, ML）</b>處理的是說不清楚的情況：不寫規則，改給程式大量例子，讓它自己找出規律。</p><p>例子裡有兩種東西。<b>特徵（Feature）</b>是輸入的線索，例如振動強度、電流；<b>標籤（Label）</b>是正確答案，例如「三天內有沒有故障」。學出來的成果叫<b>模型（Model）</b>，像一份由經驗濃縮成的判斷手冊，手冊的內容是大量可調整的數字，稱為<b>權重（Weight）</b>。</p><p><b>訓練（Training）</b>就是反覆調整這些數字：模型猜答案、和標籤比對、算出差距，這個差距稱為<b>損失（Loss）</b>，再微調權重讓差距變小。訓練好之後權重固定，用它回答新問題就是<b>推論（Inference）</b>。</p><p>模型只能從資料學，資料的問題會變成模型的問題。AIoT 的資料多半來自持續量測的感測器，不像整齊的表格；圖下方的表列出四個難處。<b>正規化（Normalization）</b>是把不同單位的數值調到相近範圍；<b>傅立葉轉換（Fourier Transform）</b>把時間上的波形換成頻率成分，方便找出週期，例如馬達轉動的固定振動。</p>",
+   "svg": "<svg viewBox=\"0 0 600 305\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"訓練時模型反覆猜答案、對答案、微調權重；訓練完成後權重固定，用來回答新資料\"><defs><marker id=\"s1-11-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"15\" y=\"24\" class=\"tb\">訓練：猜、對答案、調整，反覆很多次</text><rect x=\"15\" y=\"40\" width=\"150\" height=\"66\" rx=\"6\" class=\"box\"/><text x=\"90\" y=\"68\" class=\"tb tc\">訓練資料</text><text x=\"90\" y=\"88\" class=\"ts tc\">特徵＋標籤</text><rect x=\"225\" y=\"40\" width=\"150\" height=\"66\" rx=\"6\" class=\"acc\"/><text x=\"300\" y=\"68\" class=\"tb tc\">模型猜答案</text><text x=\"300\" y=\"88\" class=\"ts tc\">用目前的權重</text><rect x=\"435\" y=\"40\" width=\"150\" height=\"66\" rx=\"6\" class=\"box\"/><text x=\"510\" y=\"68\" class=\"tb tc\">對答案</text><text x=\"510\" y=\"88\" class=\"ts tc\">算差距（損失）</text><line x1=\"165\" y1=\"73\" x2=\"223\" y2=\"73\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/><line x1=\"375\" y1=\"73\" x2=\"433\" y2=\"73\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/><rect x=\"225\" y=\"134\" width=\"150\" height=\"54\" rx=\"6\" class=\"warn\"/><text x=\"300\" y=\"157\" class=\"tb tc\">微調權重</text><text x=\"300\" y=\"176\" class=\"ts tc\">讓差距變小</text><polyline points=\"510,106 510,161 377,161\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/><line x1=\"300\" y1=\"134\" x2=\"300\" y2=\"108\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/><line x1=\"10\" y1=\"204\" x2=\"590\" y2=\"204\" class=\"ln dash\"/><text x=\"15\" y=\"228\" class=\"tb\">推論：權重固定，直接回答新問題</text><rect x=\"15\" y=\"242\" width=\"150\" height=\"54\" rx=\"6\" class=\"box\"/><text x=\"90\" y=\"265\" class=\"tb tc\">新資料</text><text x=\"90\" y=\"284\" class=\"ts tc\">只有特徵，沒有答案</text><rect x=\"225\" y=\"242\" width=\"150\" height=\"54\" rx=\"6\" class=\"ok\"/><text x=\"300\" y=\"274\" class=\"tb tc\">訓練好的模型</text><rect x=\"435\" y=\"242\" width=\"150\" height=\"54\" rx=\"6\" class=\"box\"/><text x=\"510\" y=\"265\" class=\"tb tc\">判斷結果</text><text x=\"510\" y=\"284\" class=\"ts tc\">正常或異常</text><line x1=\"165\" y1=\"269\" x2=\"223\" y2=\"269\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/><line x1=\"375\" y1=\"269\" x2=\"433\" y2=\"269\" class=\"la\" marker-end=\"url(#s1-11-1-arr)\"/></svg>",
+   "caption": "訓練要反覆計算，推論只要向前算一次。這個差別決定了後面模型該放在哪裡。",
+   "table": {
+    "head": [
+     "資料的難處",
+     "白話說明",
+     "常見處理"
+    ],
+    "rows": [
+     [
+      "時間序列（Time-series）",
+      "資料依時間排列，前後相關，頻率常很高",
+      "時間序列分析、取樣率對齊（Resampling）、傅立葉轉換、時序模型"
+     ],
+     [
+      "高雜訊",
+      "電磁干擾或環境變化混入訊號",
+      "濾波（濾掉不要的頻率成分）、去雜訊、異常值處理"
+     ],
+     [
+      "資料缺失（Missing Data）",
+      "斷線或資料在傳輸途中遺失，造成空缺",
+      "補值、標記缺失、改善傳輸"
+     ],
+     [
+      "類別不平衡（Imbalanced Data）",
+      "正常資料很多，故障樣本極少",
+      "類別加權、增加少數類樣本、改用異常偵測"
+     ]
+    ]
+   },
+   "more": {
+    "label": "用一條直線看懂權重與訓練",
+    "body": "<p>假設要由外氣溫預測冷藏庫一天的耗電，模型只有兩個權重 a、b：<code>耗電 = a × 氣溫 + b</code>。手上有兩筆資料：20°C 時 30 度電、30°C 時 50 度電（數字為示意）。</p><ul><li>先猜 a = 1、b = 10：20°C 算出 30，對了；30°C 算出 40，比實際少 10。這個差距就是損失。</li><li>調成 a = 2、b = −10：20°C 算出 30，30°C 算出 50，兩筆都對，損失變成 0。</li></ul><p>神經網路就是把許多這樣的小算式疊在一起，權重可能多達數百萬個，由程式自動調整。想讓模型更準，常見做法是增加資料多樣性、挑選合適的資料、調整模型架構；單純縮短訓練時間不會讓它更準。</p>"
+   }
+  },
+  {
+   "id": "learning-types",
+   "h": "三種學習方式，以及怎麼驗收",
+   "predict": {
+    "q": "模型對 1,000 筆資料的準確率是 99%，其中 10 筆是故障。這個模型一定好用嗎？",
+    "a": "不一定。全部回答「正常」就有 99%，卻一件故障都抓不到。故障很少時，要另外看抓到多少、誤報多少。"
+   },
+   "body": "<p>三種方式的差別在於模型靠什麼學：</p><ul><li><b>監督式學習（Supervised Learning）</b>：資料有標籤，像附解答的練習本。輸出是類別的叫<b>分類（Classification）</b>，輸出是連續數值的叫<b>迴歸（Regression）</b>，例如預測<b>剩餘使用壽命（Remaining Useful Life, RUL）</b>。</li><li><b>非監督式學習（Unsupervised Learning）</b>：沒有標籤，由模型自己找結構。<b>分群（Clustering）</b>把相似資料歸成一組；<b>異常偵測（Anomaly Detection）</b>先學會「正常長什麼樣」，再標出偏離的樣本，適合故障樣本難收集的現場。</li><li><b>強化學習（Reinforcement Learning, RL）</b>：<b>代理人（Agent）</b>行動後依獎勵或懲罰修正策略，像訓練寵物。適合動態控制，例如空調（HVAC）節能。</li></ul><p><b>怎麼知道模型真的學會？</b>資料要切成三份：<b>訓練集（Training Set）</b>用來學，<b>驗證集（Validation Set）</b>用來調整，<b>測試集（Test Set）</b>用來做最後檢查。只會背練習題、遇到新資料就失準，稱為<b>過度擬合（Overfitting）</b>。</p><p>類別不平衡時也別只看準確率。下表比較兩個模型，資料同樣是 1,000 筆、其中 10 筆故障：一個全部回答「正常」；另一個發出 30 次告警，其中 8 次是真故障。後者準確率較低，卻有用得多。</p>",
+   "svg": "<svg viewBox=\"0 0 600 270\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"依學習依據區分監督式、非監督式與強化學習，以及各自的典型任務\"><defs><marker id=\"s1-11-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"170\" y=\"12\" width=\"260\" height=\"46\" rx=\"6\" class=\"acc\"/><text x=\"300\" y=\"40\" class=\"tb tc\">模型靠什麼學習？</text><line x1=\"300\" y1=\"58\" x2=\"100\" y2=\"108\" class=\"la\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"300\" y1=\"58\" x2=\"300\" y2=\"108\" class=\"la\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"300\" y1=\"58\" x2=\"500\" y2=\"108\" class=\"la\" marker-end=\"url(#s1-11-2-arr)\"/><text x=\"130\" y=\"76\" class=\"ts tc\">有標籤的資料</text><text x=\"308\" y=\"100\" class=\"ts\">沒標籤的資料</text><text x=\"470\" y=\"76\" class=\"ts tc\">行動後的獎勵</text><rect x=\"15\" y=\"110\" width=\"170\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"100\" y=\"135\" class=\"tb tc\">監督式</text><text x=\"100\" y=\"154\" class=\"ts tc\">學輸入到答案的對應</text><rect x=\"215\" y=\"110\" width=\"170\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"300\" y=\"135\" class=\"tb tc\">非監督式</text><text x=\"300\" y=\"154\" class=\"ts tc\">自己找資料的結構</text><rect x=\"415\" y=\"110\" width=\"170\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"500\" y=\"135\" class=\"tb tc\">強化學習</text><text x=\"500\" y=\"154\" class=\"ts tc\">試誤，累積最多獎勵</text><line x1=\"100\" y1=\"166\" x2=\"56\" y2=\"198\" class=\"ln\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"100\" y1=\"166\" x2=\"144\" y2=\"198\" class=\"ln\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"300\" y1=\"166\" x2=\"256\" y2=\"198\" class=\"ln\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"300\" y1=\"166\" x2=\"344\" y2=\"198\" class=\"ln\" marker-end=\"url(#s1-11-2-arr)\"/><line x1=\"500\" y1=\"166\" x2=\"500\" y2=\"198\" class=\"ln\" marker-end=\"url(#s1-11-2-arr)\"/><rect x=\"15\" y=\"200\" width=\"82\" height=\"60\" rx=\"6\" class=\"soft\"/><text x=\"56\" y=\"227\" class=\"tb tc\">分類</text><text x=\"56\" y=\"246\" class=\"ts tc\">正常／異常</text><rect x=\"103\" y=\"200\" width=\"82\" height=\"60\" rx=\"6\" class=\"soft\"/><text x=\"144\" y=\"227\" class=\"tb tc\">迴歸</text><text x=\"144\" y=\"246\" class=\"ts tc\">剩餘壽命</text><rect x=\"215\" y=\"200\" width=\"82\" height=\"60\" rx=\"6\" class=\"soft\"/><text x=\"256\" y=\"227\" class=\"tb tc\">分群</text><text x=\"256\" y=\"246\" class=\"ts tc\">運作模式</text><rect x=\"303\" y=\"200\" width=\"82\" height=\"60\" rx=\"6\" class=\"soft\"/><text x=\"344\" y=\"227\" class=\"tb tc\">異常偵測</text><text x=\"344\" y=\"246\" class=\"ts tc\">偏離基準</text><rect x=\"415\" y=\"200\" width=\"170\" height=\"60\" rx=\"6\" class=\"soft\"/><text x=\"500\" y=\"227\" class=\"tb tc\">動態控制</text><text x=\"500\" y=\"246\" class=\"ts tc\">空調節能，先定安全邊界</text></svg>",
+   "caption": "判斷時先問資料有沒有答案；有答案時，再看輸出是類別還是數值。",
+   "table": {
+    "head": [
+     "指標",
+     "回答什麼問題",
+     "全部答「正常」",
+     "另一個模型"
+    ],
+    "rows": [
+     [
+      "準確率（Accuracy）",
+      "全部判斷中答對多少",
+      "99%",
+      "97.6%"
+     ],
+     [
+      "召回率（Recall）",
+      "真正的故障抓到多少",
+      "0%",
+      "80%"
+     ],
+     [
+      "精確率（Precision）",
+      "發出的告警有多少是真的",
+      "沒有告警，無法計算",
+      "約 27%"
+     ]
+    ]
+   },
+   "more": {
+    "label": "標籤品質、誤報、安全邊界，以及成效不好時先查什麼",
+    "body": "<ul><li>標籤如果延遲或標準不一，模型也會學偏。</li><li>異常偵測的告警門檻要調整，否則誤報太多，人員就不再理會。門檻調嚴會少誤報但可能漏抓，調鬆則相反。</li><li>強化學習會試探，必須先界定安全邊界。</li><li>時間序列常依時間先後切分，用較早的資料訓練、較晚的資料測試，避免模型偷看到未來。</li></ul><p>成效不好時先回頭看資料：是否涵蓋現場會遇到的機型、季節與工況，標籤是否一致；資料沒問題，才考慮換模型。連訓練資料都學不好的情況則稱為<b>欠擬合（Underfitting）</b>，常表示模型太簡單或特徵不足。</p>"
+   }
+  },
+  {
+   "id": "deep-learning",
+   "h": "深度學習與常見模型",
+   "predict": {
+    "q": "倉庫相機要看貨箱有沒有破損，另一個系統要由壓縮機的電流趨勢預測負載。兩者該選同一種模型嗎？",
+    "a": "通常不會。影像重視鄰近區域的圖樣，適合 CNN；電流趨勢重視前後順序，典型選擇是 RNN 或 LSTM。"
+   },
+   "body": "<p><b>類神經網路（Artificial Neural Network, ANN）</b>由許多層簡單的計算單元串成，單元之間的連線都帶有權重。<b>深度學習（Deep Learning, DL）</b>使用多層網路，能從原始資料自動提取特徵，因此擅長處理影像、聲音與振動。</p><p>選模型時先看資料形狀：影像重視「鄰近區域的圖樣」，就用 CNN；振動與溫度重視「前後順序」，典型選擇是 RNN 或 LSTM（一維 CNN 也可處理時序，但 RNN／LSTM 較具代表性）。</p>",
+   "svg": "<svg viewBox=\"0 0 600 230\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"人工智慧包含機器學習，機器學習包含深度學習的層次圖\"><rect x=\"10\" y=\"10\" width=\"580\" height=\"210\" rx=\"8\" class=\"soft\"/><text x=\"30\" y=\"36\" class=\"tb\">人工智慧 AI</text><text x=\"30\" y=\"56\" class=\"ts\">讓機器做出辨識、預測或決策的技術總稱</text><rect x=\"40\" y=\"68\" width=\"520\" height=\"138\" rx=\"8\" class=\"box\"/><text x=\"60\" y=\"94\" class=\"tb\">機器學習 ML</text><text x=\"60\" y=\"114\" class=\"ts\">不把規則寫死，改從資料學出規律</text><rect x=\"70\" y=\"126\" width=\"460\" height=\"66\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"152\" class=\"tb\">深度學習 DL</text><text x=\"90\" y=\"174\" class=\"ts\">用多層神經網路自動找特徵，適合影像、聲音與振動</text></svg>",
+   "caption": "三者是包含關係：深度學習屬於機器學習，機器學習屬於人工智慧。",
+   "table": {
+    "head": [
+     "模型",
+     "擅長",
+     "AIoT 例子"
+    ],
+    "rows": [
+     [
+      "CNN（卷積神經網路）",
+      "局部圖樣、空間結構",
+      "自動光學檢測（AOI）找瑕疵、光達（LiDAR）點雲（用大量 3D 座標點描述物體形狀）判讀"
+     ],
+     [
+      "RNN／LSTM（循環神經網路／長短期記憶）",
+      "時間前後關係",
+      "振動、電流、溫度趨勢分析，負載預測"
+     ],
+     [
+      "GAN（生成對抗網路）",
+      "生成近似真實的新資料",
+      "合成訓練樣本，補足稀少的瑕疵影像"
+     ],
+     [
+      "SLM（小型語言模型）",
+      "處理自然語言，規模小到能放在邊緣",
+      "把推論結果寫成狀態摘要、告警說明"
+     ]
+    ]
+   },
+   "more": {
+    "label": "CNN、LSTM 怎麼運作，以及判別式與生成式 AI",
+    "body": "<p>CNN 的濾波器像一個小放大鏡，在畫面上逐格掃描。LSTM 則像會做筆記的讀者，用<b>門控（Gate）</b>決定哪些資訊要留下，改善長序列容易遺忘的問題。</p><p>用來分類或預測的模型稱為<b>判別式 AI</b>；能產生文字、影像等新內容的稱為<b>生成式 AI（Generative AI, GenAI）</b>。</p>"
+   }
+  },
+  {
+   "id": "training-to-inference",
+   "h": "從訓練到部署：模型要瘦身才放得進去",
+   "predict": {
+    "q": "一顆 MCU 只留 1 MB 給模型，而模型有 300 萬個 FP32 權重。只做 INT8 量化放得下嗎？",
+    "a": "放不下。FP32 共約 12 MB，INT8 約 3 MB，仍超過 1 MB，還要搭配剪枝、蒸餾或換硬體。"
+   },
+   "body": "<p>訓練要反覆計算與修正權重，耗費大量算力，多在雲端或配備圖形處理器（Graphics Processing Unit, GPU，擅長同時做大量計算的晶片）的工作站進行。推論只需向前計算一次，講究即時，可以放到現場。就像編字典很費工，查字典卻很快。</p><p>完整流程有五步：<b>資料前處理</b> → <b>模型訓練</b> → <b>模型壓縮</b> → <b>推論與系統整合</b> → <b>上線監測與版本管理</b>。壓縮是因為小型裝置的記憶體與電力有限，常見三種做法：</p><ul><li><b>量化（Quantization）</b>：降低數字精度，常見由 32 位元浮點數（FP32）轉成 8 位元整數（INT8）。精度通常略降，需實測驗證。</li><li><b>剪枝（Pruning）</b>：刪掉影響小的權重或連線，像修剪樹枝。</li><li><b>知識蒸餾（Knowledge Distillation）</b>：讓大模型當老師，訓練一個小模型模仿它。</li></ul><p><b>算算看：</b>500 萬個權重用 FP32 時，每個占 4 位元組，共約 20 MB；改成 INT8 後每個占 1 位元組，約 5 MB。這裡只算權重，完整模型檔還有其他資料。</p>",
+   "svg": "<svg viewBox=\"0 0 600 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AIoT 模型從前處理、雲端訓練、模型壓縮到邊緣推論與監測的流程\"><defs><marker id=\"s1-11-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"360\" y=\"22\" class=\"ts tc\">資料分布漂移 → 評估更新模型</text><polyline points=\"540,58 540,36 180,36 180,58\" class=\"la dash\" marker-end=\"url(#s1-11-4-arr)\"/><rect x=\"10\" y=\"60\" width=\"100\" height=\"60\" rx=\"6\" class=\"box\"/><text x=\"60\" y=\"87.0\" class=\"tb tc\">前處理</text><text x=\"60\" y=\"105.0\" class=\"ts tc\">濾波・正規化</text><line x1=\"112\" y1=\"90\" x2=\"128\" y2=\"90\" class=\"la\" marker-end=\"url(#s1-11-4-arr)\"/><rect x=\"130\" y=\"60\" width=\"100\" height=\"60\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"87.0\" class=\"tb tc\">雲端訓練</text><text x=\"180\" y=\"105.0\" class=\"ts tc\">GPU・TPU</text><line x1=\"232\" y1=\"90\" x2=\"248\" y2=\"90\" class=\"la\" marker-end=\"url(#s1-11-4-arr)\"/><rect x=\"250\" y=\"60\" width=\"100\" height=\"60\" rx=\"6\" class=\"acc\"/><text x=\"300\" y=\"87.0\" class=\"tb tc\">模型壓縮</text><text x=\"300\" y=\"105.0\" class=\"ts tc\">量化・剪枝</text><line x1=\"352\" y1=\"90\" x2=\"368\" y2=\"90\" class=\"la\" marker-end=\"url(#s1-11-4-arr)\"/><rect x=\"370\" y=\"60\" width=\"100\" height=\"60\" rx=\"6\" class=\"box\"/><text x=\"420\" y=\"87.0\" class=\"tb tc\">邊緣推論</text><text x=\"420\" y=\"105.0\" class=\"ts tc\">NPU・閘道器</text><line x1=\"472\" y1=\"90\" x2=\"488\" y2=\"90\" class=\"la\" marker-end=\"url(#s1-11-4-arr)\"/><rect x=\"490\" y=\"60\" width=\"100\" height=\"60\" rx=\"6\" class=\"box\"/><text x=\"540\" y=\"87.0\" class=\"tb tc\">監測更新</text><text x=\"540\" y=\"105.0\" class=\"ts tc\">漂移・版本</text><line x1=\"300\" y1=\"120\" x2=\"102\" y2=\"168\" class=\"ln dash\"/><rect x=\"10\" y=\"170\" width=\"185\" height=\"56\" rx=\"6\" class=\"soft\"/><text x=\"102.5\" y=\"195.0\" class=\"tb tc\">量化 Quantization</text><text x=\"102.5\" y=\"213.0\" class=\"ts tc\">FP32→INT8，權重約 1/4</text><line x1=\"300\" y1=\"120\" x2=\"299\" y2=\"168\" class=\"ln dash\"/><rect x=\"207\" y=\"170\" width=\"185\" height=\"56\" rx=\"6\" class=\"soft\"/><text x=\"299.5\" y=\"195.0\" class=\"tb tc\">剪枝 Pruning</text><text x=\"299.5\" y=\"213.0\" class=\"ts tc\">移除不重要的權重</text><line x1=\"300\" y1=\"120\" x2=\"496\" y2=\"168\" class=\"ln dash\"/><rect x=\"404\" y=\"170\" width=\"185\" height=\"56\" rx=\"6\" class=\"soft\"/><text x=\"496.5\" y=\"195.0\" class=\"tb tc\">蒸餾 Distillation</text><text x=\"496.5\" y=\"213.0\" class=\"ts tc\">大模型教小模型</text></svg>",
+   "caption": "典型流程：雲端訓練後壓縮，再部署到邊緣；發現漂移時先評估，再決定是否更新模型。NPU、TPU 是 AI 專用晶片，後面的硬體一節會介紹。",
+   "more": {
+    "label": "模型上線之後：系統整合、漂移、模型格式與推論引擎",
+    "body": "<p>推論結果會送進<b>人機介面（HMI）</b>、<b>製造執行系統（MES）</b>或<b>監控與資料採集系統（SCADA）</b>，變成告警與維護建議。上線後，現場條件改變可能讓資料分布偏移，稱為<b>漂移（Drift）</b>，所以要持續監測並保留版本與推論紀錄。</p><p>模型要跑起來還需要兩項配合。<b>模型格式（Model Format）</b>是模型的存檔方式，如 ONNX、TensorFlow、PyTorch 格式，影響能否跨硬體轉換與部署；<b>推論引擎（Inference Engine）</b>則把模型的運算對應到實際的處理器或加速器。</p>"
+   }
+  },
+  {
+   "id": "edge-ai",
+   "h": "Edge AI：什麼時候把判斷放在現場",
+   "predict": {
+    "q": "壓縮機保護要在 100 毫秒內反應，而網路單程延遲是 50 毫秒。判斷放雲端來得及嗎？",
+    "a": "來不及。光是往返就用掉 100 毫秒，還沒算上傳資料與計算的時間，所以要放在現場。"
+   },
+   "body": "<p>把所有原始資料送上雲端，常卡在三件事。<b>延遲（Latency）</b>：資料來回要時間，安全告警等不起。<b>頻寬（Bandwidth）</b>：影像與高頻振動的資料量很大。<b>隱私（Privacy）</b>：敏感資料離開場域就多一分風險。</p><p><b>邊緣推論（Edge Inference）</b>就近判斷，只回傳特徵、事件或結果，像分店先自己處理，只把摘要報給總公司。在靠近資料產生處處理資料稱為<b>邊緣運算（Edge Computing）</b>；再把 AI 推論放到這裡執行，就是<b>邊緣人工智慧（Edge AI）</b>。</p><p><b>算算看：</b>一個振動感測器每秒取樣 10,000 次、每筆 2 位元組，一天約 1.7 GB。若改成每分鐘只傳一筆 100 位元組的摘要，一天僅約 144 kB（數字為示意）。</p>",
+   "lab": "s1-11-edge-cloud",
+   "after": "<p>需要即時反應、資料量大、網路不穩或資料敏感時，就適合放在邊緣。雲端仍擅長跨場域彙整、訓練與管理，所以主流是<b>端雲協作（Edge–Cloud Collaboration）</b>：「訓練在雲端、推論在邊緣」。網路中斷時，現場也能繼續判斷。</p><p><b>聯合學習（Federated Learning, FL）</b>適合資料不能集中的情況：各節點用自己的資料訓練，只上傳權重或梯度（權重該往哪個方向調整的資訊），由雲端合併。原始資料不離開本地，像各校只交統計結果，不交學生名冊。</p>",
+   "svg": "<svg viewBox=\"0 0 600 305\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"雲端 AI 與邊緣 AI 的資料流比較\"><defs><marker id=\"s1-11-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"55\" y=\"83\" class=\"tb tc\">雲端 AI</text><rect x=\"110\" y=\"50\" width=\"90\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"155\" y=\"84.0\" class=\"tb tc\">感測器</text><rect x=\"440\" y=\"50\" width=\"140\" height=\"56\" rx=\"6\" class=\"warn\"/><text x=\"510\" y=\"75.0\" class=\"tb tc\">雲端推論</text><text x=\"510\" y=\"93.0\" class=\"ts tc\">AI 在遠端</text><line x1=\"202\" y1=\"68\" x2=\"438\" y2=\"68\" class=\"la\" marker-end=\"url(#s1-11-5-arr)\"/><text x=\"320\" y=\"60\" class=\"ts tc\">原始資料送上雲端</text><line x1=\"438\" y1=\"90\" x2=\"202\" y2=\"90\" class=\"ln dash\" marker-end=\"url(#s1-11-5-arr)\"/><text x=\"320\" y=\"112\" class=\"ts tc\">結果再傳回（等網路往返）</text><text x=\"320\" y=\"140\" class=\"ts tc\">缺點：延遲高、耗頻寬、資料離開現場</text><line x1=\"10\" y1=\"158\" x2=\"590\" y2=\"158\" class=\"ln dash\"/><text x=\"55\" y=\"213\" class=\"tb tc ta\">邊緣 AI</text><rect x=\"110\" y=\"180\" width=\"90\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"155\" y=\"214.0\" class=\"tb tc\">感測器</text><rect x=\"250\" y=\"180\" width=\"130\" height=\"56\" rx=\"6\" class=\"acc\"/><text x=\"315\" y=\"205.0\" class=\"tb tc\">邊緣推論</text><text x=\"315\" y=\"223.0\" class=\"ts tc\">閘道器・NPU</text><rect x=\"440\" y=\"180\" width=\"140\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"510\" y=\"205.0\" class=\"tb tc\">雲端</text><text x=\"510\" y=\"223.0\" class=\"ts tc\">訓練・彙整</text><line x1=\"202\" y1=\"208\" x2=\"248\" y2=\"208\" class=\"la\" marker-end=\"url(#s1-11-5-arr)\"/><line x1=\"382\" y1=\"198\" x2=\"438\" y2=\"198\" class=\"la\" marker-end=\"url(#s1-11-5-arr)\"/><text x=\"410\" y=\"190\" class=\"ts tc\">只傳事件</text><line x1=\"438\" y1=\"220\" x2=\"382\" y2=\"220\" class=\"ln dash\" marker-end=\"url(#s1-11-5-arr)\"/><text x=\"410\" y=\"236\" class=\"ts tc\">新模型</text><text x=\"300\" y=\"256\" class=\"ts tc\">就地處理，減少往返</text><text x=\"320\" y=\"290\" class=\"ts tc ta\">可減少延遲、上傳量與資料外傳</text></svg>",
+   "caption": "雲端推論要先傳資料再等結果；邊緣推論在現場完成。實際效果仍取決於模型、硬體與系統設計。",
+   "more": {
+    "label": "多節點怎麼協作，以及邊緣的小型語言模型",
+    "body": "<p>節點一多就要想清楚誰先更新：例如同一廠區的攝影機透過閘道器分批換上新模型版本，一台偵測到異常也可通知鄰近裝置。</p><p>邊緣也開始放入<b>小型語言模型（Small Language Model, SLM）</b>，把數值判斷翻成人看得懂的摘要與操作建議。它是人機互動與決策輔助的補充，不取代既有的預測模型，也不直接控制設備。</p>"
+   }
+  },
+  {
+   "id": "hardware-accelerators",
+   "h": "硬體加速器：專用換能效，彈性換成本",
+   "predict": {
+    "q": "倉庫有一台插電、散熱良好的主機要分析 8 路影像，另有一個電池探頭要跑很小的 INT8 模型。兩者適合同一種晶片嗎？",
+    "a": "不適合。多路影像可選 GPU；靠電池跑量化模型看 NPU。越專用通常越省電，但彈性越低。"
+   },
+   "body": "<p>神經網路的運算是大量同時進行的乘法與加法，一般的中央處理器（CPU）做得到，但在延遲與耗電上常不划算。所以邊緣裝置常加上<b>硬體加速器</b>，由它專職處理 AI 運算，CPU 繼續負責作業系統與輸入輸出，兩者是合作關係。</p><p>原則是越專用通常越省電，但彈性越低。可依需求這樣選：要低功耗跑量化模型，看 <b>NPU</b>；要多路影像或訓練，看 <b>GPU</b>；要極低延遲或需要改硬體邏輯，看 <b>FPGA</b>；產品功能固定且出貨量大，才值得做 <b>ASIC</b>。選定後，也要確認模型格式與推論引擎支援這顆硬體。</p>",
+   "svg": "<svg viewBox=\"0 0 600 205\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 硬體從通用到專用的光譜：CPU、GPU、FPGA、NPU／TPU、ASIC\"><defs><marker id=\"s1-11-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"28\" class=\"th tc\">從通用到專用：晶片的典型定位</text><rect x=\"20\" y=\"50\" width=\"104\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"72\" y=\"75.0\" class=\"tb tc\">CPU</text><text x=\"72\" y=\"93.0\" class=\"ts tc\">通用控制</text><text x=\"72\" y=\"130\" class=\"ts tc\">跑 OS、I/O</text><rect x=\"134\" y=\"50\" width=\"104\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"186\" y=\"75.0\" class=\"tb tc\">GPU</text><text x=\"186\" y=\"93.0\" class=\"ts tc\">大量平行</text><text x=\"186\" y=\"130\" class=\"ts tc\">訓練、影像</text><rect x=\"248\" y=\"50\" width=\"104\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"300\" y=\"75.0\" class=\"tb tc\">FPGA</text><text x=\"300\" y=\"93.0\" class=\"ts tc\">可重新配置</text><text x=\"300\" y=\"130\" class=\"ts tc\">低延遲客製</text><rect x=\"362\" y=\"50\" width=\"104\" height=\"56\" rx=\"6\" class=\"acc\"/><text x=\"414\" y=\"75.0\" class=\"tb tc\">NPU／TPU</text><text x=\"414\" y=\"93.0\" class=\"ts tc\">AI 張量運算</text><text x=\"414\" y=\"130\" class=\"ts tc\">INT8 省電</text><rect x=\"476\" y=\"50\" width=\"104\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"528\" y=\"75.0\" class=\"tb tc\">ASIC</text><text x=\"528\" y=\"93.0\" class=\"ts tc\">客製晶片</text><text x=\"528\" y=\"130\" class=\"ts tc\">任務專用設計</text><line x1=\"30\" y1=\"158\" x2=\"570\" y2=\"158\" class=\"la\" marker-end=\"url(#s1-11-6-arr)\" marker-start=\"url(#s1-11-6-arr)\"/><text x=\"95\" y=\"186\" class=\"ts tc\">通用・彈性高</text><text x=\"505\" y=\"186\" class=\"ts tc\">專用・能效高</text></svg>",
+   "caption": "比較的是典型定位，不是固定的效能排名；實際表現依型號與任務而定。NPU／TPU 多半也是 ASIC 的一種，這裡因用途常見而單獨列出。張量運算是對多維數字陣列的批次計算。",
+   "table": {
+    "head": [
+     "晶片",
+     "特性",
+     "適合情境",
+     "代價"
+    ],
+    "rows": [
+     [
+      "CPU（中央處理器）",
+      "通用，擅長流程控制",
+      "作業系統、I/O、小型模型",
+      "大型 AI 運算效率低"
+     ],
+     [
+      "GPU（圖形處理器）",
+      "大量平行核心，生態成熟",
+      "模型訓練、多路影像分析",
+      "功耗高，需良好散熱"
+     ],
+     [
+      "NPU（神經網路處理器）",
+      "多為推論設計，通常以 ASIC 形式實作，擅長 INT8 模型",
+      "邊緣裝置推論、SLM",
+      "能力依型號，彈性較低"
+     ],
+     [
+      "TPU（張量處理器）",
+      "Google 設計的張量運算 ASIC",
+      "雲端訓練與推論；另有 Edge TPU",
+      "主要依賴特定生態"
+     ],
+     [
+      "FPGA（現場可程式化邏輯閘陣列）",
+      "可重新配置硬體邏輯，低延遲",
+      "工業控制、安全監測、訊號前處理",
+      "開發門檻高"
+     ],
+     [
+      "ASIC（特定應用積體電路）",
+      "為固定任務客製；NPU、TPU 都是 AI 領域的 ASIC 例子",
+      "大量出貨的固定功能產品",
+      "前期成本高，邏輯固定"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ethics-governance",
+   "h": "AI 倫理與治理：輔助判斷，不當最終決策者",
+   "predict": {
+    "q": "超溫告警模型只用夏季資料訓練，到了冬天經常誤判。這屬於下表哪一類問題？",
+    "a": "演算法偏差。訓練資料沒涵蓋冬季工況，造成系統性誤判；對策是讓資料涵蓋多種運作狀態，並驗證實際情境。"
+   },
+   "body": "<p>AI 判斷會影響真實的機器與人員，出錯的代價可能是停機或事故，因此治理和技術同樣重要。尤其生成式模型用流暢的文字回答，容易讓人誤以為它很權威，所以要明確定位為「輔助判斷」，並保留人工介入的機制。</p>",
+   "table": {
+    "head": [
+     "議題",
+     "風險",
+     "對策"
+    ],
+    "rows": [
+     [
+      "演算法偏差（Algorithmic Bias）",
+      "資料不完整或不具代表性，造成系統性誤判",
+      "資料涵蓋多種運作狀態，驗證實際情境"
+     ],
+     [
+      "隱私與資料治理",
+      "個資或操作紀錄外洩、濫用",
+      "PbD、在地推論、存取權限、資料生命週期管理"
+     ],
+     [
+      "可信任 AI（Trustworthy AI）",
+      "黑盒決策（只看到結果，看不出依據）難以預期",
+      "要求可預期、可解釋、穩定；採用可解釋 AI（XAI）"
+     ],
+     [
+      "治理與責任歸屬",
+      "出事後無法追查原因",
+      "模型版本管理、保存推論紀錄、人工介入機制"
+     ]
+    ]
+   },
+   "more": {
+    "label": "Privacy by Design 的實例，以及 ISO/IEC 42001 與歐盟 AI Act",
+    "body": "<p><b>由設計起始的隱私（Privacy by Design, PbD）</b>是指一開始設計架構時就納入保護，而不是事後補救。例如倉庫出入口的人流計數器在裝置上算完人數就丟棄影像，只傳每小時人數；真的需要傳影像時，也先在現場<b>去識別化（移除能認出個人的資訊）</b>，例如遮蔽人臉。若系統先把影像全部存起來，事後才加上遮蔽或存取限制，就屬事後補救。</p><p><b>ISO/IEC 42001</b> 是組織用來建立人工智慧管理系統的標準；<b>歐盟 AI Act</b> 是依風險等級提出不同要求的法規。兩者一個是管理標準，一個是法律，但都要求依應用場域與影響程度來評估風險。</p>"
+   }
+  }
+ ],
+ "keypoints": [
+  "AI 包含機器學習，機器學習包含深度學習；訓練就是猜答案、對答案、算差距、調權重。",
+  "有標籤用監督式，沒標籤用非監督式，靠獎勵試誤用強化學習。",
+  "分類回答「哪一類」，迴歸回答「多少」；故障很少時別只看準確率，要看召回率與精確率。",
+  "看影像想到 CNN，看時間序列想到 RNN／LSTM，要生成資料想到 GAN。",
+  "模型瘦身三招：量化改精度、剪枝減連線、蒸餾換小模型。",
+  "放在邊緣的三大理由是延遲、頻寬、隱私；主流架構是訓練在雲端、推論在邊緣。",
+  "AI 是輔助判斷，不是最終決策者；出事時要能追溯版本、紀錄與人工介入過程。"
+ ],
+ "pitfalls": [
+  "訓練資料上分數高不等於真的學會；要用沒看過的資料檢查，否則可能只是過度擬合。",
+  "AI 模型的量化是降低權重的數值精度，與類比數位轉換（ADC）把訊號變成數字是兩回事。",
+  "FP32 轉 INT8 時，權重儲存約變成四分之一，不代表整個模型或系統都縮成四分之一；精度影響也要實測。",
+  "迴歸屬於監督式學習，輸出連續數值；不要因為名稱陌生，就把它和分群混在一起。",
+  "NPU 不是用來取代 CPU 的主處理器。官方學習指引（PDF 第 16 頁）把它定位為推論專用，這是典型情況，少數型號也支援裝置端訓練；應考時留意題目的條件。",
+  "聯合學習上傳的是權重或梯度，不是原始資料；這只是降低外洩風險，不等於完全沒有隱私問題。"
+ ],
+ "examples": [
+  {
+   "q": "某冷鏈倉庫有 30 台壓縮機，兩年來累積大量運轉資料，幾乎都是正常狀態，零星故障也沒有留下標記。業者希望系統能及早發現運轉狀況和平常不同的機台。最合適的做法是哪一項？",
+   "o": [
+    "用強化學習讓壓縮機自行嘗試各種運轉條件",
+    "用監督式分類，直接訓練模型辨識各種故障類型",
+    "用正常資料建立基準，以非監督式異常偵測找出偏離的機台",
+    "用迴歸模型把資料分成數個運作模式"
+   ],
+   "a": 2,
+   "think": "關鍵條件是幾乎只有正常資料，而且沒有故障標籤，這正對應非監督式的異常偵測。監督式分類缺少足夠的標籤；讓冷鏈設備試探有安全風險；迴歸是預測數值，分出模式則是分群的工作。"
+  },
+  {
+   "q": "一座山區邊坡監測站靠太陽能與電池供電，行動網路流量有限。攝影機畫面要判斷是否有落石，並在 1 秒內亮起警示燈；模型已量化為 INT8。下列哪種架構最合適？",
+   "o": [
+    "影像全部上傳雲端，由雲端 GPU 推論後再回傳結果",
+    "現場以低功耗 NPU 推論，只上傳事件與縮圖，雲端負責後續再訓練",
+    "在現場裝設多張 GPU 的工業電腦，同時負責訓練與推論",
+    "由小型語言模型讀取畫面後，直接控制警示燈"
+   ],
+   "a": 1,
+   "think": "先抓三個限制：即時、流量少、電力有限，都指向邊緣推論；INT8 模型則與 NPU 相配。全部上傳會受延遲與流量限制，多張 GPU 不適合靠電池供電。SLM 的定位是互動輔助，不直接控制設備。"
+  }
+ ],
+ "check": [
+  {
+   "q": "特徵和標籤分別是什麼？",
+   "a": "特徵是輸入的線索，標籤是訓練資料附帶的正確答案。"
+  },
+  {
+   "q": "訓練時模型反覆做哪些事？",
+   "a": "用目前的權重猜答案、和標籤比對、算出差距（損失），再微調權重讓差距變小。"
+  },
+  {
+   "q": "根據馬達振動預測還能運轉幾天，屬於分類還是迴歸？",
+   "a": "迴歸，因為輸出是連續的數值。"
+  },
+  {
+   "q": "為什麼不能只用訓練資料評估模型？",
+   "a": "模型可能只是記住了看過的資料，要用沒看過的資料才知道它能否應付新情況。"
+  },
+  {
+   "q": "1,000 筆資料有 10 筆故障，模型全部答「正常」，準確率和召回率各是多少？",
+   "a": "準確率 99%，召回率 0%：看起來很高，卻一件故障都沒抓到。"
+  },
+  {
+   "q": "量化、剪枝、知識蒸餾分別怎麼讓模型變小？",
+   "a": "量化降低數字精度，剪枝刪除影響小的連線，蒸餾讓小模型向大模型學習。"
+  },
+  {
+   "q": "判斷放雲端時，往返時間由哪些部分組成？",
+   "a": "資料上傳時間、去程與回程的網路延遲，再加上雲端計算與排隊的時間。"
+  },
+  {
+   "q": "什麼做法才符合 Privacy by Design？",
+   "a": "在架構設計時就內建保護，例如人流計數器在裝置上算完人數就丟棄影像，只傳每小時人數。"
+  }
+ ],
+ "terms": [
+  {
+   "term": "機器學習",
+   "en": "Machine Learning, ML",
+   "def": "讓程式從資料學出規律，而不是由人寫死所有規則。"
+  },
+  {
+   "term": "深度學習",
+   "en": "Deep Learning, DL",
+   "def": "使用多層神經網路、能自動提取特徵的機器學習方法。"
+  },
+  {
+   "term": "標籤",
+   "en": "Label",
+   "def": "訓練資料中附帶的正確答案。"
+  },
+  {
+   "term": "過度擬合",
+   "en": "Overfitting",
+   "def": "模型只記住訓練資料，遇到新資料就表現變差。"
+  },
+  {
+   "term": "類別不平衡",
+   "en": "Imbalanced Data",
+   "def": "某些類別的樣本遠少於其他類別，例如故障資料極少。"
+  },
+  {
+   "term": "CNN",
+   "en": "Convolutional Neural Network",
+   "def": "用濾波器掃描局部圖樣的神經網路，常用於影像。"
+  },
+  {
+   "term": "LSTM",
+   "en": "Long Short-Term Memory",
+   "def": "能保留較長前後關係的循環神經網路，常用於時間序列。"
+  },
+  {
+   "term": "訓練",
+   "en": "Training",
+   "def": "用資料反覆調整模型權重的過程。"
+  },
+  {
+   "term": "推論",
+   "en": "Inference",
+   "def": "用學好的模型對新資料做出判斷。"
+  },
+  {
+   "term": "模型量化",
+   "en": "Quantization",
+   "def": "降低模型數值的精度，例如 FP32 轉 INT8，以減少占用空間；與 ADC 的訊號量化不同。"
+  },
+  {
+   "term": "剪枝",
+   "en": "Pruning",
+   "def": "刪除影響小的權重或連線，讓模型變精簡。"
+  },
+  {
+   "term": "知識蒸餾",
+   "en": "Knowledge Distillation",
+   "def": "讓小模型模仿大模型的輸出，以保留能力並縮小規模。"
+  },
+  {
+   "term": "漂移",
+   "en": "Drift",
+   "def": "上線後資料分布改變，使模型表現可能下降。"
+  },
+  {
+   "term": "邊緣運算",
+   "en": "Edge Computing",
+   "def": "在靠近資料產生處處理資料，不必全部送到雲端。"
+  },
+  {
+   "term": "Edge AI",
+   "en": "Edge Artificial Intelligence",
+   "def": "在靠近資料產生處執行 AI 推論的架構。"
+  },
+  {
+   "term": "端雲協作",
+   "en": "Edge–Cloud Collaboration",
+   "def": "雲端負責訓練與管理，邊緣負責即時推論的分工。"
+  },
+  {
+   "term": "聯合學習",
+   "en": "Federated Learning, FL",
+   "def": "各節點在本地訓練，只上傳權重或梯度，原始資料不外傳。"
+  },
+  {
+   "term": "NPU",
+   "en": "Neural Processing Unit",
+   "def": "為神經網路運算設計的晶片，常用於低功耗邊緣推論。"
+  },
+  {
+   "term": "FPGA",
+   "en": "Field Programmable Gate Array",
+   "def": "可重新配置硬體邏輯的晶片，延遲低但開發門檻高。"
+  },
+  {
+   "term": "XAI",
+   "en": "Explainable AI",
+   "def": "讓使用者理解 AI 建議依據的方法。"
+  },
+  {
+   "term": "GPU",
+   "en": "Graphics Processing Unit",
+   "def": "圖形處理器。擅長同時做大量計算的晶片，常用於訓練與推論深度學習模型。"
+  },
+  {
+   "term": "特徵",
+   "en": "Feature",
+   "def": "模型用來判斷的輸入線索，例如振動強度、電流。"
+  },
+  {
+   "term": "權重",
+   "en": "Weight",
+   "def": "模型裡可調整的數字，訓練就是在調整它們。"
+  },
+  {
+   "term": "損失",
+   "en": "Loss",
+   "def": "模型的猜測與正確答案之間的差距，訓練時要讓它變小。"
+  },
+  {
+   "term": "召回率",
+   "en": "Recall",
+   "def": "真正的故障中被抓到的比例。"
+  },
+  {
+   "term": "精確率",
+   "en": "Precision",
+   "def": "發出的告警中確實是故障的比例。"
+  }
+ ],
+ "sources": [
+  [
+   "Google Machine Learning Crash Course",
+   "https://developers.google.com/machine-learning/crash-course"
+  ],
+  [
+   "Google ML Crash Course：準確率、精確率與召回率",
+   "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall"
+  ],
+  [
+   "Google ML Crash Course：過度擬合",
+   "https://developers.google.com/machine-learning/crash-course/overfitting/overfitting"
+  ],
+  [
+   "Google AI Edge LiteRT：訓練後量化",
+   "https://ai.google.dev/edge/litert/models/post_training_quantization"
+  ],
+  [
+   "ONNX 官方網站",
+   "https://onnx.ai/"
+  ],
+  [
+   "McMahan 等：聯合學習原始論文",
+   "https://arxiv.org/abs/1602.05629"
+  ],
+  [
+   "Google Cloud：TPU 簡介",
+   "https://cloud.google.com/tpu/docs/intro-to-tpu"
+  ],
+  [
+   "歐盟執委會：AI 監管架構（AI Act）",
+   "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+  ]
+ ]
+}

@@ -1,0 +1,472 @@
+{
+ "id": "s2-11",
+ "title": "系統元件與架構",
+ "subtitle": "把需求分配給每一層，斷線也不亂",
+ "summary": "認識物聯網系統的五種元件與邊緣、霧、雲的分工，學會依需求配置功能，並設計斷線時資料不掉、不重複。",
+ "case": {
+  "title": "貨車開進隧道，資料去哪了？",
+  "body": "冷鏈物流公司的冷藏貨車一進長隧道就斷線，車上探頭仍每分鐘量測，壓縮機也不能停。這章替公司決定每個功能放在現場還是雲端，並設計出隧道後資料不掉、不重複。"
+ },
+ "learn": [
+  "說出五種元件各自負責什麼",
+  "依延遲、頻寬、斷線、隱私與成本，判斷功能該放邊緣、霧或雲",
+  "說明訊息佇列如何吸收流量尖峰",
+  "設計斷線暫存與補傳，並處理重複和亂序"
+ ],
+ "prereq": "這章會用到幾個基本詞。<b>延遲</b>（latency）是從事情發生到系統反應要多久；<b>頻寬</b>（bandwidth）是網路每秒能傳多少資料，像水管的粗細。<b>協定</b>（protocol）是雙方約定好的通訊語言，語言不同就需要翻譯。不需要程式或電子背景也能讀。",
+ "bridge": "Broker 像 pub/sub 服務，訊息佇列像 Kafka，斷線暫存近似 outbox pattern，事件編號去重就是 idempotency key；現場推論、雲端訓練則是邊緣部署 AI 模型的常見分法。",
+ "sections": [
+  {
+   "id": "system-overview",
+   "h": "五種元件：資料往上、控制往下",
+   "predict": {
+    "q": "冷藏庫的壓縮機控制板只會說 Modbus，雲端平台只收 MQTT。要改壓縮機，還是改平台？",
+    "a": "通常都不用改。中間放一台閘道器負責翻譯，兩邊維持原本的協定。"
+   },
+   "body": "<p>物聯網（Internet of Things, IoT）系統不論用在冷鏈、工廠或農場，骨架都差不多：現場有東西負責<b>感覺</b>，有東西負責<b>動作</b>，中間有東西負責<b>判斷與傳話</b>，遠端有地方負責<b>彙整與管理</b>。</p><p>看懂一套系統，只要追兩條路。<b>資料往上</b>：探頭量到溫度，控制器讀取並數位化，閘道器翻譯後上傳，平台收下、存進資料庫，再顯示在儀表板。<b>控制往下</b>：平台的<b>規則引擎</b>（rule engine，事先寫好「若超過多少就做什麼」的機制）發現超溫，就發出告警通知人員，或下指令，經閘道器、控制器傳到現場的執行器動作。</p>",
+   "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網系統全貌：感測器、控制器、閘道器在現場，經 MQTT 與平台雙向連接，資料往上進資料庫與儀表板；規則觸發告警，或由平台下指令，經閘道器、控制器到執行器\"><defs><marker id=\"s2-11-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"10\" width=\"265\" height=\"310\" rx=\"10\" class=\"soft\"/><rect x=\"322\" y=\"10\" width=\"268\" height=\"310\" rx=\"10\" class=\"soft\"/><text x=\"150\" y=\"36\" class=\"th tc\">現場（邊緣）</text><text x=\"450\" y=\"36\" class=\"th tc\">平台／雲端</text><rect x=\"30\" y=\"50\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"85\" y=\"74\" class=\"tb tc\">感測器</text><text x=\"85\" y=\"94\" class=\"ts tc\">溫度、振動</text><rect x=\"160\" y=\"50\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"215\" y=\"74\" class=\"tb tc\">執行器</text><text x=\"215\" y=\"94\" class=\"ts tc\">馬達、警示燈</text><rect x=\"30\" y=\"150\" width=\"240\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"150\" y=\"174\" class=\"tb tc\">控制器（MCU／PLC）</text><text x=\"150\" y=\"194\" class=\"ts tc\">讀感測值、數位化、就地控制</text><rect x=\"30\" y=\"250\" width=\"240\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"150\" y=\"274\" class=\"tb tc\">閘道器 Gateway</text><text x=\"150\" y=\"294\" class=\"ts tc\">協定轉換、邊緣運算、斷線暫存</text><rect x=\"330\" y=\"50\" width=\"240\" height=\"56\" rx=\"8\" class=\"warn\"/><text x=\"450\" y=\"74\" class=\"tb tc\">告警通知</text><text x=\"450\" y=\"94\" class=\"ts tc\">簡訊、App 推播</text><rect x=\"330\" y=\"150\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"385\" y=\"174\" class=\"tb tc\">資料庫</text><text x=\"385\" y=\"194\" class=\"ts tc\">依時間存數值</text><rect x=\"460\" y=\"150\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"515\" y=\"174\" class=\"tb tc\">儀表板</text><text x=\"515\" y=\"194\" class=\"ts tc\">即時圖表</text><rect x=\"330\" y=\"250\" width=\"240\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"450\" y=\"274\" class=\"tb tc\">平台（含 MQTT Broker）</text><text x=\"450\" y=\"294\" class=\"ts tc\">收訊息、規則引擎、裝置管理</text><line x1=\"85\" y1=\"106\" x2=\"85\" y2=\"148\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"215\" y1=\"150\" x2=\"215\" y2=\"108\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"150\" y1=\"208\" x2=\"150\" y2=\"248\" class=\"ln\" marker-start=\"url(#s2-11-1-arr)\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"272\" y1=\"278\" x2=\"328\" y2=\"278\" class=\"la\" marker-start=\"url(#s2-11-1-arr)\" marker-end=\"url(#s2-11-1-arr)\"/><text x=\"298\" y=\"268\" class=\"ts tc\">MQTT</text><text x=\"298\" y=\"296\" class=\"ts tc\">指令</text><line x1=\"385\" y1=\"250\" x2=\"385\" y2=\"208\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"440\" y1=\"178\" x2=\"458\" y2=\"178\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><polyline points=\"570,270 584,270 584,86 572,86\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><text x=\"20\" y=\"352\" class=\"ts\">資料往上：感測器 → 控制器 → 閘道器 → 平台 → 資料庫 → 儀表板</text><text x=\"20\" y=\"378\" class=\"ts ta\">控制往下：規則觸發 → 平台下指令 → 閘道器 → 控制器 → 執行器動作</text></svg>",
+   "caption": "左邊在現場、右邊在平台；閘道器站在交界，也是斷線時暫存資料的常見位置。",
+   "table": {
+    "head": [
+     "元件",
+     "負責什麼",
+     "生活比喻",
+     "例子"
+    ],
+    "rows": [
+     [
+      "感測器 Sensor",
+      "把溫度、振動等物理量變成訊號",
+      "感官",
+      "溫度計、加速度計"
+     ],
+     [
+      "控制器 Controller",
+      "讀值、做簡單判斷、就地控制",
+      "脊髓反射",
+      "MCU 微控制器、PLC 工業控制器"
+     ],
+     [
+      "閘道器 Gateway",
+      "翻譯協定、轉送與暫存資料",
+      "郵局轉運站",
+      "把 Modbus 轉成 MQTT"
+     ],
+     [
+      "平台 Platform",
+      "收訊息、存資料、管裝置、跑規則",
+      "總部辦公室",
+      "MQTT Broker、資料庫、儀表板"
+     ],
+     [
+      "執行器 Actuator",
+      "把電訊號變成實際動作",
+      "手腳",
+      "馬達、閥門、警示燈"
+     ]
+    ]
+   },
+   "more": {
+    "label": "三層架構，以及圖中的 Modbus、MQTT、Broker",
+    "body": "<p>這些元件也對應常見的三層架構：感測器、控制器、執行器屬<b>感知層</b>，閘道器與通訊屬<b>網路層</b>，平台與儀表板屬<b>應用層</b>。</p><p>圖表中有兩個通訊協定：<b>Modbus</b> 是工廠機台常用的傳統協定；<b>MQTT</b>（Message Queuing Telemetry Transport）是物聯網常用的輕量協定，裝置把訊息發布到稱為 <b>Broker</b> 的中介伺服器（例如 Topic <code>coldchain/truck7/temp</code>），再由它轉給訂閱這些訊息的一方。閘道器的翻譯工作，就是在這類協定之間轉換。</p>"
+   }
+  },
+  {
+   "id": "edge-fog-cloud",
+   "h": "邊緣、霧、雲：運算該放多遠",
+   "predict": {
+    "q": "貨車開進山區斷網。車上的超溫蜂鳴器和總部的全車隊溫度排行，哪個還能運作？",
+    "a": "蜂鳴器可以，前提是判斷邏輯已部署在車上；排行要靠雲端彙整各車資料，會停止更新。"
+   },
+   "body": "<p>同一份資料可以在不同距離處理。<b>邊緣運算</b>（edge computing）在裝置或閘道器附近就地處理；<b>霧運算</b>（fog computing）在廠區或區域的伺服器彙整多個邊緣節點；<b>雲端運算</b>（cloud computing）在遠端資料中心集中處理。</p><p>好比社區小診所、區域醫院和醫學中心：小病就近看、速度快；複雜的病往上送，資源多但路程遠。沒有哪一層永遠最好，要看任務。</p>",
+   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"邊緣、霧、雲三層：越往上算力通常越大、延遲通常越高，越靠近現場越省頻寬\"><defs><marker id=\"s2-11-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"200\" y=\"20\" width=\"200\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"48\" class=\"tb tc\">雲端 Cloud</text><text x=\"300\" y=\"72\" class=\"ts tc\">算力大、跨廠分析、訓練</text><text x=\"415\" y=\"48\" class=\"ts\">延遲高、要有網路</text><text x=\"415\" y=\"70\" class=\"ts\">適合歷史與全局</text><rect x=\"130\" y=\"110\" width=\"340\" height=\"70\" rx=\"8\" class=\"soft\"/><text x=\"300\" y=\"138\" class=\"tb tc\">霧 Fog（廠區／區域伺服器）</text><text x=\"300\" y=\"162\" class=\"ts tc\">彙整多個邊緣、區域儲存與分析</text><text x=\"482\" y=\"140\" class=\"ts\">延遲中</text><text x=\"482\" y=\"162\" class=\"ts\">折衷</text><rect x=\"60\" y=\"200\" width=\"480\" height=\"70\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"228\" class=\"tb tc\">邊緣 Edge（裝置／閘道器旁）</text><text x=\"300\" y=\"252\" class=\"ts tc\">就地處理，可設計斷線仍運作</text><line x1=\"36\" y1=\"270\" x2=\"36\" y2=\"22\" class=\"la\" marker-end=\"url(#s2-11-2-arr)\"/><text x=\"48\" y=\"36\" class=\"ts ta\">延遲、算力 ↑</text><text x=\"300\" y=\"296\" class=\"ts tc\">越靠近現場反應越快、上傳越少；實際效能仍看設備與網路</text></svg>",
+   "caption": "越往上算力通常越大、路程越遠；分工要依任務，不是全部搬到同一層。",
+   "table": {
+    "head": [
+     "考量（典型情況）",
+     "邊緣 Edge",
+     "霧 Fog",
+     "雲 Cloud"
+    ],
+    "rows": [
+     [
+      "延遲",
+      "最低，可達毫秒級",
+      "中",
+      "最高，受網路影響"
+     ],
+     [
+      "頻寬用量",
+      "只傳結果，最省",
+      "傳到廠區，中等",
+      "原始資料全上傳時最多"
+     ],
+     [
+      "對外網路斷線時",
+      "已部署的功能可繼續",
+      "廠區內可繼續",
+      "依賴雲端的功能中斷"
+     ],
+     [
+      "隱私",
+      "原始資料可不離開現場",
+      "可不離開廠區",
+      "資料離開現場，需加強保護"
+     ],
+     [
+      "算力與擴充",
+      "小，受設備限制",
+      "中",
+      "大，可彈性擴充"
+     ],
+     [
+      "典型任務",
+      "安全停機、即時剔除瑕疵品",
+      "整廠彙整、區域看板",
+      "跨廠分析、模型訓練、長期保存"
+     ]
+    ]
+   },
+   "more": {
+    "label": "三層怎麼搭著用：現場推論、雲端訓練",
+    "body": "<p>實務上常把三層搭著用，例如現場用 AI 模型即時判斷（稱為<b>推論</b>，inference），雲端則用累積的資料調整模型、讓它學得更準（稱為<b>訓練</b>，training），並管理版本。</p>"
+   }
+  },
+  {
+   "id": "allocate-by-need",
+   "h": "怎麼分配：拿需求問三個問題",
+   "predict": {
+    "q": "冷凍櫃壓縮機過熱要立刻斷電。雲端平台通常 1 秒內就能下指令，這個保護可以只靠雲端嗎？",
+    "a": "不行。平常夠快也沒用，網路一斷保護就失效，現場必須能獨立執行。"
+   },
+   "body": "<p>設計時先把功能逐項列出，每項問三個問題：<b>① 多快要反應？② 網路斷了還要不要動？③ 需不需要跨據點的資料？</b>前兩題的答案偏「很急、要動」就靠近現場；第三題答「要」就往集中處放。若資料量大（如影像），也傾向就地處理後只傳結果，省頻寬與傳輸費用。</p><p><b>與安全有關的保護不能只靠雲端。</b>緊急停機若要繞一趟網路，一斷線就失效，所以現場必須有獨立可靠的執行路徑，雲端只負責監看與紀錄。</p>",
+   "table": {
+    "head": [
+     "需求",
+     "適合放哪",
+     "理由"
+    ],
+    "rows": [
+     [
+      "過溫立即斷電、緊急停機",
+      "現場控制器（MCU／PLC）",
+      "反應要快，斷網也要動"
+     ],
+     [
+      "產線影像即時判瑕疵",
+      "邊緣閘道器或邊緣伺服器",
+      "低延遲，影像太大不宜全上傳"
+     ],
+     [
+      "Modbus 機台資料轉 MQTT",
+      "閘道器",
+      "協定轉換正是閘道器的工作"
+     ],
+     [
+      "整廠稼動率（設備實際運轉時間的比例）看板",
+      "霧（廠區伺服器）",
+      "彙整同一廠的多條產線"
+     ],
+     [
+      "超過閾值發簡訊通知",
+      "平台規則引擎",
+      "集中管理規則與通知對象"
+     ],
+     [
+      "多廠趨勢比較、訓練 AI 模型",
+      "雲端",
+      "需要大算力與完整歷史資料"
+     ]
+    ]
+   },
+   "more": {
+    "label": "完整例子：產線瑕疵檢測怎麼分",
+    "body": "<p>以產線瑕疵檢測為例：影像判斷與剔除放現場，只把統計與抽樣影像送上平台；各廠良率比較則在雲端做。</p>"
+   }
+  },
+  {
+   "id": "message-queue",
+   "h": "資料管線：用訊息佇列撐過尖峰",
+   "predict": {
+    "q": "清晨所有貨車同時開機上傳，資料庫寫不及而變慢。加一層快取（cache）能解決嗎？",
+    "a": "不對症。快取主要加速讀取，這裡的問題是寫入尖峰，應讓訊息先排隊再寫入。"
+   },
+   "body": "<p>上千台裝置可能同時回報，資料庫一時寫不完就會變慢甚至出錯。常見解法是在<b>接入伺服器</b>（Access Server，負責接住裝置連線）和資料庫之間放一個<b>訊息佇列</b>（Message Queue）：訊息先排隊，後端再依自己的速度取用。</p><p>就像郵局尖峰時發號碼牌，人潮再多，櫃台也是一位一位服務。這種把尖峰流量攤平的效果叫<b>削峰填谷</b>。</p>",
+   "svg": "<svg viewBox=\"0 0 600 250\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"比較：裝置直接寫入資料庫，尖峰時可能過載；中間加訊息佇列可先排隊再寫入\"><defs><marker id=\"s2-11-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"10\" y=\"24\" class=\"tb\">✘ 直連：尖峰流量直接打到資料庫</text><rect x=\"10\" y=\"40\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"65\" y=\"74\" class=\"tb tc\">數千台裝置</text><rect x=\"470\" y=\"40\" width=\"120\" height=\"56\" rx=\"8\" class=\"bad\"/><text x=\"530\" y=\"64\" class=\"tb tc\">NoSQL DB</text><text x=\"530\" y=\"84\" class=\"ts tc\">尖峰可能過載</text><line x1=\"120\" y1=\"68\" x2=\"468\" y2=\"68\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><text x=\"295\" y=\"58\" class=\"ts tc\">瞬間湧入、沒有緩衝</text><text x=\"10\" y=\"146\" class=\"tb ta\">✔ 加訊息佇列：尖峰先排隊，後端照自己的速度處理</text><rect x=\"10\" y=\"162\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"65\" y=\"196\" class=\"tb tc\">數千台裝置</text><rect x=\"150\" y=\"162\" width=\"130\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"215\" y=\"186\" class=\"tb tc\">接入伺服器</text><text x=\"215\" y=\"206\" class=\"ts tc\">Access Server</text><rect x=\"310\" y=\"162\" width=\"130\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"375\" y=\"186\" class=\"tb tc\">訊息佇列</text><text x=\"375\" y=\"206\" class=\"ts tc\">先排隊再送</text><rect x=\"470\" y=\"162\" width=\"120\" height=\"56\" rx=\"8\" class=\"ok\"/><text x=\"530\" y=\"186\" class=\"tb tc\">NoSQL DB</text><text x=\"530\" y=\"206\" class=\"ts tc\">依自身速度寫</text><line x1=\"120\" y1=\"190\" x2=\"148\" y2=\"190\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"280\" y1=\"190\" x2=\"308\" y2=\"190\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"440\" y1=\"190\" x2=\"468\" y2=\"190\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/></svg>",
+   "caption": "佇列讓前後端的速度不必同步；可靠度仍取決於持久化、容量與確認機制的設定。",
+   "more": {
+    "label": "佇列的可靠度前提、NoSQL 與快取",
+    "body": "<p>後端若暫時停機，訊息也能先留在佇列裡等待，不過這要靠持久化（寫入磁碟）與確認機制的設定，而且佇列容量仍有上限。</p><p>圖中的 <b>NoSQL</b> 資料庫是不採傳統表格結構的資料庫，容量不夠時可以靠增加機器擴充（稱為橫向擴充），常用來存大量裝置資料。至於<b>快取</b>（cache），主要用途是加速讀取，並不是為可靠的寫入緩衝而設計。</p>"
+   }
+  },
+  {
+   "id": "store-and-forward",
+   "h": "斷線暫存與補傳",
+   "predict": {
+    "q": "貨車閘道器補傳一批資料，Broker 回了 ACK。如果要求歷史資料完整，閘道器現在可以刪暫存嗎？",
+    "a": "還不一定。這個 ACK 只代表 Broker 收到，資料庫未必寫入；要先定義確認到哪一層才能刪。"
+   },
+   "body": "<p>現場網路遲早會斷，所以要事先設計<b>暫存後轉送</b>（Store and Forward），概念就像郵差遇到封路：信先留在分局，路通了再送。流程如下：</p><ol><li>斷線時，現場依既定規則<b>繼續控制</b>，資料寫入閘道器的<b>本地暫存</b>。</li><li>每筆資料帶<b>時間戳</b>（timestamp，何時發生）與<b>事件編號</b>（event ID，第幾筆、來自誰）。</li><li>恢復連線後依序<b>補傳</b>，收到對方的 <b>ACK</b>（acknowledgement，確認收到）才刪除暫存。</li><li>暫存空間有上限，要先定好快滿時怎麼辦。</li></ol>",
+   "lab": "s2-11-outage",
+   "after": "<p>暫存能撐多久可以直接算：<b>容量 ÷ 每分鐘筆數</b>。超過之後，丟舊或丟新只是決定犧牲哪一段，遺失的筆數一樣。實務上會先想辦法少丟，例如降低取樣、優先保留告警，並通知維運人員。</p>",
+   "svg": "<svg viewBox=\"0 0 600 280\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"斷線暫存與補傳時間線：連線時即時上傳，斷線時本地暫存，恢復後補傳並去重\"><defs><marker id=\"s2-11-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"110\" y=\"44\" class=\"tb tc\">連線正常</text><rect x=\"20\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"110\" y=\"92\" class=\"ts tc\">即時上傳</text><text x=\"110\" y=\"118\" class=\"ts tc\">收到 ACK 才刪</text><rect x=\"210\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"bad\"/><text x=\"300\" y=\"44\" class=\"tb tc\">斷線中</text><rect x=\"210\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"300\" y=\"92\" class=\"ts tc\">現場照常控制</text><text x=\"300\" y=\"118\" class=\"ts tc\">寫入本地暫存</text><text x=\"300\" y=\"144\" class=\"ts tc\">帶時間戳＋編號</text><rect x=\"400\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"490\" y=\"44\" class=\"tb tc\">恢復連線</text><rect x=\"400\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"490\" y=\"92\" class=\"ts tc\">依序補傳</text><text x=\"490\" y=\"118\" class=\"ts tc\">確認後清暫存</text><text x=\"490\" y=\"144\" class=\"ts tc\">雲端依編號去重</text><rect x=\"218\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"243\" y=\"212\" class=\"ts tc\">101</text><rect x=\"274\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"299\" y=\"212\" class=\"ts tc\">102</text><rect x=\"330\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"355\" y=\"212\" class=\"ts tc\">103</text><text x=\"300\" y=\"248\" class=\"ts tc\">本地暫存（事件編號 101–103）</text><line x1=\"382\" y1=\"207\" x2=\"438\" y2=\"207\" class=\"la\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"410\" y=\"198\" class=\"ts tc ta\">補傳</text><rect x=\"440\" y=\"186\" width=\"140\" height=\"42\" rx=\"8\" class=\"box\"/><text x=\"510\" y=\"213\" class=\"tb tc\">雲端 DB</text><text x=\"300\" y=\"272\" class=\"ts tc\">暫存空間有上限：快滿時要告警，並依事先定好的策略處理</text></svg>",
+   "caption": "要先定義 ACK 代表確認到哪一層；若要求完整歷史，暫存快滿時不能默默丟棄。",
+   "video": "buffered-recovery",
+   "more": {
+    "label": "MQTT 的 QoS 與持久工作階段能幫到哪裡",
+    "body": "<p>MQTT 的服務品質等級（QoS）與持久工作階段（persistent session，裝置離線時由 Broker 記住它的訂閱與未送達訊息）能協助重送，但它們只處理連線與訊息確認，長時間斷線仍要靠現場暫存。</p>"
+   }
+  },
+  {
+   "id": "dedupe-and-order",
+   "h": "去重與排序：編號管重複，時間戳管順序",
+   "predict": {
+    "q": "補傳完成後，隧道裡量到的超溫，在圖表上卻顯示成貨車出隧道時才發生。問題最可能出在哪裡？",
+    "a": "平台用收到時間排序。應改用資料本身帶的發生時間。"
+   },
+   "body": "<p>重送解決了掉資料，卻帶來新問題：<b>重複</b>。裝置送出後沒等到 ACK，可能其實對方已收到、只是 ACK 掉了，於是又送一次。MQTT 的 <b>QoS 1</b> 保證「至少一次」，所以可能重複；<b>QoS 0</b> 是最多一次，<b>QoS 2</b> 是恰好一次，但流程較多、開銷較大。</p><p>處理重複的方法是<b>冪等</b>（idempotency）：同一件事處理多次，結果和一次相同，就像電梯按鈕按兩下也只會停一次。做法是接收端記住處理過的事件編號，看到相同編號就略過。編號要能區分來源，例如「裝置代碼加流水號」。</p><p>處理亂序則靠時間戳：補傳的資料晚到，應依<b>發生時間</b>而非<b>收到時間</b>排序。</p>",
+   "table": {
+    "head": [
+     "機制",
+     "解決的問題"
+    ],
+    "rows": [
+     [
+      "本地暫存",
+      "斷線時資料不掉"
+     ],
+     [
+      "ACK 確認＋重試",
+      "確定對方真的收到"
+     ],
+     [
+      "事件編號去重",
+      "重送造成的重複資料"
+     ],
+     [
+      "時間戳（發生時間）",
+      "補傳晚到造成的亂序"
+     ]
+    ]
+   },
+   "more": {
+    "label": "時間戳的前提：時鐘要準（NTP、RTC）",
+    "body": "<p>依發生時間排序的前提是裝置時鐘準確：連線時用 <b>NTP</b>（網路校時協定）對時，斷線期間靠裝置的<b>即時時鐘</b>（RTC，Real-Time Clock）維持，或由閘道器或 GPS 提供時間；長時間斷線仍可能有漂移，恢復連線後要重新對時。</p>"
+   }
+  },
+  {
+   "id": "design-judgement",
+   "h": "設計時的基本判斷",
+   "body": "<p>架構之外，還有幾項一開始就要想清楚的條件：</p><ul><li><b>從需求出發：</b>先寫清楚要解決誰的什麼問題，再選技術，不要反過來。</li><li><b>資安：</b>無線訊號在空中傳播，範圍內都可能被接收，比有線更容易被攔截，所以無線傳輸更要做好加密與身分驗證。</li><li><b>隱私與法規：</b>用感測器蒐集人的行為資料，要遵守當地個資與隱私法規。</li><li><b>供電與通訊：</b>偏遠、難以拉電的地點，可用太陽能加電池供電，搭配 LoRa、NB-IoT 這類低功耗、長距離的通訊方式。</li><li><b>介面與責任：</b>設備、網路、平台、應用之間要定好介面與分工，日後換掉其中一塊才不會牽動全部。</li></ul>"
+  }
+ ],
+ "keypoints": [
+  "五元件各司其職：感測器量、控制器判斷、閘道器翻譯轉送、平台彙整、執行器動作。",
+  "資料往上、控制往下，追這兩條路就能看懂一套系統。",
+  "分工口訣：急的留現場、大的先過濾、跨點才上雲。",
+  "安全保護不能只靠雲端，現場要有獨立可靠的執行路徑。",
+  "訊息佇列負責削峰填谷，讓前後端速度不必同步。",
+  "可靠傳輸四件組：暫存、確認、重試、去重，只加重送次數不夠；去重也救不回已遺失的資料。",
+  "事件編號管重複，時間戳管順序。"
+ ],
+ "pitfalls": [
+  "邊緣能在斷線時運作，前提是所需的邏輯與資料已部署在現場，不是放在邊緣就自動具備。",
+  "訊息佇列削峰不等於永不丟資料，仍要有持久化、容量規劃、重試與故障處理。",
+  "快取與訊息佇列容易混淆：快取偏向加速讀取，大量寫入的緩衝應選訊息佇列。",
+  "Broker 收到訊息不等於資料庫已寫入；QoS 只涵蓋 MQTT 連線這一段，何時可刪暫存要依所需可靠度設計。",
+  "QoS 1 是至少一次，可能重複但不是每次都重複；補傳時也不要用抵達時間排序，應保留原始量測時間。",
+  "「無線比有線安全」是錯誤說法；霧運算也不是雲的別名，它介於邊緣與雲之間。"
+ ],
+ "examples": [
+  {
+   "q": "一家冷鏈物流公司有五座冷凍倉庫。需求甲：壓縮機過熱時要在 0.5 秒內切斷電源，即使對外網路中斷也要有效。需求乙：總部每月比較五座倉庫的耗電趨勢。下列配置何者最合適？",
+   "o": [
+    "甲、乙都交給雲端規則引擎處理",
+    "甲由現場控制器執行，乙在雲端平台彙整",
+    "甲由雲端規則引擎處理，乙留在各倉庫閘道器",
+    "甲、乙都放在各倉庫閘道器，資料不上傳"
+   ],
+   "a": 1,
+   "think": "抓條件：甲要求反應快且斷網仍有效，必須放現場；乙要跨五個據點比較，需要集中彙整。A 和 C 讓保護功能依賴網路；D 無法跨據點比較，只有 B 同時滿足。"
+  },
+  {
+   "q": "冷藏貨車在山區斷線三小時，恢復後補傳暫存資料。結果雲端資料庫中有些紀錄重複，溫度趨勢圖的時間順序也亂了。最根本的改善是哪一項？",
+   "o": [
+    "增加重送次數，並依資料抵達雲端的時間排序",
+    "斷線期間停止量測，避免產生需要補傳的資料",
+    "每筆帶穩定的事件編號與量測時間，雲端依編號去重、依量測時間排序",
+    "把 MQTT 設成 QoS 1，因為它能保證訊息不重複"
+   ],
+   "a": 2,
+   "think": "有兩個症狀：重複與亂序，分別對應事件編號與發生時間。A 會讓重複更多，抵達時間也無法還原順序；B 直接失去資料；D 說反了，QoS 1 是至少一次，可能重複。"
+  }
+ ],
+ "check": [
+  {
+   "q": "感測器和執行器有什麼不同？",
+   "a": "感測器把物理量變成訊號，執行器把電訊號變成動作。"
+  },
+  {
+   "q": "Modbus 機台資料要轉成 MQTT，由哪個元件負責？",
+   "a": "閘道器。"
+  },
+  {
+   "q": "霧運算的位置在哪裡？",
+   "a": "介於邊緣與雲之間，例如廠區或區域伺服器。"
+  },
+  {
+   "q": "緊急停機功能為什麼不該只放雲端？",
+   "a": "網路一斷就失效，現場必須有可靠的執行路徑。"
+  },
+  {
+   "q": "大量裝置同時寫入時，中間可加什麼元件緩衝？",
+   "a": "訊息佇列（Message Queue），讓尖峰先排隊。"
+  },
+  {
+   "q": "斷線暫存的資料何時可以刪除？",
+   "a": "收到對方確認（ACK）之後，且確認的層級要事先定義。"
+  },
+  {
+   "q": "為什麼重送會造成重複資料？",
+   "a": "對方可能已收到但 ACK 遺失，傳送端以為失敗而再送一次。"
+  },
+  {
+   "q": "補傳的資料要依什麼時間排序？",
+   "a": "依原始發生時間，不是收到時間，且裝置時鐘要準確（連線時對時，斷線靠 RTC 維持）。"
+  }
+ ],
+ "terms": [
+  {
+   "term": "感測器",
+   "en": "Sensor",
+   "def": "把溫度、振動等物理量轉成訊號的元件。"
+  },
+  {
+   "term": "執行器",
+   "en": "Actuator",
+   "def": "把電訊號轉成實際動作的元件，如馬達、閥門。又稱致動器。"
+  },
+  {
+   "term": "MCU",
+   "en": "Microcontroller Unit",
+   "def": "微控制器。裝在設備上的小電腦，負責讀值與簡單控制。"
+  },
+  {
+   "term": "PLC",
+   "en": "Programmable Logic Controller",
+   "def": "工廠常用、耐用可靠的可程式控制器。"
+  },
+  {
+   "term": "閘道器",
+   "en": "Gateway",
+   "def": "現場與外部網路的交界，負責翻譯協定、轉送與暫存資料。"
+  },
+  {
+   "term": "Modbus",
+   "def": "工業機台常用的通訊協定，由主站向從站輪詢讀取資料，常需經閘道器轉成其他協定上傳。"
+  },
+  {
+   "term": "MQTT",
+   "en": "Message Queuing Telemetry Transport",
+   "def": "輕量的發布／訂閱通訊協定，常用於物聯網裝置。"
+  },
+  {
+   "term": "Broker",
+   "en": "Message Broker",
+   "def": "訊息代理。MQTT 的訊息中介，接收發布的訊息並轉給訂閱者。"
+  },
+  {
+   "term": "規則引擎",
+   "en": "Rule Engine",
+   "def": "依事先設定的條件自動觸發告警或指令的機制。"
+  },
+  {
+   "term": "邊緣運算",
+   "en": "Edge Computing",
+   "def": "在裝置或閘道器附近就地處理資料。"
+  },
+  {
+   "term": "霧運算",
+   "en": "Fog Computing",
+   "def": "在廠區或區域伺服器彙整多個邊緣節點，介於邊緣與雲之間。"
+  },
+  {
+   "term": "雲端運算",
+   "en": "Cloud Computing",
+   "def": "在遠端資料中心集中處理，算力大且可彈性擴充。"
+  },
+  {
+   "term": "訊息佇列",
+   "en": "Message Queue",
+   "def": "讓訊息先排隊、再由後端依速度取用的緩衝元件。"
+  },
+  {
+   "term": "削峰填谷",
+   "def": "把瞬間尖峰流量攤平到較長時間處理。"
+  },
+  {
+   "term": "暫存後轉送",
+   "en": "Store and Forward",
+   "def": "斷線時先存在本地，恢復後再補傳。"
+  },
+  {
+   "term": "ACK",
+   "en": "Acknowledgement",
+   "def": "接收方回覆的「已收到」確認。"
+  },
+  {
+   "term": "QoS",
+   "en": "Quality of Service",
+   "def": "服務品質。MQTT 的傳遞保證等級：0 最多一次、1 至少一次、2 恰好一次。"
+  },
+  {
+   "term": "冪等",
+   "en": "Idempotency",
+   "def": "同一件事處理多次，結果與處理一次相同。"
+  },
+  {
+   "term": "NTP",
+   "en": "Network Time Protocol",
+   "def": "透過網路校準裝置時鐘的協定。"
+  },
+  {
+   "term": "即時時鐘",
+   "en": "RTC, Real-Time Clock",
+   "def": "裝置上獨立計時的時鐘，斷線時仍能維持時間。"
+  }
+ ],
+ "sources": [
+  [
+   "MQTT Version 5.0（OASIS 標準）",
+   "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
+  ],
+  [
+   "NIST SP 500-325：Fog Computing Conceptual Model",
+   "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.500-325.pdf"
+  ],
+  [
+   "NIST SP 800-145：The NIST Definition of Cloud Computing",
+   "https://csrc.nist.gov/pubs/sp/800/145/final"
+  ],
+  [
+   "Modbus Organization：協定規格",
+   "https://www.modbus.org/modbus-specifications"
+  ],
+  [
+   "Microsoft Azure 架構中心：Queue-Based Load Leveling",
+   "https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling"
+  ],
+  [
+   "Enterprise Integration Patterns：Guaranteed Delivery",
+   "https://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html"
+  ],
+  [
+   "Enterprise Integration Patterns：Idempotent Receiver",
+   "https://www.enterpriseintegrationpatterns.com/patterns/messaging/IdempotentReceiver.html"
+  ],
+  [
+   "RFC 5905：NTP 第 4 版",
+   "https://www.rfc-editor.org/rfc/rfc5905"
+  ]
+ ]
+}

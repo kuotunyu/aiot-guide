@@ -1,0 +1,548 @@
+{
+ "id": "s1-23",
+ "title": "工業通訊標準與資訊模型",
+ "subtitle": "讓不同廠牌的機台連得上，也讀得懂",
+ "summary": "壓縮機回傳 253 是什麼意思？比較 Modbus、OPC UA、MTConnect、MQTT 與 RESTful API，並能依情境選用。",
+ "learn": [
+  "分辨網路分層、封裝與 TCP／UDP",
+  "讀懂 Modbus 暫存器，換算比例與有號整數",
+  "說明 OPC UA 的資訊模型解決了什麼問題",
+  "描述 MTConnect 的資料路徑與唯讀特性",
+  "依情境選擇工業標準、MQTT 或 RESTful API"
+ ],
+ "prereq": "工廠裡有幾種常見系統：<b>PLC</b>（可程式邏輯控制器）是控制機台的小電腦，<b>SCADA</b> 是監控畫面系統，<b>MES</b> 管生產現場，<b>ERP</b> 管企業經營。不同廠牌的設備常各有自己的資料格式，<b>工業通訊標準</b>就是大家約好的共同語言。光收到數字還不夠：機台回傳 25 可能是溫度也可能是轉速，說明「這個值是什麼、單位是什麼、屬於哪台設備」的共同規則，就叫<b>資訊模型</b>（Information Model）。設備要真正互通，得做到三件事：連得上、格式解得開、意義讀得懂；本章的協定分別處理其中不同的部分。",
+ "bridge": "資訊模型可以對照資料庫 schema 或 API 規格：Modbus 像只有索引的陣列，OPC UA 則像帶型別與關聯的物件圖。",
+ "sections": [
+  {
+   "id": "network-layers",
+   "h": "網路分層與封裝：所有協定都有自己的樓層",
+   "body": "<p>網路通訊很複雜，所以拆成好幾層，每層只管一件事，像寄包裹時分成「打包、填地址、運送」。<b>OSI 模型</b>（Open Systems Interconnection）把它分成七層，主要用來理解概念；實務上廣泛使用的是 <b>TCP/IP 模型</b>，常見四層或五層兩種畫法，本章用五層。</p><p><b>封裝</b>（Encapsulation）就像信封外再套信封：傳送端每往下一層就加一層<b>標頭</b>（Header，寫給同一層對方看的收件資訊）；接收端逐層拆開，稱為<b>解封裝</b>（Decapsulation）。</p>",
+   "svg": "<svg viewBox=\"0 0 600 330\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"TCP/IP 五層模型，每層對應的工業與物聯網協定；傳送端往下逐層封裝\"><defs><marker id=\"s1-23-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"140\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"90.0\" y=\"49.8\" class=\"tb tc\">應用層</text><rect x=\"175\" y=\"20\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"40.3\" class=\"t tc\">MQTT、HTTP、OPC UA、MTConnect</text><text x=\"347.5\" y=\"59.9\" class=\"ts tc\">Modbus PDU（功能碼＋資料）也在這層</text><rect x=\"20\" y=\"80\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"109.8\" class=\"tb tc\">傳輸層</text><rect x=\"175\" y=\"80\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"100.3\" class=\"t tc\">TCP 可靠有序｜UDP 不保證送達</text><text x=\"347.5\" y=\"119.9\" class=\"ts tc\">端對端傳送、分段重組</text><rect x=\"20\" y=\"140\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"169.8\" class=\"tb tc\">網際網路層</text><rect x=\"175\" y=\"140\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"160.3\" class=\"t tc\">IP 位址＋路由</text><text x=\"347.5\" y=\"179.9\" class=\"ts tc\">IPv4 如 192.168.0.1（四段）</text><rect x=\"20\" y=\"200\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"229.8\" class=\"tb tc\">資料連結層</text><rect x=\"175\" y=\"200\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"220.3\" class=\"t tc\">乙太網路訊框、MAC 位址</text><text x=\"347.5\" y=\"239.9\" class=\"ts tc\">常見設備：交換器</text><rect x=\"20\" y=\"260\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"289.8\" class=\"tb tc\">實體層</text><rect x=\"175\" y=\"260\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"280.3\" class=\"t tc\">網路線、光纖、RS-232／RS-485</text><text x=\"347.5\" y=\"299.9\" class=\"ts tc\">真正跑電訊號的地方</text><line x1=\"550\" y1=\"25\" x2=\"550\" y2=\"305\" class=\"la\" marker-end=\"url(#s1-23-1-arr)\"/><text x=\"567\" y=\"120\" class=\"ts\">加</text><text x=\"567\" y=\"142\" class=\"ts\">標</text><text x=\"567\" y=\"164\" class=\"ts\">頭</text><text x=\"567\" y=\"186\" class=\"ts\">封</text><text x=\"567\" y=\"208\" class=\"ts\">裝</text></svg>",
+   "caption": "五層模型與對應協定。Modbus、OPC UA、MQTT 都屬於應用層；底下可以走 TCP/IP，Modbus 也可以走 RS-485 這類串列線。",
+   "table": {
+    "head": [
+     "傳輸層協定",
+     "特性",
+     "適合情境"
+    ],
+    "rows": [
+     [
+      "<b>TCP</b>",
+      "連線導向、可靠、按順序；傳送前先建立連線",
+      "資料不能掉：檔案傳輸、網頁、MQTT"
+     ],
+     [
+      "<b>UDP</b>",
+      "無連線、不保證送達與順序，負擔小",
+      "即時性優先：語音、影像串流"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "溫度資料從冷藏庫送往雲端，途中經過交換器與路由器。哪一台靠 IP 位址判斷方向，哪一台靠 MAC 位址？",
+    "a": "路由器看 IP 位址，跨網路選路；交換器看 MAC 位址，在同一區域網路內轉送。"
+   },
+   "more": {
+    "label": "五層各自做什麼：實體層到應用層",
+    "body": "<ul><li><b>實體層</b>：送電訊號或光訊號。</li><li><b>資料連結層</b>：在<b>區域網路</b>（LAN，一棟或幾棟建築範圍內的網路）裡，用 <b>MAC 位址</b>（網路卡的硬體編號）傳遞<b>訊框</b>（這一層的資料包），由<b>交換器</b>（把資料轉給同網路內正確設備的裝置）負責。</li><li><b>網際網路層</b>：用 <b>IP 位址</b>（常見的 IPv4 如 192.168.0.1，四段、每段 0–255）跨網路找路，由<b>路由器</b>（連接不同網路並選路的設備）負責。</li><li><b>傳輸層</b>：負責兩端程式之間的傳送。</li><li><b>應用層</b>：各種應用協定。</li></ul>"
+   }
+  },
+  {
+   "id": "modbus-basics",
+   "h": "Modbus：簡單耐用的老牌協定",
+   "body": "<p><b>Modbus</b> 由 Modicon 於 1979 年推出，格式簡單，PLC、溫控器、伺服驅動器、電表都常支援，適合基本的資料收集與控制。</p><p>它採<b>主從架構</b>（Master/Slave，新稱 Client/Server，<b>Client</b> 是發出請求的一方，<b>Server</b> 是回應的一方）：只有主站能發問，從站被問到才回答，就像老師點名。</p><p>封包核心是 <b>PDU</b>（Protocol Data Unit），內容為<b>功能碼＋資料</b>。功能碼說明「要做什麼」，例如 03 代表讀保持暫存器（一種可讀可寫的數值格子，下一節說明）。不同傳輸模式的 PDU 相同，差別在外層包裝。</p><p>傳統 Modbus 設計時未考慮資安，<b>沒有加密與身分驗證</b>，放在開放網路上容易遭監聽、竄改或偽造，因此要靠網路隔離等方式保護；另有以 TLS 保護的 Modbus Security。</p>",
+   "svg": "<svg viewBox=\"0 0 600 368\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Modbus 主站經 RS-485 匯流排輪詢多個從站；RTU 與 TCP 封包都包著相同的功能碼加資料\"><rect x=\"20\" y=\"30\" width=\"150\" height=\"54\" rx=\"8\" class=\"acc\"/><text x=\"95.0\" y=\"52.3\" class=\"tb tc\">主站 Master</text><text x=\"95.0\" y=\"71.9\" class=\"ts tc\">（SCADA／PC）</text><line x1=\"95\" y1=\"84\" x2=\"95\" y2=\"130\" class=\"ln\"/><line x1=\"95\" y1=\"130\" x2=\"580\" y2=\"130\" class=\"la\"/><text x=\"200\" y=\"120\" class=\"ts\">RS-485 匯流排：一條線串多台，只有主站能發問</text><line x1=\"240\" y1=\"130\" x2=\"240\" y2=\"160\" class=\"ln\"/><rect x=\"180\" y=\"160\" width=\"120\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"240.0\" y=\"182.3\" class=\"tb tc\">從站 1</text><text x=\"240.0\" y=\"201.9\" class=\"ts tc\">溫控器</text><line x1=\"380\" y1=\"130\" x2=\"380\" y2=\"160\" class=\"ln\"/><rect x=\"320\" y=\"160\" width=\"120\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"380.0\" y=\"182.3\" class=\"tb tc\">從站 2</text><text x=\"380.0\" y=\"201.9\" class=\"ts tc\">變頻器</text><line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"160\" class=\"ln\"/><rect x=\"460\" y=\"160\" width=\"120\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"520.0\" y=\"182.3\" class=\"tb tc\">從站 3</text><text x=\"520.0\" y=\"201.9\" class=\"ts tc\">電表</text><text x=\"20\" y=\"192\" class=\"ts\">從站位址 1–247</text><text x=\"100\" y=\"244\" class=\"ts\">PDU（功能碼＋資料）兩種一樣，差在外包裝</text><text x=\"20\" y=\"276\" class=\"tb\">RTU</text><rect x=\"100\" y=\"254\" width=\"80\" height=\"34\" rx=\"8\" class=\"box\"/><text x=\"140.0\" y=\"275.8\" class=\"t tc\">位址</text><rect x=\"185\" y=\"254\" width=\"100\" height=\"34\" rx=\"8\" class=\"acc\"/><text x=\"235.0\" y=\"275.8\" class=\"t tc\">功能碼</text><rect x=\"290\" y=\"254\" width=\"160\" height=\"34\" rx=\"8\" class=\"acc\"/><text x=\"370.0\" y=\"275.8\" class=\"t tc\">資料</text><rect x=\"455\" y=\"254\" width=\"120\" height=\"34\" rx=\"8\" class=\"box\"/><text x=\"515.0\" y=\"275.8\" class=\"t tc\">CRC 檢查</text><text x=\"20\" y=\"322\" class=\"tb\">TCP</text><rect x=\"100\" y=\"300\" width=\"80\" height=\"34\" rx=\"8\" class=\"box\"/><text x=\"140.0\" y=\"321.8\" class=\"t tc\">MBAP</text><rect x=\"185\" y=\"300\" width=\"100\" height=\"34\" rx=\"8\" class=\"acc\"/><text x=\"235.0\" y=\"321.8\" class=\"t tc\">功能碼</text><rect x=\"290\" y=\"300\" width=\"160\" height=\"34\" rx=\"8\" class=\"acc\"/><text x=\"370.0\" y=\"321.8\" class=\"t tc\">資料</text><text x=\"462\" y=\"322\" class=\"ts\">（不用 CRC）</text><text x=\"300\" y=\"358\" class=\"ts tc\">傳統 Modbus TCP：常用 port 502，未內建加密</text></svg>",
+   "caption": "主站輪流詢問各從站；RTU 與 TCP 封包內的功能碼與資料相同，只有外層包裝不同。RTU 也可以搭配 RS-232。",
+   "table": {
+    "head": [
+     "模式",
+     "編碼",
+     "線路",
+     "錯誤檢查"
+    ],
+    "rows": [
+     [
+      "<b>Modbus RTU</b>",
+      "二進位，效率高",
+      "串列：RS-485／RS-232",
+      "CRC（循環冗餘檢查）"
+     ],
+     [
+      "<b>Modbus ASCII</b>",
+      "ASCII 文字，人可讀",
+      "串列：RS-485／RS-232",
+      "LRC（縱向冗餘檢查）"
+     ],
+     [
+      "<b>Modbus TCP</b>",
+      "PDU 前加 MBAP 標頭，包進 TCP/IP",
+      "乙太網路，典型 port 502",
+      "由 TCP/IP 與乙太網路負責，不加 CRC"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "舊壓縮機的控制器原本走 Modbus RTU，現在加一台閘道改走 Modbus TCP。「讀保持暫存器」的功能碼要換成另一個嗎？",
+    "a": "不用。功能碼與資料組成的 PDU 相同，改變的只有外層包裝與錯誤檢查的方式。"
+   },
+   "more": {
+    "label": "從站位址、RS-485，以及 CRC、LRC、MBAP、port 是什麼",
+    "body": "<p>串列線路上，從站位址為 1–247，0 為廣播。常用的 <b>RS-485</b> 是一種串列線路標準，一條線可以串接多台設備。</p><p><b>CRC</b>、<b>LRC</b> 都是附在封包尾端的檢查碼，收方重算後比對，就知道傳輸有沒有出錯。<b>ASCII</b> 是把文字對應成數字的編碼表。<b>MBAP</b> 是 Modbus TCP 加在最前面的標頭，記錄交易編號、長度與單元編號。<b>port</b>（連接埠）像同一棟大樓裡的分機號，用來區分同一台機器上的不同服務。</p>"
+   }
+  },
+  {
+   "id": "modbus-data",
+   "h": "Modbus 四種資料區：只有編號的置物櫃",
+   "body": "<p>Modbus 把資料放在四種資料區，用編號存取，像一排沒有標籤的置物櫃。協定本身不會說明某一格代表什麼，<b>要查設備廠商的位址對照表</b>。</p><p><b>位元</b>（bit）是最小的資料單位，只有 0 或 1；<b>暫存器</b>（Register）是設備裡存一個數值的小格子，16 位元可存 0–65535。<b>線圈</b>（Coil）這個名稱來自繼電器的線圈，在這裡就是一個可控制的開關。</p><p>分類只看兩件事：存的是 <b>1 位元的開關</b>還是 <b>16 位元的數值</b>；是<b>唯讀</b>還是<b>可讀可寫</b>。能寫入的線圈與保持暫存器，才能用來控制設備。</p><p>暫存器只存整數，所以讀到的值通常還要解讀：</p><ul><li><b>倍率</b>（比例因子）：對照表寫倍率 0.1 時，讀到 253 代表 25.3。</li><li><b>有號整數</b>：負溫度常以二補數存放。對照表標示為有號時，65351 要減 65536 得 −185，乘 0.1 才是 −18.5。</li></ul>",
+   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Modbus 四種資料區：依「1 位元或 16 位元」與「唯讀或可讀寫」分成 2×2\"><text x=\"275\" y=\"42\" class=\"tb tc\">唯讀（只能看）</text><text x=\"490\" y=\"42\" class=\"tb tc\">可讀可寫（能控制）</text><text x=\"20\" y=\"104\" class=\"tb\">1 位元</text><text x=\"20\" y=\"128\" class=\"ts\">開／關</text><text x=\"20\" y=\"214\" class=\"tb\">16 位元</text><text x=\"20\" y=\"238\" class=\"ts\">數值</text><rect x=\"170\" y=\"60\" width=\"210\" height=\"100\" rx=\"8\" class=\"box\"/><text x=\"275.0\" y=\"105.3\" class=\"tb tc\">離散輸入（DI）</text><text x=\"275.0\" y=\"124.9\" class=\"ts tc\">10001–19999｜例：限位開關</text><rect x=\"390\" y=\"60\" width=\"200\" height=\"100\" rx=\"8\" class=\"acc\"/><text x=\"490.0\" y=\"105.3\" class=\"tb tc\">線圈（Coil）</text><text x=\"490.0\" y=\"124.9\" class=\"ts tc\">00001–09999｜例：馬達啟停</text><rect x=\"170\" y=\"170\" width=\"210\" height=\"100\" rx=\"8\" class=\"box\"/><text x=\"275.0\" y=\"215.3\" class=\"tb tc\">輸入暫存器（IR）</text><text x=\"275.0\" y=\"234.9\" class=\"ts tc\">30001–39999｜例：溫度讀值</text><rect x=\"390\" y=\"170\" width=\"200\" height=\"100\" rx=\"8\" class=\"acc\"/><text x=\"490.0\" y=\"215.3\" class=\"tb tc\">保持暫存器（HR）</text><text x=\"490.0\" y=\"234.9\" class=\"ts tc\">40001–49999｜例：設定值</text><text x=\"300\" y=\"292\" class=\"ts tc\">圖示為常見參考編號；實際位址查設備表</text></svg>",
+   "caption": "四種資料區是「1 位元或 16 位元」與「唯讀或可讀寫」的組合。",
+   "table": {
+    "head": [
+     "資料區",
+     "大小",
+     "讀寫",
+     "慣用編號",
+     "讀取功能碼",
+     "用途例"
+    ],
+    "rows": [
+     [
+      "線圈 Coil",
+      "1 位元",
+      "<b>可讀可寫</b>",
+      "00001–09999",
+      "01",
+      "繼電器、馬達開關"
+     ],
+     [
+      "離散輸入 Discrete Input",
+      "1 位元",
+      "唯讀",
+      "10001–19999",
+      "02",
+      "開關、限位狀態"
+     ],
+     [
+      "輸入暫存器 Input Register",
+      "16 位元",
+      "唯讀",
+      "30001–39999",
+      "04",
+      "溫度、壓力讀值"
+     ],
+     [
+      "保持暫存器 Holding Register",
+      "16 位元",
+      "<b>可讀可寫</b>",
+      "40001–49999",
+      "03",
+      "設定值、配置參數"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "冷凍櫃溫控器有兩個值：探頭量到的庫內溫度、平台要調整的設定溫度。如果依資料區的讀寫特性分配，哪一個必須放在可寫入的資料區？",
+    "a": "設定溫度，因為平台要寫入。量測值只需要讀取，適合唯讀的輸入暫存器，不過也有設備放在保持暫存器，要查原廠文件。"
+   },
+   "more": {
+    "label": "字組順序與位址換算：兩個對接時常踩的細節",
+    "body": "<ul><li><b>字組順序</b>：32 位元數值占兩個暫存器，雙方須約定先後。讀到 0001、0002 兩格（十六進位），每格 16 位元，高位那格要乘 65,536：高位在前是 1×65,536＋2＝65,538；低位在前是 2×65,536＋1＝131,073。</li><li><b>位址換算</b>：40011 是慣用的參考編號，功能碼 03 已指明資料區，封包實際送的多半是從 0 起算的偏移量 10。同理，40001 在封包裡是偏移量 0。</li></ul>"
+   }
+  },
+  {
+   "id": "opc-ua",
+   "h": "OPC UA：讓資料自己說明自己",
+   "body": "<p><b>OPC UA</b>（Open Platform Communications Unified Architecture，開放平台通訊統一架構）由 <b>OPC 基金會</b>制定，是為工業自動化設計的跨廠牌資料交換標準，被視為工業 4.0（用聯網與資料讓工廠更自動化、更有彈性的趨勢）的關鍵協定。</p><p>它的核心是<b>資訊模型</b>：設備被描述成一組<b>節點</b>（Node），可以是物件、變數或方法，節點之間有關聯。每個節點以 <b>NodeId</b> 識別，由<b>命名空間索引</b>（namespace index）與識別碼組成，所以不同命名空間的相同數字不是同一個節點。</p>",
+   "svg": "<svg viewBox=\"0 0 600 305\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OPC UA 資訊模型：工具機物件底下有變數與方法節點，每個節點用 NodeId 識別\"><rect x=\"20\" y=\"20\" width=\"130\" height=\"40\" rx=\"8\" class=\"soft\"/><text x=\"85.0\" y=\"44.8\" class=\"tb tc\">Objects</text><polyline points=\"45,60 45,100 60,100\" class=\"ln\"/><rect x=\"60\" y=\"80\" width=\"220\" height=\"40\" rx=\"8\" class=\"acc\"/><text x=\"170.0\" y=\"104.8\" class=\"tb tc\">工具機 CNC-01（物件）</text><line x1=\"90\" y1=\"120\" x2=\"90\" y2=\"270\" class=\"ln\"/><line x1=\"90\" y1=\"160\" x2=\"120\" y2=\"160\" class=\"ln\"/><rect x=\"120\" y=\"140\" width=\"200\" height=\"40\" rx=\"8\" class=\"box\"/><text x=\"220.0\" y=\"164.8\" class=\"tb tc\">主軸轉速（變數）</text><line x1=\"320\" y1=\"160\" x2=\"336\" y2=\"160\" class=\"ln dash\"/><text x=\"342\" y=\"166\" class=\"t\">ns=2;s=CNC01.Speed</text><line x1=\"90\" y1=\"215\" x2=\"120\" y2=\"215\" class=\"ln\"/><rect x=\"120\" y=\"195\" width=\"200\" height=\"40\" rx=\"8\" class=\"box\"/><text x=\"220.0\" y=\"219.8\" class=\"tb tc\">刀具壽命（變數）</text><line x1=\"320\" y1=\"215\" x2=\"336\" y2=\"215\" class=\"ln dash\"/><text x=\"342\" y=\"221\" class=\"t\">ns=2;s=CNC01.ToolLife</text><line x1=\"90\" y1=\"270\" x2=\"120\" y2=\"270\" class=\"ln\"/><rect x=\"120\" y=\"250\" width=\"200\" height=\"40\" rx=\"8\" class=\"warn\"/><text x=\"220.0\" y=\"274.8\" class=\"tb tc\">自動換刀（方法）</text><line x1=\"320\" y1=\"270\" x2=\"336\" y2=\"270\" class=\"ln dash\"/><text x=\"342\" y=\"276\" class=\"t\">ns=2;i=5001</text><text x=\"330\" y=\"40\" class=\"ts\">ns＝命名空間（0 是 OPC UA 標準）</text><text x=\"330\" y=\"62\" class=\"ts\">s＝字串識別碼、i＝數字識別碼</text><text x=\"342\" y=\"112\" class=\"tb\">NodeId（命名空間＋識別碼）</text></svg>",
+   "caption": "OPC UA 不只傳「25」，而是表達「CNC-01 的主軸轉速是 25」：節點有名稱、型別與關聯，並用 NodeId 定位。圖中以工具機（切削金屬零件的加工機台，下一節說明）為例。",
+   "table": {
+    "head": [
+     "存取方式",
+     "做什麼",
+     "例子"
+    ],
+    "rows": [
+     [
+      "讀／寫 Read/Write",
+      "Client 主動讀取變數或寫入新值",
+      "讀產品重量；寫入新的進給率"
+     ],
+     [
+      "資料變更通知 Data Change Notification",
+      "訂閱<b>變數</b>，值改變時收到通知",
+      "刀具壽命低於門檻，提示換刀"
+     ],
+     [
+      "方法 Method",
+      "遠端呼叫 Server 上的動作",
+      "遠端觸發自動換刀程序"
+     ],
+     [
+      "事件通知 Event Notification",
+      "訂閱<b>事件</b>，發生時被動收到通知",
+      "緊急停機時通知維修系統"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "公司換了另一家廠牌的壓縮機，新機的暫存器排列完全不同。平台用 Modbus 或 OPC UA 讀取時，哪一邊一定得改換算設定？",
+    "a": "Modbus 那邊：位址、比例都要照新對照表改。OPC UA 的節點自帶名稱與單位，改動通常較少，但前提是 Server 有好好建模。"
+   },
+   "lab": "s1-23-model",
+   "after": "<p>實驗裡的差別在於：對照表寫的那些事，OPC UA 放進了節點。這不代表對照表消失了。舊設備接 OPC UA 時，總有人要在 Server 或閘道裡把暫存器對應成節點，只是這份工夫做一次，所有 Client 都能共用。</p><p>資安方面，它內建<b>認證、授權、資料完整性與加密</b>。實際安全程度仍取決於有沒有正確啟用與設定。</p>",
+   "more": {
+    "label": "跨平台、Client/Server 架構、聯網閘道與 Pub/Sub",
+    "body": "<p>OPC UA 不綁特定作業系統或硬體，從嵌入式裝置到雲端都能實作，也有 C++、C#、Java、Python 等語言可用，服務與資料模型還能依需求擴充。</p><p>基本架構是 <b>Client/Server</b>：Server 通常在設備端，把控制器與感測器資料轉成標準格式；MES 或監控系統當 Client 來存取。二進位傳輸的網址寫成 <code>opc.tcp://</code>，常見預設 port 為 4840。</p><p>常見導入方式是把各廠牌設備的函式庫（廠商寫好、可直接呼叫的程式工具）包進 OPC UA Server，形成聯網閘道（在不同協定之間翻譯的中繼設備），使用者只要會 OPC UA Client 就能存取所有設備。這樣資料能在同層設備之間流動（水平整合），也能從現場往上送到 MES、ERP（垂直整合），成為品質控制與預測性維護的資料基礎。</p><p>OPC UA 另外定義了<b>發布／訂閱</b>（Pub/Sub）模式，適合一對多分送資料。</p><p>單位並非每個節點都有：工程單位 EngineeringUnits 是類比量節點常帶的屬性，要 Server 有建立才讀得到。不同廠牌要用相同名稱，則有賴共同的型別定義，例如各產業的 Companion Specification。</p>"
+   }
+  },
+  {
+   "id": "mtconnect",
+   "h": "MTConnect：工具機資料的單向管線",
+   "body": "<p>冷凍櫃之外，製造業也有自己的標準。<b>工具機</b>是切削、鑽孔金屬零件的加工機台；由電腦數值控制的稱為 <b>CNC</b>（Computer Numerical Control）。<b>MTConnect</b> 是為製造業工具機設計的開放標準，<b>免權利金</b>（royalty-free）。</p><p>最大特色是<b>唯讀</b>（Read-only）：只規範如何從設備讀資料，不規範如何寫入指令，所以需要遠端控制時要另找方案。對外資料傳統上以 <b>XML</b>（用標籤標示每筆資料意義的文字格式）呈現，新版 Agent 也支援 JSON，並透過 <b>HTTP</b> 傳輸。</p><p>四個角色串成一條管線：</p><ol><li><b>Device 設備</b>：實體機台，如工具機、機器人、檢測儀器，產生各種參數。</li><li><b>Adapter 適配器</b>：用廠商函式庫取值（如 FANUC 的 FOCAS）並轉換，交給 Agent。</li><li><b>Agent 代理器</b>：架構核心，整合多個 Adapter，負責快取與格式化，再以 HTTP RESTful API 對外提供 XML。</li><li><b>Application 應用程式</b>：拿資料做監控、分析。</li></ol>",
+   "svg": "<svg viewBox=\"0 0 600 210\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MTConnect 架構：設備資料經 Adapter 轉換，交給 Agent 以 XML 經 HTTP 提供給應用程式，單向唯讀\"><defs><marker id=\"s1-23-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"30\" class=\"tb tc\">單向唯讀：資料只從機台往外流，不能下指令</text><rect x=\"10\" y=\"55\" width=\"120\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"70.0\" y=\"80.8\" class=\"tb tc\">設備</text><text x=\"70.0\" y=\"102.8\" class=\"tb tc\">CNC 工具機</text><text x=\"70.0\" y=\"146\" class=\"ts tc\">廠牌各自格式</text><rect x=\"165\" y=\"55\" width=\"125\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"227.5\" y=\"80.8\" class=\"tb tc\">Adapter</text><text x=\"227.5\" y=\"102.8\" class=\"tb tc\">適配器</text><text x=\"227.5\" y=\"146\" class=\"ts tc\">用廠商函式庫取值</text><text x=\"227.5\" y=\"168\" class=\"ts tc\">（如 FANUC FOCAS）</text><rect x=\"325\" y=\"55\" width=\"125\" height=\"64\" rx=\"8\" class=\"acc\"/><text x=\"387.5\" y=\"80.8\" class=\"tb tc\">Agent</text><text x=\"387.5\" y=\"102.8\" class=\"tb tc\">代理器</text><text x=\"387.5\" y=\"146\" class=\"ts tc\">整理成標準 XML</text><text x=\"387.5\" y=\"168\" class=\"ts tc\">用 HTTP 提供</text><rect x=\"485\" y=\"55\" width=\"105\" height=\"64\" rx=\"8\" class=\"ok\"/><text x=\"537.5\" y=\"80.8\" class=\"tb tc\">應用程式</text><text x=\"537.5\" y=\"102.8\" class=\"t tc\">監控／分析</text><text x=\"537.5\" y=\"146\" class=\"ts tc\">只讀取</text><text x=\"537.5\" y=\"168\" class=\"ts tc\">（不能寫回）</text><line x1=\"130\" y1=\"87\" x2=\"163\" y2=\"87\" class=\"la\" marker-end=\"url(#s1-23-5-arr)\"/><line x1=\"290\" y1=\"87\" x2=\"323\" y2=\"87\" class=\"la\" marker-end=\"url(#s1-23-5-arr)\"/><line x1=\"450\" y1=\"87\" x2=\"483\" y2=\"87\" class=\"la\" marker-end=\"url(#s1-23-5-arr)\"/><text x=\"300\" y=\"198\" class=\"ts tc\">典型查詢：/probe 看設備結構、/current 看目前值、/sample 看歷史</text></svg>",
+   "caption": "資料沿 Device、Adapter、Agent、Application 單向流動；Agent 是核心。",
+   "predict": {
+    "q": "一座金屬加工廠想用 MTConnect 看 CNC 的運轉狀態，也想從平台直接遠端暫停機台。這兩個需求都做得到嗎？",
+    "a": "只有看狀態做得到。MTConnect 只規範讀取，要下指令得另找方案。"
+   },
+   "more": {
+    "label": "標準參數名稱與常見應用",
+    "body": "<p>MTConnect 定義了一組標準參數名稱，例如運轉狀態、主軸轉速（刀具或工件轉多快）、進給速度（刀具相對工件移動多快），讓不同廠牌的資料能用相同名稱比較。XML 讓人和機器都容易閱讀，也容易擴充。</p><p>常見應用有生產監控、預測性維護，以及找出瓶頸以優化流程。</p>"
+   }
+  },
+  {
+   "id": "mqtt-rest",
+   "h": "MQTT 與 RESTful API：把現場資料往上送",
+   "body": "<p>現場資料收齊後，常用兩種方式往上送。</p><p><b>MQTT</b>（Message Queuing Telemetry Transport）走 TCP，採<b>發布／訂閱</b>：發布者把訊息連同<b>主題</b>（Topic，訊息的分類標籤，如 <code>coldchain/freezer1/temp</code>）交給 <b>Broker</b>（中介代理者），Broker 再轉給訂閱該主題的一方，像郵局依信箱分信。雙方不直接相連，感測器故障時 App 照常運作，App 離線時感測器也能繼續傳。在工業物聯網中，主要用於<b>即時設備監控與故障預警</b>。</p><p><b>RESTful API</b> 建立在 HTTP 上，用 URL 代表資源，用 HTTP 方法做 <b>CRUD</b>（建立、讀取、更新、刪除）。畫面端與提供資料的伺服器端只要介面不變就能各自發展，常用於 MES、ERP、網站與 App 之間的串接。</p>",
+   "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"工廠資料流：現場設備經 Modbus、MTConnect、OPC UA 匯入邊緣閘道，再經 MQTT 與 RESTful API 送到雲端、MES/ERP 與手機\"><defs><marker id=\"s1-23-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"165\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"102.5\" y=\"42.3\" class=\"tb tc\">雲端 AI 平台</text><text x=\"102.5\" y=\"61.9\" class=\"ts tc\">預測性維護</text><rect x=\"215\" y=\"20\" width=\"170\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"300.0\" y=\"42.3\" class=\"tb tc\">手機 App</text><text x=\"300.0\" y=\"61.9\" class=\"ts tc\">即時警報</text><rect x=\"415\" y=\"20\" width=\"165\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"497.5\" y=\"42.3\" class=\"tb tc\">MES／ERP</text><text x=\"497.5\" y=\"61.9\" class=\"ts tc\">生產與經營系統</text><rect x=\"40\" y=\"130\" width=\"200\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"140.0\" y=\"159.8\" class=\"tb tc\">MQTT Broker</text><rect x=\"360\" y=\"130\" width=\"200\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"460.0\" y=\"159.8\" class=\"tb tc\">RESTful API</text><rect x=\"150\" y=\"230\" width=\"300\" height=\"54\" rx=\"8\" class=\"warn\"/><text x=\"300.0\" y=\"252.3\" class=\"tb tc\">邊緣閘道＋OPC UA Server</text><text x=\"300.0\" y=\"271.9\" class=\"ts tc\">統一資料模型、加密與認證</text><rect x=\"20\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"105.0\" y=\"352.3\" class=\"tb tc\">PLC／溫控器</text><text x=\"105.0\" y=\"371.9\" class=\"ts tc\">Modbus</text><rect x=\"215\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"300.0\" y=\"352.3\" class=\"tb tc\">CNC 工具機</text><text x=\"300.0\" y=\"371.9\" class=\"ts tc\">MTConnect</text><rect x=\"410\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"495.0\" y=\"352.3\" class=\"tb tc\">新型設備</text><text x=\"495.0\" y=\"371.9\" class=\"ts tc\">內建 OPC UA</text><line x1=\"105\" y1=\"330\" x2=\"198\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"300\" y1=\"330\" x2=\"300\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"495\" y1=\"330\" x2=\"402\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"240\" y1=\"230\" x2=\"172\" y2=\"182\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"360\" y1=\"230\" x2=\"428\" y2=\"182\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"112\" y1=\"130\" x2=\"112\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"190\" y1=\"130\" x2=\"290\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"470\" y1=\"130\" x2=\"490\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><text x=\"20\" y=\"312\" class=\"ts\">讀寫暫存器</text><text x=\"308\" y=\"312\" class=\"ts\">唯讀 XML</text><text x=\"40\" y=\"212\" class=\"ts\">即時推送（發布）</text><text x=\"262\" y=\"112\" class=\"ts\">App 訂閱</text><text x=\"440\" y=\"212\" class=\"ts\">系統串接（GET/POST）</text><text x=\"20\" y=\"112\" class=\"ts\">感測資料上雲</text></svg>",
+   "caption": "一種常見的工廠資料流：設備資料匯入閘道，再用 MQTT 推送即時資料、用 RESTful API 串接企業系統。",
+   "table": {
+    "head": [
+     "HTTP 方法",
+     "CRUD",
+     "成功常見狀態碼",
+     "失敗常見狀態碼"
+    ],
+    "rows": [
+     [
+      "GET",
+      "讀取 Read",
+      "200 OK",
+      "404 Not Found"
+     ],
+     [
+      "POST",
+      "建立 Create",
+      "201 Created",
+      "400 Bad Request、409 Conflict"
+     ],
+     [
+      "PUT",
+      "更新 Update（或建立指定資源）",
+      "200 OK；新建時 201 Created",
+      "404 Not Found"
+     ],
+     [
+      "DELETE",
+      "刪除 Delete",
+      "204 No Content",
+      "403 Forbidden、404 Not Found"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "平台要把超溫告警即時推給所有值班手機，ERP 則要查某貨箱昨天的溫度紀錄。這兩件事各適合 MQTT 還是 RESTful API？",
+    "a": "告警用 MQTT，由 Broker 推給訂閱者；查歷史紀錄用 RESTful API，問一次答一次。"
+   },
+   "more": {
+    "label": "MQTT 的 QoS、Keep Alive、遺囑，以及 API 的測試工具",
+    "body": "<ul><li><b>QoS</b>（Quality of Service，服務品質）：0 最多一次，可能遺失；1 至少一次，可能重複；2 恰好一次，靠四步驟握手，開銷最大。</li><li><b>Keep Alive</b>：定期確認連線是否還在。</li><li><b>遺囑</b>（Last Will and Testament, LWT）：裝置異常斷線時，由 Broker 代發預先設定的訊息。</li><li><b>TLS/SSL</b>：加密與身分驗證。</li></ul><p>開發測試時，<b>Postman</b> 用來模擬 Client 發送請求，<b>Mock Server</b> 用來模擬還沒完成的伺服器端。</p>"
+   }
+  },
+  {
+   "id": "choose-standard",
+   "h": "怎麼選：依任務找標準",
+   "body": "<p>這些協定不是誰取代誰，常在同一座工廠裡分工。可以依序問自己：</p><ol><li><b>設備只支援什麼？</b>舊型 PLC、電表多半只有 Modbus，先用閘道接進來。</li><li><b>要跨廠牌整合，還需要語意與資安嗎？</b>選 OPC UA。</li><li><b>對象是工具機，而且只要讀資料？</b>選 MTConnect。</li><li><b>大量裝置要即時上報，網路不一定穩定？</b>選 MQTT。</li><li><b>要讓企業系統、網站或 App 互相串接？</b>選 RESTful API。</li></ol><p>Modbus、OPC UA、MTConnect 是為工業現場而生；MQTT、CoAP（為資源受限小裝置設計的輕量網路協定）、HTTP 則是通用的物聯網或網路協定，並非專為工廠自動化設計，但常用於把資料送到上層。</p>",
+   "table": {
+    "head": [
+     "比較",
+     "Modbus",
+     "OPC UA",
+     "MTConnect",
+     "MQTT",
+     "RESTful API"
+    ],
+    "rows": [
+     [
+      "定位",
+      "工業老牌協定",
+      "工業自動化的跨廠牌標準",
+      "工具機資料標準",
+      "物聯網輕量訊息協定",
+      "Web 服務串接風格"
+     ],
+     [
+      "架構",
+      "主從，只有主站發問",
+      "Client/Server、Pub/Sub",
+      "Device→Adapter→Agent→Application",
+      "發布／訂閱＋Broker",
+      "Client/Server，請求與回應"
+     ],
+     [
+      "讀寫能力",
+      "讀＋寫",
+      "讀寫＋訂閱＋方法",
+      "<b>唯讀</b>",
+      "雙向傳訊息",
+      "CRUD"
+     ],
+     [
+      "資料語意",
+      "只有位址，要查對照表",
+      "<b>資訊模型、NodeId</b>",
+      "標準參數名稱",
+      "自訂主題與內容",
+      "自訂，常用 JSON"
+     ],
+     [
+      "資安",
+      "傳統版<b>無加密與驗證</b>",
+      "<b>內建認證、授權、加密</b>",
+      "另行保護存取",
+      "靠 TLS 與帳密",
+      "靠 HTTPS 與驗證機制"
+     ],
+     [
+      "典型場景",
+      "PLC、溫控器、電表",
+      "跨廠牌整合、串接 MES",
+      "CNC 工具機監控",
+      "即時監控、故障預警",
+      "MES、ERP、App 串接"
+     ]
+    ]
+   },
+   "predict": {
+    "q": "舊壓縮機只有 Modbus RTU，平台卻希望收到帶名稱與單位的資料，再經 MQTT 上雲。要把舊壓縮機全部換掉嗎？",
+    "a": "不必。可用閘道讀 Modbus，建成 OPC UA 節點或加上語意後，再用 MQTT 往上送。"
+   }
+  }
+ ],
+ "keypoints": [
+  "互通要做到三件事：連得上、格式解得開、意義讀得懂。Modbus 的名稱、單位、比例都在對照表裡；OPC UA 把它們放進節點。",
+  "網路五層由上而下：應用、傳輸、網際網路、資料連結、實體；傳送時逐層加標頭，接收時逐層拆開。",
+  "要可靠選 TCP，要即時且可容忍遺失選 UDP；MQTT 走 TCP。",
+  "Modbus 三種模式：RTU 二進位配 CRC、ASCII 文字配 LRC、TCP 走乙太網路（典型 port 502）；傳統版沒有加密與驗證。",
+  "Modbus 四種資料區只有線圈與保持暫存器可寫入；保持暫存器慣用 4 開頭編號。",
+  "OPC UA 用資訊模型與 NodeId 描述設備，內建資安，提供讀寫、資料變更通知、方法、事件通知四種存取。",
+  "MTConnect 三個關鍵字：工具機、唯讀、XML over HTTP；核心角色是 Agent。"
+ ],
+ "pitfalls": [
+  "Modbus RTU 是串列格式，常搭 RS-485，但也可用 RS-232；Modbus TCP 才走乙太網路。40001 是慣用編號，封包內多半是從 0 起算的偏移量，對接時要對照設備文件。",
+  "「沒有資安」指傳統 Modbus，不能推及所有版本（另有 Modbus Security）。反過來，OPC UA 支援資安也不等於已經啟用；MTConnect 唯讀同樣需要保護存取。",
+  "資料變更通知與事件通知都是訂閱：前者盯<b>變數的值</b>，後者盯<b>事件</b>（故障、警報、操作紀錄）。情境是「停機了通知我」多半是事件通知。",
+  "MTConnect 對外提供的是 XML，但 Adapter 不一定輸出 XML，常見做法是以簡單文字串流交給 Agent。部分教材寫法不同（如官方學習指引第 91 頁）；應考時留意題目的條件。",
+  "選路與轉發封包屬於網際網路層（路由器），資料連結層負責同一區域網路內的訊框傳遞（交換器）。部分教材寫法不同（如官方學習指引第 82 頁）；應考時留意題目的條件。",
+  "MQTT 的 QoS 處理的是訊息遺失、重複這類傳遞可靠性問題（部分教材也把順序列入），不負責加密或加速；加密要靠 TLS。"
+ ],
+ "examples": [
+  {
+   "q": "冷凍庫用 Modbus 讀取電表的累計用電量，該值占兩個連續的保持暫存器。通訊沒有回報錯誤，但讀到的數字大得不合理。最應該先檢查哪一項？",
+   "o": [
+    "把 Modbus RTU 改成 Modbus ASCII",
+    "字組順序與倍率是否符合電表的位址對照表",
+    "把 MQTT 的 QoS 提高到 2",
+    "將保持暫存器改用線圈讀取"
+   ],
+   "a": 1,
+   "think": "關鍵條件是「通訊正常但數值不合理」，代表傳得到、解讀錯。兩個暫存器組成一個值時，字組順序與倍率都會影響結果。換傳輸模式解決不了解讀問題，QoS 屬於 MQTT，線圈只有 1 位元，都不對。"
+  },
+  {
+   "q": "冷鏈公司要整合多家廠牌的冷凍機組：資料需帶有明確語意、傳輸要能加密與認證，MES 要能訂閱異常事件，還要能遠端觸發除霜程序。哪一種標準最符合？",
+   "o": [
+    "Modbus RTU",
+    "MTConnect",
+    "OPC UA",
+    "CoAP"
+   ],
+   "a": 2,
+   "think": "把需求逐項對照：語意對應資訊模型，加密認證對應內建資安，訂閱異常對應事件通知，遠端觸發對應方法，這些 OPC UA 都有。傳統 Modbus 沒有語意與資安；MTConnect 唯讀，無法觸發動作；CoAP 是通用協定，並非為工廠自動化設計。"
+  }
+ ],
+ "check": [
+  {
+   "q": "封裝與解封裝分別發生在哪裡、做什麼？",
+   "a": "傳送端往下傳時逐層加標頭是封裝，接收端往上傳時逐層去除標頭是解封裝。"
+  },
+  {
+   "q": "有號整數（INT16）的暫存器讀到 65351，倍率 0.1，實際是多少？",
+   "a": "−18.5：65351 減 65536 得 −185，再乘 0.1。"
+  },
+  {
+   "q": "Modbus RTU、ASCII、TCP 的錯誤檢查或封裝差在哪？",
+   "a": "RTU 用 CRC，ASCII 用 LRC，TCP 則加 MBAP 標頭並由 TCP/IP 與乙太網路負責，不加 CRC。"
+  },
+  {
+   "q": "Modbus 的哪兩種資料區可以寫入？",
+   "a": "線圈（Coil）與保持暫存器（Holding Register）。"
+  },
+  {
+   "q": "為什麼同樣收到 25，Modbus 還要查對照表，OPC UA 卻不一定需要？",
+   "a": "Modbus 只有位址沒有語意，OPC UA 的節點本身帶有名稱、型別與關聯。"
+  },
+  {
+   "q": "OPC UA 的 NodeId 由什麼組成？",
+   "a": "命名空間索引加上識別碼。"
+  },
+  {
+   "q": "想遠端修改工具機參數，能只靠 MTConnect 嗎？",
+   "a": "不能，MTConnect 只規範讀取，不規範寫入指令。"
+  },
+  {
+   "q": "DELETE 請求成功時，常見的回應狀態碼是什麼？",
+   "a": "204 No Content，表示已刪除且不回傳內容。"
+  }
+ ],
+ "terms": [
+  {
+   "term": "資訊模型",
+   "en": "Information Model",
+   "def": "說明資料代表什麼、單位與彼此關係的共同規則。"
+  },
+  {
+   "term": "封裝",
+   "en": "Encapsulation",
+   "def": "資料往下層傳時逐層加上標頭的過程；反向拆開稱解封裝。"
+  },
+  {
+   "term": "TCP",
+   "en": "Transmission Control Protocol",
+   "def": "連線導向、可靠且按順序的傳輸層協定。"
+  },
+  {
+   "term": "UDP",
+   "en": "User Datagram Protocol",
+   "def": "無連線、不保證送達，但負擔小的傳輸層協定。"
+  },
+  {
+   "term": "RS-485",
+   "def": "工業常用的串列線路標準，一條線可串接多台設備。"
+  },
+  {
+   "term": "Modbus RTU",
+   "def": "以二進位編碼、CRC 檢查錯誤的 Modbus 串列傳輸模式。"
+  },
+  {
+   "term": "Modbus TCP",
+   "def": "把 Modbus 資料包進 TCP/IP，在乙太網路上傳輸的模式。"
+  },
+  {
+   "term": "PDU",
+   "en": "Protocol Data Unit",
+   "def": "Modbus 封包的核心，由功能碼與資料組成。"
+  },
+  {
+   "term": "保持暫存器",
+   "en": "Holding Register",
+   "def": "可讀可寫的 16 位元資料區，常存設定值。"
+  },
+  {
+   "term": "線圈",
+   "en": "Coil",
+   "def": "可讀可寫的 1 位元資料區，常用來控制開關。"
+  },
+  {
+   "term": "OPC UA",
+   "en": "Open Platform Communications Unified Architecture",
+   "def": "具資訊模型與內建資安的跨平台工業通訊標準。"
+  },
+  {
+   "term": "NodeId",
+   "def": "OPC UA 中識別節點的編號，由命名空間索引與識別碼組成。"
+  },
+  {
+   "term": "MTConnect",
+   "def": "主要用於工具機等製造設備的唯讀開放標準，以 XML 與 HTTP 提供資料。"
+  },
+  {
+   "term": "Adapter",
+   "def": "適配器。MTConnect 中負責從設備取值並轉換，再交給 Agent 的元件。"
+  },
+  {
+   "term": "Agent",
+   "def": "代理器。MTConnect 的核心，整合資料並透過 HTTP 對外提供。"
+  },
+  {
+   "term": "Broker",
+   "en": "Message Broker",
+   "def": "訊息代理。MQTT 中依主題接收並轉發訊息的中樞。"
+  },
+  {
+   "term": "QoS",
+   "en": "Quality of Service",
+   "def": "服務品質。MQTT 的訊息傳遞保證等級，分 0、1、2 三級。"
+  },
+  {
+   "term": "RESTful API",
+   "en": "Representational State Transfer API",
+   "def": "以 URL 代表資源、用 HTTP 方法操作的系統串接方式。"
+  },
+  {
+   "term": "CRC",
+   "en": "Cyclic Redundancy Check",
+   "def": "循環冗餘檢查。附在封包尾端的檢查碼，收方重算後比對，就知道傳輸有沒有出錯。"
+  },
+  {
+   "term": "MAC 位址",
+   "en": "Media Access Control address",
+   "def": "網路卡的硬體編號，用於同一區域網路內定址；與資安領域的訊息鑑別碼 MAC 不同。"
+  }
+ ],
+ "case": {
+  "title": "本章的場景：把各廠牌冷凍壓縮機接上平台",
+  "body": "冷鏈物流公司的冷凍櫃用了好幾家廠牌的壓縮機，新舊都有。舊機台問到的只是「40001 回傳 253」，平台卻要顯示「冷凍櫃幾度、該不該告警」。本章看資料要跨過哪些關卡，才會從一個數字變成讀得懂的資訊。"
+ },
+ "sources": [
+  [
+   "Modbus Organization：規格文件（Application Protocol、TCP/IP、Security）",
+   "https://www.modbus.org/modbus-specifications"
+  ],
+  [
+   "OPC UA Part 3：Address Space Model",
+   "https://reference.opcfoundation.org/specs/OPC-10000-3"
+  ],
+  [
+   "OPC UA Part 8：Data Access（類比量與工程單位）",
+   "https://reference.opcfoundation.org/specs/OPC-10000-8"
+  ],
+  [
+   "OPC UA Part 14：PubSub",
+   "https://reference.opcfoundation.org/specs/OPC-10000-14"
+  ],
+  [
+   "MTConnect Institute",
+   "https://www.mtconnect.org/"
+  ],
+  [
+   "MTConnect 標準文件",
+   "https://docs.mtconnect.org/"
+  ],
+  [
+   "MQTT Version 5.0（OASIS 標準）",
+   "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
+  ],
+  [
+   "RFC 9110：HTTP Semantics",
+   "https://www.rfc-editor.org/rfc/rfc9110"
+  ],
+  [
+   "RFC 9293：TCP",
+   "https://www.rfc-editor.org/rfc/rfc9293"
+  ],
+  [
+   "RFC 768：UDP",
+   "https://www.rfc-editor.org/rfc/rfc768"
+  ]
+ ]
+}
