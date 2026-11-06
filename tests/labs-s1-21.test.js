@@ -1,6 +1,6 @@
 // Run: node aiot-guide/tests/labs-s1-21.test.js
 const assert = require('assert');
-const {LAYERS, ITEMS, gradeLayers, STATIONS, SEGMENTS, symptoms, CLUES} = require('../static/assets/labs/s1-21.js');
+const {LAYERS, ITEMS, gradeLayers, STATIONS, SEGMENTS, symptoms, CLUES, gradeClue} = require('../static/assets/labs/s1-21.js');
 
 // ----- layer sorting -----
 const layerOf = Object.fromEntries(ITEMS.map(i => [i.id, i.layer]));
@@ -59,5 +59,18 @@ for (const c of CLUES) {
   assert.notStrictEqual(c.a, DEFAULT, c.q);
 }
 assert.strictEqual(new Set(CLUES.map(c => c.a)).size, CLUES.length);
+
+// clues are answered, not ticked by the selection: only the matching segment counts
+CLUES.forEach((c, i) => {
+  for (let k = 0; k < SEGMENTS.length; k++) {
+    const g = gradeClue(i, k);
+    assert.strictEqual(g.right, k === c.a, c.q + ' / ' + k);
+    assert(g.text.startsWith(g.right ? '對。先查：' : '再想想。'));
+  }
+});
+// the opening selection (閘道器) answers none of the clues
+assert(CLUES.every((c, i) => !gradeClue(i, DEFAULT).right));
+assert.strictEqual(gradeClue(1, 3).text, '對。先查：Wi-Fi、路由器、對外網路。');
+assert(gradeClue(1, 2).text.includes('「閘道器」'));
 
 console.log('labs-s1-21: all assertions passed');

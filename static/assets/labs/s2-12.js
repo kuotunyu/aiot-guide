@@ -121,10 +121,16 @@
     return {kind: 'notYet', open, supported};
   }
 
+  // What to do next when the verdict is not yet solid. done: checks run; read: checks whose interpretation was opened.
+  function nextStep(done, read) {
+    const unread = done.filter(id => !read.includes(id)).length;
+    return unread ? '還有 ' + unread + ' 項檢查的結果沒看解讀，先看過再算證據。' : '再選一項檢查。';
+  }
+
   // Rise time of an RC-loaded I2C line, 30% to 70% of VDD: tr = 0.8473 x R x C (TI SLVA689).
   function i2cRiseTime(ohm, farad) { return 0.8473 * ohm * farad; }
 
-  const api = {CASES, findCase, suspects, judge, i2cRiseTime};
+  const api = {CASES, findCase, suspects, judge, nextStep, i2cRiseTime};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -132,12 +138,13 @@
   const {esc, $$} = root.AIOTLab;
   const LABEL = {maybe: '未排除', no: '已排除', ok: '有證據'};
 
-  function verdictHtml(c, causeId, done) {
-    const r = judge(c, causeId, done), name = c.causes.find(x => x.id === causeId).name;
+  // Evidence counts only after its interpretation was read (read), the same rule as the suspect list.
+  function verdictHtml(c, causeId, read, done) {
+    const r = judge(c, causeId, read), name = c.causes.find(x => x.id === causeId).name;
     if (r.kind === 'ruledOut') return '<b>「' + esc(name) + '」已經被排除了。</b>依據是「' + esc(r.by) + '」的結果。再看一次那筆結果，想想它說明了什麼。';
     if (r.kind === 'solid') return '<b>證據足夠支持這個判斷：' + esc(name) + '。</b>其他嫌疑都有結果排除，這個原因也有直接證據。<br><b>接著驗證：</b>' + esc(c.fix);
     const left = r.open.length ? '「' + r.open.map(esc).join('」「') + '」還沒排除' : '其他嫌疑都排除了';
-    return '<b>現在還不能下這個結論。</b>' + left + (r.supported ? '，雖然這個方向已有證據支持。' : '，這個方向也還沒有直接證據。') + '再選一項檢查。';
+    return '<b>現在還不能下這個結論。</b>' + left + (r.supported ? '，雖然這個方向已有證據支持。' : '，這個方向也還沒有直接證據。') + esc(nextStep(done, read));
   }
 
   function drillLab(el) {
@@ -151,7 +158,7 @@
     function drawVerdict() {
       const v = q('.d-verdict');
       v.hidden = !picked;
-      v.innerHTML = picked ? verdictHtml(c, picked, done) : '';
+      v.innerHTML = picked ? verdictHtml(c, picked, read, done) : '';
       $$('[data-cause]', el).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cause === picked)));
     }
     function addEntry(k) {
@@ -165,6 +172,7 @@
         box.tabIndex = -1;
         box.focus();
         drawList();
+        if (picked) drawVerdict();
       };
       q('.d-log').prepend(box);
     }

@@ -46,7 +46,15 @@
     {q: '超溫告警照常推播，只有儀表板數字不動', a: 5},
   ];
 
-  const api = {LAYERS, ITEMS, gradeLayers, STATIONS, SEGMENTS, symptoms, CLUES};
+  // Answering clue i with the segment currently selected above.
+  function gradeClue(i, sel) {
+    const c = CLUES[i], right = c.a === sel;
+    return {right, text: right
+      ? '對。先查：' + SEGMENTS[c.a].look
+      : '再想想。上面選的是「' + SEGMENTS[sel].name + '」，它的症狀和這條線索對不上。'};
+  }
+
+  const api = {LAYERS, ITEMS, gradeLayers, STATIONS, SEGMENTS, symptoms, CLUES, gradeClue};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -86,7 +94,7 @@
         : '<rect data-s="' + i + '" x="' + p.x + '" y="45" width="' + p.w + '" height="30" class="soft"/><line x1="' + (p.x + 6) + '" y1="60" x2="' + (p.x + p.w - 6) + '" y2="60" class="la" marker-end="url(#s1-21-lab-arr)"/><text x="' + (p.x + p.w / 2) + '" y="112" class="ts tc">' + esc(p.label) + '</text>').join('') +
       '<rect x="511" y="30" width="88" height="60" rx="8" class="box"/><text x="555" y="66" class="tb tc">畫面</text></svg>';
     let sel = 2;
-    el.innerHTML = '<h3>實驗：畫面不更新，斷在哪一段？</h3><p class="small">點路徑上的一段，假設它壞了，看各站還剩什麼、會出現什麼症狀。</p><div class="lab-viz">' + svg + '</div><div class="chips" role="group" aria-label="故障的位置">' + SEGMENTS.map((s, i) => '<button type="button" data-k="' + i + '">' + esc(s.name) + '</button>').join('') + '</div><ul class="topics"></ul><p class="lab-say" aria-live="polite"></p><div class="tasks"><b>反過來想：聽到這些線索，你會先懷疑哪一段？</b>' + CLUES.map(c => '<div class="task"><span class="mark" aria-hidden="true">○</span><span>' + esc(c.q) + '</span><button type="button" class="linkbtn">看答案</button></div>').join('') + '</div><p class="small muted">簡化模型：一次只壞一處，貨車走自己的行動網路，不經過倉庫閘道器。實際系統可能多處同時出問題。</p>';
+    el.innerHTML = '<h3>實驗：畫面不更新，斷在哪一段？</h3><p class="small">點路徑上的一段，假設它壞了，看各站還剩什麼、會出現什麼症狀。再用下面的線索反過來練習：先在上面選一段，再按「就是上面選的這段」作答。</p><div class="lab-viz">' + svg + '</div><div class="chips" role="group" aria-label="故障的位置">' + SEGMENTS.map((s, i) => '<button type="button" data-k="' + i + '">' + esc(s.name) + '</button>').join('') + '</div><ul class="topics"></ul><p class="lab-say" aria-live="polite"></p><div class="tasks"><b>反過來想：聽到這些線索，你會先懷疑哪一段？</b>' + CLUES.map(c => '<div class="task"><span class="mark" aria-hidden="true">○</span><span>' + esc(c.q) + '<span class="res"></span></span><button type="button" class="linkbtn" data-pick>就是上面選的這段</button><button type="button" class="linkbtn" data-show>看答案</button></div>').join('') + '</div><p class="small muted">簡化模型：一次只壞一處，貨車走自己的行動網路，不經過倉庫閘道器。實際系統可能多處同時出問題。</p>';
     const list = el.querySelector('.topics'), say = el.querySelector('.lab-say'), mark = el.querySelector('[data-mark]');
     function draw() {
       $$('[data-k]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === sel)));
@@ -94,14 +102,21 @@
       mark.setAttribute('x', PARTS[sel].x + PARTS[sel].w / 2);
       list.innerHTML = symptoms(sel).map(s => '<li class="' + (s.ok ? 'hit' : '') + '"><span class="tick">' + (s.ok ? '正常' : '停住') + '</span><span>' + esc(s.name) + '</span></li>').join('');
       say.innerHTML = '<b>症狀：</b>' + esc(SEGMENTS[sel].symptom) + '<br><b>先查：</b>' + esc(SEGMENTS[sel].look);
-      $$('.task', el).forEach((d, i) => {
-        const on = CLUES[i].a === sel;
-        d.classList.toggle('done', on); d.querySelector('.mark').textContent = on ? '✓' : '○';
-      });
     }
     $$('[data-k]', el).forEach((b, i) => b.onclick = () => { sel = i; draw(); });
     $$('[data-s]', el).forEach(s => s.addEventListener('click', () => { sel = +s.dataset.s; draw(); }));
-    $$('.task button', el).forEach((b, i) => b.onclick = () => { sel = CLUES[i].a; draw(); });
+    const done = {};
+    $$('.task', el).forEach((row, i) => {
+      const res = row.querySelector('.res');
+      row.querySelector('[data-pick]').onclick = () => {
+        const g = gradeClue(i, sel);
+        if (g.right) done[i] = true;
+        row.classList.toggle('done', !!done[i]);
+        row.querySelector('.mark').textContent = done[i] ? '✓' : '○';
+        res.textContent = '　' + g.text;
+      };
+      row.querySelector('[data-show]').onclick = () => { sel = CLUES[i].a; res.textContent = ''; draw(); };
+    });
     draw();
   }
 

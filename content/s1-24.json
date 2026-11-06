@@ -9,7 +9,7 @@
   "判斷服務屬於 IaaS、PaaS 或 SaaS，並比較虛擬機與容器",
   "依資料特性與設備算力，選擇儲存方式與身分驗證機制"
  ],
- "prereq": "<b>IP 位址</b>像門牌，讓資料找到是哪一台機器；<b>埠號（Port）</b>像門牌裡的分機，指定交給哪個程式。<b>協定（Protocol）</b>是雙方約定好的說話格式。<b>閘道器（Gateway）</b>是現場和網路之間的轉接站，一邊收感測器資料，一邊上傳到後端。",
+ "prereq": "<b>閘道器（Gateway）</b>是現場和網路之間的轉接站，一邊收感測器資料，一邊上傳到後端。",
  "bridge": "Broker 像 Kafka 這類資料管線的中樞；租 GPU 主機自己裝環境近似 IaaS，託管訓練平台（如 Vertex AI）近似 PaaS，直接使用現成 AI 服務近似 SaaS；PaaS 能減輕持續整合與交付（CI/CD）及開發維運（DevOps）的負擔；圖片與文件經向量計算得到的向量，則放進向量資料庫。",
  "sections": [
   {
@@ -65,7 +65,7 @@
   {
    "id": "protocol-layers",
    "h": "通訊協定：硬體管怎麼接，軟體管說什麼",
-   "body": "<p>閘道器要把資料送到後端，得同時決定兩件事。可以想成寄信：<b>實體層協定</b>像道路規格，定義電壓、接腳與連線方式；<b>上層協定</b>像地址與信件格式，定義資料怎麼找路、怎麼送、內容長什麼樣。</p><ul><li><b>實體層與連線技術</b>：串列通訊 RS-232／422／485；有線區域網路 Ethernet（IEEE 802.3）；無線 Wi-Fi、Bluetooth、ZigBee；遠距離的 4G／5G 與低功耗廣域網路 LPWAN。</li><li><b>網路層</b>：IPv4、IPv6，負責定址與選路。</li><li><b>傳輸層</b>：TCP 確認送達、較可靠；UDP 不保證送達、負擔較小。</li><li><b>應用層</b>：HTTP、MQTT、Modbus TCP、DNS（把網址換成 IP 位址），處理特定應用的資料格式與邏輯。</li></ul><p>這裡沿用 2.1 的 TCP/IP 四層，只是把最底層稱為「實體層與連線技術」，涵蓋實體層與資料連結層；和 2.3 的五層畫法只差在這一層拆不拆開。</p>",
+   "body": "<p>閘道器要把資料送到後端，得同時決定兩件事。可以想成寄信：<b>實體層協定</b>像道路規格，定義電壓、接腳與連線方式；<b>上層協定</b>像地址與信件格式，定義資料怎麼找路、怎麼送、內容長什麼樣。</p><p>各層由誰負責、有哪些代表協定，見 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a> 的分層表；下圖只列閘道器常碰到的幾個。</p>",
    "svg": "<svg viewBox=\"0 0 600 295\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"通訊協定分層：應用層、傳輸層、網路層與實體層各有哪些協定\"><text x=\"300\" y=\"26\" class=\"th tc\">硬體管「怎麼接」，軟體管「說什麼」</text><rect x=\"20\" y=\"46\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"65.0\" class=\"tb tc\">應用層</text><text x=\"75\" y=\"83.0\" class=\"ts tc\">格式與邏輯</text><rect x=\"140\" y=\"46\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"74\" class=\"t tc\">HTTP・MQTT・Modbus TCP・DNS</text><rect x=\"20\" y=\"100\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"119.0\" class=\"tb tc\">傳輸層</text><text x=\"75\" y=\"137.0\" class=\"ts tc\">端對端傳送</text><rect x=\"140\" y=\"100\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"128\" class=\"t tc\">TCP（可靠）・UDP（無送達保證）</text><rect x=\"20\" y=\"154\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"173.0\" class=\"tb tc\">網路層</text><text x=\"75\" y=\"191.0\" class=\"ts tc\">定址與路由</text><rect x=\"140\" y=\"154\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"182\" class=\"t tc\">IPv4・IPv6</text><rect x=\"20\" y=\"208\" width=\"110\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"75\" y=\"227.0\" class=\"tb tc\">實體層</text><text x=\"75\" y=\"245.0\" class=\"ts tc\">電壓、接腳、線</text><rect x=\"140\" y=\"208\" width=\"440\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"360\" y=\"236\" class=\"t tc\">RS-232／485・Ethernet 的線材與訊號</text><text x=\"300\" y=\"280\" class=\"ts tc\">連網技術常跨層；本圖省略資料連結層</text></svg>",
    "caption": "越下層越接近實體線路，越上層越接近應用。Modbus RTU 不在 IP 網路上，通常直接跑在串列線路上。",
    "table": {
@@ -78,7 +78,7 @@
      [
       "智慧城市",
       "Ethernet＋TCP/IP",
-      "使用一般 IP 網路設備"
+      "使用一般 IP 網路設備；Ethernet（IEEE 802.3）常用雙絞線或光纖"
      ],
      [
       "工業現場（舊有串列設備）",
@@ -89,22 +89,23 @@
       "工業現場（已有乙太網路）",
       "Ethernet＋Modbus TCP",
       "同樣的 Modbus 功能走 TCP/IP"
+     ],
+     [
+      "工業現場（即時控制）",
+      "Ethernet＋EtherCAT",
+      "跑在乙太網路線路上的工業即時控制匯流排"
      ]
     ]
    },
    "predict": {
     "q": "冷藏庫的舊壓縮機控制器只有 RS-485 接頭，用 Modbus RTU。要把資料送上雲端，一定得換掉控制器嗎？",
     "a": "不一定。閘道器可以一邊用 RS-485 與 Modbus RTU 讀值，另一邊走網路送上後端。分層讓兩段各用各的。"
-   },
-   "more": {
-    "label": "兩種「分層」別混在一起，以及 Modbus、EtherCAT 是什麼",
-    "body": "<p>這裡的分層是 OSI／TCP-IP 模型（網路通訊常用的分層方式），和 IoT 三層架構的「網路層、應用層」是不同的分法：MQTT 在 IoT 三層中屬於負責傳遞資料的一段，在 TCP/IP 模型中則屬應用層。</p><p><b>Modbus</b> 是工業設備常用的讀寫資料協定，RTU 版跑在串列線路上（串列指資料沿線路一位元接一位元送出），TCP 版跑在網路上。<b>EtherCAT</b> 則是跑在乙太網路線路上的工業即時控制匯流排。Ethernet 常用雙絞線或光纖；LPWAN 的英文是 Low-Power Wide-Area Network；HTTP 是網頁與 API 常用的協定。</p>"
    }
   },
   {
    "id": "message-middleware",
    "h": "訊息中介軟體：先收下來，再慢慢分派",
-   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p>角色有三個：<b>發布者（Publisher）</b>送出帶<b>主題（Topic）</b>的訊息，例如 <code>coldchain/r1/temp</code>；<b>訂閱者（Subscriber）</b>登記想收的主題；<b>代理（Broker）</b>依登記分派。</p><p>選用時先問兩個問題。Broker 重開機後，還沒送出的訊息還在嗎？不能接受消失，就要確認訊息會先寫進硬碟，這種能力稱為<b>永久儲存（Persistent Storage）</b>。第二是下表的服務品質 <b>QoS（Quality of Service）</b>，等級越高越可靠，也越耗資源。</p>",
+   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p><a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉介紹過的三個角色</a>在這裡一樣：發布者送出帶主題的訊息（例如 <code>coldchain/r1/temp</code>），代理（Broker）依訂閱者的登記分派。</p><p>選用時先問兩個問題。Broker 重開機後，還沒送出的訊息還在嗎？不能接受消失，就要確認訊息會先寫進硬碟，這種能力稱為<b>永久儲存（Persistent Storage）</b>。第二是下表的服務品質 <b>QoS（Quality of Service）</b>，等級越高越可靠，也越耗資源。</p>",
    "svg": "<svg viewBox=\"0 0 600 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"發布訂閱模式：發布者把帶主題的訊息交給 Broker，Broker 分派給訂閱該主題的訂閱者\"><defs><marker id=\"s1-24-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"85\" y=\"24\" class=\"tb tc\">發布者</text><text x=\"305\" y=\"24\" class=\"tb tc\">代理</text><text x=\"522\" y=\"24\" class=\"tb tc\">訂閱者</text><rect x=\"20\" y=\"50\" width=\"130\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"85\" y=\"75.0\" class=\"tb tc\">溫度感測器</text><text x=\"85\" y=\"93.0\" class=\"ts tc\">coldchain/r1/temp</text><rect x=\"20\" y=\"150\" width=\"130\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"85\" y=\"175.0\" class=\"tb tc\">壓縮機振動</text><text x=\"85\" y=\"193.0\" class=\"ts tc\">coldchain/r1/vib</text><rect x=\"230\" y=\"60\" width=\"150\" height=\"130\" rx=\"6\" class=\"acc\"/><text x=\"305\" y=\"100\" class=\"tb tc\">Broker</text><text x=\"305\" y=\"130\" class=\"t tc\">收下、暫存</text><text x=\"305\" y=\"158\" class=\"t tc\">依主題分派</text><rect x=\"460\" y=\"40\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"62.0\" class=\"tb tc\">儀表板</text><text x=\"522.5\" y=\"80.0\" class=\"ts tc\">訂 …/temp、…/vib</text><rect x=\"460\" y=\"105\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"127.0\" class=\"tb tc\">告警服務</text><text x=\"522.5\" y=\"145.0\" class=\"ts tc\">訂 …/vib</text><rect x=\"460\" y=\"170\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"192.0\" class=\"tb tc\">資料儲存</text><text x=\"522.5\" y=\"210.0\" class=\"ts tc\">訂 coldchain/#</text><line x1=\"152\" y1=\"78\" x2=\"227\" y2=\"100\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"152\" y1=\"178\" x2=\"227\" y2=\"152\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"105\" x2=\"457\" y2=\"68\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"125\" x2=\"457\" y2=\"130\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"145\" x2=\"457\" y2=\"192\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"300\" y=\"248\" class=\"ts tc\">發布者與訂閱者互不認識（解耦），由 Broker 依主題轉送</text></svg>",
    "caption": "發布者只管送出，訂閱者只收自己訂的主題，中間由 Broker 暫存並轉送。",
    "table": {
@@ -162,7 +163,7 @@
      ],
      [
       "私有雲",
-      "單一組織專用",
+      "單一組織專用；可架在自家機房（那同時也是地端），也可由業者專屬代管",
       "掌控度高，較易符合法規",
       "自付維運成本，仍有資安風險"
      ],
@@ -181,7 +182,7 @@
    "lab": "s1-24-cloud",
    "more": {
     "label": "雲端的共同特性、挑戰與產品對照",
-    "body": "<p>雲端的共同特性是：需要時自己在網頁上開通（隨需自助）、透過網路使用、許多客戶共用業者的大批機器（<b>資源池共享，Resource Pooling</b>）、可快速加大或縮小規模，並依用量計費。它讓感測器與閘道器不必具備強運算力，也能提供大量運算與儲存；但資料要跑一段遠路，<b>網路延遲</b>是即時處理的主要挑戰。</p><p>純雲的常見組合：儲存用 AWS S3、資料庫用 AWS RDS 或 GCP Cloud SQL、運算用 EC2 或 Compute Engine。</p><p>同樣的邏輯可以套到訊息服務：自己安裝 Apache ActiveMQ 是 IaaS 的做法，使用 AWS IoT Core 或 GCP Pub/Sub 則接近 PaaS。開發團隊用 PaaS 能省下架設環境與日常維運的時間。</p>"
+    "body": "<p>雲端的共同特性是：需要時自己在網頁上開通（隨需自助）、透過網路使用、許多客戶共用業者的大批機器（<b>資源池共享，Resource Pooling</b>）、可快速加大或縮小規模，並依用量計費。能這樣共用，基礎是<b>虛擬化（Virtualization）</b>：用軟體把實體硬體切成多台邏輯上獨立的機器，再集中成資源池。它讓感測器與閘道器不必具備強運算力，也能提供大量運算與儲存；但資料要跑一段遠路，<b>網路延遲</b>是即時處理的主要挑戰。</p><p>純雲的常見組合：儲存用 AWS S3、資料庫用 AWS RDS 或 GCP Cloud SQL、運算用 EC2 或 Compute Engine。</p><p>同樣的邏輯可以套到訊息服務：自己安裝 Apache ActiveMQ 是 IaaS 的做法，使用 AWS IoT Core 或 GCP Pub/Sub 則接近 PaaS。開發團隊用 PaaS 能省下架設環境與日常維運的時間。</p>"
    }
   },
   {
@@ -257,7 +258,7 @@
   {
    "id": "communication-auth",
    "h": "元件怎麼溝通、怎麼確認身分",
-   "body": "<p>系統內的元件之間，常見三種溝通模式：</p><ul><li><b>請求－回應（Request-Response）</b>：像打電話問問題，問了才答。例如 HTTP、REST、gRPC、GraphQL。</li><li><b>非同步訊息驅動</b>：像寄信，交給 Broker 就可以去做別的事。例如 AMQP、MQTT、Kafka。</li><li><b>遠端程序呼叫（Remote Procedure Call, RPC）</b>：呼叫遠端服務就像呼叫本機功能。例如 gRPC、Apache Thrift、Apache Dubbo。</li></ul><p>元件通訊前要先確認對方身分，才放行服務與資料。選擇驗證機制的關鍵，是在安全性與設備算力之間取得平衡。雲端平台的資安還包含存取管理、傳輸加密（TLS/SSL）與災害復原；權限應採<b>最小權限</b>，只給完成工作所需的部分。</p>",
+   "body": "<p>系統內的元件之間，常見三種溝通模式：</p><ul><li><b>請求－回應（Request-Response）</b>：像打電話問問題，問了才答。代表是 HTTP（REST API）。</li><li><b>非同步訊息驅動</b>：像寄信，交給 Broker 就可以去做別的事。代表是 MQTT。</li><li><b>遠端程序呼叫（Remote Procedure Call, RPC）</b>：呼叫遠端服務就像呼叫本機功能。代表是 gRPC。</li></ul><p>元件通訊前要先確認對方身分，才放行服務與資料。選擇驗證機制的關鍵，是在安全性與設備算力之間取得平衡。雲端平台的資安還包含存取管理、傳輸加密（TLS/SSL）與災害復原；權限應採<b>最小權限</b>，只給完成工作所需的部分。</p>",
    "table": {
     "head": [
      "驗證機制",
@@ -293,8 +294,12 @@
     ]
    },
    "predict": {
-    "q": "貨車閘道器與鈕扣電池供電的小探頭要連上平台。兩者都用 X.509 憑證最安全，所以一律這樣做嗎？",
+    "q": "貨車閘道器與鈕扣電池供電的小探頭要連上平台。兩者都用 X.509 憑證（一種數位身分證）最安全，所以一律這樣做嗎？",
     "a": "不一定。憑證的驗算與管理都較費力，算力極低的探頭負擔不起，可改用預共享金鑰；選擇要兼顧安全與算力。"
+   },
+   "more": {
+    "label": "三種溝通模式還有哪些代表技術",
+    "body": "<p>官方學習指引在每種模式下列了幾個例子，認得各自歸哪一類即可：</p><ul><li>請求－回應：HTTP、REST、gRPC、GraphQL。</li><li>非同步訊息驅動：AMQP、MQTT、Kafka。</li><li>RPC：gRPC、Apache Thrift、Apache Dubbo。</li></ul><p>gRPC 兩邊都出現：它本身是一套 RPC 框架，而每次呼叫都是用戶端送出請求、等伺服器回應，所以也符合請求－回應模式。</p>"
    }
   }
  ],
@@ -303,7 +308,7 @@
   "訊息中介軟體的價值是解耦與緩衝：先收下、再分派，保護後端不被尖峰衝垮。",
   "三個角色記「發布、代理、訂閱」；三種 QoS 記「可能丟、可能重複、恰好一次」。",
   "雲端服務看自己管多少：IaaS 管最多，PaaS 只管程式與資料，SaaS 直接用，但資料權限仍要自己管。",
-  "虛擬機各帶作業系統，容器共用核心，所以容器較輕、啟動較快。",
+  "雲端的基礎是虛擬化；虛擬機各帶作業系統，容器共用核心，所以容器較輕、啟動較快。",
   "選儲存看資料：訂單用 RDB，JSON 事件用文件型 NoSQL，時間序列用 TSDB，影片用物件儲存，要極快再加 Redis。",
   "驗證看算力與風險：高安全用 X.509，軟體服務用 Token，算力極低用 PSK。"
  ],
@@ -311,7 +316,7 @@
   "Broker 負責分送訊息，不等於長期資料庫；持久化與保存期限要另外確認，產品名稱本身也不保證不丟資料。訊息路由（Message Router）也不是 MQTT 的組件：MQTT 只有用戶端與 Broker，依主題轉送由 Broker 完成。",
   "容易把雲端、虛擬化與裝置端混在一起：雲端的好處是讓感測器不必有強運算力，不是讓感測器也能跑虛擬機。不過資源足夠的邊緣設備確實可以跑容器。",
   "私有雲與地端都不等於自動安全，權限、修補與備份仍要有人負責。雲端權限應採最小權限，不是最大權限。",
-  "同一個名字可能出現在不同分類：gRPC 同時屬於請求－回應與 RPC，MQTT 在 TCP/IP 分層上屬應用層，在溝通模式上屬非同步訊息驅動。",
+  "同一個名字可能出現在不同分類：gRPC 同時屬於請求－回應與 RPC（原因見〈元件怎麼溝通、怎麼確認身分〉的收合區），MQTT 在 TCP/IP 分層上屬應用層，在溝通模式上屬非同步訊息驅動。",
   "部分教材的分類和嚴格定義不同：官方學習指引第 106 頁把定義通訊格式與內容的軟體協定統稱為「網路層協定」，但嚴格分層下網路層只負責定址與路由，格式與內容屬上層；第 111 頁把 Basic Auth 歸入 Token 類，但它實際上是傳送編碼後的帳號密碼，須搭配 TLS。應考時留意題目的條件。",
   "雲端產品會變動：Google Cloud IoT Core 已於 2023 年停止服務，舊資料若提到它不代表現況；GCP Pub/Sub 是通用訊息服務。",
   "SaaS 不等於什麼都不用管：軟體與底層由業者負責，帳號、資料權限與使用設定仍在使用者手上。同樣地，影片雖然帶時間，也不代表該放時序資料庫。"
@@ -386,15 +391,6 @@
    "def": "讓兩部分不必直接綁在一起，一邊變動不會拖垮另一邊。"
   },
   {
-   "term": "Broker",
-   "en": "Message Broker",
-   "def": "訊息代理。接收訊息並依主題分派給訂閱者的中間站。"
-  },
-  {
-   "term": "Topic",
-   "def": "主題。訊息的分類標籤，訂閱者依此選擇要收什麼。"
-  },
-  {
    "term": "QoS",
    "en": "Quality of Service",
    "def": "服務品質。訊息送達的保證等級：0 最多一次、1 至少一次、2 恰好一次。"
@@ -433,6 +429,11 @@
    "term": "SaaS",
    "en": "Software as a Service",
    "def": "直接使用做好的軟體。"
+  },
+  {
+   "term": "虛擬化",
+   "en": "Virtualization",
+   "def": "用軟體把實體硬體切成多台邏輯機器，是雲端能讓許多人共用的基礎。"
   },
   {
    "term": "容器",
@@ -495,10 +496,6 @@
   [
    "AWS：共同責任模型",
    "https://aws.amazon.com/compliance/shared-responsibility-model/"
-  ],
-  [
-   "MQTT Version 5.0（OASIS 標準）",
-   "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
   ],
   [
    "Apache Kafka 文件",

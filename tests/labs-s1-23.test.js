@@ -1,6 +1,6 @@
 // Run: node aiot-guide/tests/labs-s1-23.test.js
 const assert = require('assert');
-const {POINTS, POINT_ORDER, BRANDS, ADDRESSES, toSigned, decode, pduOffset, requestPdu, responsePdu, judge, nodeOf} = require('../static/assets/labs/s1-23.js');
+const {POINTS, POINT_ORDER, BRANDS, ADDRESSES, toSigned, decode, pduOffset, requestPdu, responsePdu, judge, nodeOf, typeHint, trackFreezer, hex16} = require('../static/assets/labs/s1-23.js');
 
 // Two's complement boundaries for a 16-bit register
 assert.strictEqual(toSigned(0), 0);
@@ -55,5 +55,27 @@ for (const k of POINT_ORDER) {
 assert.strictEqual(nodeOf('A', 'freezer').value, -18.5);
 assert.strictEqual(nodeOf('A', 'setpoint').write, true);
 assert.strictEqual(nodeOf('A', 'room').write, false);
+
+// Type hint states the same rule as toSigned (>= 32768 means negative under INT16)
+assert.strictEqual(typeHint(65351, 'UINT16'), '型別錯：65351 ≥ 32768，INT16 要減 65536');
+assert(65351 >= 32768 && toSigned(65351) === 65351 - 65536);
+for (const b of Object.keys(BRANDS)) for (const a of ADDRESSES) {
+  const e = BRANDS[b].map[a];
+  // a type problem only shows up for INT16 entries whose raw value is 32768 or more
+  const wrongType = e.type === 'INT16' ? 'UINT16' : 'INT16';
+  if (judge(b, a, wrongType, e.scale).problems.includes('type')) assert(e.type === 'INT16' && e.raw >= 32768, b + a);
+}
+// The register value row shows the same hex as the response PDU
+assert.strictEqual(hex16(253), '00 FD');
+assert(responsePdu(253).endsWith(hex16(253)));
+
+// OPC UA challenge needs the freezer node under both brands, in any order, and stays done
+const seen = new Set();
+assert.strictEqual(trackFreezer(seen, {node: 'room', brand: 'A'}), false);
+assert.strictEqual(trackFreezer(seen, {node: 'freezer', brand: 'A'}), false);
+assert.strictEqual(trackFreezer(seen, {node: 'freezer', brand: 'A'}), false);
+assert.strictEqual(trackFreezer(seen, {node: 'room', brand: 'B'}), false);
+assert.strictEqual(trackFreezer(seen, {node: 'freezer', brand: 'B'}), true);
+assert.strictEqual(trackFreezer(seen, {node: 'room', brand: 'A'}), true);
 
 console.log('labs-s1-23: all passed');

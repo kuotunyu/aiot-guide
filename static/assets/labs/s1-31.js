@@ -137,7 +137,7 @@
   }
 
   function tempLab(el) {
-    let mode = 0, alpha = 0.004, temp = 50, hot = -20, ref = 25;
+    let mode = 0, alpha = 0.004, temp = 100, hot = 100, ref = 25;
     el.innerHTML = '<h3>實驗：算一算溫度感測器</h3><p class="small">拉動滑桿，看公式算出什麼，以及少了一步會差多少。</p><div class="lab-form">' + radios('s131-mode', '感測器', ['Pt100', 'K 型熱電偶'], mode) + '</div><div class="temp-body"></div>';
     const body = el.querySelector('.temp-body');
     function bind(id, fn) { const i = el.querySelector('#' + id); i.oninput = () => { fn(+i.value); update(); }; }

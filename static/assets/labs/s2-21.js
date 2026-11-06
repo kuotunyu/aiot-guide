@@ -56,7 +56,24 @@
     return d.toFixed(1) + ' 天';
   }
 
-  const api = {pinState, sampleReads, batteryEstimate, batteryAdvice, formatDays};
+  // Lab settings: active mA, sleep µA, seconds awake, report interval in minutes, capacity mAh.
+  // PRESETS[0] is the chapter's example; the other two answer "12 times the interval, 12 times the life?".
+  const BATTERY_PRESETS = [
+    {name: '本節的例子（5 分鐘）', v: {active: 80, sleep: 100, sec: 5, min: 5, cap: 2000}},
+    {name: '間隔拉到 1 小時', v: {active: 80, sleep: 100, sec: 5, min: 60, cap: 2000}},
+    {name: '1 小時＋休眠降到 10 µA', v: {active: 80, sleep: 10, sec: 5, min: 60, cap: 2000}},
+  ];
+  function labEstimate(v) {
+    return batteryEstimate({activeMa: v.active, sleepUa: v.sleep, activeSec: v.sec, intervalSec: v.min * 60, capacityMah: v.cap});
+  }
+  // Life compared with the chapter's example; null when the settings are the example itself.
+  function vsExample(v) {
+    const base = BATTERY_PRESETS[0].v;
+    if (Object.keys(base).every(k => v[k] === base[k])) return null;
+    return labEstimate(v).days / labEstimate(base).days;
+  }
+
+  const api = {pinState, sampleReads, batteryEstimate, batteryAdvice, formatDays, BATTERY_PRESETS, labEstimate, vsExample};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -123,9 +140,11 @@
   }
 
   function batteryLab(el) {
-    const v = {active: 80, sleep: 100, sec: 5, min: 5, cap: 2000};
+    const v = Object.assign({}, BATTERY_PRESETS[0].v);
     const UNIT = {active: 'mA', sleep: 'µA', sec: ' 秒', min: ' 分鐘', cap: 'mAh'};
-    el.innerHTML = '<h3>實驗：探頭的電池能撐多久？</h3><p class="small">拖動滑桿，看平均電流、續航天數，以及電量花在哪一段。</p><div class="lab-form">' +
+    let active = 0;
+    el.innerHTML = '<h3>實驗：探頭的電池能撐多久？</h3><p class="small">選一組設定，或拖動滑桿，看平均電流、續航天數，以及電量花在哪一段。</p>' +
+      '<div class="chips" role="group" aria-label="設定">' + BATTERY_PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form">' +
       slider('b-active', '工作電流', 1, 300, 1, v.active, UNIT.active) +
       slider('b-sleep', '休眠電流（1000µA＝1mA）', 1, 1000, 1, v.sleep, UNIT.sleep) +
       slider('b-sec', '每次工作時間', 0.5, 30, 0.5, v.sec, UNIT.sec) +
@@ -134,14 +153,26 @@
       '</div><div class="lab-out" aria-live="polite"></div><div class="lab-viz"></div><p class="small muted">這是忽略老化、溫度與穩壓損失的理想估算。低溫環境電池的可用容量會下降，冷凍櫃裡的探頭要留餘裕，實際續航要實測。</p>';
     const out = el.querySelector('.lab-out'), viz = el.querySelector('.lab-viz');
     function draw() {
-      const e = batteryEstimate({activeMa: v.active, sleepUa: v.sleep, activeSec: v.sec, intervalSec: v.min * 60, capacityMah: v.cap});
-      out.innerHTML = '<p class="lab-say"><b>平均電流約 ' + e.avgMa.toFixed(3) + ' mA，理想續航約 ' + esc(formatDays(e.days)) + '</b>（' + Math.round(e.hours).toLocaleString('en-US') + ' 小時）。' + esc(batteryAdvice(e)) + '</p>';
+      $$('[data-p]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === active)));
+      const e = labEstimate(v), x = vsExample(v);
+      out.innerHTML = '<p class="lab-say"><b>平均電流約 ' + e.avgMa.toFixed(3) + ' mA，理想續航約 ' + esc(formatDays(e.days)) + '</b>（' + Math.round(e.hours).toLocaleString('en-US') + ' 小時）。' + (x === null ? '' : '和本節的例子相比：約 ' + x.toFixed(1) + ' 倍。') + esc(batteryAdvice(e)) + '</p>';
       viz.innerHTML = batteryBar(e) + ('<p class="small">間隔拉得再長，續航也不會超過「容量÷休眠電流」：約 ' + esc(formatDays(e.maxDays)) + '。若低溫下可用容量只剩一半（示意）：約 ' + esc(formatDays(e.halfCapacityDays)) + '。</p>');
     }
     $$('input[type=range]', el).forEach(i => i.oninput = () => {
       const k = i.id.slice(2);
       v[k] = +i.value;
       i.parentElement.querySelector('output').textContent = i.value + UNIT[k];
+      active = -1;
+      draw();
+    });
+    $$('[data-p]', el).forEach(b => b.onclick = () => {
+      active = +b.dataset.p;
+      Object.assign(v, BATTERY_PRESETS[active].v);
+      $$('input[type=range]', el).forEach(i => {
+        const k = i.id.slice(2);
+        i.value = v[k];
+        i.parentElement.querySelector('output').textContent = v[k] + UNIT[k];
+      });
       draw();
     });
     draw();

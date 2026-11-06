@@ -69,19 +69,38 @@ for (const id of CHAPTERS) {
 
 test('practice: learn mode gives feedback, wrong answers can be redone', async ({page}) => {
   await page.goto('/practice.html#s1-22');
+  await expect(page.locator('#fSubject')).toHaveValue('s1');
   await expect(page.locator('#fChapter')).toHaveValue('s1-22');
+  await expect(page.locator('#fCount')).toHaveValue('0');
   await page.selectOption('#fCount', '10');
   await page.click('#qStart');
   for (let i = 0; i < 10; i++) {
     const q = await page.locator('.qtext').innerText();
     const a = await page.evaluate(t => window.AIOT_QUESTIONS.find(x => x.q === t).a, q);
-    await page.locator('.opt').nth(i % 2 ? a : (a + 1) % 4).click();
+    // Options are shuffled on screen; data-k keeps the original index.
+    await page.locator(`.opt[data-k="${i % 2 ? a : (a + 1) % 4}"]`).click();
     await expect(page.locator('.why')).toBeVisible();
+    await expect(page.locator('.opt.correct')).toHaveAttribute('data-k', String(a));
     await page.click('#qNext');
   }
   await expect(page.locator('.score')).toHaveText('5 / 10');
   await page.click('#qRedo');
   await expect(page.locator('.qhead span').first()).toContainText('/ 5');
+});
+
+test('practice: wrong answers are remembered until answered right', async ({page}) => {
+  await page.goto('/practice.html#s2-23');
+  await expect(page.locator('#qWrong')).toBeHidden();
+  await page.click('#qStart');
+  const a = await page.evaluate(t => window.AIOT_QUESTIONS.find(x => x.q === t).a, await page.locator('.qtext').innerText());
+  await page.locator(`.opt[data-k="${(a + 1) % 4}"]`).click();
+  await page.reload();
+  await expect(page.locator('#qWrong')).toHaveText('重做曾答錯的 1 題');
+  await page.click('#qWrong');
+  await page.locator(`.opt[data-k="${a}"]`).click();
+  await page.click('#qNext');
+  await page.click('#qAgain');
+  await expect(page.locator('#qWrong')).toBeHidden();
 });
 
 test('practice: timed mode hides answers until submitted', async ({page}) => {
@@ -92,6 +111,9 @@ test('practice: timed mode hides answers until submitted', async ({page}) => {
   await expect(page.locator('#timer')).toBeVisible();
   await page.locator('.opt').first().click();
   await expect(page.locator('.why')).toHaveCount(0);
+  await expect(page.locator('.qhead span').first()).toContainText('第 1 /');
+  await page.click('#qSubmit');
+  await expect(page.locator('#qSubmit')).toContainText('還有 24 題未作答');
   await page.click('#qSubmit');
   await expect(page.locator('.score')).toContainText('/ 25');
 });

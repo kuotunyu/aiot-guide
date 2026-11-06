@@ -20,9 +20,13 @@
 
 - 內容改 `content/*.json`，不要手改 `dist/`。題目改寫到 `content/questions-<章>.json`，不動 `questions-base.json`。
 - 每個新實驗要有 `tests/labs-<章>.test.js`，數值要手算核對。不用 `alert/confirm`。
+- 改題目後跑 `python scripts/question-stats.py`：「最長選項即正解」的比例要維持在 35% 以下，同章同一考點最多 2 題。答錯時能連回小節的題目，在 edits 加 `"sec": "<節 id>"`。
+- 跨章回指用站內連結 `<a href="s1-21.html#節id">2.1〈章名〉</a>`，不要在另一章重講一遍。
 - 改到 `content/site.json` 的考試規則時，對照當年度簡章。內容有實質更新就改 `updated`。
 - 來源網址要實際開過，並確認內容真的支持該章敘述。
 
 ## 驗收
+
+不要改一點點就 commit：改動先留在本機，一批有主題的修改完成、檢查全過後，再整理成一個 commit 推到 `main`（推上去就會部署）。
 
 交付前跑 `npm run check` 並全部通過（已裝 Edge 時設 `PW_CHANNEL=msedge`）。畫面相關的改動要實際看過桌機與手機寬度。讀者回饋過的問題要變成檢查項，不只修一次。

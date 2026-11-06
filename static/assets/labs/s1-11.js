@@ -86,7 +86,7 @@
   function labEdgeCloud(el) {
     const state = Object.assign({int8: false}, PRESETS[0].v);
     let active = 0;
-    el.innerHTML = '<h3>實驗：判斷放邊緣還是雲端</h3><p class="small">選一個冷鏈情境，或拖動滑桿，看哪個條件決定了答案。再切換量化，看模型能不能放進裝置。</p>'
+    el.innerHTML = '<h3>實驗：判斷放邊緣還是雲端</h3><p class="small">選一個冷鏈情境，或拖動滑桿，看哪個條件決定了答案。要看量化的效果，選「探頭上的小模型」再把模型格式切成 INT8，結論會改變；再試「冷藏庫溫度趨勢」，INT8 後仍放不進 MCU。</p>'
       + '<div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div>'
       + '<div class="lab-form">' + FIELDS.map(([k, label]) => slider('ec-' + k, label, 0, STOPS[k].length - 1, 1, 0, '')).join('')
       + '<div class="ec-radios"></div></div>'

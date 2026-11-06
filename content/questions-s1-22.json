@@ -3,13 +3,153 @@
   "drop": [],
   "edits": {
     "legacy-s1-21": {
-      "e": "CoAP 是給受限裝置的輕量 REST 協定，使用 UDP（預設埠 5683），支援 GET/POST/PUT/DELETE 與 Observe。此處指 RFC 7252 的典型 UDP 傳輸；RFC 8323 另定義 TCP、TLS 及 WebSocket 傳輸。"
+      "e": "CoAP 是給受限裝置的輕量 REST 協定，使用 UDP（預設埠 5683），支援 GET/POST/PUT/DELETE 與 Observe。此處指 RFC 7252 的典型 UDP 傳輸；RFC 8323 另定義 TCP、TLS 及 WebSocket 傳輸。",
+      "o": [
+        "跑在 TCP 上、開銷最大",
+        "採發布／訂閱模式、必須有 Broker",
+        "跑在 UDP 上、方法類似 HTTP",
+        "只能用於工業乙太網"
+      ],
+      "sec": "qos-and-protocols"
     },
     "legacy-s1-22": {
-      "e": "LoRa 走非授權 Sub-GHz（可自建私網）；NB-IoT 建構在電信商的授權頻段上（通常需支付電信資費、室內穿透佳）。"
+      "e": "LoRa 走非授權 Sub-GHz（可自建私網）；NB-IoT 建構在電信商的授權頻段上（通常需支付電信資費、室內穿透佳）。",
+      "o": [
+        "LoRa 用電信授權頻段、NB-IoT 用非授權頻段可自建",
+        "LoRa 可用非授權頻段自建，NB-IoT 走電信頻段",
+        "兩者都必須申請電信執照",
+        "NB-IoT 傳輸速率高於 Wi-Fi"
+      ],
+      "sec": "lpwan-cellular"
     },
-    "legacy-s1-26": {
-      "e": "IPv6 使用 128 位元位址，位址空間遠大於 32 位元的 IPv4；NAT 只能緩解位址不足，6LoWPAN 則讓低功耗裝置也能使用 IPv6。"
+    "legacy-s1-25": {
+      "lesson": "s1-22",
+      "e": "被動式標籤沒有電池，靠讀取器發出的電磁場感應取電，因此便宜但讀取距離短。內建電池的是主動式標籤；標籤體積很小，不會配太陽能板，也不接市電。",
+      "sec": "rfid-nfc"
+    },
+    "legacy-s1-9": {
+      "sec": "lpwan-cellular"
+    },
+    "legacy-s1-15": {
+      "sec": "road-and-language"
+    },
+    "legacy-s1-17": {
+      "sec": "mqtt"
+    },
+    "legacy-s1-18": {
+      "sec": "qos-and-protocols"
+    },
+    "legacy-s1-19": {
+      "sec": "mqtt"
+    },
+    "legacy-s1-20": {
+      "e": "遺囑訊息（Last Will and Testament）在連線異常中斷時由 Broker 代發，用於通知裝置離線。保留訊息是 Broker 替主題保存最新一則、給新訂閱者，與斷線無關；心跳（Keep Alive）是定期確認連線還活著，不是替斷線裝置發的訊息；MQTT 也沒有名為廣播訊息的機制，訊息一律經 Broker 依主題轉送。",
+      "sec": "mqtt"
+    },
+    "legacy-s1-23": {
+      "sec": "ble-wifi-zigbee"
+    },
+    "legacy-s1-24": {
+      "sec": "lpwan-cellular"
+    },
+    "new-s1-22-1": {
+      "sec": "mqtt"
+    },
+    "new-s1-22-2": {
+      "o": [
+        "UDP 會確認並重送，保證資料必定到達",
+        "TCP 本身會加密所有內容",
+        "TCP 提供可靠、有序的位元組串流",
+        "使用 UDP 就不需要網路位址"
+      ],
+      "e": "可靠、有序的位元組串流是 TCP 的特性。UDP 不確認也不重送，不保證送達；TCP 本身不加密，加密要靠 TLS；UDP 通訊仍需要 IP 位址與 port 才知道送給誰。",
+      "sec": "road-and-language"
+    },
+    "new-s1-22-3": {
+      "q": "冷鏈平台的設計文件列出幾個名詞。依「路與語言」的分法，下列哪一組全都屬於「語言」（通訊協定）？",
+      "o": [
+        "MQTT、HTTP、CoAP",
+        "Wi-Fi、BLE、LoRa",
+        "MQTT、Wi-Fi、NB-IoT",
+        "Zigbee、4G、HTTP"
+      ],
+      "a": 0,
+      "e": "MQTT、HTTP、CoAP 規定的是連上之後資料怎麼包裝與交換，屬於語言。Wi-Fi、BLE、LoRa、NB-IoT、Zigbee、4G 回答的是裝置怎麼連上網，屬於路；其餘三組不是全是路，就是混入了路。",
+      "sec": "road-and-language"
+    },
+    "new-s1-22-4": {
+      "o": [
+        "正確，任何 MQTT 連線都自動加密",
+        "正確，主題名稱夠長就不會被猜到",
+        "正確，改用 QoS 2 就不會被偷看",
+        "不對，加密要另外配置 TLS"
+      ],
+      "e": "MQTT 不會自動加密，要另外配置 TLS（常用埠 8883），並搭配身分驗證與權限。主題名稱長短與加密無關；QoS 管的是送達保證（最多一次、至少一次、恰好一次），不負責保密。",
+      "sec": "mqtt"
+    },
+    "exam-s1-22-1": {
+      "sec": "lpwan-cellular",
+      "o": [
+        "選峰值速度最高的 Wi-Fi，不必查涵蓋範圍",
+        "以 NFC 直接連到數公里外基地台",
+        "評估 NB-IoT 涵蓋、功耗模式與費用",
+        "為降低延遲，把每小時回報改成持續傳送影像"
+      ]
+    },
+    "exam-s1-22-2": {
+      "q": "新加入的 MQTT 儀表板一連上，就想看到某主題最近一次發布的狀態，不必等設備下次發布。最直接使用什麼功能？",
+      "o": [
+        "把 QoS 提高到 2",
+        "更換 TLS 憑證",
+        "設定遺囑訊息（Last Will）",
+        "保留訊息（retained）"
+      ],
+      "e": "retained 讓 Broker 保存該主題最新一則，新訂閱者一連上就拿得到。QoS 處理送達保證，TLS 保護傳輸內容，遺囑訊息只在裝置非正常斷線時發出；三者都不會把最新狀態交給新訂閱者。",
+      "sec": "mqtt"
+    },
+    "transfer-s1-22-1": {
+      "o": [
+        "把訊息格式改成 JSON",
+        "啟用 TLS，讓重複事件自動消失",
+        "改用 QoS 0，就不會重複也不會遺失",
+        "以穩定事件 ID 辨認並去重"
+      ],
+      "e": "QoS 1 是至少一次，重送可能產生重複；用穩定事件 ID 讓接收端認出同一事件後去重。JSON 只是資料格式、TLS 只保護傳輸內容，都不處理重複；QoS 0 雖然不重送，卻可能遺失訊息，不能說兩者都不會發生。",
+      "sec": "qos-and-protocols"
+    },
+    "transfer-s1-22-2": {
+      "q": "車門狀態看板向 Broker 訂閱 coldchain/+/door。下列哪個主題的訊息會被轉送給它？",
+      "o": [
+        "coldchain/truck07/door",
+        "coldchain/truck07/temp",
+        "coldchain/room2/dock1/door",
+        "fleet/truck07/door"
+      ],
+      "a": 0,
+      "e": "+ 只比對一層任意名稱，所以 coldchain/truck07/door 符合。coldchain/truck07/temp 的最後一層不是 door；coldchain/room2/dock1/door 中間有兩層，+ 只能代一層（比對多層要用 #）；fleet/truck07/door 第一層就不是 coldchain。",
+      "sec": "mqtt"
+    },
+    "reserved-s1-22-1": {
+      "o": [
+        "依交易識別碼檢查是否已入帳",
+        "把主題名稱改得更長、更好辨認",
+        "把連線改為 TLS 加密通道",
+        "替收到的每筆訊息加上新的接收時間"
+      ],
+      "e": "線索是同一交易因確認遺失而重送；用穩定的交易識別碼搭配處理紀錄，就能認出已入帳的那筆。主題名稱長短與 TLS 加密都不提供業務去重；替每筆加上新的接收時間，反而讓兩筆看起來像不同交易。",
+      "sec": "qos-and-protocols"
+    },
+    "reserved-s1-22-2": {
+      "q": "冷藏庫用 Zigbee 組網，門邊的開關感測器靠電池運作、多半時間在休眠，只收發自己的資料。它最適合擔任哪個角色？",
+      "o": [
+        "終端裝置",
+        "路由器",
+        "協調器",
+        "MQTT Broker"
+      ],
+      "a": 0,
+      "e": "只收發自己的資料、不轉發、多半在休眠，正是終端裝置，適合電池設備。路由器要轉發封包、延伸範圍，需常時供電；協調器負責建立網路、分配位址，每個網路只有一個；MQTT Broker 是 MQTT 協定裡轉送訊息的角色，不是 Zigbee 網路的角色。",
+      "sec": "ble-wifi-zigbee"
     }
   }
 }

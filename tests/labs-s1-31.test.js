@@ -51,7 +51,7 @@ near(L.pt100R(100, 0.00385), 138.5);
 near(L.pt100R(50, 0.004), 120);
 near(L.pt100T(110, 0.004), 25);
 near(L.pt100T(115.6, 0.0039), 40);
-// Lab's opening state: 120 ohm read back with 0.00385 gives 51.948 degC
+// Old opening state (T = 50): 120 ohm read back with 0.00385 gives 51.948 degC
 near(L.pt100T(L.pt100R(50, 0.004), L.STD_ALPHA), 51.948, 0.001);
 near(L.pt100R(50, 0.00385), 119.25);
 
@@ -92,5 +92,14 @@ assert.strictEqual(v(100, 25)[1].st, '有落差');
 assert(v(100, 25)[1].why.includes('100.9°C'));
 assert(v(-20, 25)[1].why.includes('−21.9°C'));
 assert.strictEqual(v(-20, 25)[2].cls, 'ok');
+
+// Lab's opening state matches the chapter's worked example on one screen:
+// Pt100 at 100 degC with alpha 0.004 -> 140 ohm; standard 0.00385 -> 138.5 ohm; 140 ohm misread with 0.00385 -> 103.896 degC.
+near(L.pt100R(100, 0.004), 140);
+near(L.pt100T(140, L.STD_ALPHA), 103.896, 0.001);
+// Type K at 100 degC with reference 25 degC: 4.096 - 1.000 = 3.096 mV (the chapter's "about 3.10 mV").
+const open = L.thermocouple(100, 25);
+near(open.measured, 3.096, 1e-6);
+near(open.compensated, 100, 1e-6);
 
 console.log('s1-31 labs ok');

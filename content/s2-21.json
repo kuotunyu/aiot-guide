@@ -9,9 +9,9 @@
  },
  "learn": [
   "區分被動與主動元件，算出 LED 的限流電阻",
-  "依需求在 MCU 開發板、單板電腦與 PLC 之間做選擇",
+  "依需求在 MCU 開發板、單板電腦與 PLC 之間做選擇，並說明位址線與定址空間的關係",
   "接好上拉或下拉電阻，並用電晶體或繼電器驅動大負載",
-  "用平均電流估算電池續航，說明位址線與定址空間的關係",
+  "用平均電流估算電池續航",
   "分辨設計檔、韌體與文件的授權，說出使用開源硬體的基本義務"
  ],
  "prereq": "電路可以用水管來想：<b>電壓 V</b>（伏特）像水壓，<b>電流 I</b>（安培，常用 mA＝千分之一安培）像水流量，<b>電阻 R</b>（歐姆 Ω）像變窄的水管。三者的關係是<b>歐姆定律 V＝I×R</b>：電壓固定時，電阻越大、電流越小。<b>功率 P＝V×I</b>（瓦特）代表每秒用掉多少能量。IoT 板子用方向固定的<b>直流電 DC</b>（電池、USB，常見 5V、3.3V），不是插座的交流電 AC。<b>GND</b>（接地）是 0V 的共同參考點，電流要從電源出發、經過元件、回到 GND 形成迴路才會流動，所以不同模組相連時要把 GND 接在一起（共地）。",
@@ -97,7 +97,7 @@
     "q": "冷凍櫃裡的探頭靠電池、只讀溫度再無線回報；倉庫另一台現場主機要同時跑本地資料庫、處理攝影機畫面。這兩個位置該用同一種板子嗎？",
     "a": "不該。探頭要便宜省電，選 MCU 板；現場主機要多工與影像處理，選能跑 Linux 的單板電腦。"
    },
-   "body": "<p><b>MCU 微控制器</b>（Microcontroller Unit）把 CPU（負責運算的核心）、Flash（斷電不消失，存程式）、RAM（執行時的暫存空間）、GPIO、ADC（這兩項後文說明）做在<b>一顆晶片</b>，便宜省電，適合讀感測器、控制執行器。<b>Arduino</b> 是以 MCU 為核心的開放原始碼開發板。</p><p><b>SBC 單板電腦</b>（Single-Board Computer）是一塊板上的完整電腦，能跑 Linux。<b>Raspberry Pi</b> 是代表，能同時執行多個程式（<b>多工</b>）、接 USB 攝影機，常放在現場當<b>邊緣運算</b>（edge computing，在資料產生的現場就近處理，不必全部傳上雲端）節點，代價是價格與耗電都比 MCU 板高。</p><p><b>PLC 可程式邏輯控制器</b>（Programmable Logic Controller）是工廠用的工業級控制器，主打高可靠、抗干擾與即時反應；MCU 的強項則是便宜與可自由開發。</p><p>選板子依序看三件事：要控制還是要運算、<b>邏輯電壓</b>、要不要內建無線。邏輯電壓是腳位用來代表 HIGH 的電壓，5V 訊號直接接進 3.3V 腳可能燒壞，要用分壓電阻或準位轉換器（level shifter）降壓。</p>",
+   "body": "<p><b>MCU 微控制器</b>（Microcontroller Unit）把 CPU（負責運算的核心）、Flash（斷電不消失，存程式）、RAM（執行時的暫存空間）、GPIO、ADC（這兩項後文說明）做在<b>一顆晶片</b>，便宜省電，適合讀感測器、控制執行器。<b>Arduino</b> 是以 MCU 為核心的開放原始碼開發板。</p><p><b>SBC 單板電腦</b>（Single-Board Computer）是一塊板上的完整電腦，能跑 Linux。<b>Raspberry Pi</b> 是代表，能同時執行多個程式（<b>多工</b>）、接 USB 攝影機，常放在現場當<b>邊緣運算</b>（edge computing，在資料產生的現場就近處理，不必全部傳上雲端）節點，代價是價格與耗電都比 MCU 板高。</p><p><b>PLC 可程式邏輯控制器</b>（Programmable Logic Controller）是工廠用的工業級控制器，主打高可靠、抗干擾與即時反應；MCU 的強項則是便宜與可自由開發。</p><p>選板子依序看三件事：要控制還是要運算、<b>邏輯電壓</b>、要不要內建無線。邏輯電壓是腳位用來代表 HIGH 的電壓，5V 訊號直接接進 3.3V 腳可能燒壞，要用分壓電阻或準位轉換器（level shifter）降壓。</p><p>處理器最多能用多少記憶體，看位址線的數量。CPU 用<b>位址匯流排</b>（address bus，匯流排是多個元件共用的一組傳輸線路）指定要存取 RAM 的哪個位置，就像門牌。n 條位址線可組出 <b>2<sup>n</sup> 個位址</b>；每個位址存 1 byte 時，32 條就是 4GB。</p>",
    "svg": "<svg viewBox=\"0 0 600 222\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MCU 一顆晶片包辦 CPU 記憶體與 IO；單板電腦是 SoC 加外部記憶體與 Linux\"><text class=\"th tc\" x=\"155\" y=\"26\">MCU 微控制器</text><text class=\"th tc\" x=\"445\" y=\"26\">單板電腦 SBC</text><rect class=\"box\" x=\"30\" y=\"40\" width=\"250\" height=\"145\" rx=\"10\"/><text class=\"tb tc\" x=\"155\" y=\"64\">一顆晶片包辦</text><rect class=\"acc\" x=\"45\" y=\"78\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"97\" y=\"103\">CPU</text><rect class=\"acc\" x=\"160\" y=\"78\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"212\" y=\"103\">Flash</text><rect class=\"acc\" x=\"45\" y=\"128\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"97\" y=\"153\">RAM</text><rect class=\"acc\" x=\"160\" y=\"128\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"212\" y=\"153\">GPIO/ADC</text><text class=\"ts tc\" x=\"155\" y=\"208\">可裸機或 RTOS，依需求設計</text><rect class=\"box\" x=\"320\" y=\"40\" width=\"250\" height=\"145\" rx=\"10\"/><rect class=\"acc\" x=\"335\" y=\"50\" width=\"220\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"445\" y=\"73\">Linux 作業系統</text><rect class=\"box\" x=\"335\" y=\"94\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"387\" y=\"119\">ARM SoC</text><rect class=\"box\" x=\"450\" y=\"94\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"502\" y=\"119\">外部 RAM</text><rect class=\"box\" x=\"335\" y=\"140\" width=\"105\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"387\" y=\"164\">microSD</text><rect class=\"box\" x=\"450\" y=\"140\" width=\"105\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"502\" y=\"164\">USB/HDMI</text><text class=\"ts tc\" x=\"445\" y=\"208\">多工、影像處理；較耗電、較貴</text></svg>",
    "caption": "MCU 是一顆晶片包辦的控制器；單板電腦是能跑 Linux 的整台小電腦。",
    "table": {
@@ -154,8 +154,8 @@
     ]
    },
    "more": {
-    "label": "MPU、SoC、Raspberry Pi 的細節，以及位址空間怎麼算",
-    "body": "<p><b>MPU 微處理器</b>（Microprocessor Unit）以運算核心為主，記憶體等要外接。<b>SoC 系統單晶片</b>（System on Chip）把 CPU、GPU（圖形處理器）等整合成一顆；單板電腦就是把 SoC、記憶體與 I/O 做在一塊板上。MCU 可以不裝作業系統直接執行（裸機），或使用精簡的即時作業系統 RTOS（Real-Time Operating System）。</p><p>Arduino 用 Arduino IDE（寫程式並燒進板子的軟體）寫類 C/C++；Uno R3 的晶片是 ATmega328P。Raspberry Pi 常用 Python 開發，處理器是手機常用的省電 ARM 架構，不是一般桌機筆電的 x86。加裝 PoE HAT（擴充板）後，可以只靠一條網路線同時供電和傳資料。同品牌的 Pico 則是 MCU 板，不是單板電腦。</p><p>位址線的數量決定一顆處理器最多能定址多少記憶體。CPU 用<b>位址匯流排</b>（address bus，匯流排是多個元件共用的一組傳輸線路）指定要存取哪個記憶體位置，就像門牌。n 條位址線可組出 <b>2<sup>n</sup> 個位址</b>。若每個位址存 1 byte，32 條線可定址 2<sup>32</sup> bytes＝4 GiB（以 2 的次方計算的單位，教材常寫 4GB）。</p><ul><li>10 條：1,024 個位址，1KB</li><li>16 條：65,536 個位址，64KB</li><li>20 條：約 105 萬個位址，1MB</li><li>30 條：約 10.7 億個位址，1GB</li><li>32 條：約 43 億個位址，4GB</li><li>33 條：約 86 億個位址，8GB</li></ul>"
+    "label": "MPU、SoC、Raspberry Pi 的細節，以及位址空間對照表",
+    "body": "<p><b>MPU 微處理器</b>（Microprocessor Unit）以運算核心為主，記憶體等要外接。<b>SoC 系統單晶片</b>（System on Chip）把 CPU、GPU（圖形處理器）等整合成一顆；單板電腦就是把 SoC、記憶體與 I/O 做在一塊板上。MCU 可以不裝作業系統直接執行（裸機），或使用精簡的即時作業系統 RTOS（Real-Time Operating System）。</p><p>Arduino 用 Arduino IDE（寫程式並燒進板子的軟體）寫類 C/C++；Uno R3 的晶片是 ATmega328P。Raspberry Pi 常用 Python 開發，處理器是手機常用的省電 ARM 架構，不是一般桌機筆電的 x86。加裝 PoE HAT（擴充板）後，可以只靠一條網路線同時供電和傳資料。同品牌的 Pico 則是 MCU 板，不是單板電腦。</p><p>32 條位址線精確地說是 2<sup>32</sup> bytes＝4 GiB（以 2 的次方計算的單位，教材常寫 4GB）。每個位址存 1 byte 時的對照：</p><ul><li>10 條：1,024 個位址，1KB</li><li>16 條：65,536 個位址，64KB</li><li>20 條：約 105 萬個位址，1MB</li><li>30 條：約 10.7 億個位址，1GB</li><li>32 條：約 43 億個位址，4GB</li><li>33 條：約 86 億個位址，8GB</li></ul>"
    }
   },
   {
@@ -167,12 +167,12 @@
    },
    "body": "<p><b>GPIO</b>（General-Purpose Input/Output，通用輸入輸出腳）可用程式設成<b>輸出</b>（送 HIGH／LOW 去點燈）或<b>輸入</b>（讀取按鈕狀態）。設成輸入時，腳位沒接東西的狀態叫<b>浮接</b>（floating），讀值會受雜訊影響而亂跳，所以要用電阻把它拉到固定電位。</p><ul><li><b>下拉電阻</b>（pull-down）接 GND，按鈕接電源：按下 HIGH、放開 LOW，稱<b>正向邏輯</b>。</li><li><b>上拉電阻</b>（pull-up）接電源，按鈕接 GND：按下 LOW、放開 HIGH，稱<b>負向邏輯</b>。</li></ul><p>電阻決定放開時的準位，按鈕接法決定按下時的準位。Arduino 的 <code>pinMode(腳位, INPUT_PULLUP)</code> 是啟用晶片內建的上拉電阻，不必外接。</p>",
    "lab": "s2-21-pin",
-   "after": "<p>知道怎麼讀之後，下一個問題是什麼時候讀。<b>輪詢</b>（polling）是 CPU 定時主動去檢查；<b>中斷</b>（interrupt）是<b>周邊裝置</b>（CPU 以外負責輸入輸出或特定工作的部分，可在晶片外，如按鈕、感測器、通訊模組，也可在 MCU 內，如計時器）在事件發生時送訊號，請 CPU 暫停手邊工作先處理。就像等包裹：輪詢是一直跑去看信箱，中斷是郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，中斷可省下空等的時間並搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率仍要看負載。</p><p>GPIO 只傳 HIGH 或 LOW；要和感測模組交換一串資料，則用串列介面（原理見科一 3.2〈感測訊號與通訊基礎〉）。以 Arduino Uno 為例，D0／D1 是 <b>UART</b> 的 RX／TX，A4／A5 是 <b>I²C</b> 的 SDA／SCL，D10–D13 是 <b>SPI</b> 的 SS、MOSI、MISO、SCK。這些腳位多半也能當一般 GPIO 用，所以接了序列裝置就不要再拿它們接按鈕或 LED。</p>",
+   "after": "<p>知道怎麼讀之後，下一個問題是什麼時候讀。<b>輪詢</b>（polling）是 CPU 定時主動去檢查；<b>中斷</b>（interrupt）是<b>周邊裝置</b>（CPU 以外負責輸入輸出或特定工作的部分，可在晶片外，如按鈕、感測器、通訊模組，也可在 MCU 內，如計時器）在事件發生時送訊號，請 CPU 暫停手邊工作先處理。就像等包裹：輪詢是一直跑去看信箱，中斷是郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，中斷可省下空等的時間並搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率仍要看負載。</p><p>GPIO 只傳 HIGH 或 LOW；要和模組交換一串資料用串列介面（原理見科一 3.2〈感測訊號與通訊基礎〉）。這些介面占用固定腳位，接了串列裝置就別再拿那幾支腳接按鈕或 LED。</p>",
    "svg": "<svg viewBox=\"0 0 600 204\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"輪詢由 CPU 定時去問，事件要等下次檢查；中斷由周邊主動通知，CPU 立刻處理\"><defs><marker id=\"s2-21-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">輪詢是一直問，中斷是有事才通知</text><text class=\"tb\" x=\"20\" y=\"72\">輪詢</text><text class=\"ts\" x=\"20\" y=\"92\">CPU 定時去問</text><line class=\"ln\" x1=\"125\" y1=\"80\" x2=\"585\" y2=\"80\" marker-end=\"url(#s2-21-3-arr)\"/><rect class=\"acc\" x=\"143\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"203\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"263\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"323\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"383\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"443\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"503\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"563\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><circle class=\"warn\" cx=\"290\" cy=\"80\" r=\"6\"/><text class=\"ts tc\" x=\"290\" y=\"58\">事件發生</text><text class=\"ts tc\" x=\"350\" y=\"102\">下次問到才處理</text><text class=\"tb\" x=\"20\" y=\"162\">中斷</text><text class=\"ts\" x=\"20\" y=\"182\">周邊主動通知</text><line class=\"ln\" x1=\"125\" y1=\"170\" x2=\"585\" y2=\"170\" marker-end=\"url(#s2-21-3-arr)\"/><circle class=\"warn\" cx=\"290\" cy=\"170\" r=\"6\"/><rect class=\"acc\" x=\"298\" y=\"158\" width=\"70\" height=\"12\" rx=\"2\"/><text class=\"ts tc\" x=\"290\" y=\"148\">事件發生</text><text class=\"ts tc\" x=\"195\" y=\"160\">平時做別的事或休眠</text><text class=\"ts tc\" x=\"333\" y=\"194\">CPU 暫停手邊工作，立刻處理</text></svg>",
    "caption": "輪詢要等下次檢查才發現事件；中斷由事件觸發，平時 CPU 可以做別的事或休眠。",
    "more": {
-    "label": "程式怎麼寫：Arduino 與 Raspberry Pi",
-    "body": "<p>Arduino 的 <code>.ino</code> 程式有兩個預設函式：<code>setup()</code> 開機執行一次做初始化，<code>loop()</code> 不斷重複。下面這段讓 LED 閃爍：</p><p><code>void setup() { pinMode(13, OUTPUT); }</code><br>開機時把 13 號腳設成輸出（Uno 板上有一顆 LED 接在這支腳）。<br><code>void loop() {</code><br>以下內容不斷重複。<br><code>digitalWrite(13, HIGH); delay(1000);</code><br>輸出 HIGH 點亮，等 1000 毫秒。<br><code>digitalWrite(13, LOW); delay(1000);</code><br>輸出 LOW 熄滅，再等 1000 毫秒。<br><code>}</code></p><p>讀取輸入腳用 <code>digitalRead()</code>。</p><p>Raspberry Pi 常用 Python 模組 <code>RPi.GPIO</code>（Pi 5 起改用 <code>gpiozero</code> 等模組），做法相同：<code>setup</code> 設輸入或輸出、<code>output</code> 設定輸出高低、<code>input</code> <b>讀取</b>輸入腳的狀態。使用前要先用 <code>setmode</code> 選腳位編號方式：BCM 是晶片的 GPIO 編號，BOARD 是板上排針的實體腳位順序。</p><p>典型上拉或下拉電阻用 10kΩ。上面的實驗以 3.3V 為例；5V 的板子原理相同，電壓要與板子相容。</p>"
+    "label": "程式怎麼寫，以及 Uno 哪些腳位被串列介面占用",
+    "body": "<p>Arduino 的 <code>.ino</code> 程式有兩個預設函式：<code>setup()</code> 開機執行一次做初始化，<code>loop()</code> 不斷重複。下面這段讓 LED 閃爍：</p><p><code>void setup() { pinMode(13, OUTPUT); }</code><br>開機時把 13 號腳設成輸出（Uno 板上有一顆 LED 接在這支腳）。<br><code>void loop() {</code><br>以下內容不斷重複。<br><code>digitalWrite(13, HIGH); delay(1000);</code><br>輸出 HIGH 點亮，等 1000 毫秒。<br><code>digitalWrite(13, LOW); delay(1000);</code><br>輸出 LOW 熄滅，再等 1000 毫秒。<br><code>}</code></p><p>讀取輸入腳用 <code>digitalRead()</code>。</p><p>Raspberry Pi 常用 Python 模組 <code>RPi.GPIO</code>（Pi 5 起改用 <code>gpiozero</code> 等模組），做法相同：<code>setup</code> 設輸入或輸出、<code>output</code> 設定輸出高低、<code>input</code> <b>讀取</b>輸入腳的狀態。使用前要先用 <code>setmode</code> 選腳位編號方式：BCM 是晶片的 GPIO 編號，BOARD 是板上排針的實體腳位順序。</p><p>典型上拉或下拉電阻用 10kΩ。上面的實驗以 3.3V 為例；5V 的板子原理相同，電壓要與板子相容。</p><p>以 Arduino Uno 為例，D0／D1 是 <b>UART</b> 的 RX／TX，A4／A5 是 <b>I²C</b> 的 SDA／SCL，D10–D13 是 <b>SPI</b> 的 SS、MOSI、MISO、SCK。這些腳位沒接串列裝置時也能當一般 GPIO 用。</p>"
    }
   },
   {
@@ -295,17 +295,17 @@
    },
    "more": {
     "label": "為什麼硬體授權和軟體不同，Raspberry Pi 算不算開源硬體",
-    "body": "<p>硬體授權和軟體授權（見「雲端環境數據收集與平台設計」一章）有個關鍵差別：軟體複製一份就是成品，硬體公開的卻只是設計檔，實體板子還要另外製造。著作權主要保護設計檔與文件本身，不一定涵蓋依設計做出的電路功能，功能可能另涉專利。</p><p>只公開腳位圖或使用手冊不夠，因為別人無法據此修改和製造。一般的 Raspberry Pi 雖提供規格與部分電路圖，完整設計檔並未公開，通常不算開源硬體。</p>"
+    "body": "<p>硬體授權和軟體授權（軟體授權見下一章 2-2〈雲端環境數據收集與平台設計〉）有個關鍵差別：軟體複製一份就是成品，硬體公開的卻只是設計檔，實體板子還要另外製造。著作權主要保護設計檔與文件本身，不一定涵蓋依設計做出的電路功能，功能可能另涉專利。</p><p>只公開腳位圖或使用手冊不夠，因為別人無法據此修改和製造。一般的 Raspberry Pi 雖提供規格與部分電路圖，完整設計檔並未公開，通常不算開源硬體。</p>"
    }
   }
  ],
  "keypoints": [
   "被動三元件是電阻、電容、電感；電晶體是主動元件，能放大與切換。LED 要限流：R＝（電源電壓－LED 壓降）÷電流。",
-  "MCU 一顆晶片做控制，單板電腦跑 Linux 做運算；一般 Raspberry Pi 屬單板電腦。",
+  "MCU 一顆晶片做控制，單板電腦跑 Linux 做運算；一般 Raspberry Pi 屬單板電腦。n 條位址線有 2ⁿ 個位址。",
   "輸入腳不可浮接；下拉按下為 HIGH，上拉按下為 LOW。事件不常發生時，中斷比輪詢更能搭配休眠。",
   "ADC 把電壓變數字（Uno 0–1023）；PWM 用占空比調平均電壓。",
   "GPIO 推不動就加電晶體；小電流控制大電流，電感性負載要反向並聯飛輪二極體。",
-  "續航≈mAh÷平均 mA，平均要按時間加權，算出來是理想值，低溫會讓可用容量下降；n 條位址線有 2ⁿ 個位址。",
+  "續航≈mAh÷平均 mA，平均要按時間加權，算出來是理想值，低溫會讓可用容量下降。",
   "開源硬體公開的是設計檔；硬體、韌體、文件可分層授權，名稱另受商標規則約束。"
  ],
  "pitfalls": [

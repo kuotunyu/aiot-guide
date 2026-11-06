@@ -10,7 +10,7 @@
 ## 寫作要求
 - 正體中文（台灣用語），專有名詞第一次出現時附英文。
 - 用第三人稱或中性語氣講內容。可以用「你」指一般讀者，但不可寫成對某位特定學生說話（不可有「你有資料背景」「你熟 AI」「抱佛腳」「剩幾天」）。
-- 不要太簡陋也不要太冗長：一章閱讀 12–20 分鐘。一節 2–5 個短段落。寧可用表格與圖，不堆文字。
+- 不要太簡陋也不要太冗長：主文（各節 body 與 after）約 2,000 字以內；整章含表格、例題、實驗與自我檢查，章首顯示約 25–40 分鐘（build.py 的 minutes() 計算），超過先刪減，不要靠把表格收進 more 來壓時間。一節 2–5 個短段落。寧可用表格與圖，不堆文字。
 - 新名詞當場用一句白話解釋。類比用生活例子（水管、門牌、郵局）。AI／軟體類比只放進 `bridge` 欄位，主文不依賴它。
 - 內容要能獨立當學習材料讀，說清楚「它是什麼、為什麼這樣設計、怎麼選」，同時涵蓋應考會用到的名詞、比較與計算。
 - 不寫出題頻率或押題（不可有「考題九成」「出題最多」「常考第一名」「考古題出現 N 次」）。應考提醒只放在 `pitfalls`，寫成「容易混淆的地方」。
@@ -61,7 +61,7 @@
 ```
 數量：`sections` 4–7 節，其中至少 2 節有 svg（沿用底稿中好的圖，可修改）；`examples` 2 題；`check` 5–8 題；`terms` 8–20 個本章核心名詞（`en` 可省略）。
 
-`video` 只能用：`mqtt-http`（s1-22）、`adc-sampling`（s1-31）、`sampling-aliasing`、`serial-interfaces`（s1-32）、`pwm-duty`、`battery-duty`（s2-21）、`buffered-recovery`（s2-11）、`oee-losses`（s2-23）。
+`video` 只能用：`mqtt-http`（s1-22）、`adc-sampling`、`sampling-aliasing`、`serial-interfaces`（s1-32）、`pwm-duty`、`battery-duty`（s2-21）、`buffered-recovery`（s2-11）、`oee-losses`（s2-23）。
 
 ## SVG 規格
 - 開頭 `<svg viewBox="0 0 600 H" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一句描述">`，H 120–440，根元素不設 width/height。

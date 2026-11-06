@@ -61,4 +61,12 @@ assert.strictEqual(fmtMs(1000), '1 秒');
 assert.strictEqual(fmtMB(0.75), '0.75 MB');
 assert.strictEqual(fmtMB(2000), '2 GB');
 
+
+// Instructions in the lab: "探頭上的小模型" changes verdict with INT8; "冷藏庫溫度趨勢" still does not fit the MCU.
+const probe = {kbps: 1, oneWayMs: 50, limitMs: 100, stability: 98, modelMB: 3, device: 0};
+assert.strictEqual(assess(Object.assign({int8: false}, probe)).verdict, 'stuck');
+assert.strictEqual(assess(Object.assign({int8: true}, probe)).verdict, 'edge');      // 3 / 4 = 0.75 MB
+const fridge = {kbps: 0.01, oneWayMs: 20, limitMs: 5000, stability: 99.9, modelMB: 5, device: 0};
+assert.strictEqual(assess(Object.assign({int8: true}, fridge)).fits, false);          // 5 / 4 = 1.25 MB > 1 MB
+
 console.log('labs-s1-11 ok');

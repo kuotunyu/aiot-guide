@@ -8,24 +8,24 @@
   "body": "壓縮機突然停機，一整庫貨可能在幾小時內報廢；太常派人檢查，人力又吃不消。本章替這家冷鏈物流公司決定：要量什麼、何時該修、告警門檻設多少，再把同一把尺用到工廠、農場與居家。"
  },
  "learn": [
-  "用四位一體循環拆解任何一個 AIoT 案例",
+  "用「感測→傳輸→分析→行動」四步與四位一體拆解任何一個 AIoT 案例",
   "區分三種維護策略，並說明告警門檻的取捨",
   "判斷故障診斷與壽命預測屬於哪種 AI 任務",
   "說明感測融合的效益與代價",
   "依距離、耗電、資料量與移動性替場域選技術"
  ],
- "prereq": "<b>感測器（Sensor）</b>把溫度、振動等物理量變成資料；<b>執行器（Actuator，又稱致動器）</b>方向相反，把指令變成動作，例如馬達、水閥、警報器。<b>閘道器（Gateway）</b>是現場設備與外部系統之間的翻譯兼轉運站。<b>邊緣（Edge）</b>指靠近設備的現場運算，<b>雲端（Cloud）</b>指遠端資料中心。<b>AI 模型</b>是從過去資料學出規律、再對新資料做判斷的程式。",
+ "prereq": "<b>感測器（Sensor）</b>把溫度、振動等物理量變成資料；<b>執行器（Actuator，又稱致動器）</b>方向相反，把指令變成動作，例如馬達、水閥、警報器。<b>邊緣（Edge）</b>指靠近設備的現場運算，<b>雲端（Cloud）</b>指遠端資料中心。<b>AI 模型</b>是從過去資料學出規律、再對新資料做判斷的程式。",
  "bridge": "可以把「資料→模型→預測」看成中段，AIoT 在前面接上感測與傳輸，後面接上執行器；感測融合類似多模態模型，告警門檻則類似分類模型的決策門檻。",
  "sections": [
   {
    "id": "integrated-cycle",
-   "h": "拆解案例的一把尺：四位一體循環",
-   "body": "<p>AIoT 的價值，是讓系統從「只收資料、只看監控畫面」進一步能判斷、預測與輔助決策。案例五花八門，骨架卻很像。分析時可用<b>四位一體循環（AIoT Integrated Cycle）</b>逐項檢視：</p><ul><li><b>感知端（Input）</b>：量什麼？取樣頻率（多久量一次）與解析度（量得多細）夠不夠反映真實狀態？</li><li><b>通訊端（Transport）</b>：要傳多遠、多省電、多即時？</li><li><b>智慧端（AI／Process）</b>：AI 負責即時判斷（Judgment）現況，還是預測（Prediction）趨勢？</li><li><b>安全端（Security）</b>：裝置會不會被動手腳、資料會不會被攔截或外洩？這裡指資訊安全與隱私，不是門口的保全。</li></ul><p>分析的結果最後要落到<b>行動</b>：交給執行器自動動作，或用儀表板、圖表等<b>資料視覺化（Data Visualization）</b>呈現給人決定。動作改變現場，感測器再量一次，系統形成閉環。注意第四端是安全端；「行動」是分析的結果，不是四端之一。</p>",
-   "svg": "<svg viewBox=\"0 0 600 222\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AIoT 案例拆解：感測、傳輸、分析、行動形成循環，安全防護貫穿全程\"><defs><marker id=\"s1-12-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"75\" y=\"22\" class=\"ts tc\">感知端 Input</text><text x=\"225\" y=\"22\" class=\"ts tc\">通訊端 Transport</text><text x=\"375\" y=\"22\" class=\"ts tc\">智慧端 AI／Process</text><text x=\"525\" y=\"22\" class=\"ts tc\">結果 Action</text><rect x=\"10\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"box\"/><text x=\"75\" y=\"68\" class=\"tb tc\">感測</text><text x=\"75\" y=\"90\" class=\"ts tc\">冷藏庫溫度探頭</text><rect x=\"160\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"box\"/><text x=\"225\" y=\"68\" class=\"tb tc\">傳輸</text><text x=\"225\" y=\"90\" class=\"ts tc\">閘道器上傳平台</text><rect x=\"310\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"acc\"/><text x=\"375\" y=\"68\" class=\"tb tc\">分析</text><text x=\"375\" y=\"90\" class=\"ts tc\">模型判斷異常</text><rect x=\"460\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"ok\"/><text x=\"525\" y=\"68\" class=\"tb tc\">行動</text><text x=\"525\" y=\"90\" class=\"ts tc\">啟動備援壓縮機</text><line x1=\"140\" y1=\"74\" x2=\"158\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><line x1=\"290\" y1=\"74\" x2=\"308\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><line x1=\"440\" y1=\"74\" x2=\"458\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><polyline points=\"525,114 525,132 75,132 75,117\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><text x=\"300\" y=\"152\" class=\"ts tc\">備援機一啟動，庫溫改變，探頭再量一次</text><rect x=\"10\" y=\"166\" width=\"580\" height=\"46\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"195\" class=\"tb tc\">安全端 Security：裝置、傳輸、資料全程都要防護</text></svg>",
+   "h": "拆解案例的一把尺：四步流程與四位一體",
+   "body": "<p>AIoT 的價值，是讓系統從「只收資料、只看監控畫面」進一步能判斷、預測與輔助決策。案例五花八門，骨架卻很像：資料依序走過<b>感測→傳輸→分析→行動</b>四步。分析的結果最後要落到<b>行動</b>：交給執行器自動動作，或用儀表板、圖表等<b>資料視覺化（Data Visualization）</b>呈現給人決定。動作改變現場，感測器再量一次，系統形成閉環。</p><p>官方的<b>四位一體循環（AIoT Integrated Cycle）</b>是四個檢查面向：前三端對應前三步，安全端貫穿全程、不是一個步驟；行動是分析的輸出，不算一端。分析案例時可逐項檢視：</p><ul><li><b>感知端（Input）</b>：量什麼？取樣頻率（多久量一次）與解析度（量得多細）夠不夠反映真實狀態？</li><li><b>通訊端（Transport）</b>：要傳多遠、多省電、多即時？</li><li><b>智慧端（AI／Process）</b>：AI 負責即時判斷（Judgment）現況，還是預測（Prediction）趨勢？</li><li><b>安全端（Security）</b>：裝置會不會被動手腳、資料會不會被攔截或外洩？這裡指資訊安全與隱私，不是門口的保全。</li></ul>",
+   "svg": "<svg viewBox=\"0 0 600 222\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AIoT 案例拆解：感測、傳輸、分析、行動形成循環，安全防護貫穿全程\"><defs><marker id=\"s1-12-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"75\" y=\"22\" class=\"ts tc\">第 1 步</text><text x=\"225\" y=\"22\" class=\"ts tc\">第 2 步</text><text x=\"375\" y=\"22\" class=\"ts tc\">第 3 步</text><text x=\"525\" y=\"22\" class=\"ts tc\">第 4 步</text><rect x=\"10\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"box\"/><text x=\"75\" y=\"68\" class=\"tb tc\">感測</text><text x=\"75\" y=\"90\" class=\"ts tc\">冷藏庫溫度探頭</text><rect x=\"160\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"box\"/><text x=\"225\" y=\"68\" class=\"tb tc\">傳輸</text><text x=\"225\" y=\"90\" class=\"ts tc\">閘道器上傳平台</text><rect x=\"310\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"acc\"/><text x=\"375\" y=\"68\" class=\"tb tc\">分析</text><text x=\"375\" y=\"90\" class=\"ts tc\">模型判斷異常</text><rect x=\"460\" y=\"34\" width=\"130\" height=\"80\" rx=\"8\" class=\"ok\"/><text x=\"525\" y=\"68\" class=\"tb tc\">行動</text><text x=\"525\" y=\"90\" class=\"ts tc\">啟動備援壓縮機</text><line x1=\"140\" y1=\"74\" x2=\"158\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><line x1=\"290\" y1=\"74\" x2=\"308\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><line x1=\"440\" y1=\"74\" x2=\"458\" y2=\"74\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><polyline points=\"525,114 525,132 75,132 75,117\" class=\"la\" marker-end=\"url(#s1-12-1-arr)\"/><text x=\"300\" y=\"152\" class=\"ts tc\">備援機一啟動，庫溫改變，探頭再量一次</text><rect x=\"10\" y=\"166\" width=\"580\" height=\"46\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"195\" class=\"tb tc\">安全端 Security：裝置、傳輸、資料全程都要防護</text></svg>",
    "caption": "以冷藏庫為例：感測、傳輸、分析之後產生行動，再回到感測；安全防護貫穿全程。農場換成土壤濕度感測器、LoRa 與灌溉水閥，骨架相同。",
    "predict": {
     "q": "冷藏庫的探頭資料已經上雲端，儀表板也很漂亮，但半夜超溫時沒有人在看，貨還是壞了。這套系統少了哪一段？",
-    "a": "少了行動。資料沒有變成告警通知或自動啟動備援，循環就沒有接回現場。"
+    "a": "少了行動（這是流程的第四步，和四位一體的第四端「安全端」是兩回事）。資料沒有變成告警通知或自動啟動備援，循環就沒有接回現場。"
    }
   },
   {
@@ -113,7 +113,7 @@
    },
    "more": {
     "label": "工廠資料怎麼進到模型：智慧機聯網、PLC 與 OPC UA",
-    "body": "<p>工業現場常把機台連網，這種架構稱為<b>智慧機聯網（Machine Connectivity）</b>：資料可直接從工具機（切削金屬等的工廠機台）的控制器讀取，也可加裝振動、電流、溫度感測器取得。</p><p>機台常由<b>可程式邏輯控制器（Programmable Logic Controller, PLC）</b>控制，各廠牌的資料格式與定義不一。常見架構是由閘道器先轉成 <b>OPC UA（Open Platform Communications Unified Architecture）</b>這類統一標準，AI 再讀取分析，不直接面對各家的原始訊號。就像各國旅客的文件先由櫃台整理成同一種表格。</p>"
+    "body": "<p>工業現場常把機台連網，這種架構稱為<b>智慧機聯網（Machine Connectivity）</b>：資料可直接從工具機（切削金屬等的工廠機台）的控制器讀取，也可加裝振動、電流、溫度感測器取得。</p><p>機台常由 <b>PLC</b>（控制機台的工業控制器）控制，各廠牌的資料格式與定義不一。常見架構是由閘道器先轉成 <b>OPC UA</b>（見 <a href=\"s1-23.html#opc-ua\">2.3〈工業通訊標準與資訊模型〉</a>）這類統一標準，AI 再讀取分析，不直接面對各家的原始訊號。</p>"
    }
   },
   {
@@ -128,7 +128,7 @@
    },
    "more": {
     "label": "常見的融合組合，以及融合在哪裡做",
-    "body": "<ul><li>攝影機＋光達（LiDAR，用雷射光測距離）：看清物體與距離。</li><li>振動＋溫度：分辨設備異常與環境干擾。</li><li>加速度計（量移動與晃動）＋陀螺儀（量旋轉）：估算物體的朝向與傾斜，也就是姿態。</li></ul><p>融合可以在雲端做，也常在邊緣即時做，例如自駕車的車載電腦。</p>"
+    "body": "<ul><li>攝影機＋光達（LiDAR，用雷射光測距離）：看清物體與距離。</li><li>振動＋溫度：分辨設備異常與環境干擾。</li><li>加速度計＋陀螺儀（Gyroscope）：估算姿態（物體的朝向與傾斜）。</li></ul><p>融合可以在雲端做，也常在邊緣即時做，例如自駕車的車載電腦。</p>"
    }
   },
   {
@@ -179,8 +179,8 @@
     "a": "農場範圍固定，可自建閘道器；貨車跨縣市移動，要靠到處都有的基地台。決定選擇的是移動性，不只是資料量。"
    },
    "more": {
-    "label": "四個場域為什麼這樣選：電腦視覺、LPWAN、室內定位與 Mesh",
-    "body": "<ul><li><b>智慧工廠與智慧機械</b>：機台型號混雜，所以需要閘道器統一格式。除了 PdM，<b>電腦視覺（Computer Vision）</b>也常結合 AI 檢查產品瑕疵，開發時常搭配 OpenCV 這類現成的影像處理程式工具。</li><li><b>智慧農業與環境監測</b>：範圍大、沒有電源與網路線，資料卻只有幾個數字，所以適合<b>低功耗廣域網路（Low-Power Wide-Area Network, LPWAN）</b>，如 LoRa（一種可傳數公里、很省電的無線技術）。</li><li><b>智慧交通與物流</b>：車輛會移動，要靠行動網路回傳。AI 可用於路徑最佳化、車流與旅行時間預測、共享運具需求預測。倉庫等室內環境 GPS（Global Positioning System，全球定位系統，靠衛星定位）收訊差，要改用 RFID（Radio Frequency Identification，無線射頻識別，以無線電讀取標籤）或 BLE（Bluetooth Low Energy，藍牙低功耗，省電的短距無線）等方式定位。倉儲也可用 RFID 自動盤點貨物。</li><li><b>智慧居家與生活</b>：範圍小、裝置多，重視省電與便利。門鎖可用 NFC（Near Field Communication，近場通訊，幾公分內的感應）解鎖，室內裝置常用 BLE 或 Zigbee（低功耗的短距無線技術，可組成裝置間接力傳資料的 Mesh 網狀網路）連線；AI 學習作息後自動調整燈光與空調。</li></ul>"
+    "label": "四個場域為什麼這樣選",
+    "body": "<ul><li><b>智慧工廠</b>：機台型號混雜，要靠閘道器統一格式；也常用<b>電腦視覺（Computer Vision，讓 AI 看影像）</b>檢查產品瑕疵，開發常用 OpenCV。</li><li><b>智慧農業</b>：範圍大、沒有電源與網路線，資料卻只有幾個數字，所以選 LPWAN（如 LoRa）。</li><li><b>交通物流</b>：車輛會移動，要靠行動網路回傳；倉庫等室內 GPS（全球定位系統）收不到，改用 RFID 或 BLE 定位，倉儲也可用 RFID 自動盤點。</li><li><b>智慧居家</b>：範圍小、裝置多，重視省電與便利，用 BLE、Zigbee 或 NFC。</li></ul><p>這些無線技術的距離、耗電與取捨見 <a href=\"s1-22.html#wireless-map\">2.2〈常見通訊協定與網路層技術〉</a>。</p>"
    }
   },
   {
@@ -253,7 +253,7 @@
  "pitfalls": [
   "預防性維護與預測性維護名稱相近：前者依固定週期，不看實際狀態；後者依狀態資料判斷時機。",
   "預測性維護的對象是設備，產品瑕疵檢測的對象是產品；後者通常是電腦視覺任務，兩者不要混用。",
-  "感知端負責擷取訊號，算力有限，模型訓練通常不在感測器上；安全端指資訊安全，不是實體保全。",
+  "感知端負責擷取訊號，算力有限，模型訓練通常不在感測器上；安全端指資訊安全，不是實體保全。四位一體的第四端是安全端，不是行動。",
   "感測融合不是為了省感測器或降成本，也不限於雲端；它的目的是改善判斷的穩定性，但仍需校準與驗證。",
   "GPS 只負責定位，資料回傳還要靠通訊技術，且室內收訊差；RFID 主要用於識別與近距離追蹤，涵蓋範圍取決於讀取器佈署。情境同時要監測與定位時，只滿足其中一項的方案都不夠，要逐項核對需求。",
   "誤報與漏報容易記反：誤報是沒壞卻告警，漏報是快壞卻沒告警。門檻調低減少的是漏報，換來的是更多誤報。"
@@ -406,15 +406,6 @@
    "term": "BLE",
    "en": "Bluetooth Low Energy",
    "def": "省電的短距離藍牙，常用於穿戴裝置連手機。"
-  },
-  {
-   "term": "Zigbee",
-   "def": "低功耗的短距無線技術，可組 Mesh 網路，常用於室內多裝置。"
-  },
-  {
-   "term": "PIR",
-   "en": "Passive Infrared Sensor",
-   "def": "偵測人體等熱源移動所造成紅外線變化的感測器。"
   }
  ],
  "sources": [

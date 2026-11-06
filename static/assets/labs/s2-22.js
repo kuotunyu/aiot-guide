@@ -6,6 +6,8 @@
   // Simplified: data changes on a fixed period, out of phase with the browser; network one-way time is fixed;
   // server processing and reconnects are ignored. Counts are for one hour.
   const HOUR = 3600, ONE_WAY = 0.05, LP_TIMEOUT = 30;
+  // Up to this many viewers, the request count is small enough that simple polling is fine.
+  const FEW_USERS = 10;
 
   function compareUpdates(pollSec, changeSec, users) {
     const changes = HOUR / changeSec;
@@ -49,7 +51,10 @@
         ? '資料變得比輪詢還快時，長輪詢每筆都要再發一次請求，請求數反而比輪詢多。'
         : '輪詢間隔比長輪詢的 ' + LP_TIMEOUT + ' 秒逾時還長，長輪詢逾時就要重問，請求數反而比輪詢多。');
     }
-    parts.push(users > 1 ? '長輪詢與 WebSocket 的代價是伺服器要同時掛著 ' + users.toLocaleString('en-US') + ' 條連線。' : '只有一位使用者時，請求數的差距對伺服器影響不大，做法簡單也是優點。');
+    // Closing verdict for these settings: missed changes first, then few viewers, otherwise push.
+    if (r.polling.missedShare > 0) parts.push('輪詢會漏、長輪詢更費，這組條件選 WebSocket。');
+    else if (users <= FEW_USERS) parts.push((changeSec >= 60 ? '變化慢、人又少' : '人少、輪詢也跟得上變化') + '，這組條件下輪詢就夠，做法最簡單。');
+    else parts.push('這組條件下推送較划算，代價是伺服器要掛著 ' + users.toLocaleString('en-US') + ' 條連線並處理重連。');
     return parts.join('');
   }
 

@@ -28,6 +28,7 @@
       if (t.data < need.data) problems.push(t.data === 0 ? '只能回傳編號，傳不了讀值' : '速率不足');
       if (t.power > need.power) problems.push('太耗電，電池撐不久');
       if (need.mobile && t.mobile === 1) cautions.push('移動時連線受限');
+      if (t.range - need.range >= 2) cautions.push('距離遠超需求，通常較貴');
       const spare = Math.max(0, t.range - need.range) + Math.max(0, t.data - need.data);
       const status = problems.length ? 'no' : cautions.length ? 'maybe' : 'ok';
       return Object.assign({}, t, {problems, cautions, status, spare});

@@ -1,7 +1,8 @@
-// Regenerates README screenshots from a built dist/. Needs: node scripts/serve.mjs 8799 running.
+// Regenerates README screenshots from a built dist/. Needs: node scripts/serve.mjs 8799 running
+// (or SHOT_BASE pointing at any server for dist/). Rerun after changing titles or layout.
 const {chromium} = require('@playwright/test');
 const {mkdirSync} = require('fs');
-const BASE = 'http://127.0.0.1:8799/';
+const BASE = process.env.SHOT_BASE || 'http://127.0.0.1:8799/';
 mkdirSync('docs/assets', {recursive: true});
 (async () => {
   const b = await chromium.launch(process.env.PW_CHANNEL ? {channel: process.env.PW_CHANNEL} : {});

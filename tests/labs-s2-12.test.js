@@ -1,6 +1,6 @@
 // Run: node aiot-guide/tests/labs-s2-12.test.js
 const assert = require('assert');
-const {CASES, findCase, suspects, judge, i2cRiseTime} = require('../static/assets/labs/s2-12.js');
+const {CASES, findCase, suspects, judge, nextStep, i2cRiseTime} = require('../static/assets/labs/s2-12.js');
 
 assert(CASES.length >= 3 && CASES.length <= 4);
 
@@ -70,5 +70,14 @@ assert.strictEqual(judge(i2, 'signal', ['scan', 'meter', 'wiggle', 'swap', 'scop
 assert(Math.abs(i2cRiseTime(4700, 350e-12) - 1.394e-6) < 1e-9);
 assert(Math.abs(i2cRiseTime(2200, 350e-12) - 0.652e-6) < 1e-9);
 assert(i2cRiseTime(4700, 350e-12) > 1e-6 && i2cRiseTime(2200, 350e-12) < 1e-6);
+
+// The verdict only counts checks whose interpretation was read; unread results are pointed out first.
+assert.strictEqual(nextStep([], []), '再選一項檢查。');
+assert.strictEqual(nextStep(['meter', 'serial'], ['meter', 'serial']), '再選一項檢查。');
+assert.strictEqual(nextStep(['meter', 'serial'], ['meter']), '還有 1 項檢查的結果沒看解讀，先看過再算證據。');
+assert.strictEqual(nextStep(['meter', 'serial', 'others'], []), '還有 3 項檢查的結果沒看解讀，先看過再算證據。');
+// Same checks, before and after reading: the judgement follows what was read.
+assert.strictEqual(judge(nd, 'wifi', []).kind, 'notYet');
+assert.strictEqual(judge(nd, 'wifi', ['others', 'serial']).kind, 'solid');
 
 console.log('labs-s2-12 ok');

@@ -2,7 +2,7 @@
  "id": "s1-23",
  "title": "工業通訊標準與資訊模型",
  "subtitle": "讓不同廠牌的機台連得上，也讀得懂",
- "summary": "壓縮機回傳 253 是什麼意思？比較 Modbus、OPC UA、MTConnect、MQTT 與 RESTful API，並能依情境選用。",
+ "summary": "冷凍櫃回傳 65351 是什麼意思？比較 Modbus、OPC UA、MTConnect、MQTT 與 RESTful API，並能依情境選用。",
  "learn": [
   "分辨網路分層、封裝與 TCP／UDP",
   "讀懂 Modbus 暫存器，換算比例與有號整數",
@@ -16,9 +16,9 @@
   {
    "id": "network-layers",
    "h": "網路分層與封裝：所有協定都有自己的樓層",
-   "body": "<p>網路通訊很複雜，所以拆成好幾層，每層只管一件事，像寄包裹時分成「打包、填地址、運送」。<b>OSI 模型</b>（Open Systems Interconnection）把它分成七層，主要用來理解概念；實務上廣泛使用的是 <b>TCP/IP 模型</b>，常見四層或五層兩種畫法，本章用五層：把 2.1 四層模型最底下的鏈結層，再拆成資料連結層與實體層。</p><p>兩種轉送設備各看不同的地址：<b>交換器</b>在同一個區域網路內，依網路卡的硬體編號 <b>MAC 位址</b>轉送；<b>路由器</b>連接不同網路，依 <b>IP 位址</b>選路。</p><p><b>封裝</b>（Encapsulation）就像信封外再套信封：傳送端每往下一層就加一層<b>標頭</b>（Header，寫給同一層對方看的收件資訊）；接收端逐層拆開，稱為<b>解封裝</b>（Decapsulation）。</p>",
+   "body": "<p>網路通訊很複雜，所以拆成好幾層，每層只管一件事，像寄包裹時分成「打包、填地址、運送」。<b>OSI 模型</b>（Open Systems Interconnection）把它分成七層，主要用來理解概念；實務上廣泛使用的是 <b>TCP/IP 模型</b>，常見四層或五層兩種畫法，本章用五層：把 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a> 四層模型最底下的鏈結層，再拆成資料連結層與實體層。</p><p>兩種轉送設備各看不同的地址：<b>交換器</b>在同一個<b>區域網路</b>（LAN，一棟或幾棟建築範圍內的網路）內，依網路卡的硬體編號 <b>MAC 位址</b>轉送<b>訊框</b>（這一層的資料包）；<b>路由器</b>連接不同網路，依 <b>IP 位址</b>選路。常見的 IPv4 位址如 192.168.0.1，分四段、每段 0–255；IPv4 位址已不夠用，接替的 IPv6 用 128 位元。</p><p><b>封裝</b>（Encapsulation）就像信封外再套信封：傳送端每往下一層就加一層<b>標頭</b>（Header，寫給同一層對方看的收件資訊）；接收端逐層拆開，稱為<b>解封裝</b>（Decapsulation）。</p>",
    "svg": "<svg viewBox=\"0 0 600 330\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"TCP/IP 五層模型，每層對應的工業與物聯網協定；傳送端往下逐層封裝\"><defs><marker id=\"s1-23-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"140\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"90.0\" y=\"49.8\" class=\"tb tc\">應用層</text><rect x=\"175\" y=\"20\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"40.3\" class=\"t tc\">MQTT、HTTP、OPC UA、MTConnect</text><text x=\"347.5\" y=\"59.9\" class=\"ts tc\">Modbus PDU（功能碼＋資料）也在這層</text><rect x=\"20\" y=\"80\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"109.8\" class=\"tb tc\">傳輸層</text><rect x=\"175\" y=\"80\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"100.3\" class=\"t tc\">TCP 可靠有序｜UDP 不保證送達</text><text x=\"347.5\" y=\"119.9\" class=\"ts tc\">端對端傳送、分段重組</text><rect x=\"20\" y=\"140\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"169.8\" class=\"tb tc\">網際網路層</text><rect x=\"175\" y=\"140\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"160.3\" class=\"t tc\">IP 位址＋路由</text><text x=\"347.5\" y=\"179.9\" class=\"ts tc\">IPv4 如 192.168.0.1（四段）</text><rect x=\"20\" y=\"200\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"229.8\" class=\"tb tc\">資料連結層</text><rect x=\"175\" y=\"200\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"220.3\" class=\"t tc\">乙太網路訊框、MAC 位址</text><text x=\"347.5\" y=\"239.9\" class=\"ts tc\">常見設備：交換器</text><rect x=\"20\" y=\"260\" width=\"140\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"90.0\" y=\"289.8\" class=\"tb tc\">實體層</text><rect x=\"175\" y=\"260\" width=\"345\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"347.5\" y=\"280.3\" class=\"t tc\">網路線、光纖、RS-232／RS-485</text><text x=\"347.5\" y=\"299.9\" class=\"ts tc\">真正跑電訊號的地方</text><line x1=\"550\" y1=\"25\" x2=\"550\" y2=\"305\" class=\"la\" marker-end=\"url(#s1-23-1-arr)\"/><text x=\"567\" y=\"120\" class=\"ts\">加</text><text x=\"567\" y=\"142\" class=\"ts\">標</text><text x=\"567\" y=\"164\" class=\"ts\">頭</text><text x=\"567\" y=\"186\" class=\"ts\">封</text><text x=\"567\" y=\"208\" class=\"ts\">裝</text></svg>",
-   "caption": "五層模型與對應協定。Modbus、OPC UA、MQTT 都屬於應用層；底下可以走 TCP/IP，Modbus 也可以走 RS-485 這類串列線。",
+   "caption": "圖把 2.1 的鏈結層拆成資料連結與實體兩格，才能標出交換器與線材；其餘同 2.1。",
    "table": {
     "head": [
      "傳輸層協定",
@@ -39,12 +39,8 @@
     ]
    },
    "predict": {
-    "q": "溫度資料從冷藏庫送往雲端，途中經過交換器與路由器。哪一台靠 IP 位址判斷方向，哪一台靠 MAC 位址？",
+    "q": "溫度資料從冷藏庫送往雲端，途中經過交換器與路由器。哪一台靠 IP 位址判斷方向，哪一台靠 MAC 位址（網路卡的硬體編號）？",
     "a": "路由器看 IP 位址，跨網路選路；交換器看 MAC 位址，在同一區域網路內轉送。"
-   },
-   "more": {
-    "label": "五層各自做什麼：實體層到應用層",
-    "body": "<ul><li><b>實體層</b>：送電訊號或光訊號。</li><li><b>資料連結層</b>：在<b>區域網路</b>（LAN，一棟或幾棟建築範圍內的網路）裡，用 <b>MAC 位址</b>（網路卡的硬體編號）傳遞<b>訊框</b>（這一層的資料包），由<b>交換器</b>（把資料轉給同網路內正確設備的裝置）負責。</li><li><b>網際網路層</b>：用 <b>IP 位址</b>（常見的 IPv4 如 192.168.0.1，四段、每段 0–255）跨網路找路，由<b>路由器</b>（連接不同網路並選路的設備）負責。</li><li><b>傳輸層</b>：負責兩端程式之間的傳送。</li><li><b>應用層</b>：各種應用協定。</li></ul>"
    }
   },
   {
@@ -86,14 +82,14 @@
     "a": "不用。功能碼與資料組成的 PDU 相同，改變的只有外層包裝與錯誤檢查的方式。"
    },
    "more": {
-    "label": "從站位址、RS-485，以及 CRC、LRC、MBAP、port 是什麼",
-    "body": "<p>串列線路上，從站位址為 1–247，0 為廣播。常用的 <b>RS-485</b> 是一種串列線路標準，一條線可以串接多台設備。</p><p><b>CRC</b>、<b>LRC</b> 都是附在封包尾端的檢查碼，收方重算後比對，就知道傳輸有沒有出錯。<b>ASCII</b> 是把文字對應成數字的編碼表。<b>MBAP</b> 是 Modbus TCP 加在最前面的標頭，記錄交易編號、長度與單元編號。<b>port</b>（連接埠）像同一棟大樓裡的分機號，用來區分同一台機器上的不同服務。</p>"
+    "label": "從站位址、RS-485，以及 CRC、LRC、MBAP 是什麼",
+    "body": "<p>串列線路上，從站位址為 1–247，0 為廣播。常用的 <b>RS-485</b> 是一種串列線路標準，一條線可以串接多台設備。</p><p><b>CRC</b>、<b>LRC</b> 都是附在封包尾端的檢查碼，收方重算後比對，就知道傳輸有沒有出錯。<b>ASCII</b> 是把文字對應成數字的編碼表。<b>MBAP</b> 是 Modbus TCP 加在最前面的標頭，記錄交易編號、長度與單元編號。</p>"
    }
   },
   {
    "id": "modbus-data",
    "h": "Modbus 四種資料區：只有編號的置物櫃",
-   "body": "<p>Modbus 把資料放在四種資料區，用編號存取，像一排沒有標籤的置物櫃。協定本身不會說明某一格代表什麼，<b>要查設備廠商的位址對照表</b>。</p><p><b>位元</b>（bit）是最小的資料單位，只有 0 或 1；<b>暫存器</b>（Register）是設備裡存一個數值的小格子，16 位元可存 0–65535。<b>線圈</b>（Coil）這個名稱來自繼電器的線圈，在這裡就是一個可控制的開關。</p><p>分類只看兩件事：存的是 <b>1 位元的開關</b>還是 <b>16 位元的數值</b>；是<b>唯讀</b>還是<b>可讀可寫</b>。能寫入的線圈與保持暫存器，才能用來控制設備。</p><p>暫存器只存整數，所以讀到的值通常還要解讀：</p><ul><li><b>倍率</b>（比例因子）：對照表寫倍率 0.1 時，讀到 253 代表 25.3。</li><li><b>有號整數</b>：負溫度常以二補數存放。對照表標示為有號時，65351 要減 65536 得 −185，乘 0.1 才是 −18.5。</li></ul>",
+   "body": "<p>Modbus 把資料放在四種資料區，用編號存取，像一排沒有標籤的置物櫃。協定本身不會說明某一格代表什麼，<b>要查設備廠商的位址對照表</b>。</p><p><b>位元</b>（bit）是最小的資料單位，只有 0 或 1；<b>暫存器</b>（Register）是設備裡存一個數值的小格子，16 位元可存 0–65535。<b>線圈</b>（Coil）這個名稱來自繼電器的線圈，在這裡就是一個可控制的開關。</p><p>分類只看兩件事：存的是 <b>1 位元的開關</b>還是 <b>16 位元的數值</b>；是<b>唯讀</b>還是<b>可讀可寫</b>。能寫入的線圈與保持暫存器，才能用來控制設備。</p><p>暫存器只存整數，所以讀到的值通常還要解讀：</p><ul><li><b>倍率</b>（比例因子）：對照表寫倍率 0.1 時，讀到 253 代表 25.3。</li><li><b>有號整數</b>（INT16）：對照表標 INT16 時，讀值 ≥ 32768 就代表負數，要減 65536；不到 32768 就照用。例：65351 → −185，×0.1＝−18.5；253 不到 32768，仍是 25.3。（這種存法叫<b>二補數</b>）</li></ul>",
    "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Modbus 四種資料區：依「1 位元或 16 位元」與「唯讀或可讀寫」分成 2×2\"><text x=\"275\" y=\"42\" class=\"tb tc\">唯讀（只能看）</text><text x=\"490\" y=\"42\" class=\"tb tc\">可讀可寫（能控制）</text><text x=\"20\" y=\"104\" class=\"tb\">1 位元</text><text x=\"20\" y=\"128\" class=\"ts\">開／關</text><text x=\"20\" y=\"214\" class=\"tb\">16 位元</text><text x=\"20\" y=\"238\" class=\"ts\">數值</text><rect x=\"170\" y=\"60\" width=\"210\" height=\"100\" rx=\"8\" class=\"box\"/><text x=\"275.0\" y=\"105.3\" class=\"tb tc\">離散輸入（DI）</text><text x=\"275.0\" y=\"124.9\" class=\"ts tc\">10001–19999｜例：限位開關</text><rect x=\"390\" y=\"60\" width=\"200\" height=\"100\" rx=\"8\" class=\"acc\"/><text x=\"490.0\" y=\"105.3\" class=\"tb tc\">線圈（Coil）</text><text x=\"490.0\" y=\"124.9\" class=\"ts tc\">00001–09999｜例：馬達啟停</text><rect x=\"170\" y=\"170\" width=\"210\" height=\"100\" rx=\"8\" class=\"box\"/><text x=\"275.0\" y=\"215.3\" class=\"tb tc\">輸入暫存器（IR）</text><text x=\"275.0\" y=\"234.9\" class=\"ts tc\">30001–39999｜例：溫度讀值</text><rect x=\"390\" y=\"170\" width=\"200\" height=\"100\" rx=\"8\" class=\"acc\"/><text x=\"490.0\" y=\"215.3\" class=\"tb tc\">保持暫存器（HR）</text><text x=\"490.0\" y=\"234.9\" class=\"ts tc\">40001–49999｜例：設定值</text><text x=\"300\" y=\"292\" class=\"ts tc\">圖示為常見參考編號；實際位址查設備表</text></svg>",
    "caption": "四種資料區是「1 位元或 16 位元」與「唯讀或可讀寫」的組合。",
    "table": {
@@ -213,7 +209,7 @@
   {
    "id": "mqtt-rest",
    "h": "MQTT 與 RESTful API：把現場資料往上送",
-   "body": "<p>現場資料收齊後，常用兩種方式往上送。</p><p><b>MQTT</b>（Message Queuing Telemetry Transport）走 TCP，採<b>發布／訂閱</b>：發布者把訊息連同<b>主題</b>（Topic，訊息的分類標籤，如 <code>coldchain/freezer1/temp</code>）交給 <b>Broker</b>（中介代理者），Broker 再轉給訂閱該主題的一方，像郵局依信箱分信。雙方不直接相連，感測器故障時 App 照常運作，App 離線時感測器也能繼續傳。在工業物聯網中，主要用於<b>即時設備監控與故障預警</b>。</p><p><b>RESTful API</b> 建立在 HTTP 上，用 URL 代表資源，用 HTTP 方法做 <b>CRUD</b>（建立、讀取、更新、刪除）。畫面端與提供資料的伺服器端只要介面不變就能各自發展，常用於 MES、ERP、網站與 App 之間的串接。</p>",
+   "body": "<p>現場資料收齊後，常用兩種方式往上送，差別在誰主動：一種是<b>推</b>，一種是<b>拉</b>。</p><p><b>MQTT</b>（Message Queuing Telemetry Transport）走 TCP，採 <a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉</a> 教過的<b>發布／訂閱</b>（三個角色、Topic 與 QoS 都在 2.2）：Broker 把感測器發布的訊息主動推給訂閱的 App，適合把即時告警送出去。在工業物聯網中，主要用於<b>即時設備監控與故障預警</b>。</p><p><b>RESTful API</b> 建立在 HTTP 上，問一次答一次，由需要資料的一方來拉，適合查歷史與串接 MES、ERP。它用 URL 代表資源，用 HTTP 方法做 <b>CRUD</b>（建立、讀取、更新、刪除）；畫面端與提供資料的伺服器端只要介面不變就能各自發展，網站與 App 的串接也常用它。</p>",
    "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"工廠資料流：現場設備經 Modbus、MTConnect、OPC UA 匯入邊緣閘道，再經 MQTT 與 RESTful API 送到雲端、MES/ERP 與手機\"><defs><marker id=\"s1-23-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"165\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"102.5\" y=\"42.3\" class=\"tb tc\">雲端 AI 平台</text><text x=\"102.5\" y=\"61.9\" class=\"ts tc\">預測性維護</text><rect x=\"215\" y=\"20\" width=\"170\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"300.0\" y=\"42.3\" class=\"tb tc\">手機 App</text><text x=\"300.0\" y=\"61.9\" class=\"ts tc\">即時警報</text><rect x=\"415\" y=\"20\" width=\"165\" height=\"54\" rx=\"8\" class=\"ok\"/><text x=\"497.5\" y=\"42.3\" class=\"tb tc\">MES／ERP</text><text x=\"497.5\" y=\"61.9\" class=\"ts tc\">生產與經營系統</text><rect x=\"40\" y=\"130\" width=\"200\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"140.0\" y=\"159.8\" class=\"tb tc\">MQTT Broker</text><rect x=\"360\" y=\"130\" width=\"200\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"460.0\" y=\"159.8\" class=\"tb tc\">RESTful API</text><rect x=\"150\" y=\"230\" width=\"300\" height=\"54\" rx=\"8\" class=\"warn\"/><text x=\"300.0\" y=\"252.3\" class=\"tb tc\">邊緣閘道＋OPC UA Server</text><text x=\"300.0\" y=\"271.9\" class=\"ts tc\">統一資料模型、加密與認證</text><rect x=\"20\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"105.0\" y=\"352.3\" class=\"tb tc\">PLC／溫控器</text><text x=\"105.0\" y=\"371.9\" class=\"ts tc\">Modbus</text><rect x=\"215\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"300.0\" y=\"352.3\" class=\"tb tc\">CNC 工具機</text><text x=\"300.0\" y=\"371.9\" class=\"ts tc\">MTConnect</text><rect x=\"410\" y=\"330\" width=\"170\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"495.0\" y=\"352.3\" class=\"tb tc\">新型設備</text><text x=\"495.0\" y=\"371.9\" class=\"ts tc\">內建 OPC UA</text><line x1=\"105\" y1=\"330\" x2=\"198\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"300\" y1=\"330\" x2=\"300\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"495\" y1=\"330\" x2=\"402\" y2=\"286\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"240\" y1=\"230\" x2=\"172\" y2=\"182\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"360\" y1=\"230\" x2=\"428\" y2=\"182\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"112\" y1=\"130\" x2=\"112\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"190\" y1=\"130\" x2=\"290\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><line x1=\"470\" y1=\"130\" x2=\"490\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-23-6-arr)\"/><text x=\"20\" y=\"312\" class=\"ts\">讀寫暫存器</text><text x=\"308\" y=\"312\" class=\"ts\">唯讀 XML</text><text x=\"40\" y=\"212\" class=\"ts\">即時推送（發布）</text><text x=\"262\" y=\"112\" class=\"ts\">App 訂閱</text><text x=\"440\" y=\"212\" class=\"ts\">系統串接（GET/POST）</text><text x=\"20\" y=\"112\" class=\"ts\">感測資料上雲</text></svg>",
    "caption": "一種常見的工廠資料流：設備資料匯入閘道，再用 MQTT 推送即時資料、用 RESTful API 串接企業系統。",
    "table": {
@@ -255,8 +251,8 @@
     "a": "告警用 MQTT，由 Broker 推給訂閱者；查歷史紀錄用 RESTful API，問一次答一次。"
    },
    "more": {
-    "label": "MQTT 的 QoS、Keep Alive、遺囑，以及 API 的測試工具",
-    "body": "<ul><li><b>QoS</b>（Quality of Service，服務品質）：0 最多一次，可能遺失；1 至少一次，可能重複；2 恰好一次，靠四步驟握手，開銷最大。</li><li><b>Keep Alive</b>：定期確認連線是否還在。</li><li><b>遺囑</b>（Last Will and Testament, LWT）：裝置異常斷線時，由 Broker 代發預先設定的訊息。</li><li><b>TLS/SSL</b>：加密與身分驗證。</li></ul><p>開發測試時，<b>Postman</b> 用來模擬 Client 發送請求，<b>Mock Server</b> 用來模擬還沒完成的伺服器端。</p>"
+    "label": "API 的測試工具，以及 MQTT 細節在哪裡",
+    "body": "<p>開發測試時，<b>Postman</b> 用來模擬 Client 發送請求，<b>Mock Server</b> 用來模擬還沒完成的伺服器端。</p><p>MQTT 的 QoS、Keep Alive、遺囑訊息與 TLS 加密，細節見 <a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉</a>。</p>"
    }
   },
   {
@@ -331,7 +327,7 @@
  ],
  "keypoints": [
   "互通要做到三件事：連得上、格式解得開、意義讀得懂。Modbus 的名稱、單位、比例都在對照表裡；OPC UA 把它們放進節點。",
-  "網路五層由上而下：應用、傳輸、網際網路、資料連結、實體；傳送時逐層加標頭，接收時逐層拆開。",
+  "封裝：傳送端逐層加標頭，接收端逐層拆；交換器看 MAC、路由器看 IP。",
   "要可靠選 TCP，要即時且可容忍遺失選 UDP；MQTT 走 TCP。",
   "Modbus 三種模式：RTU 二進位配 CRC、ASCII 文字配 LRC、TCP 走乙太網路（典型 port 502）；傳統版沒有加密與驗證。",
   "Modbus 四種資料區只有線圈與保持暫存器可寫入；保持暫存器慣用 4 開頭編號。",
@@ -376,8 +372,8 @@
    "a": "傳送端往下傳時逐層加標頭是封裝，接收端往上傳時逐層去除標頭是解封裝。"
   },
   {
-   "q": "有號整數（INT16）的暫存器讀到 65351，倍率 0.1，實際是多少？",
-   "a": "−18.5：65351 減 65536 得 −185，再乘 0.1。"
+   "q": "有號整數（INT16）的暫存器讀到 65336，倍率 0.1，實際是多少？",
+   "a": "−20.0：65336 ≥ 32768 所以是負數，減 65536 得 −200，再乘 0.1。"
   },
   {
    "q": "Modbus RTU、ASCII、TCP 的錯誤檢查或封裝差在哪？",
@@ -474,16 +470,6 @@
    "def": "代理器。MTConnect 的核心，整合資料並透過 HTTP 對外提供。"
   },
   {
-   "term": "Broker",
-   "en": "Message Broker",
-   "def": "訊息代理。MQTT 中依主題接收並轉發訊息的中樞。"
-  },
-  {
-   "term": "QoS",
-   "en": "Quality of Service",
-   "def": "服務品質。MQTT 的訊息傳遞保證等級，分 0、1、2 三級。"
-  },
-  {
    "term": "RESTful API",
    "en": "Representational State Transfer API",
    "def": "以 URL 代表資源、用 HTTP 方法操作的系統串接方式。"
@@ -501,7 +487,7 @@
  ],
  "case": {
   "title": "本章的場景：把各廠牌冷凍壓縮機接上平台",
-  "body": "冷鏈物流公司的冷凍櫃用了好幾家廠牌的壓縮機，新舊都有。舊機台問到的只是「40001 回傳 253」，平台卻要顯示「冷凍櫃幾度、該不該告警」。本章看資料要跨過哪些關卡，才會從一個數字變成讀得懂的資訊。"
+  "body": "冷鏈物流公司的冷凍櫃用了好幾家廠牌的壓縮機，新舊都有。舊機台問到的只是「40002 回傳 65351」，平台卻要顯示「冷凍櫃零下幾度、該不該告警」。本章看資料要跨過哪些關卡，才會從一個數字變成讀得懂的資訊。"
  },
  "sources": [
   [
@@ -527,10 +513,6 @@
   [
    "MTConnect 標準文件",
    "https://docs.mtconnect.org/"
-  ],
-  [
-   "MQTT Version 5.0（OASIS 標準）",
-   "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html"
   ],
   [
    "RFC 9110：HTTP Semantics",

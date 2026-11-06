@@ -25,6 +25,11 @@
     const caught = FAILING.filter(v => v >= threshold).length;
     return {falseAlarms, caught, missed: FAILING.length - caught};
   }
+  // Recall: share of failing machines caught. Precision: share of alerts that were real; null when nothing fired.
+  function rates(c) {
+    const fired = c.caught + c.falseAlarms;
+    return {recall: c.caught / (c.caught + c.missed), precision: fired ? c.caught / fired : null};
+  }
   function strategyCosts(threshold, s) {
     const c = confusion(threshold), total = HEALTHY.length + FAILING.length;
     const lateScheduled = FAILING.length - SCHEDULED_CATCH;
@@ -51,7 +56,20 @@
     return '門檻往左，漏報變少、誤報變多；門檻往右則相反。';
   }
 
-  const api = {HEALTHY, FAILING, SCENARIOS, SCHEDULED_CATCH, T_MIN, T_MAX, confusion, strategyCosts, bestThreshold, tradeoffSay};
+  // Whole percentages; '約' marks a rounded value such as 6/11.
+  const pct = v => { const p = v * 100, r = Math.round(p); return (Math.abs(p - r) > 1e-9 ? '約 ' : '') + r + '%'; };
+  function ratesText(c) {
+    const r = rates(c);
+    return {
+      recall: '召回率 ' + c.caught + '／' + FAILING.length + '＝' + pct(r.recall) + '（真正的故障抓到多少）',
+      precision: r.precision === null
+        ? '精確率：沒有告警，無法計算（發出的告警有多少是真的）'
+        : '精確率 ' + c.caught + '／(' + c.caught + '＋' + c.falseAlarms + ')＝' + pct(r.precision) + '（發出的告警有多少是真的）',
+      short: ('召回率 ' + pct(r.recall) + '，精確率 ' + (r.precision === null ? '無法計算' : pct(r.precision))).replace(/ 約 /g, '約 '),
+    };
+  }
+
+  const api = {HEALTHY, FAILING, SCENARIOS, SCHEDULED_CATCH, T_MIN, T_MAX, confusion, rates, ratesText, strategyCosts, bestThreshold, tradeoffSay};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -72,13 +90,13 @@
       '<text x="20" y="84" class="ts">即將故障 6 台</text>' + FAILING.map(v => dot(v, 100, 'f')).join('') +
       '<line x1="20" y1="118" x2="340" y2="118" class="ln"/>' + ticks + '<text x="180" y="153" class="ts tc">振動值 mm/s（示範資料）</text>' +
       '<line data-line x1="0" y1="20" x2="0" y2="118" class="la"/><text data-label x="0" y="14" class="ts tc"></text>' + legend + '</svg></div>' +
-      '<ul class="rank" data-counts></ul><p class="lab-say" aria-live="polite"></p><p class="small muted">從 3.7 到 5.2，健康與即將故障的機台讀值重疊，所以沒有任何門檻能讓誤報和漏報同時歸零。</p>' +
+      '<ul class="rank" data-counts></ul><p class="small" data-rates></p><p class="lab-say" aria-live="polite"></p><p class="small muted">從 3.7 到 5.2，健康與即將故障的機台讀值重疊，所以沒有任何門檻能讓誤報和漏報同時歸零。</p>' +
       '<div class="lab-form">' + radios('s1-12-sc', '這批壓縮機的情境', SCENARIOS.map(s => s.name), sc) + '</div><p class="small" data-prices></p><ul class="rank" data-costs></ul><p class="lab-say" data-win aria-live="polite"></p>' +
       '<button type="button" class="linkbtn" data-best>把門檻移到這個情境最省的位置</button>' +
       '<p class="small muted">成本點數是虛構的簡化模型，只比較一段期間內這 24 台。定期保養假設剛好趕上 ' + SCHEDULED_CATCH + ' 台，其餘在兩次保養之間故障。</p>';
     const input = el.querySelector('input[type=range]'), output = el.querySelector('output');
     const svg = el.querySelector('svg'), zone = el.querySelector('[data-zone]'), line = el.querySelector('[data-line]'), label = el.querySelector('[data-label]');
-    const counts = el.querySelector('[data-counts]'), say = el.querySelector('.lab-say'), prices = el.querySelector('[data-prices]');
+    const counts = el.querySelector('[data-counts]'), ratesEl = el.querySelector('[data-rates]'), say = el.querySelector('.lab-say'), prices = el.querySelector('[data-prices]');
     const costs = el.querySelector('[data-costs]'), win = el.querySelector('[data-win]');
     function draw() {
       const c = confusion(t), s = SCENARIOS[sc], k = strategyCosts(t, s), x = X(t);
@@ -89,12 +107,14 @@
       label.textContent = '門檻 ' + t.toFixed(1) + '，右邊告警';
       $$('[data-h]', svg).forEach(n => n.setAttribute('class', +n.dataset.h >= t ? 'warn' : 'box'));
       $$('[data-f]', svg).forEach(n => n.setAttribute('class', +n.dataset.f >= t ? 'ok' : 'bad dash'));
-      svg.setAttribute('aria-label', '門檻 ' + t.toFixed(1) + ' mm/s：抓到 ' + c.caught + ' 台，誤報 ' + c.falseAlarms + ' 台，漏報 ' + c.missed + ' 台');
+      const rt = ratesText(c);
+      svg.setAttribute('aria-label', '門檻 ' + t.toFixed(1) + ' mm/s：抓到 ' + c.caught + ' 台，誤報 ' + c.falseAlarms + ' 台，漏報 ' + c.missed + ' 台；' + rt.short);
       const row = (cls, st, b, why) => '<li class="' + cls + '"><span class="st">' + esc(st) + '</span><b>' + esc(b) + '</b><span class="why">' + esc(why) + '</span></li>';
       counts.innerHTML =
         row(c.missed ? 'maybe' : 'ok', '抓到', c.caught + '／' + FAILING.length + ' 台', '故障前就排好維修') +
         row(c.falseAlarms ? 'maybe' : 'ok', '誤報', c.falseAlarms + ' 台', '機器沒事卻告警，白跑一趟') +
         row(c.missed ? 'maybe' : 'ok', '漏報', c.missed + ' 台', '沒有告警就突然壞掉');
+      ratesEl.textContent = rt.recall + '；' + rt.precision + '。';
       say.textContent = tradeoffSay(c);
       prices.textContent = s.say + '誤報一次 ' + s.falseAlarm + ' 點、提前維修一台 ' + s.repair + ' 點、突然故障一台 ' + s.miss + ' 點、定期保養一台 ' + s.service + ' 點、監測平台 ' + s.platform + ' 點。';
       const low = Math.min(k.reactive, k.scheduled, k.predictive), tag = v => v === low ? 'ok' : 'no';

@@ -13,14 +13,14 @@
   "說明憑證與 TLS 如何確認對方身分並保護傳輸",
   "替 IoT 系統分層防護，並用最小化、同意與目的限制檢視隱私"
  ],
- "prereq": "<b>明文</b>是看得懂的原始資料，<b>密文</b>是加密後的亂碼；<b>金鑰</b>是用來上鎖與解鎖的一串數字。資料在網路上傳遞就像寄明信片，沿路的設備都可能看到內容，所以才需要加密。<b>埠號（port）</b>是同一台主機上不同服務的門牌號，例如 HTTPS 慣用 443。本章不需要會算密碼學的數學，只要知道每個工具解決什麼問題。",
+ "prereq": "<b>明文</b>是看得懂的原始資料，<b>密文</b>是加密後的亂碼；<b>金鑰</b>是用來上鎖與解鎖的一串數字。資料在網路上傳遞就像寄明信片，沿路的設備都可能看到內容，所以才需要加密。<b>埠號（port）</b>是同一台主機上區分服務的編號（<a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a>有說明）。本章不需要會算密碼學的數學，只要知道每個工具解決什麼問題。",
  "bridge": "PSK 可想成燒進裝置的共用 secret，mTLS 可想成每台裝置各有一張 client certificate。",
  "sections": [
   {
    "id": "cia-aaa",
    "h": "先建立地圖：CIA 與 AAA",
    "predict": {
-    "q": "值班帳號要輸入密碼才能登入監控平台，登入後能看溫度，卻不能遠端關掉壓縮機。這兩道關卡各屬於 AAA 的哪一項？",
+    "q": "值班帳號要輸入密碼才能登入監控平台，登入後能看溫度，卻不能遠端關掉壓縮機。這兩道關卡各屬於 AAA（認證、授權、記錄這三道管控）的哪一項？",
     "a": "輸入密碼是認證（確認你是誰），不能關壓縮機是授權（決定你能做什麼）。"
    },
    "body": "<p>資訊安全的目標常用 <b>CIA</b> 三要素描述：<b>機密性（Confidentiality）</b>是只有被授權者看得到，<b>完整性（Integrity）</b>是資料沒被竄改，<b>可用性（Availability）</b>是需要時能正常使用。遇到任何攻擊，先問它破壞了哪一個，防護方向就清楚了。</p><p>另一組是 <b>AAA</b>：<b>認證（Authentication）</b>確認你是誰，<b>授權（Authorization）</b>決定你能做什麼，<b>記錄／稽核（Accounting）</b>讓事後查得到誰在何時做了什麼，也就是記錄與計量使用行為。授權時只給完成工作所需的權限，叫<b>最小權限</b>原則。</p><p>可用性常用<b>服務水準協議（SLA，Service Level Agreement）</b>量化，也就是服務承諾的上線比例。每月停機上限可這樣算：一個月以 720 小時計，乘上 (1 − SLA)。</p>",
@@ -62,7 +62,7 @@
     "q": "貨車不斷回傳大量讀值。如果每一筆都直接用非對稱運算加密，會遇到什麼問題？",
     "a": "運算量太大、太慢，車上設備負擔重。所以實務上只用非對稱方式處理金鑰，資料本體交給對稱加密。"
    },
-   "body": "<p><b>對稱式加密</b>雙方共用同一把金鑰，像同一把鑰匙開同一個櫃子。它快，適合大量資料，難處是這把鑰匙要怎麼安全交給對方。<b>非對稱式密碼</b>每人有一對鑰匙：<b>公鑰</b>可公開，<b>私鑰</b>自己保管，就像人人都能按上的掛鎖，只有主人有鑰匙。</p><p>實務上兩者合作：先用<b>金鑰交換（Key exchange）</b>演算法安全地商量出一把共用金鑰，之後用對稱加密傳資料。</p>",
+   "body": "<p><b>對稱式加密</b>雙方共用同一把金鑰，像同一把鑰匙開同一個櫃子。它快，適合大量資料，難處是這把鑰匙要怎麼安全交給對方。<b>非對稱式密碼</b>每人有一對鑰匙：<b>公鑰</b>可公開，<b>私鑰</b>自己保管，就像人人都能按上的掛鎖，只有主人有鑰匙。這對鑰匙有兩種用法：要保密，用收件人的公鑰上鎖，只有他的私鑰打得開；要證明訊息是自己發的，用自己的私鑰簽、任何人用你的公鑰驗，這叫<b>數位簽章</b>，下一節細講。</p><p>實務上兩者合作：先用<b>金鑰交換（Key exchange）</b>演算法安全地商量出一把共用金鑰，之後用對稱加密傳資料。</p>",
    "lab": "s1-25-keys",
    "svg": "<svg viewBox=\"0 0 600 330\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"公鑰私鑰的兩種用法：加密用收件人的公鑰，簽章用寄件人的私鑰\"><defs><marker id=\"s1-25-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"20\" y=\"28\" class=\"tb\">① 加密（保密）：用「收件人 B」的一對鑰匙</text><rect x=\"20\" y=\"42\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"80\" y=\"73\" class=\"tb tc\">A：明文</text><rect x=\"240\" y=\"42\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"73\" class=\"tb tc\">密文</text><rect x=\"460\" y=\"42\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"520\" y=\"73\" class=\"tb tc\">B：讀到</text><line x1=\"140\" y1=\"67\" x2=\"238\" y2=\"67\" class=\"la\" marker-end=\"url(#s1-25-2-arr)\"/><line x1=\"360\" y1=\"67\" x2=\"458\" y2=\"67\" class=\"la\" marker-end=\"url(#s1-25-2-arr)\"/><text x=\"190\" y=\"57\" class=\"ts tc ta\">B 的公鑰</text><text x=\"410\" y=\"57\" class=\"ts tc ta\">B 的私鑰</text><text x=\"20\" y=\"118\" class=\"ts\">公鑰人人可拿來上鎖，只有 B 的私鑰打得開，所以只有 B 看得到</text><text x=\"20\" y=\"168\" class=\"tb\">② 數位簽章（證明來源）：用「寄件人 A」的一對鑰匙</text><rect x=\"20\" y=\"182\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"80\" y=\"213\" class=\"tb tc\">A：訊息</text><rect x=\"240\" y=\"182\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"213\" class=\"tb tc\">訊息＋簽章</text><rect x=\"460\" y=\"182\" width=\"120\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"520\" y=\"213\" class=\"tb tc\">B：確認</text><line x1=\"140\" y1=\"207\" x2=\"238\" y2=\"207\" class=\"la\" marker-end=\"url(#s1-25-2-arr)\"/><line x1=\"360\" y1=\"207\" x2=\"458\" y2=\"207\" class=\"la\" marker-end=\"url(#s1-25-2-arr)\"/><text x=\"190\" y=\"197\" class=\"ts tc ta\">A 的私鑰</text><text x=\"410\" y=\"197\" class=\"ts tc ta\">A 的公鑰</text><text x=\"20\" y=\"258\" class=\"ts\">只有 A 簽得出來、人人可驗；訊息本身仍看得到，簽章不保密</text><text x=\"300\" y=\"306\" class=\"tb tc ta\">要保密找收件人的公鑰，要證明來源找寄件人的私鑰</text></svg>",
    "caption": "公鑰加密與數位簽章用的是不同人的鑰匙，目的也不同。",
@@ -109,7 +109,7 @@
    "id": "hash-signature",
    "h": "雜湊、MAC 與數位簽章：證明沒被改",
    "predict": {
-    "q": "平台把 App 更新檔和它的 SHA-256 摘要放在同一台伺服器。攻擊者入侵後換掉了更新檔。使用者比對摘要，一定能發現嗎？",
+    "q": "平台把 App 更新檔和它的 SHA-256 摘要（用檔案內容算出的一串指紋）放在同一台伺服器。攻擊者入侵後換掉了更新檔。使用者比對摘要，一定能發現嗎？",
     "a": "不一定。攻擊者可以連摘要一起換。摘要要從另一個可信來源取得，或改用數位簽章。"
    },
    "body": "<p><b>雜湊（Hash）</b>把任意長度的資料算成固定長度的「指紋」（摘要）。同樣輸入得到同樣指紋，內容一改指紋就變，而且<b>無法從指紋還原原文</b>。常見演算法有 SHA-256、SHA-512、SHA-3。把下載檔案的指紋與官方公布值比對，就能知道檔案有沒有變動；前提是公布值本身可信。</p><p>如果攻擊者能連指紋一起改，單純雜湊就不夠了。<b>MAC（訊息鑑別碼，Message Authentication Code）</b>把共用金鑰也算進去，常見的是 HMAC，沒有金鑰就算不出正確的值。<b>數位簽章</b>則是先雜湊訊息，再用寄件人私鑰簽署，任何人都能用寄件人公鑰驗證。只有寄件人持有私鑰，所以他事後難以否認，這叫<b>不可否認性（Non-repudiation）</b>。</p><p>下表的對稱加密指單純加密；AES-GCM 這類<b>鑑別式加密（AEAD）</b>才同時提供保密、防竄改，並確認對方持有金鑰。</p>",
@@ -168,8 +168,8 @@
    "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CA 簽發伺服器憑證、握手時裝置驗證憑證並協商金鑰，再用對稱加密傳資料\"><defs><marker id=\"s1-25-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"220\" y=\"20\" width=\"160\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"51\" class=\"tb tc\">憑證機構 CA</text><rect x=\"20\" y=\"140\" width=\"170\" height=\"120\" rx=\"8\" class=\"box\"/><text x=\"105\" y=\"196\" class=\"tb tc\">IoT 裝置</text><text x=\"105\" y=\"218\" class=\"ts tc\">內建 CA 根憑證</text><rect x=\"410\" y=\"140\" width=\"170\" height=\"120\" rx=\"8\" class=\"box\"/><text x=\"495\" y=\"196\" class=\"tb tc\">雲端伺服器</text><text x=\"495\" y=\"218\" class=\"ts tc\">持有憑證＋私鑰</text><line x1=\"255\" y1=\"70\" x2=\"130\" y2=\"138\" class=\"ln dash\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"110\" y=\"92\" class=\"ts tc\">① 預裝根憑證</text><line x1=\"345\" y1=\"70\" x2=\"470\" y2=\"138\" class=\"ln\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"425\" y=\"92\" class=\"ts\">② 簽發伺服器憑證</text><line x1=\"408\" y1=\"172\" x2=\"192\" y2=\"172\" class=\"ln\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"164\" class=\"ts tc\">③ 握手：出示憑證，裝置驗證</text><line x1=\"192\" y1=\"212\" x2=\"408\" y2=\"212\" class=\"ln\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"204\" class=\"ts tc\">③ 握手：非對稱方式協商金鑰</text><line x1=\"192\" y1=\"250\" x2=\"408\" y2=\"250\" class=\"la\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"242\" class=\"ts tc ta\">④ 對稱加密傳資料</text><text x=\"300\" y=\"294\" class=\"ts tc\">握手時完成身分驗證與金鑰協商，之後才開始傳資料</text></svg>",
    "caption": "憑證式 TLS 的流程示意；驗證與協商的先後依 TLS 版本而異，TLS 1.3 會先交換金鑰參數；實作時還要檢查憑證的主機名稱與有效期限。",
    "more": {
-    "label": "MQTT 的埠號慣例，以及 Wi-Fi 的 WEP 到 WPA3",
-    "body": "<p>埠號只是慣例：MQTT 明文慣用 1883、MQTT over TLS 慣用 8883，真正安全與否要看有沒有設定 TLS、認證與權限。</p><p>Wi-Fi 另有自己的保護，只顧裝置到基地台（AP）這一段，由弱到強是 <b>WEP</b>（已可輕易破解）、<b>WPA</b>、<b>WPA2</b>、<b>WPA3</b>（改良連線時的密碼驗證方式 SAE，即使錄下封包也難以離線猜密碼）。TLS 則保護到應用服務的整段連線，兩者可以並用。</p>"
+    "label": "HTTPS 與 MQTT 的埠號慣例，以及 Wi-Fi 的 WEP 到 WPA3",
+    "body": "<p>埠號只是慣例：HTTPS 慣用 443、MQTT 明文慣用 1883、MQTT over TLS 慣用 8883，真正安全與否要看有沒有設定 TLS、認證與權限。</p><p>Wi-Fi 另有自己的保護，只顧裝置到基地台（AP）這一段，由弱到強是 <b>WEP</b>（已可輕易破解）、<b>WPA</b>、<b>WPA2</b>、<b>WPA3</b>（改良連線時的密碼驗證方式 SAE，即使錄下封包也難以離線猜密碼）。TLS 則保護到應用服務的整段連線，兩者可以並用。</p>"
    }
   },
   {

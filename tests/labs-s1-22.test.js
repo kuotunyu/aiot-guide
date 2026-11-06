@@ -54,4 +54,13 @@ assert.strictEqual(rankWireless(truck)[0].status, 'ok');
 assert.strictEqual(st(truck, 'cat1'), 'ok');
 assert.strictEqual(st(truck, 'nbiot'), 'maybe');
 assert.strictEqual(st({range: 0, data: 1, power: 0, mobile: 0}, 'nfc'), 'ok');
+
+// Far more range than needed is flagged (range gap only, not spare data)
+assert.strictEqual(st(probe, 'lorawan'), 'maybe');
+assert.strictEqual(st(probe, 'nbiot'), 'maybe');
+assert(rankWireless(probe).find(t => t.id === 'lorawan').cautions.includes('距離遠超需求，通常較貴'));
+assert.strictEqual(st(probe, 'zigbee'), 'ok');      // one step more range is not flagged
+assert.strictEqual(st(farm, 'lorawan'), 'ok');
+assert.strictEqual(st(box, 'ble'), 'ok');           // spare data rate alone is not flagged
+
 console.log('labs: all tests passed');

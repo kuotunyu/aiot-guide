@@ -1,6 +1,6 @@
 // Run: node aiot-guide/tests/labs-s1-12.test.js
 const assert = require('assert');
-const {HEALTHY, FAILING, SCENARIOS, T_MIN, T_MAX, confusion, strategyCosts, bestThreshold, tradeoffSay} = require('../static/assets/labs/s1-12.js');
+const {HEALTHY, FAILING, SCENARIOS, T_MIN, T_MAX, confusion, rates, ratesText, strategyCosts, bestThreshold, tradeoffSay} = require('../static/assets/labs/s1-12.js');
 
 const [fresh, vaccine, remote, cheap] = SCENARIOS;
 assert.strictEqual(HEALTHY.length, 18);
@@ -47,4 +47,23 @@ assert(tradeoffSay(confusion(T_MIN)).includes('等於沒有判斷'));
 assert(tradeoffSay(confusion(3.7)).includes('5 台'));
 assert(tradeoffSay(confusion(5.3)).includes('3 台'));
 
+// Recall and precision, hand-calculated
+// t = 5.0: caught 3 of 6 -> 50%; 3 real out of 3 + 1 alerts -> 75%
+assert.deepStrictEqual(rates(confusion(5.0)), {recall: 0.5, precision: 0.75});
+assert(ratesText(confusion(5.0)).recall.includes('3／6＝50%'));
+assert(ratesText(confusion(5.0)).precision.includes('3／(3＋1)＝75%'));
+// t = 3.7: caught 6 of 6 -> 100%; 6 real out of 6 + 5 alerts -> 54.5%, shown as about 55%
+const r37 = rates(confusion(3.7));
+assert.strictEqual(r37.recall, 1);
+assert(Math.abs(r37.precision - 6 / 11) < 1e-12);
+assert(ratesText(confusion(3.7)).precision.includes('約 55%'));
+// t = T_MAX: nothing fires -> recall 0%, precision cannot be calculated (never NaN)
+assert.deepStrictEqual(rates(confusion(T_MAX)), {recall: 0, precision: null});
+assert(ratesText(confusion(T_MAX)).precision.includes('沒有告警，無法計算'));
+for (let i = T_MIN * 10; i <= T_MAX * 10; i++) {
+  const t = ratesText(confusion(i / 10));
+  assert(!/NaN/.test(t.recall + t.precision + t.short), 'threshold ' + i / 10);
+}
+
+assert.strictEqual(ratesText(confusion(3.7)).short, '召回率 100%，精確率約 55%');
 console.log('s1-12 labs: all tests passed');

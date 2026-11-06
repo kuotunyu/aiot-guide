@@ -20,6 +20,9 @@ def clean(html, where):
     def tag(m):
         if m[2].lower() in ALLOWED and not m[3].strip():
             return m[0]
+        # Cross-references to another chapter are the one kind of link allowed in content.
+        if m[2].lower() == 'a' and (m[1] or re.fullmatch(r' href="s[12]-\d\d\.html(#[\w-]+)?"', m[3])):
+            return m[0]
         problems.append(f'stripped {m[0][:40]} in {where}')
         return ''
     return re.sub(r'<(/?)([a-zA-Z][a-zA-Z0-9]*)([^<>]*)>', tag, html or '')
@@ -53,8 +56,16 @@ SUBJ = SITE['subjects']
 
 
 def minutes(c):
-    text = re.sub(r'<[^>]+>', '', ' '.join(s.get('body', '') for s in c['sections']))
-    return max(8, round(len(text) / 350 + len(c['sections']) + 3))
+    # Everything shown by default counts; collapsed details, predict answers and videos do not.
+    parts = [c.get('case', {}).get('body', ''), c.get('prereq', ''), c.get('bridge', '')] + c['learn'] + c['keypoints'] + c['pitfalls']
+    for s in c['sections']:
+        parts += [s.get('body', ''), s.get('after', ''), s.get('caption', ''), s.get('predict', {}).get('q', '')]
+        if s.get('table'):
+            parts += s['table']['head'] + [x for r in s['table']['rows'] for x in r]
+    parts += [x['q'] + ''.join(x['o']) for x in c['examples']] + [x['q'] for x in c['check']] + [x['def'] for x in c['terms']]
+    chars = len(re.sub(r'\s', '', re.sub(r'<[^>]+>', '', ''.join(parts))))
+    labs = sum(1 for s in c['sections'] if s.get('lab'))
+    return 5 * round((chars / 300 + labs * 3 + len(c['check']) * 0.5) / 5)
 
 
 # ---------- page frame ----------
@@ -112,8 +123,8 @@ def page(name, title, main, desc, scripts='', current=None, jsonld=None):
 def sidebar(cur=None):
     out = ''
     for s, sub in SUBJ.items():
-        out += f'<div class="grp">{e(sub["short"])}</div>'
-        for cid in ORDER:
+        out += f'<div class="grp">{e(sub["short"])}・建議順序</div>'
+        for cid in SITE['reading']:
             c = CH[cid]
             if c['subject'] != s:
                 continue
@@ -174,6 +185,8 @@ def chapter(cid):
             sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>{clean(s["more"]["body"], where)}</details>'
         sections += '</section>'
     toc = ''.join(f'<a href="#{e(s["id"])}">{e(s["h"])}</a>' for s in c['sections'])
+    tail = '<a href="#keypoints">重點整理</a><a href="#examples">例題</a><a href="#check">自我檢查</a><a href="#terms">本章名詞</a>' + ('<a href="#sources">來源</a>' if c.get('sources') else '')
+    official = '' if c['official'] == c['title'] else f'<span class="noread">官方項目：{e(c["official"])}</span>'
     keys = ''.join(f'<li>{clean(x, w)}</li>' for x in c['keypoints'])
     pits = ''.join(f'<li>{clean(x, w)}</li>' for x in c['pitfalls'])
     exs = ''
@@ -185,11 +198,16 @@ def chapter(cid):
     terms = ''.join('<p><b>%s</b>%s：%s</p>' % (e(t['term']), ' <span class="muted small">' + e(t['en']) + '</span>' if t.get('en') else '', e(t['def'])) for t in c['terms'])
     prev_ = CH[READ[i - 1]] if i else None
     next_ = CH[READ[i + 1]] if i + 1 < len(READ) else None
-    pager = ''
+    pager = f'<a class="px" href="practice.html#{cid}"><small>讀完這章</small>練習這一章（{QCOUNT.get(cid, 0)} 題）</a>'
     if prev_:
         pager += f'<a href="{prev_["id"]}.html"><small>上一章</small>{e(prev_["code"] + " " + prev_["title"])}</a>'
     if next_:
-        pager += f'<a class="nx" href="{next_["id"]}.html"><small>下一章</small>{e(next_["code"] + " " + next_["title"])}</a>'
+        # Say so when the next chapter is not simply the next official number.
+        k = ORDER.index(cid)
+        label = '下一章' if k + 1 < len(ORDER) and ORDER[k + 1] == next_['id'] else '下一章（建議順序）'
+        pager += f'<a class="nx" href="{next_["id"]}.html"><small>{label}</small>{e(next_["code"] + " " + next_["title"])}</a>'
+    else:
+        pager += '<a class="nx" href="practice.html"><small>全部讀完了</small>接著做兩科混合練習，熟了再開限時作答</a>'
     learn = ''.join(f'<li>{e(x)}</li>' for x in c['learn'])
     pre = clean(c.get('prereq', ''), w)
     prereq = f'<div class="prereq" data-read><b class="lb">先備知識</b>{pre if pre.lstrip().startswith("<p>") else "<p>" + pre + "</p>"}</div>' if pre else ''
@@ -208,7 +226,8 @@ def chapter(cid):
 <aside class="side" aria-label="章節">{sidebar(cid)}</aside>
 <article>
 <details class="sidemenu"><summary>全部章節</summary><div class="side">{sidebar(cid)}</div></details>
-<header class="chead">{locator(cid)}<div class="meta"><span class="tag {c["subject"]}">{e(SUBJ[c["subject"]]["short"])} {e(c["code"])}</span><span class="noread">官方項目：{e(c["official"])}</span><span class="noread">約 {minutes(c)} 分鐘</span></div>
+<details class="sidemenu tocmenu noread"><summary>本章目錄</summary><div class="in">{toc}{tail}</div></details>
+<header class="chead">{locator(cid)}<div class="meta"><span class="tag {c["subject"]}">{e(SUBJ[c["subject"]]["short"])} {e(c["code"])}</span>{official}<span class="noread">約 {minutes(c)} 分鐘</span></div>
 <h1>{e(c["title"])}</h1><p class="sub">{e(c["subtitle"])}</p><p>{e(c["summary"])}</p>
 <div class="row noread"><button type="button" class="btn ghost" data-read-all>朗讀整章</button><a class="btn ghost" href="practice.html#{cid}">練習這一章</a></div></header>
 {case}<div class="learn"><h2>讀完這章，你能</h2><ul>{learn}</ul></div>
@@ -221,7 +240,7 @@ def chapter(cid):
 {sources}
 <nav class="pager noprint" aria-label="章節切換">{pager}</nav>
 </article>
-<nav class="toc" aria-label="本章目錄"><b>本章目錄</b>{toc}<a href="#keypoints">重點整理</a><a href="#examples">例題</a><a href="#check">自我檢查</a><a href="#terms">本章名詞</a>{'<a href="#sources">來源</a>' if c.get('sources') else ''}</nav>
+<nav class="toc" aria-label="本章目錄"><b>本章目錄</b>{toc}{tail}</nav>
 </main>'''
     page(f'{cid}.html', f'{c["code"]} {c["title"]}', main, c['summary'], labs, current='index.html', jsonld={
         '@context': 'https://schema.org', '@type': 'LearningResource', 'name': f'{c["code"]} {c["title"]}', 'headline': c['title'], 'description': c['summary'],
@@ -237,7 +256,9 @@ def home():
     for st in h['stops']:
         links = ''.join(f'<a href="{x}.html">{e(CH[x]["code"] + " " + CH[x]["title"])}</a>' for x in st['chapters'])
         stops += f'<div class="stop"><b>{e(st["name"])}</b><span class="what">{e(st["what"])}</span>{links}</div>'
-    across = ''.join(f'<a href="{x}.html">{e(CH[x]["title"])}</a>' for x in h['across'])
+    across = ''.join(f'<a href="{x}.html">{e(CH[x]["code"] + " " + CH[x]["title"])}</a>' for x in h['across'])
+    mins = [minutes(CH[x]) for x in ORDER]
+    start = f'共 {len(ORDER)} 章，每章約 {min(mins)}–{max(mins)} 分鐘，可分次讀。' + h['start']
     subs = ''
     for s, sub in SUBJ.items():
         body = ''
@@ -251,7 +272,7 @@ def home():
     tools = ''.join(f'<a class="tool" href="{t["href"]}"><b>{e(t["name"])}</b><span>{e(t["desc"])}</span></a>' for t in h['tools'])
     main = f'''<main>
 <div class="wrap hero"><h1>{e(h["title"])}</h1><p class="lead">{e(h["lead"])}</p>
-<div class="row" style="margin-top:16px"><a class="btn" href="s1-21.html">{e(h["startBtn"])}</a></div><p class="small muted" style="max-width:44em">{e(h["start"])}</p>
+<div class="row" style="margin-top:16px"><a class="btn" href="s1-21.html">{e(h["startBtn"])}</a></div><p class="small muted" style="max-width:44em">{e(start)}</p>
 <div class="trace">{stops}</div>
 <div class="across"><b>{e(h["acrossLabel"])}</b>{across}</div></div>
 <div class="band" id="chapters"><div class="wrap"><div class="subjects">{subs}</div></div></div>
@@ -260,7 +281,7 @@ def home():
     page('index.html', SITE['name'], main, SITE['description'], jsonld={'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'], 'description': SITE['description'], 'inLanguage': 'zh-Hant', 'author': {'@type': 'Person', 'name': SITE['author']}, 'license': 'https://creativecommons.org/licenses/by/4.0/'})
 
 
-def practice():
+def load_questions():
     bank = json.loads((CONTENT / 'questions-base.json').read_text(encoding='utf-8'))
     dropped = edited = 0
     out = []
@@ -269,6 +290,9 @@ def practice():
         d = json.loads(f.read_text(encoding='utf-8'))
         drops |= set(d.get('drop', []))
         edits.update(d.get('edits', {}))
+    ids = {q['id'] for q in bank}
+    for x in sorted((drops | set(edits)) - ids):
+        problems.append(f'edit or drop for unknown question id {x}')
     for q in bank:
         if q['id'] in drops:
             dropped += 1
@@ -277,23 +301,36 @@ def practice():
             q = {**q, **edits[q['id']]}
             edited += 1
         assert len(q['o']) == 4 and q['a'] in range(4), q['id']
-        out.append({k: q[k] for k in ('id', 'subject', 'lesson', 'q', 'o', 'a', 'e')})
+        if q['lesson'] not in CH or CH[q['lesson']]['subject'] != q['subject']:
+            problems.append(f"question {q['id']}: lesson {q['lesson']} does not match subject {q['subject']}")
+        if q.get('sec') and q['lesson'] in CH and q['sec'] not in {s['id'] for s in CH[q['lesson']]['sections']}:
+            problems.append(f"question {q['id']}: section {q['sec']} not in {q['lesson']}")
+        out.append({k: q[k] for k in ('id', 'subject', 'lesson', 'q', 'o', 'a', 'e', 'sec') if k in q})
     print(f'questions: {len(out)} kept, {edited} edited, {dropped} dropped')
     for q in out:
         for m in BANNED.finditer(q['q'] + q['e']):
             problems.append(f"banned wording {m[0]!r} in question {q['id']}")
-    chs = [{'id': c, 'subject': CH[c]['subject'], 'code': CH[c]['code'], 'title': CH[c]['title']} for c in ORDER]
+    return out
+
+
+QUESTIONS = load_questions()
+QCOUNT = {cid: sum(1 for q in QUESTIONS if q['lesson'] == cid) for cid in ORDER}
+
+
+def practice():
+    out = QUESTIONS
+    chs = [{'id': c, 'subject': CH[c]['subject'], 'code': CH[c]['code'], 'title': CH[c]['title'], 'secs': {s['id']: s['h'] for s in CH[c]['sections']}} for c in ORDER]
     js = 'window.AIOT_QUESTIONS=' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\nwindow.AIOT_CHAPTERS=' + json.dumps(chs, ensure_ascii=False, separators=(',', ':')) + ';\n'
     (DIST / 'assets' / 'questions.js').write_text(js.replace('</', '<\\/'), encoding='utf-8')
     n = {s: sum(1 for q in out if q['subject'] == s) for s in SUBJ}
     opts = ''.join(f'<option value="{s}">{e(SUBJ[s]["name"])}（{n[s]} 題）</option>' for s in SUBJ)
-    main = f'''<main class="wrap page"><h1>練習</h1><p class="intro">全部 {len(out)} 題都是本站自編的練習題，不是官方試題。剛開始建議讀完一章後按「練習這一章」，或在下面選那一章；熟了再混合兩科或限時作答。</p>
+    main = f'''<main class="wrap page"><h1>練習</h1><p class="intro">全部 {len(out)} 題都是本站自編的練習題，不是官方試題。剛開始建議讀完一章後按「練習這一章」，或在下面選那一章；熟了再混合兩科或限時作答。限時作答以每題 90 秒計，是本站依每科 75 分鐘估算的節奏，不是官方規定。</p>
 <div class="panel noprint" id="quizSetup"><div class="formgrid">
 <label for="fSubject">科目<select id="fSubject"><option value="">兩科</option>{opts}</select></label>
 <label for="fChapter">章節<select id="fChapter"></select></label>
 <label for="fCount">題數<select id="fCount"><option value="10">10 題</option><option value="25">25 題</option><option value="50">50 題</option><option value="0">全部</option></select></label>
 <label for="fMode">方式<select id="fMode"><option value="learn">每題立刻看解析</option><option value="exam">限時作答（每題 90 秒）</option></select></label>
-<button type="button" class="btn" id="qStart">開始</button></div><p class="small muted" id="fAvail"></p></div>
+<button type="button" class="btn" id="qStart">開始</button></div><p class="small muted" id="fAvail"></p><button type="button" class="btn ghost" id="qWrong" hidden></button></div>
 <div id="quizApp"></div></main>'''
     page('practice.html', '練習', main, f'{len(out)} 題 AIoT 情境練習題，涵蓋兩個科目 15 個主題，每題附解析。', '<script src="assets/questions.js"></script>\n')
 
@@ -340,11 +377,12 @@ def reference():
             c = CH[cid]
             if c['subject'] != s:
                 continue
-            cards += f'<div class="panel {s}"><h3><a href="{cid}.html"><span class="tag">{e(c["code"])}</span> {e(c["title"])}</a></h3><ul>' + ''.join(f'<li>{clean(x, cid)}</li>' for x in c['keypoints']) + '</ul></div>'
+            pits = ''.join(f'<li>{clean(x, cid)}</li>' for x in c['pitfalls'])
+            cards += f'<div class="panel {s}"><h3><a href="{cid}.html"><span class="tag">{e(c["code"])}</span> {e(c["title"])}</a></h3><ul>' + ''.join(f'<li>{clean(x, cid)}</li>' for x in c['keypoints']) + f'</ul><details class="more"><summary>容易混淆的地方（{len(c["pitfalls"])} 條）</summary><ul>{pits}</ul></details></div>'
         blocks += f'<h2 style="margin-top:28px">{e(sub["name"])}</h2><div class="refgrid">{cards}</div>'
-    main = f'''<main class="wrap page"><h1>速查</h1><p class="intro">讀過一輪之後回來複習用：先是會用到的公式，再來是每章的重點。</p>
+    main = f'''<main class="wrap page"><h1>速查</h1><p class="intro">讀過一輪之後回來複習用：先是會用到的公式，再來是每章的重點，展開可看容易混淆的地方。</p>
 <h2>公式</h2><div class="formula">{fm}</div>{blocks}</main>'''
-    page('reference.html', '速查', main, 'AIoT 常用公式與 15 個主題的重點整理。')
+    page('reference.html', '速查', main, 'AIoT 常用公式、15 個主題的重點整理與容易混淆的地方。')
 
 
 def exam():
@@ -355,12 +393,13 @@ def exam():
         for tp in sub['topics']:
             for cid in tp['chapters']:
                 c = CH[cid]
-                scope += f'<tr><td>{e(sub["short"])}</td><td>{e(tp["name"])}</td><td>{e(c["code"])} {e(c["official"])}</td><td><a href="{cid}.html">{e(c["title"])}</a></td></tr>'
+                alias = '' if c['title'] == c['official'] else f'（本站：{e(c["title"])}）'
+                scope += f'<tr><td>{e(sub["short"])}</td><td>{e(tp["name"])}</td><td><a href="{cid}.html">{e(c["code"])} {e(c["official"])}</a>{alias}</td></tr>'
     links = ''.join(f'<li><a href="{u}" rel="noopener" target="_blank">{e(t)}</a></li>' for t, u in x['links'])
     tips = ''.join(f'<li>{e(t)}</li>' for t in x['tips'])
     main = f'''<main class="wrap page"><h1>考試資訊</h1><p class="intro">{e(x["intro"])}</p>
 <div class="panel"><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><tbody>{rows}</tbody></table></div><p class="small muted">{e(x["checked"])}</p></div>
-<h2 style="margin-top:28px">考試範圍與本站章節</h2><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>科目</th><th>評鑑主題</th><th>評鑑內容</th><th>本站章節</th></tr></thead><tbody>{scope}</tbody></table></div>
+<h2 style="margin-top:28px">考試範圍與本站章節</h2><p>章節編號照官方簡章：科一用「.」（如 2.1），科二用「-」（如 2-1）。點評鑑內容就能讀那一章。</p><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>科目</th><th>評鑑主題</th><th>評鑑內容</th></tr></thead><tbody>{scope}</tbody></table></div>
 <h2 style="margin-top:28px">作答提醒</h2><ul>{tips}</ul>
 <h2 style="margin-top:28px">官方資源</h2><ul>{links}</ul></main>'''
     page('exam.html', '考試資訊', main, 'iPAS AIoT 應用工程師初級兩個學科的考試形式、及格標準與範圍對照。')
@@ -394,7 +433,7 @@ def discovery():
             if CH[cid]['subject'] == k:
                 lines.append(f'- [{CH[cid]["code"]} {CH[cid]["title"]}]({SITE["url"]}{cid}.html)：{CH[cid]["summary"]}')
         lines.append('')
-    lines += ['## 工具', f'- [練習題]({SITE["url"]}practice.html)', f'- [名詞查詢]({SITE["url"]}glossary.html)', f'- [公式與重點速查]({SITE["url"]}reference.html)', f'- [考試資訊]({SITE["url"]}exam.html)', '']
+    lines += ['## 工具', f'- [練習題]({SITE["url"]}practice.html)', f'- [名詞查詢]({SITE["url"]}glossary.html)', f'- [公式、重點與容易混淆處速查]({SITE["url"]}reference.html)', f'- [考試資訊]({SITE["url"]}exam.html)', '']
     (DIST / 'llms.txt').write_text('\n'.join(lines), encoding='utf-8')
 
 

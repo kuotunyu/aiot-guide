@@ -36,7 +36,7 @@ assert.strictEqual(compareUpdates(5, 45, 1).longPolling.requests, 160); // 80 ch
 r = compareUpdates(5, 3600, 100);
 assert.strictEqual(r.longPolling.requests, 12000);  // re-asks every 30 s: 120/h × 100
 assert.strictEqual(r.webSocket.pushes, 100);
-assert(insight(5, 3600, 1).includes('只有一位使用者'));
+assert(insight(5, 3600, 1).includes('變化慢、人又少，這組條件下輪詢就夠'));
 // Poll every 60 s, data every 300 s: 60 polls vs 12 x 10 = 120 long-poll requests. The cause is the 30 s timeout, not fast data.
 assert(insight(60, 300, 100).includes('逾時'));
 assert(!insight(60, 300, 100).includes('資料變得比輪詢還快'));
@@ -64,5 +64,21 @@ for (const row of readings(100)) assert.strictEqual(row.temp.length, 5);
 // CSV's advantage grows with batch size, because field names are not repeated.
 const ratio = n => { const z = formatSizes(n, true).sizes; return z.xml / z.csv; };
 assert(ratio(100) > ratio(1));
+
+// Closing verdict for the four presets in the lab (POLL[3] = 5 s, CHANGE / USERS by index).
+// 冷藏庫溫度看板: 5 s / 60 s / 100 people -> push, 100 connections
+assert(insight(5, 60, 100).includes('這組條件下推送較划算，代價是伺服器要掛著 100 條連線並處理重連'));
+// 很少發生的超溫告警: 5 s / 3600 s / 100 people -> push
+assert(insight(5, 3600, 100).includes('這組條件下推送較划算'));
+// 貨車每秒更新的追蹤畫面: 5 s / 1 s / 100 people -> polling misses, choose WebSocket
+assert(insight(5, 1, 100).endsWith('輪詢會漏、長輪詢更費，這組條件選 WebSocket。'));
+// 只有一人看的倉庫螢幕: 30 s / 300 s / 1 person -> slow data, one viewer: polling is enough
+assert(insight(30, 300, 1).endsWith('變化慢、人又少，這組條件下輪詢就夠，做法最簡單。'));
+// Few viewers with faster data that polling still keeps up with
+assert(insight(15, 15, 1).endsWith('人少、輪詢也跟得上變化，這組條件下輪詢就夠，做法最簡單。'));
+// Missed changes win over few viewers; 10 viewers still count as few, 50 do not.
+assert(insight(5, 1, 1).includes('這組條件選 WebSocket'));
+assert(insight(5, 60, 10).includes('輪詢就夠'));
+assert(insight(5, 60, 50).includes('推送較划算'));
 
 console.log('labs-s2-22 ok');

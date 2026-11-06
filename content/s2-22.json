@@ -4,7 +4,7 @@
  "subtitle": "感測資料上雲後，怎麼傳、怎麼存、怎麼看",
  "summary": "沿著資料上雲的路，認識雲端服務、資料格式、資料庫、Web API 與開源授權，讀完能替 IoT 專案做出基本選型。",
  "learn": [
-  "區分 IaaS、PaaS、SaaS 與公有雲、私有雲、混合雲",
+  "區分 IaaS、PaaS、SaaS，說出每種模式自己還要管什麼",
   "說出感測資料從裝置到儀表板經過哪些環節",
   "依資料特性選資料格式與資料庫",
   "讀懂 HTTP 方法與狀態碼，比較 Polling、Long Polling、WebSocket",
@@ -16,40 +16,12 @@
   {
    "id": "cloud-models",
    "h": "雲端服務：自己要管到哪一層",
-   "body": "<p>雲端類型（公有雲、私有雲、混合雲）與虛擬機、容器的基本概念在科一 2.4〈中介軟體與平台〉，這節從「誰負責管什麼」的角度再看一次。</p><p>服務模式可用租屋來記。<b>IaaS（基礎設施即服務）</b>像毛胚屋：業者給虛擬機、儲存與網路頻寬，作業系統以上自己管。<b>PaaS（平台即服務）</b>像精裝屋：執行環境與資料庫由業者維護，開發者只管程式和資料。<b>SaaS（軟體即服務）</b>像飯店：打開就用，例如線上信箱與雲端硬碟。</p><p>判斷時問兩件事：使用者是誰、他自己還得維護什麼。只拿到機器的是 IaaS，只需上傳程式的是 PaaS，打開就用的是 SaaS。</p><p>無論哪種模式，裝置金鑰、帳號與資料的存取權限都還是使用者的責任；業者不會替你修正設錯的公開分享。</p>",
+   "body": "<p>雲端類型、虛擬機與容器已在 <a href=\"s1-24.html#cloud-models\">科一 2.4〈中介軟體與平台〉</a>講過，這節改從使用者的角度，看三種服務模式各自還要管什麼。</p><p>判斷時問兩件事：使用者是誰、他自己還得維護什麼。只拿到機器的是 <b>IaaS</b>（基礎設施即服務），只需上傳程式的是 <b>PaaS</b>（平台即服務），打開就用的是 <b>SaaS</b>（軟體即服務）。</p><p>無論哪種模式，裝置金鑰、帳號與資料的存取權限都還是使用者的責任；業者不會替你修正設錯的公開分享。</p>",
    "svg": "<svg viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 各層由誰管理的責任分層圖\"><text x=\"215\" y=\"34\" class=\"tb tc\">地端自建</text><text x=\"325\" y=\"34\" class=\"tb tc\">IaaS</text><text x=\"435\" y=\"34\" class=\"tb tc\">PaaS</text><text x=\"545\" y=\"34\" class=\"tb tc\">SaaS</text><text x=\"150\" y=\"73\" class=\"t\" text-anchor=\"end\">應用程式</text><rect x=\"165\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"72\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"111\" class=\"t\" text-anchor=\"end\">資料</text><rect x=\"165\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"545\" y=\"110\" class=\"ts tc\">帳號權限</text><text x=\"150\" y=\"149\" class=\"t\" text-anchor=\"end\">執行環境</text><rect x=\"165\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"148\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"148\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"187\" class=\"t\" text-anchor=\"end\">作業系統</text><rect x=\"165\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"186\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"186\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"225\" class=\"t\" text-anchor=\"end\">虛擬化</text><rect x=\"165\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"224\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"224\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"263\" class=\"t\" text-anchor=\"end\">硬體與網路</text><rect x=\"165\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"262\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"262\" class=\"ts tc\">業者管</text><text x=\"215\" y=\"300\" class=\"ts tc\">自有機房</text><text x=\"325\" y=\"300\" class=\"ts tc\">虛擬機 VM</text><text x=\"435\" y=\"300\" class=\"ts tc\">應用託管平台</text><text x=\"545\" y=\"300\" class=\"ts tc\">Gmail、Drive</text><text x=\"150\" y=\"300\" class=\"ts\" text-anchor=\"end\">例</text><rect x=\"60\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"box\"/><text x=\"90\" y=\"336\" class=\"ts\">你自己管</text><rect x=\"210\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"acc\"/><text x=\"240\" y=\"336\" class=\"ts\">雲端業者管</text><rect x=\"370\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"warn\"/><text x=\"400\" y=\"336\" class=\"ts\">仍要自己管帳號與權限</text></svg>",
    "caption": "越往右自己管得越少；即使是 SaaS，帳號與資料權限仍要自己管。",
-   "table": {
-    "head": [
-     "部署模式",
-     "特徵",
-     "要留意"
-    ],
-    "rows": [
-     [
-      "公有雲 Public",
-      "多個客戶共用業者的基礎設施（多租戶），隨租隨用",
-      "資料離開公司，受法規限制的不一定能放"
-     ],
-     [
-      "私有雲 Private",
-      "架在公司內部或專屬環境，自負維運成本；員工在外可透過 VPN（加密的專用通道）連回",
-      "放在自家機房不等於安全，內部人員與設定錯誤仍是風險"
-     ],
-     [
-      "混合雲 Hybrid",
-      "機敏資料留在私有雲，其他工作放公有雲",
-      "要處理兩邊的連線、同步與權限"
-     ]
-    ]
-   },
    "predict": {
     "q": "公司用 SaaS 線上表單收異常回報，卻因分享連結設成公開而外洩。既然軟體由業者維護，這是業者的責任嗎？",
     "a": "主要是公司自己的責任。業者保護平台，帳號與資料的存取權限在任何服務模式下都要自己管。"
-   },
-   "more": {
-    "label": "雲端為什麼能共用：虛擬化與資源池",
-    "body": "<p>雲端能把一台實體機分給許多人用，靠的是<b>虛擬化（Virtualization）</b>：用軟體把硬體切成多台邏輯上獨立的機器，集中成<b>資源池（Resource Pooling）</b>。因此雲端服務通常可透過網路隨處存取、依需求快速擴充，並能量測用量來計費。</p><p>AWS、Azure、GCP 這類平台的主力是 IaaS 與 PaaS。</p>"
    }
   },
   {
@@ -135,7 +107,7 @@
     ]
    },
    "predict": {
-    "q": "同一批貨車讀值分別寫成 JSON、CSV、XML。誰最長？從一次送 1 筆改成一次送 100 筆，XML 和 CSV 的倍數差距會變大還是變小？",
+    "q": "同一批貨車讀值分別寫成 JSON、CSV（用逗號分隔欄位的表格文字）、XML。誰最長？從一次送 1 筆改成一次送 100 筆，XML 和 CSV 的倍數差距會變大還是變小？",
     "a": "XML 最長、CSV 最短。差距會變大，因為 XML 和 JSON 每筆都重複欄位名，CSV 的標題列只寫一次。"
    },
    "lab": "s2-22-formats",
@@ -278,7 +250,7 @@
   {
    "id": "tools-licenses",
    "h": "開發工具與開源授權",
-   "body": "<p><b>Node-RED</b> 是 IBM 開發、現由 OpenJS 基金會維護的<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，像標準貨櫃，到哪裡都能照樣執行。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。開源授權大致分兩類：<b>Copyleft</b> 要求散布衍生作品時延續相同自由，<b>寬鬆授權</b> 則通常只要求保留聲明。</p>",
+   "body": "<p><b>Node-RED</b> 是 IBM 開發、現由 OpenJS 基金會維護的<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，像標準貨櫃，到哪裡都能照樣執行（容器與虛擬機的差別見 <a href=\"s1-24.html#vm-container\">科一 2.4〈中介軟體與平台〉</a>）。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。開源授權大致分兩類：<b>Copyleft</b> 要求散布衍生作品時延續相同自由，<b>寬鬆授權</b> 則通常只要求保留聲明。</p>",
    "svg": "<svg viewBox=\"0 0 600 210\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Node-RED 流程範例：收 MQTT、轉換、判斷門檻、畫圖或告警\"><defs><marker id=\"s2-22-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"acc\"/><text x=\"70\" y=\"69\" class=\"tb tc\">mqtt in</text><text x=\"70\" y=\"87\" class=\"ts tc\">收感測值</text><rect x=\"150\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"box\"/><text x=\"210\" y=\"69\" class=\"tb tc\">function</text><text x=\"210\" y=\"87\" class=\"ts tc\">轉換格式</text><rect x=\"290\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"warn\"/><text x=\"350\" y=\"69\" class=\"tb tc\">switch</text><text x=\"350\" y=\"87\" class=\"ts tc\">溫度＞30？</text><rect x=\"460\" y=\"6\" width=\"120\" height=\"48\" rx=\"10\" class=\"ok\"/><text x=\"520\" y=\"27\" class=\"tb tc\">chart</text><text x=\"520\" y=\"45\" class=\"ts tc\">儀表板畫圖</text><rect x=\"460\" y=\"98\" width=\"120\" height=\"48\" rx=\"10\" class=\"bad\"/><text x=\"520\" y=\"119\" class=\"tb tc\">e-mail</text><text x=\"520\" y=\"137\" class=\"ts tc\">發出告警</text><line x1=\"132\" y1=\"72\" x2=\"146\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><line x1=\"272\" y1=\"72\" x2=\"286\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,64 C435,64 435,30 456,30\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,80 C435,80 435,122 456,122\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><text x=\"300\" y=\"178\" class=\"t tc\">在瀏覽器拖拉節點、連上線，就是一支程式</text><text x=\"300\" y=\"200\" class=\"ts tc\">低程式碼、跑在 Node.js 上，常用來串 MQTT、資料庫與儀表板</text><text x=\"424\" y=\"36\" class=\"ts tc\">否</text><text x=\"424\" y=\"118\" class=\"ts tc\">是</text></svg>",
    "caption": "Node-RED 流程範例：收到感測值後先轉換格式，再判斷門檻，未超過就畫圖，超過就寄出告警。",
    "table": {
@@ -320,13 +292,13 @@
     "a": "不需要。GPL 提供原始碼的義務在散布時才發生；若把程式交給客戶，才要依條款提供。"
    },
    "more": {
-    "label": "Node.js、容器與虛擬機的差別、Shell Script，以及其他軟體類別",
-    "body": "<p>Node-RED 跑在 Node.js（讓 JavaScript 能在瀏覽器以外執行的環境）上。</p><p>Docker 屬於作業系統層級的虛擬化，容器共用主機作業系統的核心（管理硬體的底層程式），比虛擬機（用軟體模擬出的一整台電腦）輕量，彼此隔離。Linux 可原生執行；Windows、macOS 可透過 Docker Desktop 使用，其中 Linux 容器實際跑在內建的輕量 Linux 虛擬機上。</p><p>並非每台裝置都裝得下 Docker 或 Python。Linux 系統通常內建執行 <b>Shell Script</b>（把一連串系統指令寫成的小程式）的環境，不必另外安裝，適合儲存空間有限的小型裝置。</p><p><b>免費軟體（Freeware）</b>只是不收費，<b>共享軟體（Shareware）</b>偏先試用，兩者都不一定開放原始碼。<b>公共領域軟體（Public Domain）</b>則是著作權已放棄或到期。</p>"
+    "label": "Node.js、Shell Script，以及其他軟體類別",
+    "body": "<p>Node-RED 跑在 Node.js（讓 JavaScript 能在瀏覽器以外執行的環境）上。</p><p>並非每台裝置都裝得下 Docker 或 Python。Linux 系統通常內建執行 <b>Shell Script</b>（把一連串系統指令寫成的小程式）的環境，不必另外安裝，適合儲存空間有限的小型裝置。</p><p><b>免費軟體（Freeware）</b>只是不收費，<b>共享軟體（Shareware）</b>偏先試用，兩者都不一定開放原始碼。<b>公共領域軟體（Public Domain）</b>則是著作權已放棄或到期。</p>"
    }
   }
  ],
  "keypoints": [
-  "IaaS 租基礎設施、PaaS 租開發平台、SaaS 直接用軟體，雲端的基礎是虛擬化。",
+  "IaaS 租基礎設施、PaaS 租開發平台、SaaS 直接用軟體。",
   "資料管線六站：裝置、協定、平台、儲存、分析、視覺化。",
   "要層級選 JSON 或 XML，平面表格用 CSV 比 JSON、XML 精簡，要進一步省頻寬選 Protobuf 或 MessagePack。",
   "JSON 文件存 MongoDB，連續感測讀值存時序資料庫，關聯清楚的資料存 SQL。",
@@ -356,22 +328,18 @@
    "think": "關鍵條件是「新值一到就顯示」與「減少反覆請求」，代表要由伺服器主動推送，對應 WebSocket。定時 AJAX 是輪詢，溫度沒變時多半白問；每小時的 CSV 不夠即時；GET 參數是請求帶給伺服器的內容，不是推送機制。"
   },
   {
-   "q": "冷鏈物流公司要上線一套冷藏庫監控後台。團隊希望只部署自己寫的程式並管理資料，作業系統更新、資料庫修補與備份都交給業者。最符合需求的是哪一種服務模式？",
+   "q": "冷鏈物流公司的車隊讀值資料庫原本只放在一台主機上。若這台主機整台毀損，公司希望最快恢復服務、幾乎不遺失資料。事前該採用哪一種做法？",
    "o": [
-    "自建機房",
-    "IaaS",
-    "PaaS",
-    "SaaS"
+    "把資料分片到三台主機，分攤讀寫負載",
+    "主機內用 RAID 讓多顆硬碟互為備援",
+    "把資料即時複寫到另一台主機，壞了就切換",
+    "每天把資料匯出成 CSV，存到雲端硬碟"
    ],
    "a": 2,
-   "think": "先看誰在用：要部署自己程式的是開發者。再看責任線：作業系統與資料庫交給業者，只管程式和資料，這正是 PaaS。IaaS 的作業系統要自己維護，自建機房連硬體都要管，SaaS 則沒有部署自己程式的空間。"
+   "think": "關鍵條件是「整台主機毀損」與「最快恢復、幾乎不遺失」。對應觀念是複寫：資料已即時在另一台主機上，切換過去就能繼續服務。分片是為了分攤負載，壞掉那台上的資料照樣拿不到；RAID 只防硬碟損壞，整台主機壞了沒用；每天匯出 CSV 是備份，還原慢又會少掉當天的資料。反過來，複寫會把誤刪一起同步過去，所以仍要另做獨立備份。"
   }
  ],
  "check": [
-  {
-   "q": "雲端服務能分給許多人共用，基礎技術是什麼？",
-   "a": "虛擬化，把實體硬體切成可共享的資源池。"
-  },
   {
    "q": "把感測資料放上雲端後，裝置金鑰與資料權限可以交給業者不管嗎？",
    "a": "不行，這些仍要依服務分工自己管理，並檢查公開分享設定。"
@@ -416,11 +384,6 @@
    "term": "SaaS",
    "en": "Software as a Service",
    "def": "打開就能用的線上軟體。"
-  },
-  {
-   "term": "虛擬化",
-   "en": "Virtualization",
-   "def": "用軟體把實體硬體切成多台邏輯機器。"
   },
   {
    "term": "閘道器",

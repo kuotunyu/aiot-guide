@@ -55,6 +55,17 @@
     if (scale !== e.scale) problems.push('scale');
     return {got, truth, entry: e, ok: got === truth.value, problems};
   }
+  // Hint for a wrong type, using the same rule as toSigned: an INT16 reading of 32768 or more is negative.
+  function typeHint(raw, chosenType) {
+    return chosenType === 'UINT16'
+      ? '型別錯：' + raw + ' ≥ 32768，INT16 要減 65536'
+      : '型別錯：對照表標 UINT16，' + raw + ' 不必減 65536';
+  }
+  // OPC UA challenge: open the freezer node under both brands. seen is a Set of brands, kept between calls.
+  function trackFreezer(seen, s) {
+    if (s.node === 'freezer') seen.add(s.brand);
+    return seen.size === 2;
+  }
   // NodeIds differ per server; the browse name and metadata come from the shared type.
   function nodeOf(brand, key) {
     const p = POINTS[key];
@@ -62,7 +73,7 @@
     return Object.assign({nodeId: id}, p);
   }
 
-  const api = {POINTS, POINT_ORDER, BRANDS, ADDRESSES, SCALES, toSigned, decode, pduOffset, requestPdu, responsePdu, judge, nodeOf};
+  const api = {POINTS, POINT_ORDER, BRANDS, ADDRESSES, SCALES, toSigned, decode, pduOffset, hex16, requestPdu, responsePdu, judge, typeHint, trackFreezer, nodeOf};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -74,8 +85,9 @@
     const TASKS = [
       {q: '廠牌 A，用 Modbus 讀出冷凍櫃庫內溫度 −18.5 °C', done: s => s.brand === 'A' && isFreezer(s), a: {brand: 'A', ref: 40002, scale: 0.1, type: 'INT16', table: true}},
       {q: '換成廠牌 B，用 Modbus 讀出同一個溫度', done: s => s.brand === 'B' && isFreezer(s), a: {brand: 'B', ref: 40004, scale: 0.01, type: 'INT16', table: true}},
-      {q: '用 OPC UA 點開同一個溫度，再切換廠牌，看哪些欄位沒變', done: s => s.node === 'freezer', a: {node: 'freezer'}},
+      {q: '用 OPC UA 點開同一個溫度，再切換廠牌，看哪些欄位沒變', done: s => trackFreezer(seen, s), a: s => ({node: 'freezer', brand: s.brand === 'A' ? 'B' : 'A'})},
     ];
+    const seen = new Set();
     const isFreezer = s => {
       const r = judge(s.brand, s.ref, s.type, s.scale);
       return r.entry.point === 'freezer' && r.ok;
@@ -111,10 +123,9 @@
       $$('[data-n]', el).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.n === s.node)));
       const r = judge(s.brand, s.ref, s.type, s.scale), e = r.entry;
       wire.innerHTML = '<ul class="rank">' +
-        row('ok', '送出', '請求 PDU', '<code>' + requestPdu(s.ref) + '</code><br>功能碼 03，偏移量 ' + pduOffset(s.ref) + '（' + s.ref + ' 是慣用標示）') +
-        row('ok', '收到', '回應 PDU', '<code>' + responsePdu(e.raw) + '</code>') +
-        row('ok', '收到', '暫存器值', '<b>' + e.raw + '</b>') +
-        row('no', '沒有', '名稱', '封包裡沒有') + row('no', '沒有', '單位', '封包裡沒有') + row('no', '沒有', '比例、型別', '封包裡沒有') + '</ul>';
+        row('ok', '收到', '暫存器值', '<b>' + e.raw + '</b>（封包裡寫成十六進位 <code>' + hex16(e.raw) + '</code>）<br>回應 PDU <code>' + responsePdu(e.raw) + '</code>') +
+        row('no', '沒有', '名稱', '封包裡沒有') + row('no', '沒有', '單位', '封包裡沒有') + row('no', '沒有', '比例、型別', '封包裡沒有') +
+        row('ok', '送出', '請求 PDU', '<code>' + requestPdu(s.ref) + '</code><br>功能碼 03，偏移量 ' + pduOffset(s.ref) + '（' + s.ref + ' 是慣用標示）') + '</ul>';
       const shown = num(r.got);
       if (!s.table) {
         mOut.innerHTML = '<b>算出 ' + shown + '。</b>通訊沒有回報任何錯誤，但封包沒說這個數字是什麼。打開對照表才能判斷。';
@@ -124,7 +135,7 @@
         if (r.ok) msg = '<b>' + esc(POINTS[e.point].name) + '＝' + shown + ' ' + esc(r.truth.unit) + '，正確。</b>';
         else {
           const why = [];
-          if (r.problems.includes('type')) why.push('型別錯：' + e.raw + ' 的最高位元是 1，INT16 要減 65536');
+          if (r.problems.includes('type')) why.push(typeHint(e.raw, s.type));
           if (r.problems.includes('scale')) why.push('比例錯：對照表寫 ×' + e.scale);
           msg = '<b>算出 ' + shown + '，實際是 ' + num(r.truth.value) + ' ' + esc(r.truth.unit) + '。</b>' + esc(why.join('；')) + '。協定不會替你發現這種錯。';
         }
@@ -151,7 +162,7 @@
     }
     $$('[data-a]', el).forEach(b => b.onclick = () => { s.ref = +b.dataset.a; draw(); });
     $$('[data-n]', el).forEach(b => b.onclick = () => { s.node = b.dataset.n; draw(); });
-    $$('.task button', el).forEach((b, i) => b.onclick = () => { Object.assign(s, TASKS[i].a); drawForm(); draw(); });
+    $$('.task button', el).forEach((b, i) => b.onclick = () => { const a = TASKS[i].a; Object.assign(s, typeof a === 'function' ? a(s) : a); drawForm(); draw(); });
     drawForm(); draw();
   }
 

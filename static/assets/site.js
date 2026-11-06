@@ -63,27 +63,43 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     if ([...fC.options].some(o => o.value === cur)) fC.value = cur;
   }
   function updAvail(){ avail.textContent = '目前範圍共 ' + pool().length + ' 題'; }
+  // Questions answered wrong are remembered in this browser only, until answered right.
+  const loadWrong = () => { try { return new Set(JSON.parse(store.get('wrong') || '[]')); } catch(e){ return new Set(); } };
+  function record(q, k){
+    const w = loadWrong(); if (k === q.a) w.delete(q.id); else w.add(q.id);
+    store.set('wrong', JSON.stringify([...w]));
+  }
+  function updRedo(){
+    const b = $('#qWrong'), ids = loadWrong(), qs = ALL.filter(q => ids.has(q.id));
+    b.hidden = !qs.length; b.textContent = '重做曾答錯的 ' + qs.length + ' 題';
+    b.onclick = () => start(shuffle(qs), 'learn');
+  }
   fS.onchange = () => { fillChapters(); updAvail(); }; fC.onchange = updAvail;
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const chName = id => { const c = CH.find(x => x.id === id); return c ? c.code + ' ' + c.title : ''; };
+  // Point at the section that teaches the question when one is tagged; otherwise the chapter.
+  const backLink = q => { const c = CH.find(x => x.id === q.lesson), h = q.sec && c && c.secs[q.sec];
+    return h ? '<a href="' + q.lesson + '.html#' + q.sec + '">回到〈' + esc(h) + '〉（' + esc(chName(q.lesson)) + '）</a>' : '<a href="' + q.lesson + '.html">讀這一章：' + esc(chName(q.lesson)) + '</a>'; };
 
   $('#qStart').onclick = () => start(shuffle(pool()).slice(0, +fN.value || 9999), fM.value);
   function start(qs, mode){
     if (!qs.length) { avail.textContent = '這個範圍沒有題目，請換一個範圍。'; return; }
     clearInterval(tick);
-    run = {qs, mode, i:0, ans:{}, t0:Date.now(), limit: qs.length * 90000};
+    // Options are shown in a fresh order each run; answers are still stored as the original index.
+    run = {qs, mode, i:0, ans:{}, perm:Object.fromEntries(qs.map(q => [q.id, shuffle([0, 1, 2, 3])])), t0:Date.now(), limit: qs.length * 90000};
     $('#quizSetup').hidden = true; render();
-    if (mode === 'exam') tick = setInterval(() => { const t = $('#timer'); if (!t) return; const ms = run.t0 + run.limit - Date.now(); t.textContent = fmt(ms); if (ms <= 0) finish(); }, 1000);
+    if (mode === 'exam') tick = setInterval(() => { const t = $('#timer'); if (!t) return; const ms = run.t0 + run.limit - Date.now(); t.textContent = fmt(ms); if (ms <= 0) finish(true); }, 1000);
   }
   const fmt = ms => { ms = Math.max(0, ms); return Math.floor(ms / 60000) + ':' + String(Math.floor(ms % 60000 / 1000)).padStart(2, '0'); };
   function qBlock(q, picked, reveal){
+    const perm = run.perm[q.id] || [0, 1, 2, 3];
     let h = '<p class="small muted noread">' + esc(chName(q.lesson)) + '</p><div class="qtext">' + esc(q.q) + '</div><div class="opts">';
-    q.o.forEach((o, k) => {
+    perm.forEach((k, pos) => {
       let c = ''; if (reveal && picked != null){ if (k === q.a) c = 'correct'; else if (k === picked) c = 'wrong'; } else if (picked === k) c = 'picked';
-      h += '<button type="button" class="opt ' + c + '" data-k="' + k + '"' + (reveal && picked != null ? ' disabled' : '') + '><span class="k">' + LET[k] + '</span><span>' + esc(o) + '</span></button>';
+      h += '<button type="button" class="opt ' + c + '" data-k="' + k + '"' + (reveal && picked != null ? ' disabled' : '') + '><span class="k">' + LET[pos] + '</span><span>' + esc(q.o[k]) + '</span></button>';
     });
     h += '</div>';
-    if (reveal && picked != null) h += '<div class="why ' + (picked === q.a ? 'ok' : 'bad') + '"><b>' + (picked === q.a ? '答對了' : '正解是 ' + LET[q.a]) + '</b><p>' + esc(q.e) + '</p><p class="small"><a href="' + q.lesson + '.html">讀這一章：' + esc(chName(q.lesson)) + '</a></p></div>';
+    if (reveal && picked != null) h += '<div class="why ' + (picked === q.a ? 'ok' : 'bad') + '"><b>' + (picked === q.a ? '答對了' : '正解是 ' + LET[perm.indexOf(q.a)]) + '</b><p>' + esc(q.e) + '</p><p class="small">' + backLink(q) + '</p></div>';
     return h;
   }
   function render(){
@@ -92,34 +108,39 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     let h = '<div class="quiz" data-read><div class="qhead"><span>第 ' + (run.i + 1) + ' / ' + run.qs.length + ' 題</span><span class="row">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + '<button type="button" class="say" data-say-card>朗讀題目</button></span></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div>';
     h += qBlock(q, picked, !ex);
     h += '<div class="qnav noread"><button type="button" class="btn ghost" id="qPrev"' + (run.i ? '' : ' disabled') + '>上一題</button>';
-    h += ex ? '<button type="button" class="btn ghost" id="qSubmit">交卷</button>' : '<button type="button" class="btn ghost" id="qEnd">結束並看結果</button>';
+    const left = run.qs.length - done;
+    h += ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題未作答，再按一次交卷' : '交卷') + '</button>' : '<button type="button" class="btn ghost" id="qEnd">結束並看結果</button>';
     h += '<button type="button" class="btn" id="qNext">' + (run.i + 1 < run.qs.length ? '下一題' : '看結果') + '</button></div>';
     if (ex) h += '<div class="grid noread">' + run.qs.map((x, k) => '<button type="button" data-j="' + k + '" class="' + (run.ans[x.id] != null ? 'ans ' : '') + (k === run.i ? 'cur' : '') + '">' + (k + 1) + '</button>').join('') + '</div>';
     qa.innerHTML = h + '</div>';
-    $$('.opt', qa).forEach(b => b.onclick = () => { run.ans[q.id] = +b.dataset.k; if (ex && run.i + 1 < run.qs.length) run.i++; render(); });
-    $('#qPrev').onclick = () => { run.i--; render(); };
-    $('#qNext').onclick = () => { if (run.i + 1 < run.qs.length){ run.i++; render(); scrollTo(0, 0); } else finish(); };
-    const end = $('#qEnd') || $('#qSubmit'); end.onclick = () => finish();
-    $$('.grid button', qa).forEach(b => b.onclick = () => { run.i = +b.dataset.j; render(); });
+    $$('.opt', qa).forEach(b => b.onclick = () => { run.ans[q.id] = +b.dataset.k; run.confirm = false; if (!ex) record(q, run.ans[q.id]); render(); });
+    $('#qPrev').onclick = () => { run.i--; run.confirm = false; render(); };
+    $('#qNext').onclick = () => { run.confirm = false; if (run.i + 1 < run.qs.length){ run.i++; render(); scrollTo(0, 0); } else finish(); };
+    // Submitting with unanswered questions takes a second press, so a stray tap cannot end the test.
+    if ($('#qEnd')) $('#qEnd').onclick = () => finish();
+    if ($('#qSubmit')) $('#qSubmit').onclick = () => { if (left && !run.confirm){ run.confirm = true; render(); } else finish(); };
+    $$('.grid button', qa).forEach(b => b.onclick = () => { run.i = +b.dataset.j; run.confirm = false; render(); });
   }
-  function finish(){ clearInterval(tick); run.done = true; result(); scrollTo(0, 0); }
+  function finish(timeUp){ clearInterval(tick); if (run.mode === 'exam') run.qs.forEach(q => { if (run.ans[q.id] != null) record(q, run.ans[q.id]); }); run.done = true; run.timeUp = !!timeUp; result(); scrollTo(0, 0); }
   function result(){
     const answered = run.qs.filter(q => run.ans[q.id] != null), ok = answered.filter(q => run.ans[q.id] === q.a).length;
     const total = run.mode === 'exam' ? run.qs.length : answered.length, wrong = run.qs.filter(q => run.ans[q.id] != null ? run.ans[q.id] !== q.a : run.mode === 'exam');
     const by = {}; run.qs.forEach(q => { if (run.mode !== 'exam' && run.ans[q.id] == null) return; const b = by[q.lesson] || (by[q.lesson] = {n:0, ok:0}); b.n++; if (run.ans[q.id] === q.a) b.ok++; });
-    let h = '<div class="quiz"><div class="panel"><div class="score">' + ok + ' / ' + total + '</div><p>' + (total ? '答對率 ' + Math.round(ok / total * 100) + '%' : '還沒有作答') + '</p><div class="row"><button type="button" class="btn" id="qAgain">換一組題目</button>' + (wrong.length ? '<button type="button" class="btn ghost" id="qRedo">重做錯的 ' + wrong.length + ' 題</button>' : '') + '</div></div>';
+    let h = '<div class="quiz"><div class="panel">' + (run.timeUp ? '<p><b>時間到，已自動交卷。</b></p>' : '') + '<div class="score">' + ok + ' / ' + total + '</div><p>' + (total ? '答對率 ' + Math.round(ok / total * 100) + '%' : '還沒有作答') + '</p><div class="row"><button type="button" class="btn" id="qAgain">換一組題目</button>' + (wrong.length ? '<button type="button" class="btn ghost" id="qRedo">重做錯的 ' + wrong.length + ' 題</button>' : '') + '</div></div>';
     const rows = Object.keys(by).sort((a, b) => by[a].ok / by[a].n - by[b].ok / by[b].n);
     if (rows.length > 1) h += '<h2>各章表現</h2><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>章節</th><th>答對</th></tr></thead><tbody>' + rows.map(k => '<tr><td><a href="' + k + '.html">' + esc(chName(k)) + '</a></td><td class="mono">' + by[k].ok + ' / ' + by[k].n + '</td></tr>').join('') + '</tbody></table></div>';
     if (wrong.length) h += '<h2>檢討</h2>' + wrong.map(q => '<div class="ex">' + qBlock(q, run.ans[q.id] == null ? -1 : run.ans[q.id], true) + '</div>').join('');
     qa.innerHTML = h + '</div>';
     $$('.opt', qa).forEach(b => b.disabled = true);
-    $('#qAgain').onclick = () => { run = null; qa.innerHTML = ''; $('#quizSetup').hidden = false; };
+    $('#qAgain').onclick = () => { run = null; qa.innerHTML = ''; $('#quizSetup').hidden = false; updRedo(); };
     if ($('#qRedo')) $('#qRedo').onclick = () => start(shuffle(wrong), 'learn');
   }
   fillChapters();
   const hash = location.hash.slice(1);
-  if (CH.some(c => c.id === hash)) { fC.value = hash; }
-  updAvail();
+  // Coming from a chapter's "練習這一章": preselect that subject and chapter, and all of its questions.
+  const fromCh = CH.find(c => c.id === hash);
+  if (fromCh) { fS.value = fromCh.subject; fillChapters(); fC.value = hash; fN.value = '0'; }
+  updAvail(); updRedo();
 })();
 
 // ----- read aloud -----

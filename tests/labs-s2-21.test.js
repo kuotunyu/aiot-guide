@@ -1,6 +1,6 @@
 // Run: node aiot-guide/tests/labs-s2-21.test.js
 const assert = require('assert');
-const {pinState, sampleReads, batteryEstimate, batteryAdvice, formatDays} = require('../static/assets/labs/s2-21.js');
+const {pinState, sampleReads, batteryEstimate, batteryAdvice, formatDays, BATTERY_PRESETS, labEstimate, vsExample} = require('../static/assets/labs/s2-21.js');
 
 // Input pin truth table
 const level = (m, p) => pinState(m, p).level;
@@ -72,5 +72,20 @@ assert.strictEqual(formatDays(1.25), '1.3 天');
 assert.strictEqual(formatDays(58.2), '58 天');
 assert.strictEqual(formatDays(833.3), '833 天（約 2.3 年）');
 assert.strictEqual(formatDays(Infinity), '無上限');
+
+// The three chips, hand-calculated against the chapter's example (58.2 days)
+const [ex, hour, hourLow] = BATTERY_PRESETS.map(p => p.v);
+near(labEstimate(ex).days, 58.2, 0.1);                 // 2000 ÷ 1.43167 mA ÷ 24
+assert.strictEqual(vsExample(ex), null);               // no comparison when the settings are the example
+// 1 hour: (80×5 + 0.1×3595) ÷ 3600 = 0.21097 mA; 2000 ÷ 0.21097 = 9480 h = 395 d, about 6.8 times
+near(labEstimate(hour).avgMa, 759.5 / 3600, 1e-9);
+near(labEstimate(hour).days, 395, 0.5);
+near(vsExample(hour), 6.8, 0.05);
+// 1 hour and 10 µA sleep: (400 + 0.01×3595) ÷ 3600 = 0.12110 mA; 16515 h = 688 d, about 11.8 times
+near(labEstimate(hourLow).avgMa, 435.95 / 3600, 1e-9);
+near(labEstimate(hourLow).days, 688, 0.5);
+near(vsExample(hourLow), 11.8, 0.05);
+assert(vsExample(hourLow) < 12);                       // close to 12 times only once sleep current is low
+assert.strictEqual(vsExample(Object.assign({}, ex, {cap: 2100})) !== null, true);
 
 console.log('labs-s2-21: all passed');
