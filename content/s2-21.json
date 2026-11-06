@@ -167,7 +167,7 @@
    },
    "body": "<p><b>GPIO</b>（General-Purpose Input/Output，通用輸入輸出腳）可用程式設成<b>輸出</b>（送 HIGH／LOW 去點燈）或<b>輸入</b>（讀取按鈕狀態）。設成輸入時，腳位沒接東西的狀態叫<b>浮接</b>（floating），讀值會受雜訊影響而亂跳，所以要用電阻把它拉到固定電位。</p><ul><li><b>下拉電阻</b>（pull-down）接 GND，按鈕接電源：按下 HIGH、放開 LOW，稱<b>正向邏輯</b>。</li><li><b>上拉電阻</b>（pull-up）接電源，按鈕接 GND：按下 LOW、放開 HIGH，稱<b>負向邏輯</b>。</li></ul><p>電阻決定放開時的準位，按鈕接法決定按下時的準位。Arduino 的 <code>pinMode(腳位, INPUT_PULLUP)</code> 是啟用晶片內建的上拉電阻，不必外接。</p>",
    "lab": "s2-21-pin",
-   "after": "<p>知道怎麼讀之後，下一個問題是什麼時候讀。<b>輪詢</b>（polling）是 CPU 定時主動去檢查；<b>中斷</b>（interrupt）是<b>周邊裝置</b>（CPU 以外負責輸入輸出或特定工作的部分，可在晶片外，如按鈕、感測器、通訊模組，也可在 MCU 內，如計時器）在事件發生時送訊號，請 CPU 暫停手邊工作先處理。就像等包裹：輪詢是一直跑去看信箱，中斷是郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，中斷可省下空等的時間並搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率仍要看負載。</p>",
+   "after": "<p>知道怎麼讀之後，下一個問題是什麼時候讀。<b>輪詢</b>（polling）是 CPU 定時主動去檢查；<b>中斷</b>（interrupt）是<b>周邊裝置</b>（CPU 以外負責輸入輸出或特定工作的部分，可在晶片外，如按鈕、感測器、通訊模組，也可在 MCU 內，如計時器）在事件發生時送訊號，請 CPU 暫停手邊工作先處理。就像等包裹：輪詢是一直跑去看信箱，中斷是郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，中斷可省下空等的時間並搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率仍要看負載。</p><p>GPIO 只傳 HIGH 或 LOW；要和感測模組交換一串資料，則用串列介面（原理見科一 3.2〈感測訊號與通訊基礎〉）。以 Arduino Uno 為例，D0／D1 是 <b>UART</b> 的 RX／TX，A4／A5 是 <b>I²C</b> 的 SDA／SCL，D10–D13 是 <b>SPI</b> 的 SS、MOSI、MISO、SCK。這些腳位多半也能當一般 GPIO 用，所以接了序列裝置就不要再拿它們接按鈕或 LED。</p>",
    "svg": "<svg viewBox=\"0 0 600 204\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"輪詢由 CPU 定時去問，事件要等下次檢查；中斷由周邊主動通知，CPU 立刻處理\"><defs><marker id=\"s2-21-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">輪詢是一直問，中斷是有事才通知</text><text class=\"tb\" x=\"20\" y=\"72\">輪詢</text><text class=\"ts\" x=\"20\" y=\"92\">CPU 定時去問</text><line class=\"ln\" x1=\"125\" y1=\"80\" x2=\"585\" y2=\"80\" marker-end=\"url(#s2-21-3-arr)\"/><rect class=\"acc\" x=\"143\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"203\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"263\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"323\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"383\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"443\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"503\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"563\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><circle class=\"warn\" cx=\"290\" cy=\"80\" r=\"6\"/><text class=\"ts tc\" x=\"290\" y=\"58\">事件發生</text><text class=\"ts tc\" x=\"350\" y=\"102\">下次問到才處理</text><text class=\"tb\" x=\"20\" y=\"162\">中斷</text><text class=\"ts\" x=\"20\" y=\"182\">周邊主動通知</text><line class=\"ln\" x1=\"125\" y1=\"170\" x2=\"585\" y2=\"170\" marker-end=\"url(#s2-21-3-arr)\"/><circle class=\"warn\" cx=\"290\" cy=\"170\" r=\"6\"/><rect class=\"acc\" x=\"298\" y=\"158\" width=\"70\" height=\"12\" rx=\"2\"/><text class=\"ts tc\" x=\"290\" y=\"148\">事件發生</text><text class=\"ts tc\" x=\"195\" y=\"160\">平時做別的事或休眠</text><text class=\"ts tc\" x=\"333\" y=\"194\">CPU 暫停手邊工作，立刻處理</text></svg>",
    "caption": "輪詢要等下次檢查才發現事件；中斷由事件觸發，平時 CPU 可以做別的事或休眠。",
    "more": {
@@ -251,7 +251,7 @@
     "q": "公司想公開自家探頭板，只放上腳位圖與使用手冊。這樣算開源硬體嗎？",
     "a": "不算。別人無法據此修改和製造，要公開電路圖、PCB 佈局、Gerber、BOM 這類設計檔。"
    },
-   "body": "<p><b>開源硬體</b>（open source hardware，OSHW）是把做出一塊板子所需的設計資料公開，讓任何人都能研究、修改、製造與販售。這些<b>設計檔</b>包括電路圖、PCB 佈局（電路板上零件與走線的配置）、Gerber（交給板廠製造的檔案）與 BOM（Bill of Materials，物料清單）。最知名的例子是 Arduino，它公開參考設計，所以市面上有許多相容板。</p><p>專案常分層處理：硬體、韌體、文件各選合適的授權，名稱另外管理。規劃自己的專案時，先決定公開哪些檔案，再替每一層選授權，關鍵問題是要不要求別人的衍生設計也開放，最後在檔案中附上作者與授權聲明。使用別人的設計時則反過來：先查授權，保留原有聲明、標示自己改了什麼，散布衍生設計時依條款開放。</p>",
+   "body": "<p><b>開源硬體</b>（open source hardware，OSHW）是把做出一塊板子所需的設計資料公開，讓任何人都能研究、修改、製造與販售。這些<b>設計檔</b>包括電路圖、PCB 佈局（電路板上零件與走線的配置）、Gerber（交給板廠製造的檔案）與 BOM（Bill of Materials，物料清單）。最知名的例子是 Arduino，它公開參考設計，所以市面上有許多相容板。</p><p>專案常分層處理：硬體、韌體、文件各選合適的授權，名稱另外管理。規劃自己的專案時，先決定公開哪些檔案，再替每一層選授權，關鍵問題是要不要求別人的衍生設計也開放；要求的叫<b>互惠</b>（copyleft，改作後散布必須用相同授權開放），不要求的叫寬鬆授權。最後在檔案中附上作者與授權聲明。使用別人的設計時則反過來：先查授權，保留原有聲明、標示自己改了什麼，散布衍生設計時依條款開放。</p>",
    "svg": "<svg viewBox=\"0 0 600 276\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"一個開源硬體專案分成硬體設計檔、韌體、文件與名稱四層，各層適用不同授權或規則\"><text class=\"th tc\" x=\"300\" y=\"24\">同一個專案，各部分可用不同授權</text><text class=\"ts tc\" x=\"105\" y=\"52\">部分</text><text class=\"ts tc\" x=\"290\" y=\"52\">包含</text><text class=\"ts tc\" x=\"480\" y=\"52\">常見授權或規則</text><rect class=\"acc\" x=\"20\" y=\"62\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"105\" y=\"89\">硬體設計檔</text><text class=\"ts tc\" x=\"290\" y=\"89\">電路圖、PCB、Gerber、BOM</text><text class=\"ts tc\" x=\"480\" y=\"89\">CERN-OHL、CC BY-SA</text><rect class=\"box\" x=\"20\" y=\"114\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"105\" y=\"141\">韌體與函式庫</text><text class=\"ts tc\" x=\"290\" y=\"141\">燒進板子執行的程式</text><text class=\"ts tc\" x=\"480\" y=\"141\">GPL、LGPL、MIT</text><rect class=\"box\" x=\"20\" y=\"166\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"105\" y=\"193\">文件與教學</text><text class=\"ts tc\" x=\"290\" y=\"193\">手冊、接線圖、範例說明</text><text class=\"ts tc\" x=\"480\" y=\"193\">CC BY-SA</text><rect class=\"warn\" x=\"20\" y=\"218\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"105\" y=\"245\">名稱與標誌</text><text class=\"ts tc\" x=\"290\" y=\"245\">品牌名稱、商標</text><text class=\"ts tc\" x=\"480\" y=\"245\">另依商標規則</text></svg>",
    "caption": "以 Arduino 為例：板子的參考設計採 CC BY-SA，IDE 採 GPL，核心函式庫多採 LGPL，名稱則受商標保護。",
    "table": {
@@ -265,6 +265,11 @@
       "CC BY-SA",
       "硬體設計檔、文件",
       "標示作者與授權、註明修改；散布改作時用相同授權。可商用"
+     ],
+     [
+      "CC BY",
+      "文件、圖片、設計檔",
+      "標示作者與授權即可，改作不必用相同授權。可商用"
      ],
      [
       "CERN-OHL-S",
@@ -309,7 +314,8 @@
   "繼電器的負載接 COM 與 NO 或 NC，不是接 NO 與 NC 之間；光敏電阻是感測光線的元件，不是調光用的控制元件。",
   "部分教材以可變電阻作為檯燈調光的做法，因為它能連續改變電流；實務上電阻會發熱，MCU 調光多用 PWM 搭配 MOSFET。應考時留意題目的條件與選項。",
   "mAh 是電荷、Wh 才是能量；n 條位址線換算成 bytes 時，要先假設每個位址存 1 byte，4GB 不是所有 32 位元系統的實體記憶體上限。",
-  "開源不等於不能商用：依授權可以製造和販售相容板，但不代表能使用原品牌名稱（如 Arduino）；禁止商用的 NC 條款則不符合開源硬體的定義。簡章只列出「開源硬體規劃與授權規範」，未指定授權種類，本章的授權是通行例子。"
+  "開源不等於不能商用：依授權可以製造和販售相容板，但不代表能使用原品牌名稱（如 Arduino）；禁止商用的 NC 條款則不符合開源硬體的定義。簡章只列出「開源硬體規劃與授權規範」，未指定授權種類，本章的授權是通行例子。",
+  "CC 授權不是每一種都算開源：含 NC（禁止商用）或 ND（禁止改作）的版本限制了使用與修改，不符合開源硬體的定義；CC BY、CC BY-SA 與放棄權利的 CC0 才適合。"
  ],
  "examples": [
   {

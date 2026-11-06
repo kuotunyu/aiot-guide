@@ -16,7 +16,7 @@
   {
    "id": "cloud-models",
    "h": "雲端服務：自己要管到哪一層",
-   "body": "<p>服務模式可用租屋來記。<b>IaaS（基礎設施即服務）</b>像毛胚屋：業者給虛擬機、儲存與網路頻寬，作業系統以上自己管。<b>PaaS（平台即服務）</b>像精裝屋：執行環境與資料庫由業者維護，開發者只管程式和資料。<b>SaaS（軟體即服務）</b>像飯店：打開就用，例如線上信箱與雲端硬碟。</p><p>判斷時問兩件事：使用者是誰、他自己還得維護什麼。只拿到機器的是 IaaS，只需上傳程式的是 PaaS，打開就用的是 SaaS。</p><p>無論哪種模式，裝置金鑰、帳號與資料的存取權限都還是使用者的責任；業者不會替你修正設錯的公開分享。</p>",
+   "body": "<p>雲端類型（公有雲、私有雲、混合雲）與虛擬機、容器的基本概念在科一 2.4〈中介軟體與平台〉，這節從「誰負責管什麼」的角度再看一次。</p><p>服務模式可用租屋來記。<b>IaaS（基礎設施即服務）</b>像毛胚屋：業者給虛擬機、儲存與網路頻寬，作業系統以上自己管。<b>PaaS（平台即服務）</b>像精裝屋：執行環境與資料庫由業者維護，開發者只管程式和資料。<b>SaaS（軟體即服務）</b>像飯店：打開就用，例如線上信箱與雲端硬碟。</p><p>判斷時問兩件事：使用者是誰、他自己還得維護什麼。只拿到機器的是 IaaS，只需上傳程式的是 PaaS，打開就用的是 SaaS。</p><p>無論哪種模式，裝置金鑰、帳號與資料的存取權限都還是使用者的責任；業者不會替你修正設錯的公開分享。</p>",
    "svg": "<svg viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 各層由誰管理的責任分層圖\"><text x=\"215\" y=\"34\" class=\"tb tc\">地端自建</text><text x=\"325\" y=\"34\" class=\"tb tc\">IaaS</text><text x=\"435\" y=\"34\" class=\"tb tc\">PaaS</text><text x=\"545\" y=\"34\" class=\"tb tc\">SaaS</text><text x=\"150\" y=\"73\" class=\"t\" text-anchor=\"end\">應用程式</text><rect x=\"165\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"72\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"111\" class=\"t\" text-anchor=\"end\">資料</text><rect x=\"165\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"545\" y=\"110\" class=\"ts tc\">帳號權限</text><text x=\"150\" y=\"149\" class=\"t\" text-anchor=\"end\">執行環境</text><rect x=\"165\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"148\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"148\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"187\" class=\"t\" text-anchor=\"end\">作業系統</text><rect x=\"165\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"186\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"186\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"225\" class=\"t\" text-anchor=\"end\">虛擬化</text><rect x=\"165\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"224\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"224\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"263\" class=\"t\" text-anchor=\"end\">硬體與網路</text><rect x=\"165\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"262\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"262\" class=\"ts tc\">業者管</text><text x=\"215\" y=\"300\" class=\"ts tc\">自有機房</text><text x=\"325\" y=\"300\" class=\"ts tc\">虛擬機 VM</text><text x=\"435\" y=\"300\" class=\"ts tc\">應用託管平台</text><text x=\"545\" y=\"300\" class=\"ts tc\">Gmail、Drive</text><text x=\"150\" y=\"300\" class=\"ts\" text-anchor=\"end\">例</text><rect x=\"60\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"box\"/><text x=\"90\" y=\"336\" class=\"ts\">你自己管</text><rect x=\"210\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"acc\"/><text x=\"240\" y=\"336\" class=\"ts\">雲端業者管</text><rect x=\"370\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"warn\"/><text x=\"400\" y=\"336\" class=\"ts\">仍要自己管帳號與權限</text></svg>",
    "caption": "越往右自己管得越少；即使是 SaaS，帳號與資料權限仍要自己管。",
    "table": {
@@ -189,8 +189,8 @@
     "a": "通常分開。連續讀值適合時序資料庫，訂單適合關聯式資料庫；選型看資料形狀與查詢需求。"
    },
    "more": {
-    "label": "備份與 RAID 能防什麼，以及 NAS 和 SAN 的接法",
-    "body": "<p>完整備份要先拷回再還原，較慢；RAID（把多顆硬碟組成一組，通常壞一顆仍可運作）只防硬碟損壞，不防整台主機毀損。</p><p>儲存設備也有兩種接法。<b>NAS（網路附加儲存）</b>是掛在網路上的獨立檔案櫃，自己就有 IP 位址，獲授權的設備都能直接透過網路共用，不必經由某台伺服器轉手。<b>SAN（儲存區域網路）</b>用專用高速網路把磁碟陣列接給伺服器，伺服器看到的就像本機硬碟。簡單說，NAS 以整個檔案為單位存取，SAN 以硬碟上更小的資料區塊為單位存取。</p>"
+    "label": "資料表怎麼設計，以及備份、RAID、NAS 和 SAN",
+    "body": "<p>關聯式資料庫的設計從「拆表」開始。冷鏈平台可以分成<b>裝置表</b>（裝置編號、放在哪個冷藏庫、型號）與<b>讀值表</b>（裝置編號、量測時間、溫度）。裝置編號在裝置表中唯一，稱為<b>主鍵</b>（Primary Key）；讀值表用同一個編號指回裝置表，稱為<b>外鍵</b>（Foreign Key）。</p><p>不把冷藏庫名稱重複寫進每一筆讀值，是<b>正規化</b>（Normalization）的直覺：同一件事只存一處，改名時只要改一筆，不會出現前後不一致。讀值表最常用「某台裝置、某段時間」查詢，所以替裝置編號與量測時間建立<b>索引</b>（Index），查詢就不必逐筆掃描整張表；代價是寫入時要多維護索引。</p><p>完整備份要先拷回再還原，較慢；RAID（把多顆硬碟組成一組，通常壞一顆仍可運作）只防硬碟損壞，不防整台主機毀損。</p><p>儲存設備也有兩種接法。<b>NAS（網路附加儲存）</b>是掛在網路上的獨立檔案櫃，自己就有 IP 位址，獲授權的設備都能直接透過網路共用，不必經由某台伺服器轉手。<b>SAN（儲存區域網路）</b>用專用高速網路把磁碟陣列接給伺服器，伺服器看到的就像本機硬碟。簡單說，NAS 以整個檔案為單位存取，SAN 以硬碟上更小的資料區塊為單位存取。</p>"
    }
   },
   {
@@ -273,7 +273,7 @@
     "a": "約 92%。每分鐘 12 次輪詢，只有 1 次拿得到新資料。"
    },
    "lab": "s2-22-realtime",
-   "after": "<p>因為不必一再建立新請求，頁面又能在資料產生時立刻更新，資料更新頻繁的儀表板很適合 WebSocket。但它不是萬能：它不屬於 RESTful 的一問一答、不負責儲存資料，每條連線也要占用伺服器資源，斷線時還要處理重連。資料變得慢、線上人數又少時，簡單的輪詢也可能夠用。</p>"
+   "after": "<p>因為不必一再建立新請求，頁面又能在資料產生時立刻更新，資料更新頻繁的儀表板很適合 WebSocket。但它不是萬能：它不屬於 RESTful 的一問一答、不負責儲存資料，每條連線也要占用伺服器資源，斷線時還要處理重連。資料變得慢、線上人數又少時，簡單的輪詢也可能夠用。</p><p>長輪詢也有極限：伺服器有新資料就回應，瀏覽器收到後必須立刻再發一個新請求等下一筆。資料變化很快時，幾乎每筆資料都換來一次回應加一次新請求，請求數反而可能比固定間隔的輪詢還多。</p>"
   },
   {
    "id": "tools-licenses",
@@ -340,7 +340,8 @@
   "Google Cloud IoT Core 已於 2023 年停止服務，部分教材仍把它列為現行的 IoT 資料中樞；實務上不能再選用，應考時留意題目的條件。",
   "複寫會同步誤刪，不能取代獨立備份；RAID 也只防硬碟損壞。",
   "NoSQL 不代表沒有結構，關聯式資料庫也能存 JSON；選型要看資料形狀與查詢需求，情境強調原生存放 JSON 文件時才想到 MongoDB。",
-  "自由軟體不等於免費；GPL 的義務在散布時才發生，公司內部自用不必把原始碼公開上網。"
+  "自由軟體不等於免費；GPL 的義務在散布時才發生，公司內部自用不必把原始碼公開上網。",
+  "GPL 的散布才觸發義務，但 AGPL 把「透過網路提供服務給別人使用」也算進去；把 AGPL 軟體改過後放在雲端讓客戶使用，就要提供修改後的原始碼。"
  ],
  "examples": [
   {
@@ -499,6 +500,21 @@
    "term": "CSV",
    "en": "Comma-Separated Values",
    "def": "逗號分隔值。用逗號分欄、換行分列的純文字平面表格格式。"
+  },
+  {
+   "term": "主鍵",
+   "en": "Primary Key",
+   "def": "在一張資料表中唯一識別每一筆資料的欄位，例如裝置編號。"
+  },
+  {
+   "term": "外鍵",
+   "en": "Foreign Key",
+   "def": "指向另一張表主鍵的欄位，用來把兩張表的資料關聯起來。"
+  },
+  {
+   "term": "正規化",
+   "en": "Normalization",
+   "def": "把資料拆成多張表、讓同一件事只存一處，避免重複與不一致的設計方法。"
   }
  ],
  "case": {

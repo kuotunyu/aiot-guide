@@ -45,13 +45,13 @@
       "冷藏貨車",
       "車廂探頭、GPS、車上行動網路",
       "車在哪？車廂幾度？沿路有沒有斷溫？",
-      "2.2 通訊與網路"
+      "2.2 常見通訊協定與網路層技術"
      ],
      [
       "進出倉的貨箱",
       "RFID 標籤、讀取器",
       "這是哪一箱？何時進出？",
-      "2.2 通訊與網路"
+      "2.2 常見通訊協定與網路層技術"
      ],
      [
       "雲端監控平台",
@@ -104,7 +104,7 @@
     ]
    },
    "more": {
-    "label": "網路層會看到的名字（下一章細講）",
+    "label": "網路層會看到的名字（2.2 常見通訊協定與網路層技術細講）",
     "body": "<ul><li>短距離無線：Wi-Fi、Bluetooth（BLE 是其低功耗版）、Zigbee。</li><li>距離遠且省電：LoRa、NB-IoT。</li><li>車對車、車對路側設施的通訊：V2V、V2I。</li></ul>"
    }
   },
@@ -272,8 +272,8 @@
    "id": "osi-tcpip",
    "h": "OSI 七層與 TCP/IP 四層：網路怎麼分工",
    "predict": {
-    "q": "工程師確認貨車與平台之間的 TCP 連線正常，但訂閱端就是收不到 MQTT 訊息。該先往 OSI 的上層還是下層找？",
-    "a": "先往上層找。TCP 在第 4 層，它正常代表以下幾層大致沒問題；MQTT 屬於應用層，例如 Topic 寫錯就會收不到。"
+    "q": "工程師確認監控平台與伺服器之間的 TCP 連線正常，但打開網頁卻顯示「404 找不到頁面」。該先往 OSI 的上層還是下層找？",
+    "a": "先往上層找。TCP 在第 4 層，它正常代表以下幾層大致沒問題；404 是應用層的 HTTP 回應，代表伺服器收到了請求，只是找不到要的頁面，問題多半在網址或伺服器設定。"
    },
    "body": "<p>網路通訊像寄包裹：寫內容、裝箱、貼地址、交給運輸，每一步由不同單位負責，改動其中一段不必影響其他段。<b>OSI（Open Systems Interconnection）</b>是七層的參考模型，用來解決不同系統互連的相容問題；<b>TCP/IP</b> 是網際網路實際廣泛使用的四層模型。後者是<b>把功能相近的層合併</b>，不是刪掉某幾層。</p><p>幾個關鍵位置要記住：<b>IP</b> 在 OSI 第 3 層，負責定址與路由；<b>TCP、UDP</b> 在第 4 層；<b>HTTP</b> 在第 7 層；<b>乙太網路</b>在第 2 層。</p><p><b>TCP</b> 會確認與重傳，可靠但負擔較大，像掛號信；<b>UDP</b> 不保證送達，但輕快，像平信，常用於語音通話、視訊會議與 DNS 查詢。</p>",
    "svg": "<svg viewBox=\"0 0 600 410\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OSI 七層與 TCP/IP 四層對照，以及各層代表協定\">\n<text x=\"135\" y=\"26\" class=\"th tc\">OSI 七層</text>\n<text x=\"332\" y=\"26\" class=\"th tc\">TCP/IP 四層</text>\n<text x=\"502\" y=\"26\" class=\"th tc\">代表協定</text>\n<rect x=\"20\" y=\"40\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"68\" class=\"tb\">7 應用層</text><text x=\"148\" y=\"68\" class=\"ts\">Application</text>\n<rect x=\"20\" y=\"84\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"112\" class=\"tb\">6 表達層</text><text x=\"148\" y=\"112\" class=\"ts\">Presentation</text>\n<rect x=\"20\" y=\"128\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"156\" class=\"tb\">5 會話層</text><text x=\"148\" y=\"156\" class=\"ts\">Session</text>\n<rect x=\"20\" y=\"172\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"200\" class=\"tb\">4 傳輸層</text><text x=\"148\" y=\"200\" class=\"ts\">Transport</text>\n<rect x=\"20\" y=\"216\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"244\" class=\"tb\">3 網路層</text><text x=\"148\" y=\"244\" class=\"ts\">Network</text>\n<rect x=\"20\" y=\"260\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"288\" class=\"tb\">2 資料連結層</text><text x=\"148\" y=\"288\" class=\"ts\">Data Link</text>\n<rect x=\"20\" y=\"304\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"34\" y=\"332\" class=\"tb\">1 實體層</text><text x=\"148\" y=\"332\" class=\"ts\">Physical</text>\n<rect x=\"265\" y=\"40\" width=\"135\" height=\"132\" rx=\"6\" class=\"acc\"/>\n<text x=\"332\" y=\"104\" class=\"tb tc\">應用層</text>\n<text x=\"332\" y=\"126\" class=\"ts tc\">合併 5～7 層</text>\n<rect x=\"265\" y=\"172\" width=\"135\" height=\"44\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"200\" class=\"tb tc\">傳輸層</text>\n<rect x=\"265\" y=\"216\" width=\"135\" height=\"44\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"244\" class=\"tb tc\">網際網路層</text>\n<rect x=\"265\" y=\"260\" width=\"135\" height=\"88\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"298\" class=\"tb tc\">鏈結層</text>\n<text x=\"332\" y=\"320\" class=\"ts tc\">又稱網路介面層</text>\n<rect x=\"415\" y=\"40\" width=\"175\" height=\"132\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"100\" class=\"t\">HTTP、MQTT、FTP</text>\n<text x=\"428\" y=\"124\" class=\"t\">SMTP、DNS</text>\n<rect x=\"415\" y=\"172\" width=\"175\" height=\"44\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"200\" class=\"t\">TCP、UDP</text>\n<rect x=\"415\" y=\"216\" width=\"175\" height=\"44\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"244\" class=\"t\">IP、ICMP</text>\n<rect x=\"415\" y=\"260\" width=\"175\" height=\"88\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"298\" class=\"t\">乙太網路、Wi-Fi</text>\n<text x=\"428\" y=\"320\" class=\"ts\">網路線、光纖、電波</text>\n<text x=\"20\" y=\"374\" class=\"ts\">TCP/IP 不是刪掉 OSI 的層，而是把功能相近的層合併</text>\n<text x=\"20\" y=\"396\" class=\"ts\">資料單位：第 4 層區段 → 第 3 層封包 → 第 2 層訊框 → 第 1 層位元</text>\n</svg>",
