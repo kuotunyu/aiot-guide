@@ -5,7 +5,7 @@ content/site.json (home, exam facts, formulas) and copies static/ as is. No runt
 """
 from pathlib import Path
 from html import escape as e
-import json, re, shutil
+import hashlib, json, re, shutil
 
 HERE = Path(__file__).resolve().parent
 CONTENT, STATIC, DIST = HERE / 'content', HERE / 'static', HERE / 'dist'
@@ -117,6 +117,8 @@ def page(name, title, main, desc, scripts='', current=None, jsonld=None):
 </body>
 </html>
 '''
+    # Fingerprint our own CSS/JS so a returning visitor never mixes a new page with cached old assets.
+    html = re.sub(r'((?:href|src)="(assets/[\w/.-]+\.(?:css|js)))"', lambda m: f'{m[1]}?v={hashlib.md5((DIST / m[2]).read_bytes()).hexdigest()[:8]}"', html)
     (DIST / name).write_text(html, encoding='utf-8')
 
 
@@ -159,17 +161,18 @@ def chapter(cid):
     i = READ.index(cid)
     w = cid
     sections = ''
+    link, used = linker(cid)
     for k, s in enumerate(c['sections']):
         where = f'{w} section {k + 1}'
         sections += f'<section id="{e(s["id"])}" data-read class="{"first" if k == 0 else ""}"><h2><span class="txt">{e(s["h"])}</span>{SAY}</h2>'
         if s.get('predict'):
             pr = s['predict']
             sections += f'<details class="pr" data-say="{e("先想一想。" + pr["q"] + "。答案：" + pr["a"])}"><summary><span class="prk">先想一想</span>{e(pr["q"])}</summary><p>{e(pr["a"])}</p></details>'
-        sections += clean(s.get('body', ''), where)
+        sections += link(clean(s.get('body', ''), where))
         if s.get('lab'):
             sections += f'<div class="lab" data-lab="{e(s["lab"])}"><noscript><p>這個互動實驗需要 JavaScript。</p></noscript></div>'
         if s.get('after'):
-            sections += clean(s['after'], where)
+            sections += link(clean(s['after'], where))
         if s.get('svg'):
             cap = f'<figcaption>{e(s["caption"])}</figcaption>' if s.get('caption') else ''
             sections += f'<figure class="dg" title="點圖放大">{check_svg(s["svg"], where)}{cap}</figure>'
@@ -182,7 +185,7 @@ def chapter(cid):
                 sections += f'<p class="small muted noread">{e(v["transcript"])}</p>'
             sections += '</details>'
         if s.get('more'):
-            sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>{clean(s["more"]["body"], where)}</details>'
+            sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>{link(clean(s["more"]["body"], where))}</details>'
         sections += '</section>'
     toc = ''.join(f'<a href="#{e(s["id"])}">{e(s["h"])}</a>' for s in c['sections'])
     tail = '<a href="#keypoints">重點整理</a><a href="#examples">例題</a><a href="#check">自我檢查</a><a href="#terms">本章名詞</a>' + ('<a href="#sources">來源</a>' if c.get('sources') else '')
@@ -241,7 +244,7 @@ def chapter(cid):
 <nav class="pager noprint" aria-label="章節切換">{pager}</nav>
 </article>
 <nav class="toc" aria-label="本章目錄"><b>本章目錄</b>{toc}{tail}</nav>
-</main>'''
+{glossary_data(used)}</main>'''
     page(f'{cid}.html', f'{c["code"]} {c["title"]}', main, c['summary'], labs, current='index.html', jsonld={
         '@context': 'https://schema.org', '@type': 'LearningResource', 'name': f'{c["code"]} {c["title"]}', 'headline': c['title'], 'description': c['summary'],
         'url': SITE['url'] + cid + '.html', 'inLanguage': 'zh-Hant', 'learningResourceType': '教學文章與互動實驗', 'teaches': c['learn'], 'dateModified': SITE['updated'],
@@ -336,32 +339,110 @@ def practice():
 
 
 ALIASES = {'dos': 'dos／ddos', 'ddos': 'dos／ddos', 'osi 七層': 'osi', 'osi 模型': 'osi'}
+# Too generic to be worth a definition popup inside chapters.
+NO_LINK = {'物聯網', '感測器'}
 
 
-def glossary():
+def build_terms():
     terms = {}
-    for cid in ORDER:
+    for cid in SITE['reading']:
         for t in CH[cid]['terms']:
-            key = t['term'].strip().lower()
-            key = ALIASES.get(key, key)
-            cur = terms.setdefault(key, {**t, 'where': []})
+            key = ALIASES.get(t['term'].strip().lower(), t['term'].strip().lower())
+            cur = terms.setdefault(key, {**t, 'key': key, 'where': []})
             if len(t['def']) > len(cur['def']):
                 cur['def'] = t['def']
             if cid not in cur['where']:
                 cur['where'].append(cid)
-    items = sorted(terms.values(), key=lambda t: t['term'].lower())
-    html = ''
-    for t in items:
-        where = ''.join(f'<a href="{c}.html">{e(CH[c]["code"] + " " + CH[c]["title"])}</a>' for c in t['where'])
+    return terms
+
+
+TERMS = build_terms()
+
+
+def term_regex(name):
+    if re.search(r'[／（(]', name) or name in NO_LINK:
+        return None
+    if re.fullmatch(r'[\x20-\x7e]+', name):
+        return r'(?<![A-Za-z0-9])' + re.escape(name) + r'(?![A-Za-z0-9])' if len(name) >= 2 else None
+    return re.escape(name) if len(name) >= 3 else None
+
+
+def linker(cid):
+    # Wrap the first use of each term taught in another chapter, so readers can check it in place.
+    names = {}
+    for t in TERMS.values():
+        if cid not in t['where'] and term_regex(t['term']):
+            names[t['term']] = t['key']
+    if not names:
+        return (lambda html: html), {}
+    rx = re.compile('|'.join(term_regex(n) for n in sorted(names, key=len, reverse=True)))
+    used = {}
+
+    def run(html):
+        out, skip = [], 0
+        for part in re.split(r'(<[^>]+>)', html):
+            if part.startswith('<'):
+                m = re.match(r'<(/?)(a|code)\b', part)
+                if m:
+                    skip += -1 if m[1] else 1
+                out.append(part)
+                continue
+            if skip:
+                out.append(part)
+                continue
+
+            def wrap(m):
+                key = names[m[0]]
+                if key in used:
+                    return m[0]
+                used[key] = TERMS[key]
+                return f'<button type="button" class="gl" data-k="{e(key)}" aria-expanded="false">{m[0]}</button>'
+            out.append(rx.sub(wrap, part))
+        return ''.join(out)
+    return run, used
+
+
+def glossary_data(used):
+    data = {k: {'t': t['term'], 'en': t.get('en', ''), 'd': t['def'], 'h': CH[t['where'][0]]['code'] + ' ' + CH[t['where'][0]]['title'], 'u': t['where'][0] + '.html'} for k, t in used.items()}
+    return '<script type="application/json" id="gldata">' + json.dumps(data, ensure_ascii=False).replace('</', '<\\/') + '</script>' if data else ''
+
+
+def glossary():
+    def item(t):
+        links = [f'<a href="{c}.html">{e(CH[c]["code"] + " " + CH[c]["title"])}</a>' for c in t['where']]
+        where = links[0] + ('<span class="also">也在：</span>' + ''.join(links[1:]) if len(links) > 1 else '')
         subjects = ' '.join(sorted({CH[c]['subject'] for c in t['where']}))
         en = ' <span class="en">' + e(t['en']) + '</span>' if t.get('en') else ''
-        html += f'<div class="gitem" data-s="{subjects}"><b>{e(t["term"])}</b>{en}<p>{e(t["def"])}</p><div class="where">{where}</div></div>'
+        return f'<div class="gitem" data-s="{subjects}"><b>{e(t["term"])}</b>{en}<p>{e(t["def"])}</p><div class="where">{where}</div></div>'
+    # Default view groups terms by the chapter that first teaches them, in reading order.
+    groups, chips = '', ''
+    for cid in SITE['reading']:
+        mine = [t for t in TERMS.values() if t['where'][0] == cid]
+        if not mine:
+            continue
+        c = CH[cid]
+        chips += f'<a href="#g-{cid}" data-s="{c["subject"]}" title="{e(c["title"])}" aria-label="{e(c["code"] + " " + c["title"])}">{e(c["code"])}</a>'
+        groups += f'<section class="gsec" id="g-{cid}" data-s="{c["subject"]}"><h2><a href="{cid}.html">{e(c["code"] + " " + c["title"])}</a><span class="small muted">{len(mine)} 個</span></h2><div class="glist">{"".join(item(t) for t in mine)}</div></section>'
+    conf = ''
+    cpath = CONTENT / 'confusables.json'
+    groups_c = json.loads(cpath.read_text(encoding='utf-8'))['groups'] if cpath.exists() else []
+    for g in groups_c:
+        if g['chapter'] not in CH or (g.get('sec') and g['sec'] not in {s['id'] for s in CH[g['chapter']]['sections']}):
+            problems.append(f'confusables: bad chapter or section in {g["title"]}')
+            continue
+        c = CH[g['chapter']]
+        cells = ''.join(f'<div><b>{e(x["term"])}</b><span>{e(x["gist"])}</span></div>' for x in g['items'])
+        tip = f'<p class="tip">{e(g["tip"])}</p>' if g.get('tip') else ''
+        href = g['chapter'] + '.html' + ('#' + g['sec'] if g.get('sec') else '')
+        conf += f'<div class="conf{" wide" if len(g["items"]) > 3 else ""}" data-s="{c["subject"]}"><h3>{e(g["title"])}</h3><div class="cg" style="--n:{len(g["items"])}">{cells}</div>{tip}<a class="small" href="{href}">{e(c["code"] + " " + c["title"])}</a></div>'
     opts = ''.join(f'<option value="{s}">{e(SUBJ[s]["short"])}</option>' for s in SUBJ)
-    main = f'''<main class="wrap page"><h1>名詞</h1><p class="intro">讀到不懂的縮寫就來這裡查。每個名詞都連回講解它的章節。</p>
-<div class="panel"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="例如 MQTT、遲滯、OEE"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><span class="small muted" id="gcount"></span></div></div>
-<div class="glist">{html}</div></main>'''
-    page('glossary.html', '名詞', main, f'{len(items)} 個物聯網與 AIoT 名詞的白話解釋。')
-    print('glossary terms:', len(items))
+    views = '<button type="button" data-v="ch" aria-pressed="true">依章節</button><button type="button" data-v="az" aria-pressed="false">A–Z・ㄅㄆㄇ</button>' + (f'<button type="button" data-v="conf" aria-pressed="false">容易混淆（{len(groups_c)} 組）</button>' if conf else '')
+    main = f'''<main class="wrap page gloss"><h1>名詞</h1><p class="intro">讀到不懂的名詞就來這裡查，也可以照章節複習，或看容易混淆的概念怎麼分。章節內文裡有虛線底線的詞，點一下就能看定義。</p>
+<div class="panel"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="MQTT、遲滯、OEE"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><div class="seg gview" role="group" aria-label="呈現方式">{views}</div><span class="small muted" id="gcount"></span></div>
+<nav class="gchips" aria-label="跳到章節"><span class="small muted">跳到章節（依建議順序）</span>{chips}</nav></div>
+<div id="gch">{groups}</div><div class="glist" id="gaz" hidden></div><div class="confs" id="gconf" hidden>{conf}</div></main>'''
+    page('glossary.html', '名詞', main, f'{len(TERMS)} 個物聯網與 AIoT 名詞的白話解釋，依章節整理，並對照容易混淆的概念。')
+    print('glossary terms:', len(TERMS), 'confusable groups:', len(groups_c))
 
 
 def reference():

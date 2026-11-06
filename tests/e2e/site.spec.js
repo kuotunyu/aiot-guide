@@ -124,6 +124,29 @@ test('glossary: search handles plain-keyboard spellings', async ({page}) => {
   await expect(page.locator('.gitem:visible b').first()).toContainText('I²C');
   await page.fill('#gq', 'zzzz');
   await expect(page.locator('#gcount')).toHaveText('0 個名詞');
+  await expect(page.locator('.gsec:visible')).toHaveCount(0);
+});
+
+test('glossary: grouped by chapter by default, A–Z puts acronyms first', async ({page}) => {
+  await page.goto('/glossary.html');
+  await expect(page.locator('#gch')).toBeVisible();
+  await expect(page.locator('.gsec').first()).toHaveAttribute('id', 'g-s1-21');
+  await page.click('[data-v="az"]');
+  await expect(page.locator('#gch')).toBeHidden();
+  await expect(page.locator('#gaz .gitem b').first()).toHaveText(/^[A-Za-z0-9]/);
+  await expect(page.locator('#gcount')).toHaveText(/^\d+ 個名詞$/);
+});
+
+test('chapter: terms from other chapters open a definition in place', async ({page}) => {
+  await page.goto('/s2-22.html');
+  const term = page.locator('.gl').first();
+  await term.scrollIntoViewIfNeeded();
+  await term.click();
+  await expect(page.locator('.glpop')).toBeVisible();
+  await expect(term).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.glpop a')).toHaveAttribute('href', /^s[12]-\d\d\.html$/);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.glpop')).toBeHidden();
 });
 
 test('reader: reads a chapter and collapsed Q&A, can jump and stop', async ({page}) => {

@@ -41,14 +41,63 @@ if (tocLinks.length && window.IntersectionObserver) {
 // ----- glossary -----
 const gq = $('#gq');
 if (gq) {
-  const items = $$('.gitem'), subj = $('#gs'), count = $('#gcount');
-  const run = () => {
-    const norm = v => v.normalize('NFKC').toLowerCase(), q = norm(gq.value.trim()), s = subj.value; let n = 0;
-    items.forEach(it => { const ok = (!q || norm(it.textContent).includes(q)) && (!s || it.dataset.s.includes(s)); it.hidden = !ok; if (ok) n++; });
-    count.textContent = n + ' 個名詞';
-  };
-  gq.oninput = run; subj.onchange = run; run();
+  const items = $$('.gitem'), confs = $$('.conf'), subj = $('#gs'), count = $('#gcount');
+  const byCh = $('#gch'), az = $('#gaz'), conf = $('#gconf'), chips = $('.gchips'), btns = $$('.gview button');
+  const home = items.map(it => it.parentNode);
+  const coll = new Intl.Collator('zh-TW-u-co-zhuyin', {numeric: true, sensitivity: 'base'});
+  // English and acronyms first (A–Z), then Chinese by zhuyin order.
+  const name = it => it.querySelector('b').textContent, latin = s => /^[A-Za-z0-9]/.test(s) ? 0 : 1;
+  const sorted = items.slice().sort((a, b) => latin(name(a)) - latin(name(b)) || coll.compare(name(a), name(b)));
+  let view = 'ch';
+  const norm = v => v.normalize('NFKC').toLowerCase();
+  function show(v){
+    view = v;
+    btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+    if (v === 'az') sorted.forEach(it => az.appendChild(it)); else items.forEach((it, i) => home[i].appendChild(it));
+    byCh.hidden = v !== 'ch'; az.hidden = v !== 'az'; conf.hidden = v !== 'conf'; chips.hidden = v !== 'ch';
+    store.set('gview', v); run();
+  }
+  function run(){
+    const q = norm(gq.value.trim()), s = subj.value; let n = 0;
+    const list = view === 'conf' ? confs : items;
+    list.forEach(it => { const ok = (!q || norm(it.textContent).includes(q)) && (!s || it.dataset.s.includes(s)); it.hidden = !ok; if (ok) n++; });
+    $$('.gsec').forEach(sec => { sec.hidden = !$$('.gitem', sec).some(it => !it.hidden); });
+    $$('a', chips).forEach(a => { const sec = $(a.getAttribute('href')); a.hidden = !sec || sec.hidden; });
+    count.textContent = n + (view === 'conf' ? ' 組' : ' 個名詞');
+  }
+  btns.forEach(b => b.onclick = () => show(b.dataset.v));
+  gq.oninput = run; subj.onchange = run;
+  const want = location.hash === '#conf' ? 'conf' : store.get('gview');
+  show(btns.some(b => b.dataset.v === want) ? want : 'ch');
 }
+
+// ----- terms taught in other chapters: tap to see the definition in place -----
+const glData = $('#gldata');
+if (glData) (function(){
+  const data = JSON.parse(glData.textContent);
+  const pop = document.createElement('div');
+  pop.className = 'glpop noread'; pop.hidden = true; pop.setAttribute('role', 'dialog');
+  document.body.appendChild(pop);
+  let cur = null;
+  function close(){ if (!cur) return; cur.setAttribute('aria-expanded', 'false'); pop.hidden = true; cur = null; }
+  function open(b){
+    const d = data[b.dataset.k]; if (!d) return;
+    close(); cur = b; b.setAttribute('aria-expanded', 'true');
+    pop.setAttribute('aria-label', d.t);
+    pop.innerHTML = '<b>' + esc(d.t) + '</b>' + (d.en ? ' <span class="en">' + esc(d.en) + '</span>' : '') + '<p>' + esc(d.d) + '</p><a href="' + d.u + '">在 ' + esc(d.h) + ' 細講</a>';
+    pop.hidden = false;
+    const r = b.getBoundingClientRect(), w = pop.offsetWidth;
+    pop.style.left = Math.max(8, Math.min(scrollX + r.left, scrollX + document.documentElement.clientWidth - w - 8)) + 'px';
+    pop.style.top = (scrollY + r.bottom + 6) + 'px';
+  }
+  document.addEventListener('click', ev => {
+    const b = ev.target.closest('.gl');
+    if (b) { ev.preventDefault(); if (b === cur) close(); else open(b); return; }
+    if (!pop.contains(ev.target)) close();
+  });
+  document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && cur){ const b = cur; close(); b.focus(); } });
+  addEventListener('resize', close);
+})();
 
 // ----- practice -----
 const qa = $('#quizApp');

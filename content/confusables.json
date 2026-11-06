@@ -1,0 +1,465 @@
+{
+ "groups": [
+  {
+   "title": "加速度計、陀螺儀",
+   "chapter": "s1-21",
+   "sec": "common-sensors",
+   "items": [
+    {
+     "term": "加速度計",
+     "gist": "量直線加速與傾斜"
+    },
+    {
+     "term": "陀螺儀",
+     "gist": "量轉多快（旋轉）"
+    }
+   ],
+   "tip": "兩者合在一起就是 IMU"
+  },
+  {
+   "title": "網路層、OSI 第 3 層",
+   "chapter": "s1-21",
+   "sec": "osi-tcpip",
+   "items": [
+    {
+     "term": "網路層",
+     "gist": "物聯網三層中泛指資料傳輸"
+    },
+    {
+     "term": "OSI 第 3 層",
+     "gist": "專指定址與路由"
+    }
+   ],
+   "tip": "同名不同義，先看題目講的是哪個模型"
+  },
+  {
+   "title": "主動式感測器、被動式感測器、PIR、RFID 被動標籤",
+   "chapter": "s1-31",
+   "sec": "what-and-types",
+   "items": [
+    {
+     "term": "主動式感測器",
+     "gist": "自己產生電訊號，如熱電偶"
+    },
+    {
+     "term": "被動式感測器",
+     "gist": "要外加電源，如應變規、RTD"
+    },
+    {
+     "term": "PIR",
+     "gist": "「被動」指自己不發射紅外線"
+    },
+    {
+     "term": "RFID 被動標籤",
+     "gist": "「被動」指標籤沒有電池"
+    }
+   ],
+   "tip": "看到「被動」，先確認說的是哪一種"
+  },
+  {
+   "title": "準確度、精密度、解析度",
+   "chapter": "s1-31",
+   "sec": "accuracy-precision",
+   "items": [
+    {
+     "term": "準確度",
+     "gist": "離真值多近"
+    },
+    {
+     "term": "精密度",
+     "gist": "重複量測彼此多接近"
+    },
+    {
+     "term": "解析度",
+     "gist": "能分辨的最小變化"
+    }
+   ],
+   "tip": "三者互不保證；刻度細不等於準"
+  },
+  {
+   "title": "遲滯、反應時間",
+   "chapter": "s1-31",
+   "sec": "spec-curves",
+   "items": [
+    {
+     "term": "遲滯",
+     "gist": "上升與下降的輸出差"
+    },
+    {
+     "term": "反應時間",
+     "gist": "輸出跟上變化所需時間"
+    }
+   ],
+   "tip": "遲滯是路徑差，不是時間延遲"
+  },
+  {
+   "title": "UART、I²C、SPI",
+   "chapter": "s1-32",
+   "sec": "interfaces",
+   "items": [
+    {
+     "term": "UART",
+     "gist": "非同步全雙工，點對點"
+    },
+    {
+     "term": "I²C",
+     "gist": "同步半雙工，兩條線靠位址"
+    },
+    {
+     "term": "SPI",
+     "gist": "同步全雙工，每台一條 CS"
+    }
+   ],
+   "tip": "線數、方向、時脈是三個獨立問題"
+  },
+  {
+   "title": "LoRa、LoRaWAN、NB-IoT",
+   "chapter": "s1-22",
+   "sec": "lpwan-cellular",
+   "items": [
+    {
+     "term": "LoRa",
+     "gist": "無線調變技術，屬實體層"
+    },
+    {
+     "term": "LoRaWAN",
+     "gist": "架在 LoRa 上，可自建閘道"
+    },
+    {
+     "term": "NB-IoT",
+     "gist": "電信業者，授權頻譜"
+    }
+   ]
+  },
+  {
+   "title": "QoS 0、QoS 1、QoS 2",
+   "chapter": "s1-22",
+   "sec": "qos-and-protocols",
+   "items": [
+    {
+     "term": "QoS 0",
+     "gist": "最多一次，可能遺失"
+    },
+    {
+     "term": "QoS 1",
+     "gist": "至少一次，可能重複"
+    },
+    {
+     "term": "QoS 2",
+     "gist": "恰好一次，開銷最大"
+    }
+   ],
+   "tip": "只有 0、1、2，沒有 3"
+  },
+  {
+   "title": "TCP、UDP",
+   "chapter": "s1-23",
+   "sec": "network-layers",
+   "items": [
+    {
+     "term": "TCP",
+     "gist": "連線導向，可靠且按順序"
+    },
+    {
+     "term": "UDP",
+     "gist": "無連線，不保證送達，負擔小"
+    }
+   ],
+   "tip": "要可靠選 TCP，要即時且可容忍遺失選 UDP"
+  },
+  {
+   "title": "IaaS、PaaS、SaaS",
+   "chapter": "s1-24",
+   "sec": "cloud-models",
+   "items": [
+    {
+     "term": "IaaS",
+     "gist": "租虛擬硬體，作業系統以上自己管"
+    },
+    {
+     "term": "PaaS",
+     "gist": "只管自己的程式和資料"
+    },
+    {
+     "term": "SaaS",
+     "gist": "直接使用做好的軟體"
+    }
+   ],
+   "tip": "毛胚屋、附家具的房子、飯店"
+  },
+  {
+   "title": "認證、授權、記錄／稽核",
+   "chapter": "s1-25",
+   "sec": "cia-aaa",
+   "items": [
+    {
+     "term": "認證",
+     "gist": "確認你是誰"
+    },
+    {
+     "term": "授權",
+     "gist": "決定你能做什麼"
+    },
+    {
+     "term": "記錄／稽核",
+     "gist": "事後查得到誰做了什麼"
+    }
+   ]
+  },
+  {
+   "title": "對稱式加密、雜湊、MAC、數位簽章",
+   "chapter": "s1-25",
+   "sec": "hash-signature",
+   "items": [
+    {
+     "term": "對稱式加密",
+     "gist": "共用一把金鑰，負責保密"
+    },
+    {
+     "term": "雜湊",
+     "gist": "算指紋，不用金鑰"
+    },
+    {
+     "term": "MAC",
+     "gist": "把共用金鑰算進指紋"
+    },
+    {
+     "term": "數位簽章",
+     "gist": "私鑰簽署、公鑰驗證"
+    }
+   ],
+   "tip": "這裡的 MAC 不是網路卡的 MAC 位址"
+  },
+  {
+   "title": "RPO、RTO",
+   "chapter": "s1-25",
+   "sec": "layered-defense",
+   "items": [
+    {
+     "term": "RPO",
+     "gist": "可能遺失多久的資料"
+    },
+    {
+     "term": "RTO",
+     "gist": "停機多久能恢復"
+    }
+   ],
+   "tip": "RPO 看掉多少資料，RTO 看停多久"
+  },
+  {
+   "title": "分類、迴歸、分群",
+   "chapter": "s1-11",
+   "sec": "learning-types",
+   "items": [
+    {
+     "term": "分類",
+     "gist": "輸出類別：哪一類"
+    },
+    {
+     "term": "迴歸",
+     "gist": "輸出連續數值：多少"
+    },
+    {
+     "term": "分群",
+     "gist": "沒有標籤，相似的歸一組"
+    }
+   ],
+   "tip": "分類、迴歸是監督式，分群是非監督式"
+  },
+  {
+   "title": "準確率、召回率、精確率",
+   "chapter": "s1-11",
+   "sec": "model-evaluation",
+   "items": [
+    {
+     "term": "準確率",
+     "gist": "全部判斷中答對多少"
+    },
+    {
+     "term": "召回率",
+     "gist": "真正的故障抓到多少"
+    },
+    {
+     "term": "精確率",
+     "gist": "發出的告警有多少是真的"
+    }
+   ],
+   "tip": "量測的精密度英文也是 Precision，別混"
+  },
+  {
+   "title": "事後維修、預防性維護、預測性維護",
+   "chapter": "s1-12",
+   "sec": "maintenance-strategies",
+   "items": [
+    {
+     "term": "事後維修",
+     "gist": "壞了才修"
+    },
+    {
+     "term": "預防性維護",
+     "gist": "固定週期，不看實際狀態"
+    },
+    {
+     "term": "預測性維護",
+     "gist": "依狀態資料決定維修時機"
+    }
+   ],
+   "tip": "事後看故障、預防看日曆、預測看狀態"
+  },
+  {
+   "title": "誤報、漏報",
+   "chapter": "s1-12",
+   "sec": "maintenance-strategies",
+   "items": [
+    {
+     "term": "誤報",
+     "gist": "機器沒事卻告警"
+    },
+    {
+     "term": "漏報",
+     "gist": "機器快壞卻沒告警"
+    }
+   ],
+   "tip": "門檻調低：漏報減少，誤報增加"
+  },
+  {
+   "title": "邊緣運算、霧運算、雲端運算",
+   "chapter": "s2-11",
+   "sec": "edge-fog-cloud",
+   "items": [
+    {
+     "term": "邊緣運算",
+     "gist": "裝置或閘道器附近就地處理"
+    },
+    {
+     "term": "霧運算",
+     "gist": "廠區伺服器彙整多個邊緣"
+    },
+    {
+     "term": "雲端運算",
+     "gist": "遠端資料中心集中處理"
+    }
+   ],
+   "tip": "霧運算不是雲的別名，介於邊緣與雲之間"
+  },
+  {
+   "title": "MCU、SBC、PLC",
+   "chapter": "s2-21",
+   "sec": "controllers",
+   "items": [
+    {
+     "term": "MCU",
+     "gist": "一顆晶片，便宜省電做控制"
+    },
+    {
+     "term": "SBC",
+     "gist": "完整電腦，能跑 Linux"
+    },
+    {
+     "term": "PLC",
+     "gist": "工業級，高可靠、即時"
+    }
+   ],
+   "tip": "一般 Raspberry Pi 屬單板電腦"
+  },
+  {
+   "title": "上拉電阻、下拉電阻",
+   "chapter": "s2-21",
+   "sec": "gpio",
+   "items": [
+    {
+     "term": "上拉電阻",
+     "gist": "接電源，按下為 LOW"
+    },
+    {
+     "term": "下拉電阻",
+     "gist": "接 GND，按下為 HIGH"
+    }
+   ],
+   "tip": "電阻決定放開時的準位"
+  },
+  {
+   "title": "複寫、分片、備份",
+   "chapter": "s2-22",
+   "sec": "storage",
+   "items": [
+    {
+     "term": "複寫",
+     "gist": "複製到多台，為了備援"
+    },
+    {
+     "term": "分片",
+     "gist": "切開分散，為了分攤負載"
+    },
+    {
+     "term": "備份",
+     "gist": "獨立副本，誤刪時能還原"
+    }
+   ],
+   "tip": "複寫會同步誤刪，不能取代備份"
+  },
+  {
+   "title": "三用電錶、示波器、邏輯分析儀、頻譜分析儀",
+   "chapter": "s2-12",
+   "sec": "instruments",
+   "items": [
+    {
+     "term": "三用電錶",
+     "gist": "看一個數值：電壓、電流、電阻"
+    },
+    {
+     "term": "示波器",
+     "gist": "看電壓隨時間的波形"
+    },
+    {
+     "term": "邏輯分析儀",
+     "gist": "解碼多條數位線的內容"
+    },
+    {
+     "term": "頻譜分析儀",
+     "gist": "看各頻率的能量，找干擾"
+    }
+   ]
+  },
+  {
+   "title": "RSSI、SNR",
+   "chapter": "s2-12",
+   "sec": "wireless",
+   "items": [
+    {
+     "term": "RSSI",
+     "gist": "收到的訊號多強（dBm）"
+    },
+    {
+     "term": "SNR",
+     "gist": "訊號比雜訊高出多少（dB）"
+    }
+   ],
+   "tip": "訊號強不代表連線品質好"
+  },
+  {
+   "title": "ERP、MES、SCADA、PLC",
+   "chapter": "s2-23",
+   "sec": "isa-95",
+   "items": [
+    {
+     "term": "ERP",
+     "gist": "接訂單，管採購、庫存、財務"
+    },
+    {
+     "term": "MES",
+     "gist": "派工、追溯、統計效率"
+    },
+    {
+     "term": "SCADA",
+     "gist": "集中監看、告警、遠端下指令"
+    },
+    {
+     "term": "PLC",
+     "gist": "現場即時控制馬達與閥門"
+    }
+   ],
+   "tip": "越上層管生意，越下層越即時"
+  }
+ ]
+}
