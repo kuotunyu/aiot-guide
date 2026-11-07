@@ -28,11 +28,46 @@ def clean(html, where):
     return re.sub(r'<(/?)([a-zA-Z][a-zA-Z0-9]*)([^<>]*)>', tag, html or '')
 
 
-def check_svg(svg, where):
+def video(key):
+    v = SITE['videos'][key]
+    out = f'<details class="vid"><summary>看動畫：{e(v["title"])}（{v["seconds"]} 秒）</summary><video controls preload="none" playsinline src="media/{key}.mp4" poster="media/{key}-poster.jpg"></video>'
+    if v.get('transcript'):
+        out += f'<p class="small muted noread">{e(v["transcript"])}</p>'
+    return out + '</details>'
+
+
+def figure(svg, caption, where, steps=None, start=1, loop=False):
+    svg = check_svg(svg, where, loop)
+    cap = f'<figcaption>{e(caption)}</figcaption>' if caption else ''
+    if loop:
+        # A looping animation: .lp-move plays, .lp-still is the complete still picture shown when motion is off.
+        if 'class="lp-move"' not in svg or 'class="lp-still"' not in svg:
+            problems.append(f'loop figure in {where}: needs a <g class="lp-move"> and a <g class="lp-still">')
+        return f'<figure class="dg loop">{svg}{cap}</figure>'
+    if not steps:
+        return f'<figure class="dg" title="點圖放大">{svg}{cap}</figure>'
+    # A step figure: parts marked data-s="2 3" show only at those steps; the rest always show.
+    n = len(steps)
+    used = {int(x) for v in re.findall(r'data-s="([^"]+)"', svg) for x in v.split()}
+    if not used or max(used) > n or min(used) < 1 or not 1 <= start <= n:
+        problems.append(f'step figure in {where}: data-s {sorted(used)} vs {n} steps, start {start}')
+    items = ''.join(f'<li{" class=on" if i + 1 == start else ""}>{e(t)}</li>' for i, t in enumerate(steps))
+    ctl = f'<div class="stepctl noread" hidden><button type="button" class="btn ghost" data-d="-1">上一步</button><span class="stepn">{start} / {n}</span><button type="button" class="btn ghost" data-d="1">下一步</button></div>'
+    return f'<figure class="dg stepfig" data-cur="{start}" data-n="{n}">{svg}{ctl}<ol class="stepcap" aria-live="polite">{items}</ol>{cap}</figure>'
+
+
+def check_svg(svg, where, loop=False):
     svg = svg.strip()
     body = re.sub(r'url\(#[\w-]+\)', '', svg)
     bad = [x for x in ('style=', 'fill="', 'stroke="', '<script') if x in body]
     tags = {x.lower() for x in re.findall(r'<([a-zA-Z]+)', svg)} - SVG_TAGS
+    if loop:
+        # Loop figures carry their own keyframes: only motion, never colours, and only lp- names.
+        tags.discard('style')
+        for css in re.findall(r'<style>(.*?)</style>', svg, re.S):
+            names = re.findall(r'(?:^|})\s*(@keyframes\s+[\w-]+|[^{}@]+)\s*{', css)
+            if re.search(r'url\(|@import|fill|stroke|color|background', css) or any(not re.match(r'(@keyframes\s+lp-|\.lp-)', n.strip()) for n in names if not re.match(r'^[\d.%,\s]+$|^(from|to)$', n.strip())):
+                bad.append('loop style')
     if bad or tags or not svg.startswith('<svg viewBox="0 0 600 '):
         problems.append(f'svg in {where}: {bad} {tags}')
     return svg
@@ -69,7 +104,7 @@ def minutes(c):
 
 
 # ---------- page frame ----------
-NAV = [('index.html', '首頁'), ('practice.html', '練習'), ('glossary.html', '名詞'), ('reference.html', '速查'), ('exam.html', '考試資訊'), ('about.html', '關於')]
+NAV = [('index.html', '首頁'), ('index.html#chapters', '章節'), ('practice.html', '練習'), ('glossary.html', '名詞'), ('reference.html', '速查'), ('exam.html', '考試資訊'), ('about.html', '關於')]
 LOGO = '<svg viewBox="0 0 26 26" aria-hidden="true"><path class="tr" d="M3 20h7l6-14h7"/><circle class="nd" cx="3.5" cy="20" r="3"/><circle class="nd" cx="22.5" cy="6" r="3"/></svg>'
 READER = '''<div id="reader" role="region" aria-label="朗讀播放器"><div class="in">
 <div class="ctl"><button type="button" id="rdPrev" aria-label="上一段">⏮</button><button type="button" id="rdPlay" class="main" aria-label="暫停或繼續">⏸</button><button type="button" id="rdNext" aria-label="下一段">⏭</button><button type="button" id="rdStop" aria-label="停止朗讀">⏹</button></div>
@@ -142,6 +177,7 @@ def table(t, where):
 
 
 SAY = '<button type="button" class="say" data-say-card>朗讀</button>'
+GUIDE_NOTE = '<p class="small muted noread">標「指引 p.N」的條目：本站寫通行說法，括號內是官方學習指引的寫法；考題若照指引出，看題目條件判斷。</p>'
 
 
 def locator(cid):
@@ -168,22 +204,27 @@ def chapter(cid):
         if s.get('predict'):
             pr = s['predict']
             sections += f'<details class="pr" data-say="{e("先想一想。" + pr["q"] + "。答案：" + pr["a"])}"><summary><span class="prk">先想一想</span>{e(pr["q"])}</summary><p>{e(pr["a"])}</p></details>'
+        # Extra figures sit where the text needs them: after the predict, the body, the after text, or at the end.
+        figs = {}
+        for f in s.get('figs', []):
+            figs.setdefault(f.get('pos', 'end'), []).append(figure(f['svg'], f.get('caption'), where, f.get('steps'), f.get('start', 1), f.get('loop')))
+        sections += ''.join(figs.pop('after-predict', []))
         sections += link(clean(s.get('body', ''), where))
+        sections += ''.join(figs.pop('after-body', []))
         if s.get('lab'):
             sections += f'<div class="lab" data-lab="{e(s["lab"])}"><noscript><p>這個互動實驗需要 JavaScript。</p></noscript></div>'
         if s.get('after'):
             sections += link(clean(s['after'], where))
+        sections += ''.join(figs.pop('after-after', []))
         if s.get('svg'):
-            cap = f'<figcaption>{e(s["caption"])}</figcaption>' if s.get('caption') else ''
-            sections += f'<figure class="dg" title="點圖放大">{check_svg(s["svg"], where)}{cap}</figure>'
+            sections += figure(s['svg'], s.get('caption'), where, s.get('steps'), s.get('start', 1), s.get('loop'))
+        sections += ''.join(figs.pop('end', []))
+        for pos in figs:
+            problems.append(f'unknown figure position {pos} in {where}')
         if s.get('table'):
             sections += table(s['table'], where)
         if s.get('video'):
-            v = SITE['videos'][s['video']]
-            sections += f'<details class="vid"><summary>看動畫：{e(v["title"])}（{v["seconds"]} 秒）</summary><video controls preload="none" playsinline src="media/{s["video"]}.mp4" poster="media/{s["video"]}-poster.jpg"></video>'
-            if v.get('transcript'):
-                sections += f'<p class="small muted noread">{e(v["transcript"])}</p>'
-            sections += '</details>'
+            sections += video(s['video'])
         if s.get('more'):
             sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>{link(clean(s["more"]["body"], where))}</details>'
         sections += '</section>'
@@ -236,7 +277,7 @@ def chapter(cid):
 {case}<div class="learn"><h2>讀完這章，你能</h2><ul>{learn}</ul></div>
 {prereq}{bridge}
 {sections}
-<section id="keypoints" data-read><div class="keys"><h2>重點整理</h2><ul>{keys}</ul></div><div class="pits"><h2>容易混淆的地方</h2><ul>{pits}</ul></div></section>
+<section id="keypoints" data-read><div class="keys"><h2>重點整理</h2><ul>{keys}</ul></div><div class="pits"><h2>容易混淆的地方</h2>{GUIDE_NOTE if '指引 p.' in pits else ''}<ul>{pits}</ul></div></section>
 <section id="examples" data-read><h2><span class="txt">例題：怎麼想</span>{SAY}</h2><p class="small muted noread">先選一個答案，再看解題思路。朗讀時會連答案一起唸。</p>{exs}</section>
 <section id="check" data-read><h2><span class="txt">自我檢查</span>{SAY}</h2><div class="flgrid">{chk}</div></section>
 <section id="terms" data-read><h2><span class="txt">本章名詞</span>{SAY}</h2><div class="termgrid">{terms}</div>{guide}</section>
@@ -245,7 +286,7 @@ def chapter(cid):
 </article>
 <nav class="toc" aria-label="本章目錄"><b>本章目錄</b>{toc}{tail}</nav>
 {glossary_data(used)}</main>'''
-    page(f'{cid}.html', f'{c["code"]} {c["title"]}', main, c['summary'], labs, current='index.html', jsonld={
+    page(f'{cid}.html', f'{c["code"]} {c["title"]}', main, c['summary'], labs, current='index.html#chapters', jsonld={
         '@context': 'https://schema.org', '@type': 'LearningResource', 'name': f'{c["code"]} {c["title"]}', 'headline': c['title'], 'description': c['summary'],
         'url': SITE['url'] + cid + '.html', 'inLanguage': 'zh-Hant', 'learningResourceType': '教學文章與互動實驗', 'teaches': c['learn'], 'dateModified': SITE['updated'],
         'educationalAlignment': {'@type': 'AlignmentObject', 'alignmentType': 'educationalSubject', 'targetName': SUBJ[c['subject']]['name']},
@@ -257,28 +298,28 @@ def home():
     h = SITE['home']
     stops = ''
     for st in h['stops']:
-        links = ''.join(f'<a href="{x}.html">{e(CH[x]["code"] + " " + CH[x]["title"])}</a>' for x in st['chapters'])
+        links = ''.join(f'<a href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in st['chapters'])
         stops += f'<div class="stop"><b>{e(st["name"])}</b><span class="what">{e(st["what"])}</span>{links}</div>'
-    across = ''.join(f'<a href="{x}.html">{e(CH[x]["code"] + " " + CH[x]["title"])}</a>' for x in h['across'])
+    across = '｜'.join(e(name) + ' ' + ''.join(f'<a href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in ids) for name, ids in h['acrossGroups'])
     mins = [minutes(CH[x]) for x in ORDER]
     start = f'共 {len(ORDER)} 章，每章約 {min(mins)}–{max(mins)} 分鐘，可分次讀。' + h['start']
     subs = ''
     for s, sub in SUBJ.items():
-        body = ''
-        for tp in sub['topics']:
-            items = ''
-            for cid in tp['chapters']:
-                c = CH[cid]
-                items += f'<li><a href="{cid}.html"><span class="tag">{e(c["code"])}</span><span><span class="t">{e(c["title"])}</span><span class="d">{e(c["subtitle"])}</span></span></a></li>'
-            body += f'<div class="topic">{e(tp["name"])}</div><ul class="chlist">{items}</ul>'
+        # Listed in the recommended reading order, the same order as the sidebar and the pager.
+        items = ''
+        for cid in [x for x in SITE['reading'] if CH[x]['subject'] == s]:
+            c = CH[cid]
+            items += f'<li><a href="{cid}.html"><span class="tag">{e(c["code"])}</span><span><span class="t">{e(c["title"])}</span><span class="d">{e(c["subtitle"])}</span></span></a></li>'
+        body = f'<div class="topic">建議順序</div><ul class="chlist">{items}</ul>'
         subs += f'<div class="subject {s}"><h2>{e(sub["name"])}</h2><p class="desc">{e(sub["desc"])}</p>{body}</div>'
     tools = ''.join(f'<a class="tool" href="{t["href"]}"><b>{e(t["name"])}</b><span>{e(t["desc"])}</span></a>' for t in h['tools'])
     main = f'''<main>
 <div class="wrap hero"><h1>{e(h["title"])}</h1><p class="lead">{e(h["lead"])}</p>
-<div class="row" style="margin-top:16px"><a class="btn" href="s1-21.html">{e(h["startBtn"])}</a></div><p class="small muted" style="max-width:44em">{e(start)}</p>
-<div class="trace">{stops}</div>
-<div class="across"><b>{e(h["acrossLabel"])}</b>{across}</div></div>
-<div class="band" id="chapters"><div class="wrap"><div class="subjects">{subs}</div></div></div>
+<div class="row" style="margin-top:16px"><a class="btn" href="s1-21.html">{e(h["startBtn"])}</a><a class="btn ghost" href="#chapters">選科目與章節 ↓</a></div><p class="small muted" style="max-width:44em">{e(start)}</p></div>
+<div class="band" id="chapters"><div class="wrap"><div class="subjects">{subs}</div><p class="small muted" style="margin:18px 0 0">照建議順序排列；編號是官方項目編號，官方的分組見<a href="exam.html#scope">考試資訊</a>。</p></div></div>
+<div class="band" id="map"><div class="wrap"><h2 style="margin:0 0 4px">{e(h["mapTitle"])}</h2><p class="small muted" style="margin:0">{e(h["mapNote"])}</p>
+{video(h["video"]) if h.get("video") else ""}<div class="trace">{stops}</div>
+<p class="across"><b>{e(h["acrossLabel"])}</b>{across}</p></div></div>
 <div class="band"><div class="wrap"><div class="tools">{tools}</div></div></div>
 </main>'''
     page('index.html', SITE['name'], main, SITE['description'], jsonld={'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'], 'description': SITE['description'], 'inLanguage': 'zh-Hant', 'author': {'@type': 'Person', 'name': SITE['author']}, 'license': 'https://creativecommons.org/licenses/by/4.0/'})
@@ -436,7 +477,7 @@ def glossary():
         href = g['chapter'] + '.html' + ('#' + g['sec'] if g.get('sec') else '')
         conf += f'<div class="conf{" wide" if len(g["items"]) > 3 else ""}" data-s="{c["subject"]}"><h3>{e(g["title"])}</h3><div class="cg" style="--n:{len(g["items"])}">{cells}</div>{tip}<a class="small" href="{href}">{e(c["code"] + " " + c["title"])}</a></div>'
     opts = ''.join(f'<option value="{s}">{e(SUBJ[s]["short"])}</option>' for s in SUBJ)
-    views = '<button type="button" data-v="ch" aria-pressed="true">依章節</button><button type="button" data-v="az" aria-pressed="false">A–Z・ㄅㄆㄇ</button>' + (f'<button type="button" data-v="conf" aria-pressed="false">容易混淆（{len(groups_c)} 組）</button>' if conf else '')
+    views = '<button type="button" data-v="ch" aria-pressed="true">依章節</button><button type="button" data-v="az" aria-pressed="false">依名稱</button>' + (f'<button type="button" data-v="conf" aria-pressed="false">容易混淆（{len(groups_c)} 組）</button>' if conf else '')
     main = f'''<main class="wrap page gloss"><h1>名詞</h1><p class="intro">讀到不懂的名詞就來這裡查，也可以照章節複習，或看容易混淆的概念怎麼分。章節內文裡有虛線底線的詞，點一下就能看定義。</p>
 <div class="panel"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="MQTT、遲滯、OEE"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><div class="seg gview" role="group" aria-label="呈現方式">{views}</div><span class="small muted" id="gcount"></span></div>
 <nav class="gchips" aria-label="跳到章節"><span class="small muted">跳到章節（依建議順序）</span>{chips}</nav></div>
@@ -461,7 +502,7 @@ def reference():
             pits = ''.join(f'<li>{clean(x, cid)}</li>' for x in c['pitfalls'])
             cards += f'<div class="panel {s}"><h3><a href="{cid}.html"><span class="tag">{e(c["code"])}</span> {e(c["title"])}</a></h3><ul>' + ''.join(f'<li>{clean(x, cid)}</li>' for x in c['keypoints']) + f'</ul><details class="more"><summary>容易混淆的地方（{len(c["pitfalls"])} 條）</summary><ul>{pits}</ul></details></div>'
         blocks += f'<h2 style="margin-top:28px">{e(sub["name"])}</h2><div class="refgrid">{cards}</div>'
-    main = f'''<main class="wrap page"><h1>速查</h1><p class="intro">讀過一輪之後回來複習用：先是會用到的公式，再來是每章的重點，展開可看容易混淆的地方。</p>
+    main = f'''<main class="wrap page"><h1>速查</h1><p class="intro">讀過一輪之後回來複習用：先是會用到的公式，再來是每章的重點，展開可看容易混淆的地方。</p><p class="small muted">標「指引 p.N」的條目：本站寫通行說法，括號內是官方學習指引的寫法；考題若照指引出，看題目條件判斷。</p>
 <h2>公式</h2><div class="formula">{fm}</div>{blocks}</main>'''
     page('reference.html', '速查', main, 'AIoT 常用公式、15 個主題的重點整理與容易混淆的地方。')
 
@@ -480,7 +521,7 @@ def exam():
     tips = ''.join(f'<li>{e(t)}</li>' for t in x['tips'])
     main = f'''<main class="wrap page"><h1>考試資訊</h1><p class="intro">{e(x["intro"])}</p>
 <div class="panel"><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><tbody>{rows}</tbody></table></div><p class="small muted">{e(x["checked"])}</p></div>
-<h2 style="margin-top:28px">考試範圍與本站章節</h2><p>章節編號照官方簡章：科一用「.」（如 2.1），科二用「-」（如 2-1）。點評鑑內容就能讀那一章。</p><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>科目</th><th>評鑑主題</th><th>評鑑內容</th></tr></thead><tbody>{scope}</tbody></table></div>
+<h2 style="margin-top:28px" id="scope">考試範圍與本站章節</h2><p>章節編號照官方簡章：科一用「.」（如 2.1），科二用「-」（如 2-1）。點評鑑內容就能讀那一章。</p><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>科目</th><th>評鑑主題</th><th>評鑑內容</th></tr></thead><tbody>{scope}</tbody></table></div>
 <h2 style="margin-top:28px">作答提醒</h2><ul>{tips}</ul>
 <h2 style="margin-top:28px">官方資源</h2><ul>{links}</ul></main>'''
     page('exam.html', '考試資訊', main, 'iPAS AIoT 應用工程師初級兩個學科的考試形式、及格標準與範圍對照。')
@@ -528,7 +569,7 @@ if __name__ == '__main__':
         chapter(cid)
     practice(); glossary(); reference(); exam(); about(); not_found(); discovery()
     # every marker id must be unique across the site, and every internal link must resolve
-    ids = re.findall(r'<marker id="([^"]+)"', ''.join(s.get('svg', '') for c in CH.values() for s in c['sections']))
+    ids = re.findall(r'<marker id="([^"]+)"', ''.join(s.get('svg', '') + ''.join(f['svg'] for f in s.get('figs', [])) for c in CH.values() for s in c['sections']))
     dup = {i for i in ids if ids.count(i) > 1}
     if dup:
         problems.append(f'duplicate marker ids within site: {sorted(dup)[:5]}')

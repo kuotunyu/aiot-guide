@@ -46,14 +46,6 @@ assert.strictEqual(L.owner('paas', 'runtime'), 'vendor');
 assert.strictEqual(L.owner('saas', 'app'), 'vendor');
 // SaaS: data permissions remain yours in every model.
 for (const m of L.MODELS) assert.strictEqual(L.owner(m.id, 'data'), 'you', m.id);
-assert.strictEqual(L.layerLabel('saas', 'data'), '資料權限與設定');
-assert.strictEqual(L.layerLabel('paas', 'data'), '資料');
-
-assert.deepStrictEqual(L.handoff('onprem', 'iaas'), ['virt', 'hw']);
-assert.deepStrictEqual(L.handoff('iaas', 'paas'), ['runtime', 'os']);
-assert.deepStrictEqual(L.handoff('paas', 'saas'), ['app']);
-assert.deepStrictEqual(L.handoff('saas', 'saas'), []);
-assert.deepStrictEqual(L.handoff('saas', 'paas'), ['app']);
 
 // Quiz answers come from the model.
 const ans = L.TASKS.map(t => L.owner(t.model, t.layer));

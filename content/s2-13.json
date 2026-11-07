@@ -24,7 +24,7 @@
     "q": "倉庫一台攝影機仍用出廠帳密，但它只拍走道、沒有機密。被入侵需要在意嗎？",
     "a": "需要。它可能成為進入內部網路的跳板，也可能被收編去攻擊別人，影響不限於那段畫面。"
    },
-   "body": "<p>一般電腦有人在用、會更新、壞了有人發現；IoT 裝置則數量多、算力小、裝好就沒人看，常常放在任何人都碰得到的地方。只要有一台被攻破，它就可能成為進入內部網路的跳板。</p><p>所以 IoT 資安的思考方式是：先認出風險是什麼，再挑真正對得上的措施。下表先給全貌，後面各節逐一說明。</p>",
+   "body": "<p>一般電腦有人在用、會更新、壞了有人發現；IoT 裝置則數量多、算力小、裝好就沒人看，常常放在任何人都碰得到的地方。只要有一台被攻破，它就可能成為進入內部網路的跳板，也可能被收編成殭屍網路，和大量裝置一起灌爆別人的服務（DDoS）；2016 年的 Mirai 就是靠沒改的出廠預設密碼這樣做的（見 <a href=\"s1-25.html#attacks\">科一 2.5〈資安與隱私基本概念〉</a>）。</p><p>所以 IoT 資安的思考方式是：先認出風險是什麼，再挑真正對得上的措施。下表先給全貌，後面各節逐一說明。</p>",
    "table": {
     "head": [
      "風險",
@@ -68,10 +68,6 @@
       "關閉除錯口、防拆、儲存加密"
      ]
     ]
-   },
-   "more": {
-    "label": "代表案例：Mirai 怎麼靠預設密碼癱瘓網站",
-    "body": "<p>2016 年的 <b>Mirai</b> 惡意程式掃描網路上的攝影機與路由器，用出廠預設帳密登入，把大量裝置變成<b>殭屍網路</b>（botnet，被遠端操控的裝置群），再一起發動<b>分散式阻斷服務攻擊</b>（DDoS，Distributed Denial of Service，由大量裝置同時灌流量），造成多個知名網站無法連線。入侵手法並不高深，靠的就是沒人改密碼。</p>"
    }
   },
   {
@@ -81,9 +77,9 @@
     "q": "一台貨車閘道器連車失竊，全公司的閘道器共用同一張憑證。接下來會有什麼麻煩？",
     "a": "撤銷那張憑證，全部閘道器都會斷線；不撤銷，失竊的裝置就繼續以合法身分連線。所以部署時每台要發獨立憑證。"
    },
-   "body": "<p>裝置的安全不是裝好防毒就結束，而是一段生命週期，每個階段各有該做的事。部署時的第一件事是<b>改掉預設帳密</b>；退役時則要撤銷憑證、清除資料、從資產清單移除，舊裝置才不會還能以合法身分連線。</p>",
-   "svg": "<svg viewBox=\"0 0 600 190\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"裝置生命週期五階段：出廠、部署、運作、更新、退役，各階段的安全措施\"><defs><marker id=\"s2-13-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"20\" width=\"104\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"62\" y=\"48\" class=\"tb tc\">出廠</text><rect x=\"10\" y=\"76\" width=\"104\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"62\" y=\"102\" class=\"ts tc\">每台唯一密碼</text><text x=\"62\" y=\"128\" class=\"ts tc\">關 JTAG/UART</text><text x=\"62\" y=\"154\" class=\"ts tc\">安全開機</text><line x1=\"114\" y1=\"42\" x2=\"127\" y2=\"42\" class=\"ln\" marker-end=\"url(#s2-13-2-arr)\"/><rect x=\"127\" y=\"20\" width=\"104\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"179\" y=\"48\" class=\"tb tc\">部署</text><rect x=\"127\" y=\"76\" width=\"104\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"179\" y=\"102\" class=\"ts tc\">改預設帳密</text><text x=\"179\" y=\"128\" class=\"ts tc\">發裝置憑證</text><text x=\"179\" y=\"154\" class=\"ts tc\">網段隔離</text><line x1=\"231\" y1=\"42\" x2=\"244\" y2=\"42\" class=\"ln\" marker-end=\"url(#s2-13-2-arr)\"/><rect x=\"244\" y=\"20\" width=\"104\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"296\" y=\"48\" class=\"tb tc\">運作</text><rect x=\"244\" y=\"76\" width=\"104\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"296\" y=\"102\" class=\"ts tc\">最小權限</text><text x=\"296\" y=\"128\" class=\"ts tc\">日誌監控</text><text x=\"296\" y=\"154\" class=\"ts tc\">關閉多餘通訊埠</text><line x1=\"348\" y1=\"42\" x2=\"361\" y2=\"42\" class=\"ln\" marker-end=\"url(#s2-13-2-arr)\"/><rect x=\"361\" y=\"20\" width=\"104\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"413\" y=\"48\" class=\"tb tc\">更新</text><rect x=\"361\" y=\"76\" width=\"104\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"413\" y=\"102\" class=\"ts tc\">韌體簽章驗證</text><text x=\"413\" y=\"128\" class=\"ts tc\">OTA 加密傳送</text><text x=\"413\" y=\"154\" class=\"ts tc\">失敗可回復</text><line x1=\"465\" y1=\"42\" x2=\"478\" y2=\"42\" class=\"ln\" marker-end=\"url(#s2-13-2-arr)\"/><rect x=\"478\" y=\"20\" width=\"104\" height=\"44\" rx=\"8\" class=\"acc\"/><text x=\"530\" y=\"48\" class=\"tb tc\">退役</text><rect x=\"478\" y=\"76\" width=\"104\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"530\" y=\"102\" class=\"ts tc\">撤銷憑證</text><text x=\"530\" y=\"128\" class=\"ts tc\">清除資料</text><text x=\"530\" y=\"154\" class=\"ts tc\">移出資產清單</text></svg>",
-   "caption": "五個階段環環相扣，任何一段沒人管，都可能成為入侵的破口。",
+   "body": "<p>裝置安全是一段生命週期，五個階段該做的事整理在圖下的表格。部署的<b>第一件事是改掉預設帳密</b>；最容易出事的則是多台共用一張憑證，先看圖。</p>",
+   "svg": "<svg viewBox=\"0 0 600 356\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"一台閘道器失竊：四台共用憑證 A 時，撤銷會讓四台全部斷線、不撤銷則小偷繼續連線；每台各有憑證時，只撤銷失竊那台的憑證 C，其他三台照常連線\"><text x=\"12\" y=\"22\" class=\"tb\">4 台閘道器共用一張憑證</text><rect x=\"12\" y=\"32\" width=\"316\" height=\"32\" rx=\"8\" class=\"box\"/><text x=\"170\" y=\"54\" class=\"t tc\">雲端平台</text><line x1=\"47\" y1=\"64\" x2=\"47\" y2=\"96\" class=\"ln\"/><rect x=\"12\" y=\"96\" width=\"70\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"47\" y=\"127\" class=\"t tc\">憑證 A</text><line x1=\"129\" y1=\"64\" x2=\"129\" y2=\"96\" class=\"ln\"/><rect x=\"94\" y=\"96\" width=\"70\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"129\" y=\"127\" class=\"t tc\">憑證 A</text><line x1=\"211\" y1=\"64\" x2=\"211\" y2=\"96\" class=\"ln\"/><rect x=\"176\" y=\"96\" width=\"70\" height=\"50\" rx=\"8\" class=\"bad\"/><text x=\"211\" y=\"116\" class=\"tb tc\">失竊</text><text x=\"211\" y=\"138\" class=\"t tc\">憑證 A</text><line x1=\"293\" y1=\"64\" x2=\"293\" y2=\"96\" class=\"ln\"/><rect x=\"258\" y=\"96\" width=\"70\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"293\" y=\"127\" class=\"t tc\">憑證 A</text><rect x=\"346\" y=\"32\" width=\"242\" height=\"52\" rx=\"8\" class=\"bad\"/><text x=\"467\" y=\"54\" class=\"tb tc\">撤銷憑證 A</text><text x=\"467\" y=\"76\" class=\"t tc\">→ 4 台全部斷線</text><rect x=\"346\" y=\"94\" width=\"242\" height=\"52\" rx=\"8\" class=\"bad\"/><text x=\"467\" y=\"116\" class=\"tb tc\">不撤銷</text><text x=\"467\" y=\"138\" class=\"t tc\">→ 小偷繼續合法連線</text><line x1=\"12\" y1=\"163\" x2=\"588\" y2=\"163\" class=\"ln dash\"/><text x=\"12\" y=\"190\" class=\"tb\">每台閘道器各有一張憑證</text><rect x=\"12\" y=\"200\" width=\"316\" height=\"32\" rx=\"8\" class=\"box\"/><text x=\"170\" y=\"222\" class=\"t tc\">雲端平台</text><line x1=\"47\" y1=\"232\" x2=\"47\" y2=\"264\" class=\"ln\"/><rect x=\"12\" y=\"264\" width=\"70\" height=\"50\" rx=\"8\" class=\"ok\"/><text x=\"47\" y=\"295\" class=\"t tc\">憑證 A</text><line x1=\"129\" y1=\"232\" x2=\"129\" y2=\"264\" class=\"ln\"/><rect x=\"94\" y=\"264\" width=\"70\" height=\"50\" rx=\"8\" class=\"ok\"/><text x=\"129\" y=\"295\" class=\"t tc\">憑證 B</text><line x1=\"211\" y1=\"232\" x2=\"211\" y2=\"264\" class=\"ln dash\"/><circle cx=\"211\" cy=\"248\" r=\"9\" class=\"bad\"/><line x1=\"206\" y1=\"243\" x2=\"216\" y2=\"253\" class=\"bad\"/><line x1=\"206\" y1=\"253\" x2=\"216\" y2=\"243\" class=\"bad\"/><rect x=\"176\" y=\"264\" width=\"70\" height=\"50\" rx=\"8\" class=\"bad\"/><text x=\"211\" y=\"284\" class=\"tb tc\">失竊</text><text x=\"211\" y=\"306\" class=\"t tc\">憑證 C</text><line x1=\"293\" y1=\"232\" x2=\"293\" y2=\"264\" class=\"ln\"/><rect x=\"258\" y=\"264\" width=\"70\" height=\"50\" rx=\"8\" class=\"ok\"/><text x=\"293\" y=\"295\" class=\"t tc\">憑證 D</text><rect x=\"346\" y=\"200\" width=\"242\" height=\"114\" rx=\"8\" class=\"ok\"/><text x=\"467\" y=\"250\" class=\"tb tc\">只撤銷憑證 C</text><text x=\"467\" y=\"276\" class=\"t tc\">其他 3 台照常連線</text><text x=\"300\" y=\"344\" class=\"t tc\">退役也一樣：清掉資料還不夠，平台上的憑證要撤銷</text></svg>",
+   "caption": "共用憑證只能二選一：全部斷線，或放任小偷連線；每台獨立，才能只撤銷出事的那台。",
    "table": {
     "head": [
      "階段",
@@ -98,8 +94,8 @@
      ],
      [
       "部署",
-      "改掉預設帳密；每台發獨立憑證",
-      "遺失時只要撤銷那一台"
+      "改掉預設帳密；每台發<b>獨立憑證</b>；放進獨立網段",
+      "遺失時只要撤銷那一台；被入侵也不容易擴散"
      ],
      [
       "運作",
@@ -108,7 +104,7 @@
      ],
      [
       "更新",
-      "定期更新韌體與軟體",
+      "定期更新韌體與軟體；更新包要驗簽章、失敗能回復",
       "把已知漏洞真正補起來"
      ],
      [
@@ -126,13 +122,32 @@
     "q": "新版韌體推給全台貨車閘道器，簽章完全正確，卻有一個會讓裝置開不了機的錯誤。簽章幫得上忙嗎？",
     "a": "幫不上。簽章只確認來源與內容未被改，不保證程式沒錯，這要靠分批推送與 A/B 分區回復。"
    },
-   "body": "<p><b>安全開機</b>（Secure Boot）解決「開機跑的程式可不可信」。晶片內的 ROM（出廠後不能改寫的記憶體）當<b>信任根</b>（root of trust），開機時每一層先驗下一層的簽章（ROM → Bootloader → 韌體 → 應用程式；Bootloader 是開機時負責載入韌體的小程式），不符就拒絕執行，串起來稱為<b>信任鏈</b>。像進大樓時每道門的警衛都先核對下一位的證件。</p><p><b>OTA</b>（Over-The-Air）是透過網路遠端更新韌體，像手機系統更新。它要同時顧好幾件事：</p><ul><li><b>簽章</b>：廠商用只有自己持有的私鑰簽，裝置用公開的公鑰驗，確認來源且內容沒被改。</li><li><b>TLS 傳送</b>：防止傳輸途中被偷看。</li><li><b>分批推送</b>：先對少量裝置試，沒問題再全面更新。</li><li><b>A/B 分區</b>：新版寫到備用區，開機測試失敗就回到舊版，大幅降低裝置<b>變磚</b>（再也開不了機）的風險。</li><li><b>版本檢查</b>：拒絕裝回較舊的版本，防止<b>降版攻擊</b>。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 390\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OTA 韌體更新流程：廠商私鑰簽章、TLS 傳送、裝置驗簽、寫入 B 分區、測試失敗自動回滾\"><defs><marker id=\"s2-13-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"150\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"95\" y=\"44\" class=\"tb tc\">廠商</text><text x=\"95\" y=\"64\" class=\"ts tc\">用私鑰簽韌體</text><rect x=\"225\" y=\"20\" width=\"150\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"44\" class=\"tb tc\">更新伺服器</text><text x=\"300\" y=\"64\" class=\"ts tc\">分批推送</text><rect x=\"430\" y=\"20\" width=\"150\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"505\" y=\"44\" class=\"tb tc\">裝置</text><text x=\"505\" y=\"64\" class=\"ts tc\">用公鑰驗簽章</text><line x1=\"170\" y1=\"54\" x2=\"223\" y2=\"54\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"197\" y=\"44\" class=\"ts tc\">上傳</text><line x1=\"375\" y1=\"54\" x2=\"428\" y2=\"54\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"402\" y=\"44\" class=\"ts tc\">TLS</text><rect x=\"430\" y=\"130\" width=\"150\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"505\" y=\"151\" class=\"tb tc\">寫入 B 分區</text><text x=\"505\" y=\"171\" class=\"ts tc\">A 區舊版保留</text><line x1=\"505\" y1=\"76\" x2=\"505\" y2=\"128\" class=\"la\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"522\" y=\"108\" class=\"ts ta\">驗簽通過</text><rect x=\"225\" y=\"130\" width=\"150\" height=\"50\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"151\" class=\"tb tc\">簽章不符</text><text x=\"300\" y=\"171\" class=\"ts tc\">丟棄、不安裝</text><line x1=\"440\" y1=\"76\" x2=\"377\" y2=\"132\" class=\"ln dash\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"372\" y=\"100\" class=\"ts tc\">驗簽失敗</text><rect x=\"430\" y=\"230\" width=\"150\" height=\"50\" rx=\"8\" class=\"box\"/><text x=\"505\" y=\"251\" class=\"tb tc\">重開機自我測試</text><text x=\"505\" y=\"271\" class=\"ts tc\">從 B 區開機</text><line x1=\"505\" y1=\"180\" x2=\"505\" y2=\"228\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><rect x=\"225\" y=\"230\" width=\"150\" height=\"50\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"251\" class=\"tb tc\">自動回滾</text><text x=\"300\" y=\"271\" class=\"ts tc\">回到 A 區舊版</text><line x1=\"430\" y1=\"262\" x2=\"377\" y2=\"262\" class=\"ln dash\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"402\" y=\"250\" class=\"ts tc\">失敗</text><rect x=\"430\" y=\"320\" width=\"150\" height=\"50\" rx=\"8\" class=\"ok\"/><text x=\"505\" y=\"351\" class=\"tb tc\">成功：改用 B</text><line x1=\"505\" y1=\"280\" x2=\"505\" y2=\"318\" class=\"la\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"522\" y=\"304\" class=\"ts ta\">通過</text><rect x=\"20\" y=\"130\" width=\"180\" height=\"150\" rx=\"8\" class=\"soft\"/><text x=\"34\" y=\"156\" class=\"ts\">簽章＝防竄改、確認來源</text><text x=\"34\" y=\"184\" class=\"ts\">TLS＝傳送途中防偷看</text><text x=\"34\" y=\"212\" class=\"ts\">A/B 分區＝保留回復機會</text><text x=\"34\" y=\"240\" class=\"ts\">分批＝先小量試再全推</text><text x=\"34\" y=\"268\" class=\"ts\">版本檢查＝防降回舊版</text></svg>",
-   "caption": "OTA 流程：簽章驗不過就丟棄；新版開機失敗就回到 A 區舊版。",
-   "more": {
-    "label": "降版防護與回滾為何不衝突，以及硬體的限制",
-    "body": "<p>降版攻擊是把裝置退回有漏洞的狀態。版本檢查擋的是外部送來的舊版安裝包；A/B 回滾是回到更新前原本在跑、已驗證過的版本，新版確認成功後才提高最低允許版本。</p><p>TLS 只保護傳輸途中；若韌體內容本身要保密，還需另外加密。</p><p>不是每台小裝置都有足夠的記憶體做 A/B 分區與驗簽；選硬體時就要把更新需求算進去。</p>"
-   }
+   "body": "<p><b>安全開機</b>（Secure Boot）確認開機跑的程式可信：晶片內的 ROM 出廠後不能改寫，當<b>信任根</b>（root of trust）。開機時每一層先驗下一層的簽章，不符就停，串成<b>信任鏈</b>；Bootloader 是開機時載入韌體的小程式。</p><p><b>OTA</b>（Over-The-Air）是透過網路遠端更新韌體，像手機系統更新。它要同時顧好幾件事：</p><ul><li><b>簽章</b>：廠商用只有自己持有的私鑰簽，裝置用公開的公鑰驗，確認來源且內容沒被改。</li><li><b>TLS 傳送</b>：防止傳輸途中被偷看。</li><li><b>分批推送</b>：先對少量裝置試，沒問題再全面更新。</li><li><b>A/B 分區</b>：新版寫到備用區，開機測試失敗就回到舊版，大幅降低裝置<b>變磚</b>（再也開不了機）的風險；小裝置要有足夠的儲存空間才做得到。</li><li><b>版本檢查</b>：拒絕裝回較舊的版本，防止<b>降版攻擊</b>。</li></ul>",
+   "figs": [
+    {
+     "pos": "after-body",
+     "svg": "<svg viewBox=\"0 0 600 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"信任鏈：ROM 當信任根，開機時依序驗 Bootloader、韌體、應用程式的簽章；韌體被改過時 Bootloader 驗簽不符，拒絕執行，不往下開機\"><defs><marker id=\"s2-13-3-arr2\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"12\" y=\"32\" class=\"tb ta\" data-s=\"1\">正常開機</text><text x=\"12\" y=\"32\" class=\"tb ta\" data-s=\"2 3\">另一次開機：韌體被改過</text><rect x=\"13\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"acc\"/><text x=\"66\" y=\"83\" class=\"tb tc\">ROM</text><text x=\"66\" y=\"107\" class=\"t tc\">信任根</text><rect x=\"169\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"ok\"/><text x=\"222\" y=\"83\" class=\"tb tc\">Bootloader</text><text x=\"222\" y=\"107\" class=\"t tc\">✓ 通過</text><rect x=\"325\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"378\" y=\"83\" class=\"tb tc\">韌體</text><rect x=\"481\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"534\" y=\"83\" class=\"tb tc\">應用程式</text><g data-s=\"1\"><rect x=\"325\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"ok\"/><text x=\"378\" y=\"83\" class=\"tb tc\">韌體</text><text x=\"378\" y=\"107\" class=\"t tc\">✓ 通過</text><rect x=\"481\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"ok\"/><text x=\"534\" y=\"83\" class=\"tb tc\">應用程式</text><text x=\"534\" y=\"107\" class=\"t tc\">✓ 通過</text></g><g data-s=\"2\"><rect x=\"325\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"bad\"/><text x=\"378\" y=\"83\" class=\"tb tc\">韌體</text><text x=\"378\" y=\"107\" class=\"t tc\">被改過</text></g><g data-s=\"3\"><rect x=\"325\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"box dash\"/><text x=\"378\" y=\"83\" class=\"t tc\">韌體</text><rect x=\"481\" y=\"56\" width=\"106\" height=\"64\" rx=\"8\" class=\"box dash\"/><text x=\"534\" y=\"83\" class=\"t tc\">應用程式</text></g><line x1=\"119\" y1=\"88\" x2=\"167\" y2=\"88\" class=\"la\" marker-end=\"url(#s2-13-3-arr2)\"/><text x=\"144\" y=\"74\" class=\"t tc\">驗簽</text><line x1=\"275\" y1=\"88\" x2=\"323\" y2=\"88\" class=\"la\" marker-end=\"url(#s2-13-3-arr2)\"/><text x=\"300\" y=\"74\" class=\"t tc\">驗簽</text><line x1=\"431\" y1=\"88\" x2=\"479\" y2=\"88\" class=\"la\" data-s=\"1\" marker-end=\"url(#s2-13-3-arr2)\"/><line x1=\"431\" y1=\"88\" x2=\"479\" y2=\"88\" class=\"ln dash\" data-s=\"2 3\"/><text x=\"456\" y=\"74\" class=\"t tc\">驗簽</text><g data-s=\"2 3\"><line x1=\"300\" y1=\"94\" x2=\"300\" y2=\"136\" class=\"ln\"/><rect x=\"225\" y=\"136\" width=\"150\" height=\"36\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"160\" class=\"tb tc\">✕ 簽章不符</text></g><g data-s=\"1\"><rect x=\"12\" y=\"188\" width=\"576\" height=\"40\" rx=\"8\" class=\"ok\"/><text x=\"300\" y=\"214\" class=\"tb tc\">每一層都驗過下一層，開機完成</text></g><g data-s=\"3\"><rect x=\"12\" y=\"188\" width=\"576\" height=\"40\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"214\" class=\"tb tc\">拒絕執行，不往下開機</text></g></svg>",
+     "caption": "這是上面安全開機那段的信任鏈：從 ROM 起，每一層先驗下一層的簽章才交棒。OTA 是安裝時驗一次，安全開機是每次開機都驗。",
+     "steps": [
+      "正常開機：ROM 驗 Bootloader，Bootloader 驗韌體，韌體再驗應用程式，每一層都通過才往下跑。",
+      "另一次開機前，韌體被人改過。Bootloader 照常驗它的簽章，算出來對不上。",
+      "Bootloader 拒絕執行這份韌體，開機停在這裡，應用程式也不會被載入；要恢復得重新裝回有正確簽章的韌體。"
+     ],
+     "start": 3
+    }
+   ],
+   "svg": "<svg viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OTA 三種出錯的逐步圖：伺服器被入侵、韌體被換掉時，裝置用公鑰驗簽擋下；新版有 bug 時，分批只推一台，寫入 B 分區測試失敗後回到 A，伺服器停止推送；攻擊者改送簽章正確的舊版時，版本檢查拒絕\"><defs><marker id=\"s2-13-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"12\" y=\"16\" width=\"120\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"72\" y=\"38\" class=\"tb tc\">廠商</text><text x=\"72\" y=\"60\" class=\"t tc\">私鑰簽章</text><line x1=\"132\" y1=\"43\" x2=\"196\" y2=\"43\" class=\"la\" marker-end=\"url(#s2-13-3-arr)\"/><rect x=\"198\" y=\"16\" width=\"150\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"273\" y=\"38\" class=\"tb tc\">更新伺服器</text><g data-s=\"1 2\"><rect x=\"198\" y=\"16\" width=\"150\" height=\"54\" rx=\"8\" class=\"bad\"/><text x=\"273\" y=\"38\" class=\"tb tc\">更新伺服器</text><text x=\"273\" y=\"60\" class=\"t tc\">韌體被換掉</text></g><text x=\"273\" y=\"60\" class=\"t tc\" data-s=\"3 4\">只推 1 台</text><g data-s=\"5\"><rect x=\"198\" y=\"16\" width=\"150\" height=\"54\" rx=\"8\" class=\"warn\"/><text x=\"273\" y=\"38\" class=\"tb tc\">更新伺服器</text><text x=\"273\" y=\"60\" class=\"t tc\">停止推送</text></g><g data-s=\"6 7\"><rect x=\"198\" y=\"16\" width=\"150\" height=\"54\" rx=\"8\" class=\"bad\"/><text x=\"273\" y=\"38\" class=\"tb tc\">更新伺服器</text><text x=\"273\" y=\"60\" class=\"t tc\">換成舊版</text></g><line x1=\"348\" y1=\"43\" x2=\"398\" y2=\"43\" class=\"la\" data-s=\"1 2 6 7\" marker-end=\"url(#s2-13-3-arr)\"/><polyline points=\"348,43 374,43 374,59 400,59\" class=\"la\" data-s=\"3 4\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"373\" y=\"33\" class=\"t tc ta\" data-s=\"1 2 3 4 6 7\">TLS</text><rect x=\"404\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"442\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"480\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"518\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"556\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"442\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"480\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"518\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><rect x=\"556\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"box\"/><g data-s=\"1\"><rect x=\"404\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"442\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"480\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"518\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"556\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"442\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"480\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"518\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/><rect x=\"556\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"bad\"/></g><g data-s=\"6\"><rect x=\"404\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"442\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"480\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"518\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"556\" y=\"16\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"442\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"480\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"518\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/><rect x=\"556\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\"/></g><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"acc\" data-s=\"3\"/><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"warn\" data-s=\"4\"/><rect x=\"404\" y=\"48\" width=\"28\" height=\"22\" rx=\"4\" class=\"ok\" data-s=\"5\"/><text x=\"494\" y=\"90\" class=\"ts tc\">10 台裝置</text><g data-s=\"1 2 6 7\"><rect x=\"213\" y=\"104\" width=\"120\" height=\"34\" rx=\"8\" class=\"bad\"/><text x=\"273\" y=\"127\" class=\"tb tc\">攻擊者</text><line x1=\"273\" y1=\"104\" x2=\"273\" y2=\"74\" class=\"la\" marker-end=\"url(#s2-13-3-arr)\"/><text x=\"284\" y=\"94\" class=\"t\">入侵</text></g><line x1=\"418\" y1=\"70\" x2=\"418\" y2=\"148\" class=\"ln dash\"/><rect x=\"12\" y=\"148\" width=\"576\" height=\"134\" rx=\"10\" class=\"soft\"/><text x=\"28\" y=\"176\" class=\"tb ta\" data-s=\"1 2\">情境一　伺服器被入侵</text><text x=\"28\" y=\"176\" class=\"tb ta\" data-s=\"3 4 5\">情境二　新版有 bug</text><text x=\"28\" y=\"176\" class=\"tb ta\" data-s=\"6 7\">情境三　送來舊版安裝包</text><text x=\"520\" y=\"176\" class=\"ts tc\">放大其中一台</text><rect x=\"28\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"box\"/><text x=\"86\" y=\"228\" class=\"tb tc\">公鑰驗簽</text><rect x=\"168\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"box\"/><text x=\"226\" y=\"228\" class=\"tb tc\">版本檢查</text><rect x=\"478\" y=\"198\" width=\"104\" height=\"48\" rx=\"8\" class=\"box\"/><text x=\"530\" y=\"228\" class=\"tb tc\">自我測試</text><rect x=\"308\" y=\"198\" width=\"146\" height=\"48\" rx=\"8\" class=\"box\"/><text x=\"381\" y=\"190\" class=\"ts tc\">A/B 分區</text><g><rect x=\"314\" y=\"204\" width=\"64\" height=\"36\" rx=\"5\" class=\"soft\"/><text x=\"346\" y=\"228\" class=\"t tc\">A 現行</text></g><g><rect x=\"384\" y=\"204\" width=\"64\" height=\"36\" rx=\"5\" class=\"soft\"/><text x=\"416\" y=\"228\" class=\"t tc\">B 新版</text></g><line x1=\"144\" y1=\"222\" x2=\"166\" y2=\"222\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><line x1=\"284\" y1=\"222\" x2=\"306\" y2=\"222\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><line x1=\"454\" y1=\"222\" x2=\"476\" y2=\"222\" class=\"ln\" marker-end=\"url(#s2-13-3-arr)\"/><g data-s=\"2\"><rect x=\"28\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"bad\"/><text x=\"86\" y=\"228\" class=\"tb tc\">✕ 公鑰驗簽</text></g><g data-s=\"3 4 6 7\"><rect x=\"28\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"ok\"/><text x=\"86\" y=\"228\" class=\"tb tc\">✓ 公鑰驗簽</text></g><g data-s=\"3 4\"><rect x=\"168\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"ok\"/><text x=\"226\" y=\"228\" class=\"tb tc\">✓ 版本檢查</text></g><g data-s=\"7\"><rect x=\"168\" y=\"198\" width=\"116\" height=\"48\" rx=\"8\" class=\"bad\"/><text x=\"226\" y=\"228\" class=\"tb tc\">✕ 版本檢查</text></g><g data-s=\"4\"><rect x=\"478\" y=\"198\" width=\"104\" height=\"48\" rx=\"8\" class=\"bad\"/><text x=\"530\" y=\"228\" class=\"tb tc\">✕ 自我測試</text></g><g data-s=\"2 4 5 7\"><rect x=\"314\" y=\"204\" width=\"64\" height=\"36\" rx=\"5\" class=\"ok\"/><text x=\"346\" y=\"228\" class=\"t tc\">A 現行</text></g><g data-s=\"3\"><rect x=\"384\" y=\"204\" width=\"64\" height=\"36\" rx=\"5\" class=\"acc\"/><text x=\"416\" y=\"228\" class=\"t tc\">B 新版</text></g><g data-s=\"4\"><rect x=\"384\" y=\"204\" width=\"64\" height=\"36\" rx=\"5\" class=\"bad\"/><text x=\"416\" y=\"228\" class=\"t tc\">B 新版</text></g><path d=\"M530,248 C530,282 346,282 346,250\" class=\"la\" data-s=\"4\" marker-end=\"url(#s2-13-3-arr)\"/><g data-s=\"1\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"317\" class=\"tb tc\">伺服器照常用 TLS 推給裝置</text><text x=\"300\" y=\"340\" class=\"t tc\">TLS 只護送途中，源頭被換管不到</text></g><g data-s=\"2\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"ok\"/><text x=\"300\" y=\"317\" class=\"tb tc\">沒有廠商私鑰，簽章不符，丟棄</text><text x=\"300\" y=\"340\" class=\"t tc\">A 區原版本照常運作</text></g><g data-s=\"3\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"317\" class=\"tb tc\">只推 10 台中的 1 台，驗簽、版本都過</text><text x=\"300\" y=\"340\" class=\"t tc\">寫入 B 分區，A 區原版本保留</text></g><g data-s=\"4\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"317\" class=\"tb tc\">測試失敗，自動回到 A</text><text x=\"300\" y=\"340\" class=\"t tc\">通過的話才會改用 B</text></g><g data-s=\"5\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"317\" class=\"tb tc\">簽章驗過，不代表能開機</text><text x=\"300\" y=\"340\" class=\"t tc\">救回裝置的是分批與 A/B</text></g><g data-s=\"6\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"warn\"/><text x=\"300\" y=\"317\" class=\"tb tc\">舊版是廠商真的簽過的</text><text x=\"300\" y=\"340\" class=\"t tc\">所以驗簽照樣通過</text></g><g data-s=\"7\"><rect x=\"28\" y=\"294\" width=\"544\" height=\"56\" rx=\"8\" class=\"ok\"/><text x=\"300\" y=\"317\" class=\"tb tc\">低於最低允許版本，拒絕</text><text x=\"300\" y=\"340\" class=\"t tc\">擋下降版攻擊，A 區照常運作</text></g></svg>",
+   "caption": "同一條更新路線跑三次：每種出錯由不同關卡擋下。驗簽在裝置端做，所以伺服器被攻破也擋得住。",
+   "steps": [
+    "情境一：攻擊者入侵更新伺服器，換成自己的韌體。伺服器照常用 TLS 推給裝置；TLS 只護送途中，源頭被換管不到。",
+    "攻擊者拿不到廠商私鑰，做不出正確簽章；每台裝置用公鑰驗簽，對不上就丟棄，A 區照常運作。",
+    "情境二：廠商正常簽好的新版藏著開不了機的錯誤。分批只推 10 台中的 1 台；驗簽、版本都過，寫進 B 分區，A 區原版本保留。",
+    "從 B 區重開機做自我測試：失敗，裝置自動改回從 A 區開機。測試通過的話，之後才改用 B。",
+    "伺服器看到失敗回報，停止推給其餘 9 台。簽章驗過，不代表能開機；救回裝置的是分批與 A/B。",
+    "情境三：攻擊者改送廠商以前正式簽過的舊版，裡面有已知漏洞。簽章是真的，驗簽照樣通過。",
+    "版本檢查發現它低於最低允許版本，拒絕安裝，擋下降版攻擊，裝置照常用 A 區原本的版本運作。"
+   ],
+   "start": 4
   },
   {
    "id": "replay-attack",
@@ -143,50 +158,55 @@
    },
    "body": "<p><b>重放攻擊</b>（Replay Attack）的攻擊者不用看懂、也不用修改封包，只要把錄到的合法指令（例如「開門」）<b>原封不動再送一次</b>。像有人錄下你按鐵捲門遙控器的訊號，晚上再播一次。</p><p>因為內容和簽章都是真的，<b>單靠加密或簽章擋不住</b>。接收端必須多檢查一件事：這則訊息是不是新的，也就是<b>新鮮度</b>（freshness）。常見做法有三種：<b>nonce</b>（一次性亂數）、<b>序號</b>（counter）、<b>時間戳</b>（timestamp）配時間窗。下面親手試，也看看網路不順時合法訊息會怎樣。</p>",
    "lab": "s2-13-replay",
-   "after": "<p>沒有一種做法完美：時間窗怕時鐘不準、窗內重放；序號怕亂序與重開機歸零；nonce 要花記憶體，也不知道訊息多舊。三種常搭配使用，且這些欄位要放在簽章保護範圍內，攻擊者才改不了。</p>",
-   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"重放攻擊時序：攻擊者錄下合法開門封包再送一次，門鎖以序號判斷已用過而拒絕\"><defs><marker id=\"s2-13-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"30\" y=\"16\" width=\"120\" height=\"40\" rx=\"8\" class=\"box\"/><text x=\"90\" y=\"42\" class=\"tb tc\">手機 App</text><rect x=\"240\" y=\"16\" width=\"120\" height=\"40\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"42\" class=\"tb tc\">攻擊者</text><rect x=\"450\" y=\"16\" width=\"120\" height=\"40\" rx=\"8\" class=\"box\"/><text x=\"510\" y=\"42\" class=\"tb tc\">冷藏庫門鎖</text><line x1=\"90\" y1=\"56\" x2=\"90\" y2=\"266\" class=\"ln dash\"/><line x1=\"300\" y1=\"56\" x2=\"300\" y2=\"266\" class=\"ln dash\"/><line x1=\"510\" y1=\"56\" x2=\"510\" y2=\"266\" class=\"ln dash\"/><line x1=\"90\" y1=\"96\" x2=\"508\" y2=\"96\" class=\"la\" marker-end=\"url(#s2-13-4-arr)\"/><text x=\"195\" y=\"88\" class=\"ts tc ta\">開門 seq=41＋簽章</text><circle cx=\"300\" cy=\"96\" r=\"5\" class=\"bad\"/><text x=\"310\" y=\"118\" class=\"ts\">偷偷錄下</text><rect x=\"316\" y=\"130\" width=\"184\" height=\"32\" rx=\"6\" class=\"ok\"/><text x=\"408\" y=\"151\" class=\"ts tc\">執行，記住最後序號 41</text><line x1=\"300\" y1=\"196\" x2=\"508\" y2=\"196\" class=\"ln dash\" marker-end=\"url(#s2-13-4-arr)\"/><text x=\"405\" y=\"188\" class=\"ts tc\">原封不動重送 seq=41</text><rect x=\"316\" y=\"214\" width=\"184\" height=\"32\" rx=\"6\" class=\"bad\"/><text x=\"408\" y=\"235\" class=\"ts tc\">41 不大於 41，拒絕執行</text><text x=\"300\" y=\"290\" class=\"ts tc\">簽章擋得住竄改，擋不住重放；還要檢查序號、nonce 或時間戳</text></svg>",
-   "caption": "序號 41 已經用過，同一封包再來一次就被拒絕。",
+   "after": "<p>時間戳、序號、nonce 這些欄位要放在簽章保護範圍內，攻擊者才改不了。TLS 只防單一連線內的重放；指令經 Broker 轉送或走沒有 TLS 的短距離無線電時，應用層仍要自己檢查新鮮度。</p>",
    "table": {
     "head": [
      "機制",
      "做法",
-     "注意",
-     "適合"
+     "注意"
     ],
     "rows": [
      [
       "nonce（一次性亂數）",
       "每次通訊用新的隨機數，用過就作廢",
-      "接收端要記得用過的值，或由接收端產生",
-      "記憶體夠，或能多一次來回由接收端出題的場合"
+      "要記得用過的值（或由接收端出題）；看不出訊息多舊"
      ],
      [
       "序號（counter）",
       "每則訊息遞增，不大於上次就拒絕",
-      "裝置重開機後序號不能歸零",
-      "送往同一接收端、順序大致穩定的裝置"
+      "重開機後不能歸零；嚴格遞增會誤擋亂序的合法訊息"
      ],
      [
       "時間戳（timestamp）",
       "超過有效時間（例如 30 秒）就拒絕",
-      "雙方時鐘要同步；時間窗內仍需排除重複",
-      "時鐘可靠的裝置；常與 nonce 或序號搭配"
+      "雙方時鐘要同步；窗內仍要排除重複（常配 nonce 或序號）"
      ]
     ]
-   },
-   "more": {
-    "label": "實作細節：滑動視窗、挑戰回應、序號存放與 TLS 的範圍",
-    "body": "<ul><li><b>滑動視窗</b>（sliding window）：不要求序號嚴格遞增，而是容許最近一段範圍內亂序，並記住窗內哪些收過。IPsec 與 DTLS 這類可能亂序的傳輸都採用這種做法。</li><li><b>挑戰回應</b>（challenge-response）：由門鎖先發一個 nonce，手機把它一起簽回來。門鎖只需記住剛發出去的那個，新鮮度也最明確，代價是多一次來回，且裝置要能雙向通訊。</li><li><b>序號存放</b>：序號要存進斷電不消失的記憶體。flash 寫入次數有限，常見做法是不每次都寫，而是分批預留一段序號，重開機後從下一段開始，寧可跳號也不重複。</li><li><b>金鑰更換</b>：序號快用完時要換金鑰，否則序號回頭就會讓舊訊息重新有效。</li><li><b>TLS 的範圍</b>：TLS 本身能擋住對該連線的封包重放，但它只保護一段連線。指令經 Broker 或閘道器轉送、或走沒有 TLS 的短距離無線電時，應用層仍要自己檢查新鮮度。LoRaWAN 就以訊框計數器（frame counter）防重放。</li></ul>"
    }
   },
   {
    "id": "transport-security",
    "h": "傳輸保護：TLS、MQTT 與 Wi-Fi",
    "predict": {
-    "q": "工程師把貨車閘道器的 MQTT 連線從 1883 改連 8883，就回報「已加密」。這樣夠確定了嗎？",
-    "a": "不夠。埠號只是慣例，要實際設定 TLS 並驗證憑證才有加密，也還沒處理身分驗證與權限。"
+    "q": "車隊每台貨車的閘道器都改走 TLS，也各自有憑證了。7 號車能不能發布到 coldchain/truck8/ 的 Topic？",
+    "a": "可能可以，除非 Broker 設了 ACL。TLS 和憑證只管加密與確認你是誰；能發布哪些 Topic 要靠 ACL 限制。"
    },
-   "body": "<p><b>TLS</b>（Transport Layer Security）是裝置與雲端之間最常用的安全通訊方式，提供加密、身分驗證與完整性檢查；HTTPS 就是 HTTP 加上 TLS。它的前身 SSL 已淘汰，只是名稱還常被並列為「TLS／SSL」。</p><p><b>MQTT</b> 預設很「裸」：常用的 1883 埠是<b>明文</b>，帳密驗證是選用，Broker（訊息中轉站）可能允許匿名連線。實作時要自己開安全：</p><ul><li>改用 TLS 連線，慣用埠號是 <b>8883</b>（埠號只是慣例，加密要實際設定才生效）。</li><li>啟用帳密或憑證驗證；<b>mTLS</b> 是雙方互驗憑證。</li><li>用 <b>ACL</b>（存取控制清單）限制每台裝置只能發布、訂閱自己的 Topic（訊息分類的頻道名稱），例如 7 號車只能發布 <code>coldchain/truck7/#</code>。</li></ul><p>無線訊號在空中傳，範圍內誰都收得到，所以 Wi-Fi 的加密標準更重要。下表由舊到新，新裝置至少選 WPA2，能用 WPA3 就用。</p>",
+   "body": "<p><b>TLS</b> 負責加密傳輸並驗證對方身分（HTTPS 就是 HTTP 加上 TLS），原理見<a href=\"s1-25.html#pki-tls\">科一 2.5〈資安與隱私基本概念〉</a>；這裡講 MQTT 和 Wi-Fi 要怎麼實際開起來。</p><p><b>MQTT</b> 預設很「裸」：常用的 1883 埠是<b>明文</b>，Broker（訊息中轉站）可能允許匿名連線。加密（<b>TLS</b>，慣用 <b>8883</b> 埠）、驗證（帳密或憑證，<b>mTLS</b> 是雙方互驗憑證）、授權（<b>ACL</b>，存取控制清單，限定每台能發布、訂閱哪些 Topic）要一層層自己開，見下圖。</p>",
+   "figs": [
+    {
+     "pos": "after-body",
+     "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MQTT 連線逐步加上三層防護：1883 明文且允許匿名時，竊聽者看得到溫度、陌生裝置連得進；開 TLS（慣用 8883 埠）後內容加密，但仍可匿名連入；關掉匿名、每台獨立帳密或憑證（mTLS 雙方互驗）後擋下陌生裝置，7 號車仍能發布到 truck8；加上 ACL 後 7 號車只能發布 truck7/#\"><defs><marker id=\"s2-13-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"12\" y=\"28\" class=\"tb ta\" data-s=\"1\">① 什麼都沒開</text><text x=\"12\" y=\"28\" class=\"tb ta\" data-s=\"2\">② 內容看得到嗎？</text><text x=\"12\" y=\"28\" class=\"tb ta\" data-s=\"3\">③ 你是誰？</text><text x=\"12\" y=\"28\" class=\"tb ta\" data-s=\"4\">④ 你能做什麼？</text><rect x=\"12\" y=\"52\" width=\"116\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"70\" y=\"76\" class=\"tb tc\">7 號車</text><text x=\"70\" y=\"98\" class=\"t tc\">閘道器</text><rect x=\"380\" y=\"12\" width=\"208\" height=\"180\" rx=\"10\" class=\"box\"/><text x=\"396\" y=\"38\" class=\"tb\" data-s=\"1 2\">Broker：允許匿名</text><text x=\"396\" y=\"38\" class=\"tb\" data-s=\"3\">Broker：驗身分</text><text x=\"396\" y=\"38\" class=\"tb\" data-s=\"4\">Broker：驗身分＋ACL</text><rect x=\"396\" y=\"52\" width=\"176\" height=\"56\" rx=\"6\" class=\"soft\"/><rect x=\"396\" y=\"120\" width=\"176\" height=\"56\" rx=\"6\" class=\"soft\"/><rect x=\"396\" y=\"120\" width=\"176\" height=\"56\" rx=\"6\" class=\"warn\" data-s=\"3\"/><rect x=\"396\" y=\"52\" width=\"176\" height=\"56\" rx=\"6\" class=\"ok\" data-s=\"4\"/><rect x=\"396\" y=\"120\" width=\"176\" height=\"56\" rx=\"6\" class=\"bad\" data-s=\"4\"/><text x=\"484\" y=\"86\" class=\"t tc\" data-s=\"1 2 3\">truck7/</text><text x=\"484\" y=\"154\" class=\"t tc\" data-s=\"1 2 3\">truck8/</text><text x=\"484\" y=\"86\" class=\"tb tc\" data-s=\"4\">✓ truck7/#</text><text x=\"484\" y=\"154\" class=\"tb tc\" data-s=\"4\">✕ truck8/</text><rect x=\"136\" y=\"66\" width=\"236\" height=\"28\" rx=\"14\" class=\"acc\" data-s=\"2 3 4\"/><line x1=\"128\" y1=\"80\" x2=\"394\" y2=\"80\" class=\"la\" marker-end=\"url(#s2-13-5-arr)\"/><path d=\"M340,80 V148 H394\" class=\"la\" marker-end=\"url(#s2-13-5-arr)\" data-s=\"1 2 3\"/><g data-s=\"4\"><path d=\"M340,80 V148 H394\" class=\"ln dash\"/><circle cx=\"366\" cy=\"148\" r=\"9\" class=\"bad\"/><line x1=\"361\" y1=\"143\" x2=\"371\" y2=\"153\" class=\"bad\"/><line x1=\"361\" y1=\"153\" x2=\"371\" y2=\"143\" class=\"bad\"/></g><text x=\"254\" y=\"56\" class=\"t tc\" data-s=\"1\">1883 明文</text><text x=\"254\" y=\"56\" class=\"tb tc ta\" data-s=\"2\">8883＋TLS 加密</text><text x=\"254\" y=\"56\" class=\"tb tc ta\" data-s=\"3 4\">TLS＋每台獨立憑證</text><rect x=\"206\" y=\"68\" width=\"96\" height=\"24\" rx=\"4\" class=\"box\"/><text x=\"254\" y=\"86\" class=\"t tc\" data-s=\"1\">8.0°C</text><text x=\"254\" y=\"86\" class=\"t tc\" data-s=\"2 3 4\">▒▒▒▒</text><line x1=\"240\" y1=\"94\" x2=\"240\" y2=\"124\" class=\"ln dash\"/><rect x=\"168\" y=\"124\" width=\"144\" height=\"56\" rx=\"8\" class=\"bad\" data-s=\"1\"/><rect x=\"168\" y=\"124\" width=\"144\" height=\"56\" rx=\"8\" class=\"ok\" data-s=\"2 3 4\"/><text x=\"240\" y=\"148\" class=\"tb tc\">竊聽者</text><text x=\"240\" y=\"170\" class=\"t tc\" data-s=\"1\">看到 8.0°C</text><text x=\"240\" y=\"170\" class=\"t tc\" data-s=\"2 3 4\">只見 ▒▒▒▒</text><line x1=\"484\" y1=\"232\" x2=\"484\" y2=\"196\" class=\"la\" marker-end=\"url(#s2-13-5-arr)\" data-s=\"1 2\"/><g data-s=\"3 4\"><line x1=\"484\" y1=\"232\" x2=\"484\" y2=\"194\" class=\"ln dash\"/><circle cx=\"484\" cy=\"213\" r=\"9\" class=\"bad\"/><line x1=\"479\" y1=\"208\" x2=\"489\" y2=\"218\" class=\"bad\"/><line x1=\"479\" y1=\"218\" x2=\"489\" y2=\"208\" class=\"bad\"/></g><rect x=\"396\" y=\"232\" width=\"176\" height=\"56\" rx=\"8\" class=\"bad\" data-s=\"1 2\"/><rect x=\"396\" y=\"232\" width=\"176\" height=\"56\" rx=\"8\" class=\"ok\" data-s=\"3 4\"/><text x=\"484\" y=\"256\" class=\"tb tc\">陌生裝置</text><text x=\"484\" y=\"278\" class=\"t tc\" data-s=\"1 2\">連得進來</text><text x=\"484\" y=\"278\" class=\"t tc\" data-s=\"3 4\">擋在門外</text><rect x=\"12\" y=\"214\" width=\"364\" height=\"56\" rx=\"8\" class=\"warn\" data-s=\"1 2 3\"/><rect x=\"12\" y=\"214\" width=\"364\" height=\"56\" rx=\"8\" class=\"ok\" data-s=\"4\"/><text x=\"194\" y=\"248\" class=\"t tc\" data-s=\"1\">填 8883 卻沒啟用 TLS → 還在這一步</text><text x=\"194\" y=\"248\" class=\"t tc\" data-s=\"2\">只加密、驗伺服器，Broker 仍允許匿名</text><text x=\"194\" y=\"248\" class=\"t tc\" data-s=\"3\">知道你是誰，不代表限制你能做什麼</text><text x=\"194\" y=\"248\" class=\"t tc\" data-s=\"4\">每台只能發布自己的 Topic</text></svg>",
+     "caption": "TLS 管內容被偷看，驗證管陌生人，ACL 管越權發布；三層各自要開。圖中 Topic 省略開頭的 coldchain/。",
+     "steps": [
+      "什麼都沒開：1883 是明文，竊聽者看得到 8.0°C，陌生裝置也能匿名連入。8883 只是慣例埠號，沒實際啟用 TLS 就還在這一步。",
+      "開 TLS：管道加密，竊聽者只見亂碼。但一般 TLS 只讓裝置驗伺服器，Broker 若允許匿名，陌生裝置照樣連得進。",
+      "關掉匿名，每台用獨立帳密或憑證；mTLS 是雙方互驗憑證。陌生裝置被擋下，7 號車卻仍能發布到 truck8/。",
+      "加 ACL：Broker 照清單檢查每台能用的 Topic（訊息分類的頻道名稱），7 號車只剩 coldchain/truck7/#，發往 truck8/ 被拒。"
+     ],
+     "start": 1
+    }
+   ],
+   "after": "<p>無線訊號在空中傳，範圍內誰都收得到，所以 Wi-Fi 的加密標準更重要。下表由舊到新，新裝置至少選 WPA2，能用 WPA3 就用。</p>",
    "table": {
     "head": [
      "標準",
@@ -201,24 +221,24 @@
      ],
      [
       "WPA",
-      "TKIP（過渡方案，仍以 RC4 為基礎）",
+      "TKIP（仍以 RC4 為基礎）",
       "比 WEP 好，但已過時"
      ],
      [
       "WPA2",
-      "AES（CCMP）",
+      "AES",
       "長期主流；預共享密碼（PSK）模式怕弱密碼被離線猜解"
      ],
      [
       "WPA3",
-      "AES；Personal 模式仍用共用密碼，但以 SAE 交握取代 WPA2 的 PSK 金鑰推導",
+      "AES＋SAE 交握",
       "目前最強，能抵抗離線字典攻擊"
      ]
     ]
    },
    "more": {
-    "label": "看懂表中名詞：RC4、TKIP、PSK、SAE，以及 Evil Twin",
-    "body": "<p>AES、RC4 是加密演算法，RC4 已不安全；TKIP、CCMP 是把它們套用到 Wi-Fi 的協定。PSK（預共享密碼）是大家共用一組 Wi-Fi 密碼；攻擊者錄下連線過程後可在自己電腦上大量試密碼，這就是<b>離線字典攻擊</b>。WPA3 的 SAE 讓每次猜測都必須真的和基地台互動，所以離線猜不了。</p><p>另外要提防 <b>Evil Twin</b>（邪惡雙胞胎）：攻擊者架一台名稱一模一樣的假基地台，等人連上後竊取輸入的資料，像在真櫃檯旁擺一個假櫃檯。路由器的預設管理帳密也要記得改掉。</p>"
+    "label": "為什麼 WPA2 怕離線猜密碼、WPA3 擋得住",
+    "body": "<p>PSK（預共享密碼）是大家共用一組 Wi-Fi 密碼；攻擊者錄下連線過程後可在自己電腦上大量試密碼，這就是<b>離線字典攻擊</b>。WPA3 的 SAE 讓每次猜測都必須真的和基地台互動，所以離線猜不了。</p>"
    }
   },
   {
@@ -229,8 +249,8 @@
     "a": "可能碰得到。SSID 只是名稱，要綁定不同 VLAN 並設好存取規則，才真的隔離。"
    },
    "body": "<p>就算裝置被攻破，也要讓影響範圍越小越好。這靠幾層措施：</p><ul><li><b>防火牆</b>：依規則決定哪些連線能進出，像門口警衛看名單。限制來源 IP、關閉不必要的通訊埠都能縮小曝露面。</li><li><b>網段隔離</b>：<b>VLAN</b> 用設定把一台交換器切成幾個互不相通的虛擬網路，再配合路由與存取規則。只換一個 Wi-Fi 名稱（SSID）不會自動隔離。</li><li><b>VPN</b>：在公開網路上建立加密通道，適合遠端維護；連進來後仍要驗證與授權。</li><li><b>日誌</b>（log）：事後追查的依據。要看哪種紀錄能回答哪個問題，見下表。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"網段隔離：網際網路經防火牆分成辦公 IT、IoT、OT 產線三個網段，遠端維護走 VPN\"><defs><marker id=\"s2-13-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><ellipse cx=\"72\" cy=\"150\" rx=\"58\" ry=\"34\" class=\"box\"/><text x=\"72\" y=\"156\" class=\"t tc\">網際網路</text><polyline points=\"72,184 72,222 195,222 195,192\" class=\"ln dash\" marker-end=\"url(#s2-13-6-arr)\"/><text x=\"133\" y=\"242\" class=\"ts tc\">遠端維護走 VPN</text><rect x=\"150\" y=\"110\" width=\"90\" height=\"80\" rx=\"8\" class=\"warn\"/><text x=\"195\" y=\"146\" class=\"tb tc\">防火牆</text><text x=\"195\" y=\"166\" class=\"ts tc\">只放行必要</text><line x1=\"130\" y1=\"150\" x2=\"148\" y2=\"150\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><text x=\"222\" y=\"70\" class=\"ts tc\">網段之間預設不通</text><rect x=\"300\" y=\"20\" width=\"280\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"440\" y=\"51\" class=\"tb tc\">辦公 IT 網段</text><text x=\"440\" y=\"71\" class=\"ts tc\">電腦、郵件、ERP</text><rect x=\"300\" y=\"115\" width=\"280\" height=\"70\" rx=\"8\" class=\"acc\"/><text x=\"440\" y=\"146\" class=\"tb tc\">IoT 網段（VLAN＋存取規則）</text><text x=\"440\" y=\"166\" class=\"ts tc\">攝影機、感測器，只准連 Broker</text><rect x=\"300\" y=\"210\" width=\"280\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"440\" y=\"241\" class=\"tb tc\">OT 產線網段</text><text x=\"440\" y=\"261\" class=\"ts tc\">PLC、機台；規則最嚴</text><line x1=\"240\" y1=\"140\" x2=\"298\" y2=\"56\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><line x1=\"240\" y1=\"150\" x2=\"298\" y2=\"150\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><line x1=\"240\" y1=\"160\" x2=\"298\" y2=\"244\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/></svg>",
-   "caption": "IoT 和 OT 設備各自獨立網段，只開放必要連線；遠端進來先走 VPN。",
+   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"網段隔離：網際網路經防火牆分成辦公 IT、IoT、OT 產線三個網段，遠端維護走 VPN；IoT 網段一台攝影機被入侵，往辦公 IT 與 OT 的連線在防火牆被擋下\"><defs><marker id=\"s2-13-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><ellipse cx=\"72\" cy=\"150\" rx=\"58\" ry=\"34\" class=\"box\"/><text x=\"72\" y=\"156\" class=\"t tc\">網際網路</text><polyline points=\"72,184 72,222 195,222 195,192\" class=\"ln dash\" marker-end=\"url(#s2-13-6-arr)\"/><text x=\"133\" y=\"244\" class=\"t tc\">遠端維護走 VPN</text><rect x=\"150\" y=\"110\" width=\"90\" height=\"80\" rx=\"8\" class=\"warn\"/><text x=\"195\" y=\"146\" class=\"tb tc\">防火牆</text><text x=\"195\" y=\"166\" class=\"ts tc\">只放行必要</text><line x1=\"130\" y1=\"150\" x2=\"148\" y2=\"150\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><text x=\"196\" y=\"74\" class=\"t tc\">預設不通，擴散被擋</text><rect x=\"300\" y=\"14\" width=\"280\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"440\" y=\"45\" class=\"tb tc\">辦公 IT 網段</text><text x=\"440\" y=\"65\" class=\"ts tc\">電腦、郵件、ERP</text><rect x=\"300\" y=\"104\" width=\"280\" height=\"92\" rx=\"8\" class=\"acc\"/><rect x=\"314\" y=\"122\" width=\"76\" height=\"56\" rx=\"8\" class=\"bad\"/><text x=\"352\" y=\"146\" class=\"tb tc\">被入侵</text><text x=\"352\" y=\"167\" class=\"tb tc\">攝影機</text><text x=\"485\" y=\"136\" class=\"tb tc\">IoT 網段</text><text x=\"485\" y=\"160\" class=\"t tc\">VLAN＋存取規則</text><text x=\"485\" y=\"183\" class=\"t tc\">只准連 Broker</text><rect x=\"300\" y=\"216\" width=\"280\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"440\" y=\"247\" class=\"tb tc\">OT 產線網段</text><text x=\"440\" y=\"267\" class=\"ts tc\">PLC、機台；規則最嚴</text><line x1=\"240\" y1=\"124\" x2=\"298\" y2=\"58\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><line x1=\"240\" y1=\"150\" x2=\"298\" y2=\"150\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><line x1=\"240\" y1=\"176\" x2=\"298\" y2=\"242\" class=\"ln\" marker-end=\"url(#s2-13-6-arr)\"/><line x1=\"314\" y1=\"136\" x2=\"240\" y2=\"124\" class=\"bad dash\"/><line x1=\"314\" y1=\"164\" x2=\"240\" y2=\"176\" class=\"bad dash\"/><circle cx=\"240\" cy=\"124\" r=\"9\" class=\"bad\"/><line x1=\"235\" y1=\"119\" x2=\"245\" y2=\"129\" class=\"bad\"/><line x1=\"235\" y1=\"129\" x2=\"245\" y2=\"119\" class=\"bad\"/><circle cx=\"240\" cy=\"176\" r=\"9\" class=\"bad\"/><line x1=\"235\" y1=\"171\" x2=\"245\" y2=\"181\" class=\"bad\"/><line x1=\"235\" y1=\"181\" x2=\"245\" y2=\"171\" class=\"bad\"/></svg>",
+   "caption": "IoT 和 OT（營運技術，直接控制產線機台的系統，例如 PLC）設備各自獨立網段，只開放必要連線；一台攝影機被入侵，想連辦公與產線網段，在防火牆就被擋下。遠端進來先走 VPN。",
    "table": {
     "head": [
      "日誌",
@@ -259,10 +279,6 @@
       "有沒有發現惡意程式？"
      ]
     ]
-   },
-   "more": {
-    "label": "API 防護，以及圖中的 OT、PLC、ERP",
-    "body": "<p><b>API 防護</b>：Web API（讓程式互相呼叫的對外介面）要定期找漏洞、補漏洞，並確認每個請求只能做它被允許的事。</p><p>圖中的 OT（Operational Technology，操作技術）指控制產線機台的系統，PLC 是工廠用的控制器，ERP 是企業管理系統。</p>"
    }
   },
   {
@@ -272,7 +288,7 @@
     "q": "冷藏貨車每 10 秒回傳一次 GPS，用途是追蹤車廂溫度與到貨時間。這份軌跡算不算個人資料？",
     "a": "算。每台車對應固定的駕駛，軌跡可以推出某個人幾點在哪裡、在哪裡停留多久，能間接識別特定人，就屬於個資。"
    },
-   "body": "<p>資安保護資料不被偷、不被改；<b>隱私</b>（privacy）問的是另一件事：即使系統很安全，蒐集與使用資料本身是否合理。IoT 裝置持續、自動地記錄，很容易在不知不覺中蒐集到人的行蹤與習慣。</p><ul><li><b>資料最小化</b>：只收目的需要的資料。監控車廂溫度不需要每 10 秒的精確位置。</li><li><b>目的限制</b>：為溫控蒐集的軌跡，不能事後拿去考核駕駛，除非另有告知與合法依據。</li><li><b>去識別化</b>：分析時用代號取代車牌與姓名，並限制誰能把代號還原。</li><li><b>保存期限</b>：過了用途就刪除，存越久，外洩時傷害越大。</li></ul><p>這些原則在臺灣的個人資料保護法與歐盟 GDPR 都看得到，完整說明見科一 2.5〈資安與隱私基本概念〉。OWASP IoT Top 10 的第 6 項「隱私保護不足」指的就是這類問題。</p>"
+   "body": "<p>資安管資料有沒有被偷、被改；<b>隱私</b>（privacy）管的是該不該收、能拿來做什麼。套到這台車：監控車廂溫度不需要每 10 秒的精確位置（<b>資料最小化</b>）；為溫控收的軌跡不能拿去考核駕駛（<b>目的限制</b>）；過了用途就刪，存越久，外洩時傷害越大（<b>保存期限</b>）。</p><p><b>去識別化</b>、使用者同意，以及個資法、GDPR 等法規，見<a href=\"s1-25.html#privacy\">科一 2.5〈資安與隱私基本概念〉</a>。</p>"
   },
   {
    "id": "owasp-iot-top10",
@@ -293,8 +309,7 @@
   "部署後第一件事是改預設密碼；每台獨立憑證，遺失時只撤銷那一台。",
   "程式有漏洞就要修程式；外圍防護只能爭取時間，漏洞本身還在。",
   "簽章管來源與完整性，加密管保密，A/B 分區管失敗後回得去。",
-  "重放攻擊看新鮮度：nonce、序號、時間戳，且欄位要在簽章保護內。",
-  "防重放的取捨：時間窗靠時鐘，序號怕亂序與歸零，nonce 花記憶體；實務常搭配。",
+  "重放攻擊看新鮮度，欄位要在簽章保護內：時間戳靠時鐘（窗內仍要排除重複），序號怕亂序與重開機歸零，nonce 花記憶體；實務常把時間窗和 nonce 或序號搭配。",
   "裝置到雲端用 TLS；MQTT 用 8883 並實際啟用 TLS 與驗證。Wi-Fi 由弱到強：WEP、WPA、WPA2、WPA3。"
  ],
  "pitfalls": [
@@ -303,7 +318,6 @@
   "防護要對準攻擊途徑：上鎖的機櫃只防有人動手碰設備，擋不了從網路灌進來的流量。",
   "只改變登入資料的傳遞方式（例如 Cookie 換成 Token）不等於補好漏洞，API 的防護重點仍是驗證、授權與修補。",
   "SSID 只是名稱，不同 SSID 不代表已隔離；隔離要靠 VLAN 與存取規則。",
-  "題目寫「TLS／SSL」是習慣並列，實務上 SSL 已淘汰，應使用現代版本的 TLS。",
   "資料加密存放不等於顧好隱私：加密防的是外人偷看，收太多、用在原本沒說的目的、存太久，都是隱私問題。"
  ],
  "examples": [
@@ -332,36 +346,24 @@
  ],
  "check": [
   {
-   "q": "裝置遺失時，為什麼每台獨立憑證比共用一組好？",
-   "a": "可以只撤銷遺失那台，其他裝置不受影響。"
+   "q": "OTA 更新包已經走 TLS 傳送，為什麼裝置還要驗簽章？",
+   "a": "TLS 只保護傳送途中；更新伺服器被入侵、檔案在源頭就被換掉時，TLS 照樣送達，只有驗廠商簽章才擋得下。"
   },
   {
-   "q": "安全開機靠什麼確認韌體沒被改？",
-   "a": "從信任根開始逐層驗證下一層的簽章，形成信任鏈。"
+   "q": "版本檢查拒絕裝回舊版，A/B 分區卻會在新版失敗時退回舊版，兩者衝突嗎？",
+   "a": "不衝突：版本檢查擋的是外部送來的舊版安裝包，A/B 退回的是更新前原本在跑、已驗證過的版本，新版確認成功後才提高最低允許版本。"
   },
   {
-   "q": "A/B 分區解決的是什麼問題？",
-   "a": "新版開機失敗時能回到舊版，降低裝置變磚的風險。"
+   "q": "開門指令全程走 TLS，為什麼應用層還要自己檢查新鮮度？",
+   "a": "TLS 只防單一連線內的重放；指令經 Broker 轉送或走沒有 TLS 的短距離無線電時，舊訊息仍可能被重送。"
   },
   {
-   "q": "為什麼簽章擋不住重放攻擊？",
-   "a": "重送的封包本身是真的，簽章驗得過；要另外檢查 nonce、序號或時間戳。"
+   "q": "想知道某台攝影機最近連過哪些網域，該看哪種日誌？它能看出誰改了檔案嗎？",
+   "a": "看 DNS log；它只記網域查詢、看不到檔案操作，誰登入做了什麼要看 System log（需已啟用稽核）。"
   },
   {
-   "q": "用序號防重放時，裝置重開機要注意什麼？",
-   "a": "序號不能歸零，否則舊封包可能又被接受。"
-  },
-  {
-   "q": "合法的開門指令延遲了 45 秒，時間窗是 30 秒，會發生什麼事？把窗拉長有什麼代價？",
-   "a": "合法指令被誤擋；拉長時間窗可避免誤擋，但攻擊者可重放的時間也跟著變長。"
-  },
-  {
-   "q": "WEP、WPA、WPA2、WPA3 中，哪個能抵抗離線字典攻擊？",
-   "a": "WPA3，它以 SAE 交握取代 WPA2 的 PSK 金鑰推導，錄下交握也無法離線猜密碼。"
-  },
-  {
-   "q": "想知道某台攝影機最近連過哪些網域，該看哪種日誌？",
-   "a": "DNS log，它記錄網域名稱查詢。"
+   "q": "溫控軌跡全程走 TLS、存放也加密，主管想調出來考核駕駛的停車時間。資安都做好了，還有問題嗎？",
+   "a": "有。加密只管資料會不會被外人偷看；把為溫控收的軌跡拿去考核駕駛，超出原本說的用途，違反目的限制，這是隱私問題。"
   }
  ],
  "terms": [
@@ -430,10 +432,6 @@
    "def": "目前最強的 Wi-Fi 安全標準，Personal 模式以 SAE 交握保護共用密碼，抵抗離線猜解。"
   },
   {
-   "term": "Evil Twin",
-   "def": "名稱與真基地台一模一樣的假基地台，等人連上後竊取輸入的資料。"
-  },
-  {
    "term": "VLAN",
    "en": "Virtual LAN",
    "def": "用設定把實體網路切成互不相通的虛擬網路。"
@@ -469,10 +467,6 @@
    "https://owasp.org/www-project-internet-of-things/"
   ],
   [
-   "LoRa Alliance：LoRaWAN L2 1.0.4 規格（訊框計數器）",
-   "https://resources.lora-alliance.org/technical-specifications/ts001-1-0-4-lorawan-l2-1-0-4-specification"
-  ],
-  [
    "ETSI EN 303 645：消費性 IoT 資安基準",
    "https://www.etsi.org/deliver/etsi_en/303600_303699/303645/02.01.01_60/en_303645v020101p.pdf"
   ],
@@ -483,14 +477,6 @@
   [
    "RFC 8446：TLS 1.3",
    "https://www.rfc-editor.org/rfc/rfc8446"
-  ],
-  [
-   "RFC 9147：DTLS 1.3（含防重放滑動視窗）",
-   "https://www.rfc-editor.org/rfc/rfc9147"
-  ],
-  [
-   "RFC 4303：IPsec ESP（序號與防重放視窗）",
-   "https://www.rfc-editor.org/rfc/rfc4303"
   ],
   [
    "MQTT Version 5.0（OASIS 標準）",

@@ -14,7 +14,7 @@
   "區分 RSSI 與 SNR，並計算 SNR",
   "用 ping、nslookup 等指令逐層定位，並分清線索與確診"
  ],
- "prereq": "幾個網路基本詞：<b>IP 位址</b>像設備的門牌，封包靠它找到機器。<b>連接埠（port）</b>像門牌裡的房間號，區分同一台機器上的不同服務，例如 HTTP 80、HTTPS 443、SSH 22、DNS 53、MQTT 1883。HTTP 是網頁傳輸的規則，MQTT 是物聯網常用的訊息傳遞規則，SSH 用來安全地遠端操作機器。<b>DNS</b> 像通訊錄，把網域名稱翻成 IP。<b>DHCP</b> 像飯店櫃台發房卡，替新設備自動配發 IP 與相關設定。<b>閘道（Gateway）</b>是區域網路通往外面的出口，通常就是路由器。這裡的閘道指網路設定裡的預設閘道（default gateway），和系統元件與架構一章負責翻譯協定的 IoT 閘道器不同。",
+ "prereq": "幾個網路基本詞：<b>IP 位址</b>像設備的門牌，封包靠它找到機器。<b>連接埠（port）</b>像門牌裡的房間號，區分同一台機器上的不同服務，例如 MQTT 1883、HTTP 80、HTTPS 443、SSH 22、DNS 53。<b>DNS</b> 像通訊錄，把網域名稱翻成 IP。<b>DHCP</b> 像飯店櫃台發房卡，替新設備自動配發 IP 與相關設定。<b>閘道（Gateway）</b>是區域網路通往外面的出口，通常就是路由器。這裡的閘道指網路設定裡的預設閘道（default gateway），和系統元件與架構一章負責翻譯協定的 IoT 閘道器不同。",
  "bridge": "本章可以看成替資料管線除錯：畫面沒更新時，先找出最後一筆正常資料停在哪一段，只是這條管線往前延伸到了電源、接線與感測器。",
  "sections": [
   {
@@ -25,12 +25,18 @@
     "a": "不用。現場讀值正常，表示探頭到 MCU 這段沒問題，最後正常的位置在 MCU，要往後面的網路與平台查。"
    },
    "body": "<p>物聯網系統的資料要走過一長串環節：<b>電源 → 接線 → 感測器 → MCU 程式 → 網路 → 平台 → 顯示</b>。MCU（Microcontroller，微控制器）是設備上跑程式的小晶片。任何一段出問題，使用者看到的都可能只是「畫面沒資料」，所以要逐段問：資料到這裡了嗎？目標是找出<b>最後一段正常的位置</b>，問題就在它的下一段。</p><ul><li><b>由簡入繁、先實體後軟體</b>：完全沒電時，重開機或重灌軟體都沒有意義。</li><li><b>先問最近改了什麼</b>：換路由器、更新韌體（Firmware，燒在設備裡的程式）、移動位置都是線索。</li><li><b>一次只改一個變數</b>：同時改很多項，修好了也不知道是哪項有效。</li><li><b>用證據判斷</b>：用儀器量、看紀錄與時間戳記，或和已知正常的設備比對。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 272\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"沿資料路徑逐段排查：電源、接線、感測器、MCU 程式、網路、平台、顯示\"><defs><marker id=\"s2-12-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">逐段問：資料到這一段了嗎？</text><rect class=\"warn\" x=\"20\" y=\"44\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"75\" y=\"76\">電源</text><text class=\"ts tc\" x=\"75\" y=\"116\">量電壓</text><rect class=\"warn\" x=\"160\" y=\"44\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"215\" y=\"76\">接線</text><text class=\"ts tc\" x=\"215\" y=\"116\">鬆脫、接反</text><rect class=\"box\" x=\"300\" y=\"44\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"355\" y=\"76\">感測器</text><text class=\"ts tc\" x=\"355\" y=\"116\">範圍、校準</text><rect class=\"box\" x=\"440\" y=\"44\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"495\" y=\"76\">MCU 程式</text><text class=\"ts tc\" x=\"495\" y=\"116\">序列埠看 log</text><line class=\"la\" x1=\"130\" y1=\"70\" x2=\"158\" y2=\"70\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"270\" y1=\"70\" x2=\"298\" y2=\"70\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"410\" y1=\"70\" x2=\"438\" y2=\"70\" marker-end=\"url(#s2-12-1-arr)\"/><polyline class=\"la\" points=\"550,70 580,70 580,176 552,176\" marker-end=\"url(#s2-12-1-arr)\"/><rect class=\"acc\" x=\"440\" y=\"150\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"495\" y=\"182\">網路</text><text class=\"ts tc\" x=\"495\" y=\"222\">ping、DNS</text><rect class=\"acc\" x=\"300\" y=\"150\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"355\" y=\"182\">平台</text><text class=\"ts tc\" x=\"355\" y=\"222\">port、服務</text><rect class=\"acc\" x=\"160\" y=\"150\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"215\" y=\"182\">顯示</text><text class=\"ts tc\" x=\"215\" y=\"222\">App、儀表板</text><line class=\"la\" x1=\"440\" y1=\"176\" x2=\"412\" y2=\"176\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"300\" y1=\"176\" x2=\"272\" y2=\"176\" marker-end=\"url(#s2-12-1-arr)\"/><text class=\"ts\" x=\"20\" y=\"172\">從源頭往後，</text><text class=\"ts\" x=\"20\" y=\"192\">一段一段確認</text><text class=\"ts tc\" x=\"300\" y=\"262\">先實體（電、線）→ 再程式 → 再網路與雲端；一次只改一個變數</text></svg>",
-   "caption": "沿資料流向逐段確認，先查電與線這類實體問題，再查程式、網路與雲端。",
+   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"找出最後一段正常位置的逐步圖：資料依序經過電源、接線、感測器、MCU 程式、網路、平台到顯示，使用者只在顯示端看到症狀；現場螢幕讀值在跳，證明電源到 MCU 程式都正常；最後正常的位置在 MCU，下一段網路要先查\"><defs><marker id=\"s2-12-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">找出最後一段正常的位置</text><g data-s=\"2 3\"><circle class=\"acc\" cx=\"28\" cy=\"56\" r=\"8\"/><line class=\"la\" x1=\"34\" y1=\"62\" x2=\"41\" y2=\"69\"/><text class=\"t\" x=\"48\" y=\"62\">觀察點：現場螢幕讀值在跳</text></g><polygon class=\"ok\" points=\"20,104 20,90 550,90 550,104 545,104 545,95 25,95 25,104\" data-s=\"2 3\"/><g data-s=\"3\"><rect class=\"ok\" x=\"545\" y=\"40\" width=\"5\" height=\"64\"/><polygon class=\"ok\" points=\"545,40 451,40 461,54 451,68 545,68\"/><text class=\"tb tc\" x=\"503\" y=\"60\">最後正常</text></g><rect class=\"box\" x=\"20\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\"/><rect class=\"ok\" x=\"20\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\" data-s=\"2 3\"/><text class=\"tb tc\" x=\"75\" y=\"144\">電源</text><rect class=\"box\" x=\"160\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\"/><rect class=\"ok\" x=\"160\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\" data-s=\"2 3\"/><text class=\"tb tc\" x=\"215\" y=\"144\">接線</text><rect class=\"box\" x=\"300\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\"/><rect class=\"ok\" x=\"300\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\" data-s=\"2 3\"/><text class=\"tb tc\" x=\"355\" y=\"144\">感測器</text><rect class=\"box\" x=\"440\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\"/><rect class=\"ok\" x=\"440\" y=\"112\" width=\"110\" height=\"52\" rx=\"8\" data-s=\"2 3\"/><text class=\"tb tc\" x=\"495\" y=\"144\">MCU 程式</text><line class=\"la\" x1=\"130\" y1=\"138\" x2=\"158\" y2=\"138\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"270\" y1=\"138\" x2=\"298\" y2=\"138\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"410\" y1=\"138\" x2=\"438\" y2=\"138\" marker-end=\"url(#s2-12-1-arr)\"/><g data-s=\"2 3\"><circle class=\"acc\" cx=\"452\" cy=\"180\" r=\"8\"/><line class=\"la\" x1=\"458\" y1=\"186\" x2=\"465\" y2=\"193\"/></g><polyline class=\"la\" points=\"550,138 580,138 580,254 552,254\" marker-end=\"url(#s2-12-1-arr)\"/><text class=\"tb ta\" x=\"572\" y=\"202\" text-anchor=\"end\" data-s=\"3\">下一段</text><rect class=\"box\" x=\"440\" y=\"228\" width=\"110\" height=\"52\" rx=\"8\"/><rect class=\"warn\" x=\"440\" y=\"228\" width=\"110\" height=\"52\" rx=\"8\" data-s=\"3\"/><text class=\"tb tc\" x=\"495\" y=\"260\">網路</text><rect class=\"box\" x=\"300\" y=\"228\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"355\" y=\"260\">平台</text><rect class=\"bad\" x=\"160\" y=\"228\" width=\"110\" height=\"52\" rx=\"8\"/><text class=\"tb tc\" x=\"215\" y=\"260\">顯示</text><line class=\"la\" x1=\"440\" y1=\"254\" x2=\"412\" y2=\"254\" marker-end=\"url(#s2-12-1-arr)\"/><line class=\"la\" x1=\"300\" y1=\"254\" x2=\"272\" y2=\"254\" marker-end=\"url(#s2-12-1-arr)\"/><text class=\"tb tc\" x=\"495\" y=\"302\" data-s=\"3\">先查這裡</text><text class=\"tb\" x=\"20\" y=\"248\">症狀</text><text class=\"t\" x=\"20\" y=\"272\">3 號庫曲線停了</text></svg>",
+   "caption": "畫面沒資料時別急著換設備，沿資料路徑用證據一段段縮小範圍。",
    "more": {
     "label": "現場安全，以及修好之後還要做的事",
     "body": "<p>先實體後軟體的意思是先看插頭、開關與接線。憑感覺猜測或敲敲打打，既不客觀，也可能弄壞東西；若設備冒煙或明顯異常，先斷電再檢查。</p><p>修好之後還有兩件事：驗證原本的問題與相關功能都恢復，並保留錯誤訊息與處理紀錄。重開機後暫時正常，不等於找到根本原因（Root cause）；資源不足或接觸不良之後還會再發生。</p>"
-   }
+   },
+   "steps": [
+    "使用者只看得到最後的症狀：平台上 3 號庫的溫度曲線停了，光看畫面分不出是哪一段出事。",
+    "挑一個觀察點：現場螢幕讀值在跳，證明從電源、接線、感測器到 MCU 程式這四段都正常，探頭不用換。",
+    "最後正常的位置在 MCU，問題就在它的下一段，所以先查網路，再往平台查。"
+   ],
+   "start": 3
   },
   {
    "id": "narrow-down",
@@ -39,43 +45,9 @@
     "q": "今早全部貨車同時停止回報。逐台打電話請司機檢查車上設備，是好的第一步嗎？",
     "a": "不是。每台同時壞掉的機率很低，應該先查它們的共同點，例如平台、Broker 或電信連線。"
    },
-   "body": "<p>動手之前，先描述清楚三件事：什麼壞了、何時開始、影響哪些設備。影響範圍與時間型態能決定<b>先查哪裡</b>。這裡得到的是排查順序，不是確診；最後仍要量測確認。</p><p>全部設備同時失效，不太可能是每一台剛好都壞了，要找它們的共同點。只有一台失效，就先查那一台。多數時間正常、偶爾中斷，則代表基本功能沒問題，要找間歇出現的因素。</p>",
-   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"以影響範圍與時間型態兩軸縮小故障嫌疑的四格表\"><text class=\"th tc\" x=\"300\" y=\"24\">看「範圍」×「時間」縮小嫌疑</text><text class=\"tb tc\" x=\"230\" y=\"58\">只有一台壞</text><text class=\"tb tc\" x=\"465\" y=\"58\">全部都壞</text><text class=\"tb\" x=\"20\" y=\"120\">持續壞</text><text class=\"tb\" x=\"20\" y=\"220\">時好時壞</text><rect class=\"box\" x=\"120\" y=\"70\" width=\"220\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"230\" y=\"108\">查該設備本身</text><text class=\"ts tc\" x=\"230\" y=\"134\">電源、接線、元件、韌體</text><rect class=\"warn\" x=\"350\" y=\"70\" width=\"230\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"465\" y=\"108\">查共同點</text><text class=\"ts tc\" x=\"465\" y=\"134\">總電源、網路、伺服器</text><rect class=\"box\" x=\"120\" y=\"170\" width=\"220\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"230\" y=\"208\">查接觸與訊號</text><text class=\"ts tc\" x=\"230\" y=\"234\">接觸不良、壓降、訊號邊緣</text><rect class=\"warn\" x=\"350\" y=\"170\" width=\"230\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"465\" y=\"208\">查共用資源</text><text class=\"ts tc\" x=\"465\" y=\"234\">干擾源、頻寬不足、擁塞</text><text class=\"ts tc\" x=\"300\" y=\"288\">另一線索：兩端各自正常卻收不到 → 先查中間通訊（天線、網路）</text></svg>",
-   "caption": "影響範圍 × 時間型態四格：先判斷落在哪一格，就知道先查哪裡。",
-   "table": {
-    "head": [
-     "看到的現象",
-     "優先懷疑",
-     "為什麼這樣想"
-    ],
-    "rows": [
-     [
-      "所有設備都失效",
-      "共同元件：電源、網路、伺服器、閘道器",
-      "每台都剛好同時壞的機率很低"
-     ],
-     [
-      "大多正常，偶爾斷線",
-      "間歇干擾（如微波爐運作時干擾 2.4GHz）、電壓偶爾下降、接觸不良",
-      "能正常運作代表設定與硬體基本成立，要找時有時無的因素"
-     ],
-     [
-      "兩端各自測試都正常，互相卻收不到",
-      "中間的通訊路徑：天線、網路、連線設定",
-      "兩端單獨都沒事，問題多半在兩者之間"
-     ],
-     [
-      "原本可用，突然不能用",
-      "最近的變化：網路、供電、韌體",
-      "之前能用，代表當時的條件都成立，要看什麼變了"
-     ],
-     [
-      "訊號強度正常，但傳輸很慢",
-      "頻寬不足、擁塞，也可能有干擾與重傳",
-      "訊號強只代表收得到，傳得快不快還要看線路多擠、重傳多少"
-     ]
-    ]
-   }
+   "body": "<p>動手之前，先描述清楚三件事：什麼壞了、何時開始（原本好好的突然壞，先查最近的變化，見上一節）、影響哪些設備。影響範圍與時間型態能決定<b>先查哪裡</b>。這裡得到的是排查順序，不是確診；最後仍要量測確認。</p><p>這樣分的道理：全部同時壞，不太可能每台剛好都壞；時好時壞代表基本設定成立，要找時有時無的因素。</p>",
+   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"以影響範圍與時間型態兩軸縮小故障嫌疑的四格表：只有一台持續壞，查該設備本身（電源、接線、元件、韌體）；全部持續壞，查共同點（總電源、網路、伺服器）；只有一台時好時壞，查接觸與訊號（接觸不良、壓降、訊號邊緣）；全部時好時壞，查共用資源（干擾源、頻寬不足、擁塞）。另一線索：兩端各自正常卻收不到，先查中間通訊（天線、網路）\"><text class=\"th tc\" x=\"300\" y=\"24\">看「範圍」×「時間」縮小嫌疑</text><text class=\"tb tc\" x=\"230\" y=\"58\">只有一台壞</text><text class=\"tb tc\" x=\"465\" y=\"58\">全部都壞</text><text class=\"tb\" x=\"20\" y=\"120\">持續壞</text><text class=\"tb\" x=\"20\" y=\"220\">時好時壞</text><rect class=\"box\" x=\"120\" y=\"70\" width=\"220\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"230\" y=\"108\">查該設備本身</text><text class=\"ts tc\" x=\"230\" y=\"134\">電源、接線、元件、韌體</text><rect class=\"warn\" x=\"350\" y=\"70\" width=\"230\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"465\" y=\"108\">查共同點</text><text class=\"ts tc\" x=\"465\" y=\"134\">總電源、網路、伺服器</text><rect class=\"box\" x=\"120\" y=\"170\" width=\"220\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"230\" y=\"208\">查接觸與訊號</text><text class=\"ts tc\" x=\"230\" y=\"234\">接觸不良、壓降、訊號邊緣</text><rect class=\"warn\" x=\"350\" y=\"170\" width=\"230\" height=\"90\" rx=\"8\"/><text class=\"tb tc\" x=\"465\" y=\"208\">查共用資源</text><text class=\"ts tc\" x=\"465\" y=\"234\">干擾源、頻寬不足、擁塞</text><text class=\"ts tc\" x=\"300\" y=\"288\">另一線索：兩端各自正常卻收不到 → 先查中間通訊（天線、網路）</text></svg>",
+   "caption": "影響範圍 × 時間型態四格：先判斷落在哪一格，就知道先查哪裡。"
   },
   {
    "id": "instruments",
@@ -84,7 +56,7 @@
     "q": "探頭節點會隨機重開，懷疑 Wi-Fi 發射瞬間電壓掉下去。三用電錶量到 3.3 V，可以排除電源問題嗎？",
     "a": "不行。電錶顯示的數值更新慢，抓不到幾毫秒的瞬間壓降，要用示波器看電壓隨時間的變化。"
    },
-   "body": "<p>選工具先問：我想看的是<b>一個數值、隨時間變化的波形、數位訊號的內容，還是空中的無線電</b>？</p><p><b>三用電錶（Multimeter）</b>確認設備有沒有正常供電；波形交給<b>示波器（Oscilloscope）</b>；UART、I²C、SPI 這些晶片之間的數位傳輸方式，要看裡面傳了什麼就用<b>邏輯分析儀（Logic Analyzer）</b>。<b>序列埠（Serial port，即串列埠）</b>監看則是讀 MCU 自己印出的文字，兩邊的傳輸速度要設成一致。</p>",
+   "body": "<p>選工具先問：我想看的是<b>一個數值、隨時間變化的波形、數位訊號的內容，還是空中的無線電</b>？下面的圖先比電錶和示波器，表格再列齊各工具。</p>",
    "table": {
     "head": [
      "工具",
@@ -102,7 +74,7 @@
      [
       "示波器",
       "電壓隨時間的波形",
-      "振盪器、雜訊、PWM（快速開關調節輸出）",
+      "振盪器（產生固定節拍的元件）、雜訊、PWM（快速開關調節輸出）",
       "同時看很多條線（通道數有限）"
      ],
      [
@@ -112,7 +84,7 @@
       "類比波形細節"
      ],
      [
-      "序列埠監看",
+      "序列埠（串列埠）監看",
       "MCU 印出的文字",
       "程式跑到哪、讀值多少",
       "量電氣訊號"
@@ -132,9 +104,11 @@
     ]
    },
    "more": {
-    "label": "三用電錶怎麼接，以及它量不到什麼",
-    "body": "<p>三用電錶量電壓、電流、電阻與導通（兩點之間有沒有接通）。量電壓時探棒並接在被測點兩端，量電流要串進迴路，量電阻要先斷電。</p><p>它顯示的是一個數值，看不到快速變化的波形，因此振盪器（產生固定節拍、讓電路同步運作的元件）是否正常通常交給示波器或頻率計（專門量訊號每秒變化幾次的儀器）；部分數位電錶有頻率檔，也能在規格範圍內量頻率。</p>"
-   }
+    "label": "三用電錶怎麼接",
+    "body": "<p>三用電錶量電壓、電流、電阻與導通（兩點之間有沒有接通）。量電壓時探棒並接在被測點兩端，量電流要串進迴路，量電阻要先斷電。</p>"
+   },
+   "svg": "<svg viewBox=\"0 0 600 330\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"同一次 Wi-Fi 發射造成的瞬間壓降：三用電錶每次更新顯示一段時間的平均，讀數一直約 3.29 到 3.30 V；示波器放大這 10 毫秒，看到電壓跌破重開機門檻、MCU 因此重開機\"><rect class=\"soft\" x=\"32\" y=\"40\" width=\"132.667\" height=\"84\" rx=\"6\"/><text class=\"tb tc\" x=\"98.3333\" y=\"62\">3.30 V</text><rect class=\"soft\" x=\"168.667\" y=\"40\" width=\"132.667\" height=\"84\" rx=\"6\"/><text class=\"tb tc\" x=\"235\" y=\"62\">3.29 V</text><rect class=\"soft\" x=\"305.333\" y=\"40\" width=\"132.667\" height=\"84\" rx=\"6\"/><text class=\"tb tc\" x=\"371.667\" y=\"62\">3.30 V</text><path class=\"la\" d=\"M30,92 H238 L240,118 L244,118 L246,92 H440\"/><text class=\"ts\" x=\"440\" y=\"142\" text-anchor=\"end\">1 秒</text><text class=\"ts\" x=\"32\" y=\"30\">每一格是電錶的一次更新</text><text class=\"t tc\" x=\"242\" y=\"156\">Wi-Fi 發射</text><line class=\"ln dash\" x1=\"236\" y1=\"124\" x2=\"30\" y2=\"176\"/><line class=\"ln dash\" x1=\"248\" y1=\"124\" x2=\"440\" y2=\"176\"/><rect class=\"soft\" x=\"30\" y=\"176\" width=\"410\" height=\"124\" rx=\"6\"/><text class=\"ts\" x=\"38\" y=\"190\">3.3 V</text><line class=\"ln dash\" x1=\"30\" y1=\"250\" x2=\"440\" y2=\"250\"/><text class=\"t\" x=\"38\" y=\"242\">重開機門檻</text><path class=\"la\" d=\"M30,198 H120 C140,198 150,272 172,276 H296 C320,276 332,198 360,198 H440\"/><text class=\"ts\" x=\"432\" y=\"292\" text-anchor=\"end\">10 毫秒</text><text class=\"tb tc\" x=\"525\" y=\"52\">三用電錶</text><rect class=\"ok\" x=\"470\" y=\"62\" width=\"110\" height=\"50\" rx=\"8\"/><text class=\"th tc\" x=\"525\" y=\"94\">3.29 V</text><text class=\"t tc\" x=\"525\" y=\"136\">一段時間的平均</text><text class=\"tb tc\" x=\"525\" y=\"204\">示波器</text><rect class=\"bad\" x=\"466\" y=\"214\" width=\"118\" height=\"46\" rx=\"8\"/><text class=\"tb tc\" x=\"525\" y=\"243\">跌破門檻</text><text class=\"t tc\" x=\"525\" y=\"284\">MCU 因此重開機</text><text class=\"t tc\" x=\"300\" y=\"322\">要一個數值 → 電錶；要看隨時間的變化 → 示波器</text></svg>",
+   "caption": "同一次 Wi-Fi 發射：幾毫秒的下陷被平均進電錶的讀數裡，螢幕仍顯示約 3.29 V；示波器把時間放大，才看得到電壓掉到重開機門檻以下。"
   },
   {
    "id": "hardware-faults",
@@ -143,7 +117,7 @@
     "q": "主機放進 −25°C 的冷凍櫃幾小時後顯示低電量，拿出來回溫又恢復。電池壞了嗎？",
     "a": "不一定。鋰電池在低溫下輸出會下降。把耐低溫探頭放進去、主機留在外面，往往就解決了。"
    },
-   "body": "<p>另一類故障來自電源。Wi-Fi 發射瞬間電流很大，若電源供應不足，電壓會掉下去，設備就重開機，因此常見「一連網就重開」。溫度也會影響電源：鋰電池在低溫下能輸出的電流與電壓都會下降，回溫後又恢復，看起來像「電池壞了」。</p><p>UART 這類非同步串列通訊的兩端必須事先約好格式，才能把收到的電壓變化還原成資料。鮑率不一致幾乎一定出現亂碼，其他參數不一致則可能造成亂碼、資料錯誤或框架錯誤（Framing error）。</p>",
+   "body": "<p>溫度也會影響電源：鋰電池在低溫下能輸出的電流與電壓都會下降，回溫後又恢復，看起來像「電池壞了」。一連 Wi-Fi 就重開機，多半是發射瞬間的壓降（見<a href=\"s2-12.html#instruments\">上一節的示波器圖</a>），要換能供應大電流的電源。</p><p>UART 這類非同步串列通訊的兩端必須事先約好格式，才能把收到的電壓變化還原成資料。鮑率不一致幾乎一定出現亂碼，其他參數不一致則可能造成亂碼、資料錯誤或框架錯誤（Framing error）。</p>",
    "table": {
     "head": [
      "症狀",
@@ -167,14 +141,9 @@
       "看序列埠紀錄、查接線、重新上電"
      ],
      [
-      "讀值突然異常或無效",
-      "超出量測範圍（超音波感測器典型 2cm–4m）",
-      "對照規格書範圍"
-     ],
-     [
-      "讀值偶爾不準",
-      "感測器老化、未校準、環境干擾",
-      "校準或更換、過濾離群值；提高網路頻寬沒有幫助"
+      "讀值異常或偶爾不準",
+      "超出量測範圍、感測器老化、未校準、環境干擾",
+      "先對照規格書範圍，再校準或更換、過濾離群值；提高網路頻寬沒有幫助"
      ],
      [
       "兩顆 I²C 感測器只讀到一顆",
@@ -185,32 +154,12 @@
       "I²C 感測器偶爾讀不到",
       "接頭鬆動、線太長或上拉太弱、瞬間壓降",
       "搖動接頭測試、換已知正常的元件比對，再用示波器看 SDA 波形與 VCC"
-     ],
-     [
-      "一連 Wi-Fi 就重開機",
-      "電源不足，電壓瞬間下降",
-      "量電壓、換能供應大電流的電源"
-     ],
-     [
-      "低溫環境中設備低電量停擺",
-      "主機低於工作溫度，電池輸出下降",
-      "只把耐低溫探頭放進低溫區，主機留在外面"
-     ],
-     [
-      "SD 卡紀錄到某天就中斷",
-      "卡片已滿、卡片損壞，或程式寫檔後沒有正確關閉",
-      "換一張卡對照測試，查剩餘容量與程式的錯誤訊息"
-     ],
-     [
-      "攝影機辨識車牌常認錯",
-      "影像模糊、光線不足或解析度不夠，細節看不清",
-      "先看原始影像是否清楚，再調整鏡頭、照明或解析度"
      ]
     ]
    },
    "more": {
-    "label": "串列格式 8N1 與偶發的 I²C 讀取失敗",
-    "body": "<p>約定的內容有<b>鮑率（Baud rate，每秒傳送的符號數）</b>、資料位元、<b>同位檢查（Parity）</b>與停止位元。常見設定如 115200 8N1，代表鮑率 115200、8 個資料位元、無同位檢查、1 個停止位元。</p><p>兩端還要有共同的電壓基準，也就是接在一起的地線，稱為<b>共地</b>。共地接觸不良時，就算設定完全一致也可能出現亂碼。</p><p>I²C 靠<b>上拉電阻（Pull-up resistor）</b>把線拉回高電位，線越長、電容越大，電壓爬升越慢。規格限制上升時間，100 kHz 標準模式的上限是 1 µs；超過時就可能偶發讀取失敗。估算式是上升時間 ≈ 0.8473 × 電阻 × 電容，例如 4.7 kΩ、350 pF 約 1.4 µs，改用 2.2 kΩ 約 0.65 µs。</p>"
+    "label": "串列格式、共地與偶發的 I²C 讀取失敗",
+    "body": "<p>格式包含<b>鮑率</b>、資料位元、<b>同位檢查</b>與停止位元，常見寫法 115200 8N1＝8 個資料位元、無（N）同位、1 個停止位元（見<a href=\"s1-32.html#transmission\">科一 3.2〈感測訊號與通訊基礎〉</a>）。</p><p>兩端還要有共同的電壓基準，也就是接在一起的地線，稱為<b>共地</b>。共地接觸不良時，就算設定完全一致也可能出現亂碼。</p><p>I²C 靠<b>上拉電阻</b>把線拉回高電位；線越長（電容越大）、上拉電阻越大，上升時間越長，超過規格就可能偶發讀錯；可縮短線，或換阻值小一點的上拉電阻。</p>"
    }
   },
   {
@@ -220,41 +169,12 @@
     "q": "探頭的 RSSI 有 −55 dBm，資料卻一直重傳。訊號這麼強，還可能是無線的問題嗎？",
     "a": "可能。若周圍雜訊高達 −60 dBm，訊號只高出雜訊 5 dB，還是聽不清楚。"
    },
-   "body": "<p><b>RSSI（Received Signal Strength Indicator）</b>表示接收到的訊號多強，常見單位是 dBm，通常是負數，越接近 0 越強，所以 −50 比 −90 強。<b>SNR（Signal-to-Noise Ratio，訊噪比）</b>則是訊號比背景雜訊高出多少：−60 −（−90）＝ 30 dB。</p><p>這就像在吵雜的餐廳講話：聲音大（RSSI 高）不一定聽得清楚，要比周圍噪音大得夠多（SNR 高）才行。所以<b>訊號強，不代表連線品質好</b>。</p>",
-   "svg": "<svg viewBox=\"0 0 600 275\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"RSSI 與 SNR：接收訊號 −60 dBm、雜訊底 −90 dBm，SNR 為 30 dB\"><defs><marker id=\"s2-12-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"22\">RSSI 看訊號多強，SNR 看高出雜訊多少</text><line class=\"ln\" x1=\"70\" y1=\"44\" x2=\"70\" y2=\"236\"/><line class=\"ln\" x1=\"66\" y1=\"50\" x2=\"74\" y2=\"50\"/><text class=\"ts\" x=\"20\" y=\"55\">−50</text><line class=\"ln\" x1=\"66\" y1=\"86\" x2=\"74\" y2=\"86\"/><text class=\"ts\" x=\"20\" y=\"91\">−60</text><line class=\"ln\" x1=\"66\" y1=\"122\" x2=\"74\" y2=\"122\"/><text class=\"ts\" x=\"20\" y=\"127\">−70</text><line class=\"ln\" x1=\"66\" y1=\"158\" x2=\"74\" y2=\"158\"/><text class=\"ts\" x=\"20\" y=\"163\">−80</text><line class=\"ln\" x1=\"66\" y1=\"194\" x2=\"74\" y2=\"194\"/><text class=\"ts\" x=\"20\" y=\"199\">−90</text><line class=\"ln\" x1=\"66\" y1=\"230\" x2=\"74\" y2=\"230\"/><text class=\"ts\" x=\"20\" y=\"235\">−100</text><text class=\"ts\" x=\"20\" y=\"262\">（dBm）</text><line class=\"la\" x1=\"70\" y1=\"86\" x2=\"330\" y2=\"86\"/><text class=\"tb\" x=\"340\" y=\"91\">訊號 −60 dBm</text><line class=\"ln dash\" x1=\"70\" y1=\"194\" x2=\"330\" y2=\"194\"/><text class=\"t\" x=\"340\" y=\"199\">雜訊底 −90 dBm</text><line class=\"la\" x1=\"200\" y1=\"90\" x2=\"200\" y2=\"190\" marker-start=\"url(#s2-12-5-arr)\" marker-end=\"url(#s2-12-5-arr)\"/><text class=\"tb ta\" x=\"212\" y=\"145\">SNR = 30 dB</text><text class=\"ts tc\" x=\"540\" y=\"50\">Wi-Fi 典型</text><rect class=\"ok\" x=\"490\" y=\"60\" width=\"100\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"540\" y=\"83\">−50 強</text><rect class=\"warn\" x=\"490\" y=\"104\" width=\"100\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"540\" y=\"127\">−70 可用</text><rect class=\"bad\" x=\"490\" y=\"148\" width=\"100\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"540\" y=\"171\">−90 很弱</text><text class=\"ts tc\" x=\"540\" y=\"232\">越接近 0 越強</text><text class=\"ts tc\" x=\"330\" y=\"262\">SNR(dB) = 訊號 − 雜訊；越高越好</text></svg>",
-   "caption": "RSSI 是絕對強度（dBm），SNR 是訊號高出背景雜訊多少（dB）；數值為典型參考。",
-   "table": {
-    "head": [
-     "技術",
-     "特性",
-     "突然失效或不穩時先查"
-    ],
-    "rows": [
-     [
-      "紅外線",
-      "光，需要直線視線，無法穿牆",
-      "中間有無遮擋、環境光；與 Wi-Fi 不同頻段，不會被 Wi-Fi 干擾"
-     ],
-     [
-      "超音波",
-      "靠回波測距",
-      "距離是否超出量程、物體角度與材質"
-     ],
-     [
-      "UHF RFID（用超高頻無線電讀取電子標籤）",
-      "容易受金屬與含水物品影響",
-      "標籤設計與貼附位置；金屬會讓標籤天線收不好訊號，加大功率也解決不了"
-     ],
-     [
-      "2.4GHz 無線（Wi-Fi、藍牙等）",
-      "頻段擁擠，設備彼此共用",
-      "同頻段干擾源、頻道、距離"
-     ]
-    ]
-   },
+   "body": "<p><b>RSSI（Received Signal Strength Indicator）</b>表示接收到的訊號多強，常見單位是 dBm（以 1 毫瓦為基準，比 1 毫瓦小就是負數）。接收到的訊號通常遠小於 1 毫瓦，所以多是負數，越接近 0 越強，−50 比 −90 強。<b>SNR（Signal-to-Noise Ratio，訊噪比）</b>則是訊號比背景雜訊高出多少：−60 −（−90）＝ 30 dB。</p><p>這就像在吵雜的餐廳講話：聲音大（RSSI 高）不一定聽得清楚，要比周圍噪音大得夠多（SNR 高）才行。所以<b>訊號強，不代表連線品質好</b>。</p><p>不同技術各有弱點：紅外線怕遮擋（要直線視線）和強烈環境光，但不受 Wi-Fi 干擾；UHF RFID（用超高頻無線電讀取的電子標籤）怕金屬與含水物（見 <a href=\"s1-22.html#rfid-nfc\">2.2〈常見通訊協定與網路層技術〉</a>）；2.4GHz 頻段擁擠，容易互相干擾。</p>",
+   "svg": "<svg viewBox=\"0 0 600 304\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"同一條 dBm 刻度上比較兩顆探頭：甲訊號 −55 dBm、雜訊 −60 dBm，SNR 只有 5 dB；乙訊號 −75 dBm、雜訊 −100 dBm，SNR 25 dB。甲的訊號比較強，卻是乙聽得比較清楚\"><defs><marker id=\"s2-12-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">甲的訊號比較強，卻是乙聽得比較清楚</text><line class=\"ln\" x1=\"70\" y1=\"54\" x2=\"70\" y2=\"246\"/><line class=\"ln\" x1=\"66\" y1=\"60\" x2=\"74\" y2=\"60\"/><text class=\"ts\" x=\"58\" y=\"65\" text-anchor=\"end\">−50</text><line class=\"ln\" x1=\"66\" y1=\"96\" x2=\"74\" y2=\"96\"/><text class=\"ts\" x=\"58\" y=\"101\" text-anchor=\"end\">−60</text><line class=\"ln\" x1=\"66\" y1=\"132\" x2=\"74\" y2=\"132\"/><text class=\"ts\" x=\"58\" y=\"137\" text-anchor=\"end\">−70</text><line class=\"ln\" x1=\"66\" y1=\"168\" x2=\"74\" y2=\"168\"/><text class=\"ts\" x=\"58\" y=\"173\" text-anchor=\"end\">−80</text><line class=\"ln\" x1=\"66\" y1=\"204\" x2=\"74\" y2=\"204\"/><text class=\"ts\" x=\"58\" y=\"209\" text-anchor=\"end\">−90</text><line class=\"ln\" x1=\"66\" y1=\"240\" x2=\"74\" y2=\"240\"/><text class=\"ts\" x=\"58\" y=\"245\" text-anchor=\"end\">−100</text><text class=\"ts\" x=\"20\" y=\"44\">越接近 0 越強</text><text class=\"ts\" x=\"20\" y=\"268\">（dBm）</text><text class=\"th tc\" x=\"170\" y=\"70\">甲</text><rect class=\"bad\" x=\"100\" y=\"78\" width=\"140\" height=\"18\"/><line class=\"la\" x1=\"100\" y1=\"78\" x2=\"240\" y2=\"78\"/><line class=\"ln dash\" x1=\"100\" y1=\"96\" x2=\"240\" y2=\"96\"/><text class=\"t\" x=\"250\" y=\"76\">訊號 −55</text><text class=\"t\" x=\"250\" y=\"112\">雜訊 −60</text><text class=\"tb\" x=\"100\" y=\"130\">SNR 只有 5 dB</text><text class=\"th tc\" x=\"430\" y=\"142\">乙</text><rect class=\"ok\" x=\"360\" y=\"150\" width=\"140\" height=\"90\"/><line class=\"la\" x1=\"360\" y1=\"150\" x2=\"500\" y2=\"150\"/><line class=\"ln dash\" x1=\"360\" y1=\"240\" x2=\"500\" y2=\"240\"/><line class=\"la\" x1=\"384\" y1=\"154\" x2=\"384\" y2=\"236\" marker-start=\"url(#s2-12-5-arr)\" marker-end=\"url(#s2-12-5-arr)\"/><text class=\"tb\" x=\"400\" y=\"201\">SNR 25 dB</text><text class=\"t\" x=\"510\" y=\"156\">訊號 −75</text><text class=\"t\" x=\"510\" y=\"246\">雜訊 −100</text><text class=\"t tc\" x=\"300\" y=\"294\">SNR(dB) = 訊號 − 雜訊；越高越清楚</text></svg>",
+   "caption": "同一條 dBm 刻度上比較兩顆探頭：甲的 RSSI 比乙強 20 dB，卻只比雜訊高 5 dB；乙比較弱，但高出雜訊 25 dB。RSSI 是絕對強度（dBm），SNR 是兩者相減的差距（dB）。",
    "more": {
-    "label": "dBm 與 dB 的差別，以及怎麼改善訊號",
-    "body": "<p>dBm 是以 1 毫瓦為基準的功率刻度，比 1 毫瓦小就是負數。dB 表示兩個量相差多少倍，是相對值，所以兩個 dBm 相減得到的是 dB。</p><p>改善時先查天線、遮擋與干擾，再調整位置或頻道，也可以換較合適的天線。提高發射功率會增加耗電，也可能干擾別人；訊號增強器則可能連雜訊一起放大。</p>"
+    "label": "怎麼改善訊號",
+    "body": "<p>改善時先查天線、遮擋與干擾，再調整位置或頻道，也可以換較合適的天線。提高發射功率會增加耗電，也可能干擾別人；訊號增強器則可能連雜訊一起放大。</p>"
    }
   },
   {
@@ -264,9 +184,9 @@
     "q": "閘道器 ping Broker 的 IP 有回應，MQTT 還是連不上。既然網路是通的，一定是 Broker 壞了嗎？",
     "a": "還不能這樣說。ping 成功只代表 ICMP 有回應，還要往上查 port、防火牆、服務狀態與帳密。"
    },
-   "body": "<p>網路問題也是分段排查，順序是：本機有 IP → IP 連得到 → 名稱解析得到 → 服務 port 開著 → 應用層登入正常。下層通了，才值得查上層。每個指令只回答一個問題。</p><ul><li><b>對方不回 ping</b>：有些機器或防火牆刻意不回這種測試封包，要再試別的方法才能下結論。</li><li><b>瀏覽器輸入網址打不開，改打伺服器的數字位址卻開得了</b>：路是通的，出問題的是「查通訊錄」這一步，優先查 DNS。</li><li><b>ping 得到，但 MQTT 或 HTTP 連不上</b>：查防火牆是否擋了 port、服務是否啟動，再查帳密與憑證（證明伺服器身分的電子文件）。</li><li><b>能連到登入畫面</b>：只表示路與服務都通，不表示已登入。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 350\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"網路故障由下往上逐層檢查：本機 IP、IP 連通、DNS、port、應用層\"><defs><marker id=\"s2-12-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"tb tc\" x=\"120\" y=\"26\">依序檢查</text><text class=\"tb tc\" x=\"320\" y=\"26\">用什麼</text><text class=\"tb tc\" x=\"500\" y=\"26\">不通就查</text><rect class=\"acc\" x=\"20\" y=\"40\" width=\"200\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"120\" y=\"68\">本機有 IP 嗎？</text><text class=\"ts tc\" x=\"320\" y=\"67\">ipconfig／ifconfig</text><rect class=\"bad\" x=\"420\" y=\"40\" width=\"160\" height=\"44\" rx=\"8\"/><text class=\"ts tc\" x=\"500\" y=\"67\">DHCP、Wi-Fi 密碼</text><line class=\"la\" x1=\"120\" y1=\"84\" x2=\"120\" y2=\"102\" marker-end=\"url(#s2-12-6-arr)\"/><rect class=\"acc\" x=\"20\" y=\"104\" width=\"200\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"120\" y=\"132\">IP 連得到嗎？</text><text class=\"ts tc\" x=\"320\" y=\"131\">ping 閘道或伺服器 IP</text><rect class=\"bad\" x=\"420\" y=\"104\" width=\"160\" height=\"44\" rx=\"8\"/><text class=\"ts tc\" x=\"500\" y=\"131\">閘道、路由、ICMP 被擋</text><line class=\"la\" x1=\"120\" y1=\"148\" x2=\"120\" y2=\"166\" marker-end=\"url(#s2-12-6-arr)\"/><rect class=\"acc\" x=\"20\" y=\"168\" width=\"200\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"120\" y=\"196\">名稱解析得到？</text><text class=\"ts tc\" x=\"320\" y=\"195\">nslookup 網域名稱</text><rect class=\"bad\" x=\"420\" y=\"168\" width=\"160\" height=\"44\" rx=\"8\"/><text class=\"ts tc\" x=\"500\" y=\"195\">DNS 伺服器設定</text><line class=\"la\" x1=\"120\" y1=\"212\" x2=\"120\" y2=\"230\" marker-end=\"url(#s2-12-6-arr)\"/><rect class=\"acc\" x=\"20\" y=\"232\" width=\"200\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"120\" y=\"260\">服務 port 開著？</text><text class=\"ts tc\" x=\"320\" y=\"259\">telnet／nc 主機 port</text><rect class=\"bad\" x=\"420\" y=\"232\" width=\"160\" height=\"44\" rx=\"8\"/><text class=\"ts tc\" x=\"500\" y=\"259\">防火牆、服務沒啟動</text><line class=\"la\" x1=\"120\" y1=\"276\" x2=\"120\" y2=\"294\" marker-end=\"url(#s2-12-6-arr)\"/><rect class=\"acc\" x=\"20\" y=\"296\" width=\"200\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"120\" y=\"324\">應用層正常？</text><text class=\"ts tc\" x=\"320\" y=\"323\">看服務 log、登入</text><rect class=\"bad\" x=\"420\" y=\"296\" width=\"160\" height=\"44\" rx=\"8\"/><text class=\"ts tc\" x=\"500\" y=\"323\">帳密、憑證、TLS</text></svg>",
-   "caption": "由本機往外、由下往上逐層確認；哪一層不通，就查右邊那一欄。",
+   "body": "<p>網路問題也是分段排查，順序是：本機有 IP → IP 連得到 → 名稱解析得到 → 服務 port 開著 → 應用層登入正常。下層通了，才值得查上層。每個指令只回答一個問題。</p>",
+   "svg": "<svg viewBox=\"0 0 600 352\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"每個網路指令走到多深：ipconfig 只看本機，ping 路由器只到路由器，ping Broker 只碰到 Broker 的作業系統，nslookup 問的是另一台 DNS 伺服器，nc 穿過 port 1883 就停，MQTT 登入才到帳密憑證。所以 ping 通 ≠ MQTT 可用；nc 連上 1883 只是門開著，還沒登入\"><defs><marker id=\"s2-12-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"tb tc\" x=\"406.5\" y=\"20\">Broker 主機</text><polyline class=\"ln\" points=\"218,34 218,28 595,28 595,34\"/><text class=\"tb tc\" x=\"126\" y=\"58\">本機</text><text class=\"tb tc\" x=\"184\" y=\"58\">路由器</text><text class=\"tb tc\" x=\"264\" y=\"58\">作業系統</text><text class=\"tb tc\" x=\"359\" y=\"58\">port 1883</text><text class=\"tb tc\" x=\"454\" y=\"58\">MQTT 服務</text><text class=\"tb tc\" x=\"549\" y=\"58\">帳密憑證</text><text class=\"tb\" x=\"4\" y=\"98\">ipconfig</text><rect class=\"acc\" x=\"102\" y=\"72\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"156\" y=\"72\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"218\" y=\"72\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"313\" y=\"72\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"408\" y=\"72\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"503\" y=\"72\" width=\"92\" height=\"40\" rx=\"6\"/><path class=\"la\" d=\"M114,84 H138 V100 H116\" marker-end=\"url(#s2-12-6-arr)\"/><text class=\"tb\" x=\"4\" y=\"144\">ping 路由器</text><rect class=\"acc\" x=\"102\" y=\"118\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"156\" y=\"118\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"218\" y=\"118\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"313\" y=\"118\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"408\" y=\"118\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"503\" y=\"118\" width=\"92\" height=\"40\" rx=\"6\"/><line class=\"la\" x1=\"126\" y1=\"138\" x2=\"184\" y2=\"138\" marker-end=\"url(#s2-12-6-arr)\"/><text class=\"tb\" x=\"4\" y=\"190\">ping Broker</text><rect class=\"acc\" x=\"102\" y=\"164\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"156\" y=\"164\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"218\" y=\"164\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"313\" y=\"164\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"408\" y=\"164\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"503\" y=\"164\" width=\"92\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"454\" y=\"190\">ping 通 ≠ MQTT 可用</text><line class=\"la\" x1=\"126\" y1=\"184\" x2=\"304\" y2=\"184\" marker-end=\"url(#s2-12-6-arr)\"/><text class=\"tb\" x=\"4\" y=\"236\">nslookup</text><rect class=\"acc\" x=\"102\" y=\"210\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"156\" y=\"210\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"box\" x=\"218\" y=\"210\" width=\"377\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"416.5\" y=\"236\">DNS 伺服器（另一台機器）</text><line class=\"la\" x1=\"126\" y1=\"230\" x2=\"236\" y2=\"230\" marker-end=\"url(#s2-12-6-arr)\"/><text class=\"tb\" x=\"4\" y=\"282\">nc 1883</text><rect class=\"acc\" x=\"102\" y=\"256\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"156\" y=\"256\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"218\" y=\"256\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"313\" y=\"256\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"408\" y=\"256\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"soft\" x=\"503\" y=\"256\" width=\"92\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"501.5\" y=\"282\">門開著，還沒登入</text><line class=\"la\" x1=\"126\" y1=\"276\" x2=\"399\" y2=\"276\" marker-end=\"url(#s2-12-6-arr)\"/><text class=\"tb\" x=\"4\" y=\"328\">MQTT 登入</text><rect class=\"acc\" x=\"102\" y=\"302\" width=\"48\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"156\" y=\"302\" width=\"56\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"218\" y=\"302\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"313\" y=\"302\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"408\" y=\"302\" width=\"92\" height=\"40\" rx=\"6\"/><rect class=\"acc\" x=\"503\" y=\"302\" width=\"92\" height=\"40\" rx=\"6\"/><line class=\"la\" x1=\"126\" y1=\"322\" x2=\"549\" y2=\"322\" marker-end=\"url(#s2-12-6-arr)\"/></svg>",
+   "caption": "六個檢查都從本機（閘道器）出發，藍色格是它實際碰到的地方。",
    "table": {
     "head": [
      "指令",
@@ -275,7 +195,7 @@
     ],
     "rows": [
      [
-      "ipconfig /all（Windows）／ifconfig、ip addr 看 IP，ip route 看閘道，/etc/resolv.conf 或 resolvectl 看 DNS（Linux）",
+      "ipconfig /all（Windows）／ifconfig、ip addr（Linux）",
       "我拿到什麼 IP、閘道、DNS？",
       "169.254.x.x 時優先查 DHCP"
      ],
@@ -302,13 +222,13 @@
      [
       "nc、telnet、ssh",
       "遠端某個 port 能不能連？",
-      "連上 port 不等於登入成功"
+      "連不上先查防火牆是否擋了 port、服務是否啟動；連上 port 不等於登入成功，登入失敗再查帳密、憑證（證明伺服器身分的電子文件）與 TLS 設定，並看服務 log"
      ]
     ]
    },
    "more": {
-    "label": "169.254 位址、Wi-Fi 連不上的檢查，以及一個完整例子",
-    "body": "<p>這些指令從本機往外查，每個只回答一個問題。Windows 上若看到 <code>169.254.x.x</code> 這種 IP，代表設備沒有從 DHCP 拿到位址，只好自己配一個，無法正常上網。</p><p>Wi-Fi 連不上時，先查 SSID（網路名稱）與密碼、訊號強度、DHCP 能否發出 IP，以及頻段；多數 ESP32、ESP8266（常見的 Wi-Fi 開發晶片）只支援 2.4GHz，連不上 5GHz 的網路。</p><p>舉個例子：一批感測器在換路由器後停止回報，現場螢幕的讀值卻正常，表示量測端沒事。接著查閘道器連線與 IP 設定，再測目的服務的 port，若發現新路由器擋住連線，修正後還要確認斷線期間的資料與告警是否恢復。</p>"
+    "label": "169.254 位址與 Wi-Fi 連不上的檢查",
+    "body": "<p>Windows 上若看到 <code>169.254.x.x</code> 這種 IP，代表設備沒有從 DHCP 拿到位址，只好自己配一個，無法正常上網。</p><p>Wi-Fi 連不上時，先查 SSID（網路名稱）與密碼、訊號強度、DHCP 能否發出 IP，以及頻段；多數 ESP32、ESP8266（常見的 Wi-Fi 開發晶片）只支援 2.4GHz，連不上 5GHz 的網路。</p>"
    }
   },
   {
@@ -337,11 +257,6 @@
       "MQTT 或網站服務可用"
      ],
      [
-      "電錶量到 3.3 V",
-      "當下的平均電壓正常",
-      "程式有在跑，或沒有瞬間壓降"
-     ],
-     [
       "序列埠亂碼",
       "收到的資料無法正確還原",
       "一定是鮑率；共地、接頭與雜訊也會造成"
@@ -350,11 +265,6 @@
       "I²C 掃描看得到元件",
       "掃描當下元件有回應",
       "不會偶發失敗"
-     ],
-     [
-      "連得上 port",
-      "路與服務都通",
-      "帳密與憑證正確"
      ],
      [
       "重開機後恢復",
@@ -378,10 +288,8 @@
  ],
  "pitfalls": [
   "重開機後恢復正常不等於修好；沒找到根本原因，問題可能再次出現。",
-  "對方不回 ping，不能直接判定對方壞了；對方回了 ping，也不能保證網站或訊息服務可用。",
-  "能連到登入畫面只表示路與服務都通，不表示已登入；若提示來自自己電腦上的金鑰密碼，那還沒有連到對方，不算遠端回應。",
-  "基本三用電錶以電壓、電流、電阻為主，振盪頻率與波形通常用頻率計或示波器；但有頻率檔的數位電錶也能在規格內量頻率。應考時留意題目的條件。 另外，電錶讀值正常也不能排除瞬間壓降。",
-  "亂碼優先對應通訊參數不一致，但接頭鬆動或雜訊同樣可能造成亂碼；若題目要求選最直接的原因，依題目條件判斷，實務上兩者都要查。",
+  "檢查結果只是線索：ping 不回不代表對方壞了，ping 有回也不代表服務可用；連得上 port 或看到登入畫面不代表已登入；電錶量到 3.3 V 不能排除瞬間壓降；亂碼不一定是鮑率，接頭、共地、雜訊也會造成。",
+  "基本三用電錶以電壓、電流、電阻為主，振盪頻率與波形通常交給示波器或頻率計（專門量每秒變化幾次的儀器）；有頻率檔的數位電錶也能在規格內量頻率，但看不到波形。",
   "訊號強不等於傳得快；讀值改變也只是線索，例如溫室濕度突然升高，可能是灑水剛啟動，也可能是感測器受潮，要另外量測確認。"
  ],
  "examples": [
@@ -410,36 +318,24 @@
  ],
  "check": [
   {
-   "q": "系統完全沒有反應，第一步查什麼？",
-   "a": "電源與實體接線，並用三用電錶量電壓確認。"
+   "q": "用三用電錶量節點的耗電電流，接法和量電壓有什麼不同？",
+   "a": "量電流要把電錶串進迴路，讓電流流過電錶；量電壓是把探棒並接在被測點兩端。"
   },
   {
-   "q": "想看振盪器輸出或 PWM 波形，該用什麼工具？",
-   "a": "示波器。"
+   "q": "維修筆電接上倉庫網路後，ipconfig 顯示 IP 是 169.254.23.8，什麼網站都連不上。該先查哪一段？",
+   "a": "DHCP：這是沒從 DHCP 拿到位址時自己配的 IP，先查 DHCP 伺服器與到路由器的連線。"
   },
   {
-   "q": "懷疑現場有不明無線電訊號影響設備，想看各頻率上有多少訊號，該用什麼工具？",
-   "a": "頻譜分析儀，它能顯示各頻率的訊號能量。"
+   "q": "倉庫換成只開 5GHz 的新路由器後，手機連得上，ESP32 節點卻全部連不上 Wi-Fi。最可能的原因是什麼？",
+   "a": "多數 ESP32 只支援 2.4GHz，連不上只開 5GHz 的網路；讓路由器同時開 2.4GHz 頻段。"
   },
   {
-   "q": "序列埠收到亂碼，先查什麼？",
-   "a": "兩端的鮑率、資料位元、同位檢查與停止位元是否一致，再查接線。"
+   "q": "2.4GHz 頻段太擠、干擾嚴重，改用紅外線傳輸能避開嗎？代價是什麼？",
+   "a": "能避開 Wi-Fi 干擾，但紅外線要直線視線，怕遮擋和強烈環境光。"
   },
   {
-   "q": "接收訊號 −65 dBm、雜訊 −90 dBm，SNR 是多少？",
-   "a": "25 dB。"
-  },
-  {
-   "q": "ping 節點逾時，能斷定它沒電嗎？想確認有沒有電該怎麼做？",
-   "a": "不能，逾時有很多可能；用三用電錶量電壓。"
-  },
-  {
-   "q": "網址打不開，但直接輸入伺服器的數字位址可以，優先查什麼？",
-   "a": "DNS，也就是名稱解析。"
-  },
-  {
-   "q": "哪個指令可以看出封包卡在哪一跳？",
-   "a": "tracert（Windows）或 traceroute（Linux）。"
+   "q": "探頭附近雜訊高、SNR 太低，加裝訊號增強器一定有用嗎？",
+   "a": "不一定，增強器可能連雜訊一起放大，SNR 沒變好；應先查天線、遮擋與干擾源，再調位置或頻道。"
   }
  ],
  "terms": [

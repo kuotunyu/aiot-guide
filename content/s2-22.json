@@ -17,8 +17,8 @@
    "id": "cloud-models",
    "h": "雲端服務：自己要管到哪一層",
    "body": "<p>雲端類型、虛擬機與容器已在 <a href=\"s1-24.html#cloud-models\">科一 2.4〈中介軟體與平台〉</a>講過，這節改從使用者的角度，看三種服務模式各自還要管什麼。</p><p>判斷時問兩件事：使用者是誰、他自己還得維護什麼。只拿到機器的是 <b>IaaS</b>（基礎設施即服務），只需上傳程式的是 <b>PaaS</b>（平台即服務），打開就用的是 <b>SaaS</b>（軟體即服務）。</p><p>無論哪種模式，裝置金鑰、帳號與資料的存取權限都還是使用者的責任；業者不會替你修正設錯的公開分享。</p>",
-   "svg": "<svg viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 各層由誰管理的責任分層圖\"><text x=\"215\" y=\"34\" class=\"tb tc\">地端自建</text><text x=\"325\" y=\"34\" class=\"tb tc\">IaaS</text><text x=\"435\" y=\"34\" class=\"tb tc\">PaaS</text><text x=\"545\" y=\"34\" class=\"tb tc\">SaaS</text><text x=\"150\" y=\"73\" class=\"t\" text-anchor=\"end\">應用程式</text><rect x=\"165\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"72\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"50\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"72\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"111\" class=\"t\" text-anchor=\"end\">資料</text><rect x=\"165\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"435\" y=\"110\" class=\"ts tc\">你管</text><rect x=\"495\" y=\"88\" width=\"100\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"545\" y=\"110\" class=\"ts tc\">帳號權限</text><text x=\"150\" y=\"149\" class=\"t\" text-anchor=\"end\">執行環境</text><rect x=\"165\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"148\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"148\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"126\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"148\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"187\" class=\"t\" text-anchor=\"end\">作業系統</text><rect x=\"165\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"325\" y=\"186\" class=\"ts tc\">你管</text><rect x=\"385\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"186\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"164\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"186\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"225\" class=\"t\" text-anchor=\"end\">虛擬化</text><rect x=\"165\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"224\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"224\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"202\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"224\" class=\"ts tc\">業者管</text><text x=\"150\" y=\"263\" class=\"t\" text-anchor=\"end\">硬體與網路</text><rect x=\"165\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"box\"/><text x=\"215\" y=\"262\" class=\"ts tc\">你管</text><rect x=\"275\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"325\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"385\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"435\" y=\"262\" class=\"ts tc\">業者管</text><rect x=\"495\" y=\"240\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><text x=\"545\" y=\"262\" class=\"ts tc\">業者管</text><text x=\"215\" y=\"300\" class=\"ts tc\">自有機房</text><text x=\"325\" y=\"300\" class=\"ts tc\">虛擬機 VM</text><text x=\"435\" y=\"300\" class=\"ts tc\">應用託管平台</text><text x=\"545\" y=\"300\" class=\"ts tc\">Gmail、Drive</text><text x=\"150\" y=\"300\" class=\"ts\" text-anchor=\"end\">例</text><rect x=\"60\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"box\"/><text x=\"90\" y=\"336\" class=\"ts\">你自己管</text><rect x=\"210\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"acc\"/><text x=\"240\" y=\"336\" class=\"ts\">雲端業者管</text><rect x=\"370\" y=\"322\" width=\"22\" height=\"18\" rx=\"3\" class=\"warn\"/><text x=\"400\" y=\"336\" class=\"ts\">仍要自己管帳號與權限</text></svg>",
-   "caption": "越往右自己管得越少；即使是 SaaS，帳號與資料權限仍要自己管。",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 各層由誰管理：資料、帳號與存取權限每種模式都自己管；其餘各層以階梯線分開，左上是你管、右下是業者管\"><text x=\"215\" y=\"30\" class=\"tb tc\">地端自建</text><text x=\"325\" y=\"30\" class=\"tb tc\">IaaS</text><text x=\"435\" y=\"30\" class=\"tb tc\">PaaS</text><text x=\"545\" y=\"30\" class=\"tb tc\">SaaS</text><rect x=\"165\" y=\"44\" width=\"430\" height=\"38\" rx=\"6\" class=\"warn\"/><text x=\"380\" y=\"69\" class=\"tb tc\">資料、帳號與存取權限：每種模式都自己管</text><text x=\"150\" y=\"119\" class=\"t\" text-anchor=\"end\">應用程式</text><rect x=\"165\" y=\"96\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"275\" y=\"96\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"385\" y=\"96\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"495\" y=\"96\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><text x=\"150\" y=\"159\" class=\"t\" text-anchor=\"end\">執行環境</text><rect x=\"165\" y=\"136\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"275\" y=\"136\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"385\" y=\"136\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"495\" y=\"136\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><text x=\"150\" y=\"199\" class=\"t\" text-anchor=\"end\">作業系統</text><rect x=\"165\" y=\"176\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"275\" y=\"176\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"385\" y=\"176\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"495\" y=\"176\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><text x=\"150\" y=\"239\" class=\"t\" text-anchor=\"end\">虛擬化</text><rect x=\"165\" y=\"216\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"275\" y=\"216\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"385\" y=\"216\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"495\" y=\"216\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><text x=\"150\" y=\"279\" class=\"t\" text-anchor=\"end\">硬體與網路</text><rect x=\"165\" y=\"256\" width=\"100\" height=\"34\" rx=\"4\" class=\"acc\"/><rect x=\"275\" y=\"256\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"385\" y=\"256\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><rect x=\"495\" y=\"256\" width=\"100\" height=\"34\" rx=\"4\" class=\"soft\"/><polyline points=\"490,92 490,133 380,133 380,213 270,213 270,293\" class=\"la\"/><text x=\"325\" y=\"160\" class=\"tb tc\">你管</text><text x=\"435\" y=\"240\" class=\"tb tc\">業者管</text><text x=\"150\" y=\"320\" class=\"ts\" text-anchor=\"end\">例</text><text x=\"215\" y=\"320\" class=\"ts tc\">自有機房</text><text x=\"325\" y=\"320\" class=\"ts tc\">虛擬機 VM</text><text x=\"435\" y=\"320\" class=\"ts tc\">應用託管平台</text><text x=\"545\" y=\"320\" class=\"ts tc\">Gmail、Drive</text></svg>",
+   "caption": "越往右，業者管的層數越多；但無論哪種模式，資料、帳號與存取權限都要自己管。實際分工依服務契約而定。",
    "predict": {
     "q": "公司用 SaaS 線上表單收異常回報，卻因分享連結設成公開而外洩。既然軟體由業者維護，這是業者的責任嗎？",
     "a": "主要是公司自己的責任。業者保護平台，帳號與資料的存取權限在任何服務模式下都要自己管。"
@@ -27,51 +27,30 @@
   {
    "id": "data-pipeline",
    "h": "從感測器到儀表板：資料收集流程",
-   "body": "<p>資料收集是一條管線。感測元件本身只輸出電訊號，要由 <b>MCU（微控制器）</b>這種小型電腦讀取，或經<b>閘道器（Gateway）</b>這個轉接站，打包成訊息才能上網；內建處理與連網能力的智慧感測器則可直接連線。回報方式可以是定時送出，也可以是數值變化時才送。</p><p>IoT 雲平台的核心是<b>裝置資料中樞（Device Hub）</b>，像一間專收裝置訊息的郵局：讓大量裝置透過各種<b>協定</b>（雙方約定的溝通規則）連入，負責裝置註冊、身分驗證與收發訊息，也能設定規則，在數值超過門檻或變化時發出通知。</p><p>最後一站是<b>視覺化</b>，依目的選圖：</p><ul><li>隨時間的趨勢：折線圖</li><li>項目之間比大小：柱狀圖（長條圖）</li><li>占比與階層：圓餅圖、樹狀圖（Treemap）</li><li>兩個變數的關係：散布圖</li><li>目前的即時值：儀表（Gauge）、數字卡</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"IoT 資料收集流程：裝置、傳輸協定、雲平台、儲存、分析、視覺化\"><defs><marker id=\"s2-22-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"42\" class=\"tb tc\">① 裝置／閘道</text><text x=\"100\" y=\"66\" class=\"ts tc\">感測器、MCU、閘道器</text><rect x=\"220\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"42\" class=\"tb tc\">② 傳輸協定</text><text x=\"300\" y=\"66\" class=\"ts tc\">MQTT、HTTP、CoAP</text><rect x=\"420\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"acc\"/><text x=\"500\" y=\"42\" class=\"tb tc\">③ IoT 雲平台</text><text x=\"500\" y=\"66\" class=\"ts tc\">連線、驗證、轉送</text><rect x=\"420\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"500\" y=\"162\" class=\"tb tc\">④ 儲存</text><text x=\"500\" y=\"186\" class=\"ts tc\">SQL、NoSQL、時序庫</text><rect x=\"220\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"162\" class=\"tb tc\">⑤ 分析</text><text x=\"300\" y=\"186\" class=\"ts tc\">規則、告警、趨勢</text><rect x=\"20\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"162\" class=\"tb tc\">⑥ 視覺化</text><text x=\"100\" y=\"186\" class=\"ts tc\">儀表板、圖表</text><line x1=\"182\" y1=\"48\" x2=\"216\" y2=\"48\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"382\" y1=\"48\" x2=\"416\" y2=\"48\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"500\" y1=\"82\" x2=\"500\" y2=\"132\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"418\" y1=\"168\" x2=\"384\" y2=\"168\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"218\" y1=\"168\" x2=\"184\" y2=\"168\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><text x=\"512\" y=\"112\" class=\"ts\">規則轉送</text><text x=\"300\" y=\"238\" class=\"t tc\">每筆資料至少帶：裝置 ID、時間戳記、量測值</text></svg>",
-   "caption": "資料從裝置一路走到儀表板的六個環節；閘道器視架構而定，不一定需要。",
-   "table": {
-    "head": [
-     "平台或服務",
-     "是什麼",
-     "補充"
-    ],
-    "rows": [
-     [
-      "AWS IoT Core",
-      "Amazon 的 IoT 資料中樞",
-      "管理裝置連線與訊息"
-     ],
-     [
-      "Azure IoT Hub",
-      "Microsoft 的 IoT 資料中樞",
-      "支援 MQTT、AMQP、HTTPS"
-     ],
-     [
-      "Google Cloud IoT Core",
-      "Google 過去的 IoT 資料中樞",
-      "已於 2023 年停止服務，舊教材仍可能提到"
-     ],
-     [
-      "ThingSpeak",
-      "MathWorks 的 IoT 平台",
-      "可直接畫圖、跑 MATLAB 分析，常見於教學"
-     ]
-    ]
-   },
+   "body": "<p>資料收集是一條管線。感測元件本身只輸出電訊號，要由 <b>MCU（微控制器）</b>這種小型電腦讀取，或經<b>閘道器（Gateway）</b>這個轉接站，打包成訊息才能上網，每筆至少帶<b>裝置 ID、時間戳記、量測值</b>；內建處理與連網能力的智慧感測器則可直接連線。回報方式可以是定時送出，也可以是數值變化時才送。</p><p>IoT 雲平台的核心是<b>裝置資料中樞（Device Hub）</b>，像一間專收裝置訊息的郵局：讓大量裝置透過各種<b>協定</b>（雙方約定的溝通規則）連入，負責裝置註冊、身分驗證與收發訊息，也能設定規則，在數值超過門檻或變化時發出通知。這類服務例如 AWS IoT Core、Azure IoT Hub。</p><p>最後一站是<b>視覺化</b>：先想清楚要回答什麼問題，再挑圖。</p>",
+   "svg": "<svg viewBox=\"0 0 600 336\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"動畫：一筆冷藏庫溫度讀值走完資料收集流程六站，每站停一下：①裝置／閘道，探頭的電訊號由 MCU 讀取並打包成訊息；②傳輸協定，用 MQTT 送出；③IoT 雲平台，驗證裝置身分；④儲存，存進時序資料庫多一列；⑤分析，套用規則與分析；⑥視覺化，畫上折線圖。下方讀數面板顯示打包後一路帶著的三欄：裝置 ID t01、時間戳記 08:00、量測值 25.3°C；每筆資料至少帶這三欄。\"><style>@keyframes lp-s222-dot{0%{transform:translate(180px,48px) scale(0.2);opacity:0}9.57%{transform:translate(180px,48px) scale(0.2);opacity:0}11.7%{transform:translate(180px,48px) scale(1);opacity:1}17.02%{transform:translate(180px,48px) scale(1);opacity:1}20.21%{transform:translate(220px,48px) scale(1);opacity:1}30.85%{transform:translate(220px,48px) scale(1);opacity:1}31.7%{transform:translate(220px,48px) scale(1);opacity:0}32.13%{transform:translate(380px,48px) scale(1);opacity:0}32.98%{transform:translate(380px,48px) scale(1);opacity:1}36.17%{transform:translate(420px,48px) scale(1);opacity:1}46.81%{transform:translate(420px,48px) scale(1);opacity:1}47.66%{transform:translate(420px,48px) scale(1);opacity:0}48.09%{transform:translate(500px,80px) scale(1);opacity:0}48.94%{transform:translate(500px,80px) scale(1);opacity:1}52.13%{transform:translate(500px,136px) scale(1);opacity:1}62.77%{transform:translate(500px,136px) scale(1);opacity:1}63.62%{transform:translate(500px,136px) scale(1);opacity:0}64.04%{transform:translate(420px,168px) scale(1);opacity:0}64.89%{transform:translate(420px,168px) scale(1);opacity:1}68.09%{transform:translate(380px,168px) scale(1);opacity:1}78.72%{transform:translate(380px,168px) scale(1);opacity:1}79.57%{transform:translate(380px,168px) scale(1);opacity:0}80%{transform:translate(220px,168px) scale(1);opacity:0}80.85%{transform:translate(220px,168px) scale(1);opacity:1}84.04%{transform:translate(180px,168px) scale(1);opacity:1}95.21%{transform:translate(180px,168px) scale(1);opacity:1}96.81%{transform:translate(180px,168px) scale(0.4);opacity:0}97.34%{transform:translate(180px,48px) scale(0.2);opacity:0}100%{transform:translate(180px,48px) scale(0.2);opacity:0}}.lp-s222-dot{animation:lp-s222-dot 9.4s linear infinite}@keyframes lp-s222-k1{0%{opacity:0}1.6%{opacity:1}17.02%{opacity:1}18.62%{opacity:0}100%{opacity:0}}.lp-s222-k1{animation:lp-s222-k1 9.4s linear infinite}@keyframes lp-s222-on{0%{opacity:0}1.06%{opacity:1}13.83%{opacity:1}15.43%{opacity:0}100%{opacity:0}}.lp-s222-on{animation:lp-s222-on 9.4s linear infinite}.lp-s222-k2{animation-delay:-7.6s}.lp-s222-k3{animation-delay:-6.1s}.lp-s222-k4{animation-delay:-4.6s}.lp-s222-k5{animation-delay:-3.1s}.lp-s222-k6{animation-delay:-1.6s}@keyframes lp-s222-wave{0%{opacity:0}0.53%{opacity:0}2.66%{opacity:1}8.51%{opacity:1}10.11%{opacity:0}100%{opacity:0}}.lp-s222-wave{animation:lp-s222-wave 9.4s linear infinite}@keyframes lp-s222-card{0%{opacity:0}8.51%{opacity:0}10.64%{opacity:1}96.81%{opacity:1}98.4%{opacity:0}100%{opacity:0}}.lp-s222-card{animation:lp-s222-card 9.4s linear infinite}</style><defs><marker id=\"s2-22-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"42\" class=\"tb tc\">① 裝置／閘道</text><text x=\"100\" y=\"66\" class=\"ts tc\">感測器、MCU、閘道器</text><rect x=\"220\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"42\" class=\"tb tc\">② 傳輸協定</text><text x=\"300\" y=\"66\" class=\"ts tc\">MQTT、HTTP、CoAP</text><rect x=\"420\" y=\"16\" width=\"160\" height=\"64\" rx=\"8\" class=\"acc\"/><text x=\"500\" y=\"42\" class=\"tb tc\">③ IoT 雲平台</text><text x=\"500\" y=\"66\" class=\"ts tc\">連線、驗證、轉送</text><rect x=\"420\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"500\" y=\"162\" class=\"tb tc\">④ 儲存</text><text x=\"500\" y=\"186\" class=\"ts tc\">SQL、NoSQL、時序庫</text><rect x=\"220\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"162\" class=\"tb tc\">⑤ 分析</text><text x=\"300\" y=\"186\" class=\"ts tc\">規則、告警、趨勢</text><rect x=\"20\" y=\"136\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"162\" class=\"tb tc\">⑥ 視覺化</text><text x=\"100\" y=\"186\" class=\"ts tc\">儀表板、圖表</text><line x1=\"182\" y1=\"48\" x2=\"216\" y2=\"48\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"382\" y1=\"48\" x2=\"416\" y2=\"48\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"500\" y1=\"82\" x2=\"500\" y2=\"132\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"418\" y1=\"168\" x2=\"384\" y2=\"168\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><line x1=\"218\" y1=\"168\" x2=\"184\" y2=\"168\" class=\"la\" marker-end=\"url(#s2-22-2-arr)\"/><text x=\"512\" y=\"112\" class=\"ts\">規則轉送</text><rect x=\"10\" y=\"214\" width=\"580\" height=\"80\" rx=\"8\" class=\"soft\"/><g class=\"lp-move\"><rect x=\"17\" y=\"13\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-k1\"/><rect x=\"217\" y=\"13\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-on lp-s222-k2\"/><rect x=\"417\" y=\"13\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-on lp-s222-k3\"/><rect x=\"417\" y=\"133\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-on lp-s222-k4\"/><rect x=\"217\" y=\"133\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-on lp-s222-k5\"/><rect x=\"17\" y=\"133\" width=\"166\" height=\"70\" rx=\"10\" class=\"la lp-s222-on lp-s222-k6\"/><polyline points=\"40,254 48,261.4 56,267.1 64,269.2 72,266.7 80,260.2 88,251.4 96,242.9 104,237.5 112,236.9 120,241.4 128,249.9 136,259.6 144,267.7 152,271.6 160,270.3 168,264.2 176,255.3 184,246.3 192,240.1 200,238.2 208,241 216,247.4 224,255.2 232,262.1 240,266 248,266.3 256,263 264,257.4 272,251.4 280,246.6 288,244.3 296,244.8 304,248 312,252.6 320,257.5 328,261.3 336,263 344,262.1 352,258.8 360,253.9 368,248.8 376,244.9 384,243.4 392,245.1 400,249.7 408,256 416,262.4 424,266.7 432,267.5 440,264.1 448,257.3 456,249 464,241.7 472,237.7 480,238.4 488,244 496,252.8 504,262.3 512,269.4 520,272 528,269.2 536,261.9 544,252.4 552,243.5 560,238\" class=\"la lp-s222-wave\"/><g class=\"lp-s222-card\"><rect x=\"22\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"110\" y=\"248\" class=\"t tc\">裝置 ID</text><text x=\"110\" y=\"272\" class=\"tb tc\">t01</text><rect x=\"212\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"300\" y=\"248\" class=\"t tc\">時間戳記</text><text x=\"300\" y=\"272\" class=\"tb tc\">08:00</text><rect x=\"402\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"490\" y=\"248\" class=\"t tc\">量測值</text><text x=\"490\" y=\"272\" class=\"tb tc\">25.3°C</text></g><text x=\"300\" y=\"322\" class=\"th tc lp-s222-k1\">① 電訊號 → MCU 讀取並打包成訊息</text><text x=\"300\" y=\"322\" class=\"th tc lp-s222-on lp-s222-k2\">② 用 MQTT 送出</text><text x=\"300\" y=\"322\" class=\"th tc lp-s222-on lp-s222-k3\">③ 平台驗證裝置身分 ✓</text><text x=\"300\" y=\"322\" class=\"th tc lp-s222-on lp-s222-k4\">④ 存進時序資料庫（多一列）</text><text x=\"300\" y=\"322\" class=\"th tc lp-s222-on lp-s222-k5\">⑤ 套用規則與分析</text><text x=\"300\" y=\"322\" class=\"th tc lp-s222-on lp-s222-k6\">⑥ 畫上折線圖</text><circle r=\"7\" class=\"mk lp-s222-dot\"/></g><g class=\"lp-still\"><rect x=\"22\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"110\" y=\"248\" class=\"t tc\">裝置 ID</text><text x=\"110\" y=\"272\" class=\"tb tc\">t01</text><rect x=\"212\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"300\" y=\"248\" class=\"t tc\">時間戳記</text><text x=\"300\" y=\"272\" class=\"tb tc\">08:00</text><rect x=\"402\" y=\"225\" width=\"176\" height=\"58\" rx=\"6\" class=\"box\"/><text x=\"490\" y=\"248\" class=\"t tc\">量測值</text><text x=\"490\" y=\"272\" class=\"tb tc\">25.3°C</text><text x=\"300\" y=\"322\" class=\"th tc\">電訊號在 MCU 打包成訊息後，每筆至少帶這三欄走完六站</text></g></svg>",
+   "loop": true,
+   "caption": "同一筆讀值走完六站；閘道器視架構而定。",
    "predict": {
     "q": "冷藏庫的溫度探頭本身只輸出電訊號。它要怎樣才能把讀值送進雲端平台？",
     "a": "要由 MCU 讀取，或經閘道器打包成訊息才能上網；內建處理與連網能力的智慧感測器才可直接連線。"
    },
    "more": {
-    "label": "常見協定、規劃平台要估什麼，以及品牌和服務的差別",
-    "body": "<p>常見協定有專為小型裝置設計的 MQTT、企業訊息常用的 AMQP，以及加密的 HTTPS。</p><p>平台要同時承接大量裝置，所以規劃時會先估算每秒進來多少訊息，確認傳輸與處理速度跟得上，再一併考量穩定度、安全、成本與資料所在地法規。</p><p>挑選時要分清楚品牌與服務：IBM Cloud 是整個雲端平台的品牌；Kubernetes 負責調度容器（容器見本章後段），不管裝置註冊與驗證。雲端平台不是每項服務都等於 IoT 資料中樞。</p>"
-   }
+    "label": "規劃平台要估什麼，以及哪些服務才算 IoT 資料中樞",
+    "body": "<p>平台要同時承接大量裝置，所以規劃時會先估算每秒進來多少訊息，確認傳輸與處理速度跟得上，再一併考量穩定度、安全、成本與資料所在地法規。</p><p>教學常用的 ThingSpeak（MathWorks）可直接畫圖分析；挑選時要分清楚品牌與服務：IBM Cloud 是整個雲端平台的品牌；Kubernetes 負責調度容器（容器見本章後段），不管裝置註冊與驗證。雲端平台不是每項服務都等於 IoT 資料中樞。</p>"
+   },
+   "figs": [
+    {
+     "pos": "end",
+     "svg": "<svg viewBox=\"0 0 600 370\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"依問題挑圖：折線圖：看隨時間怎麼變的趨勢；長條圖（柱狀圖）：比哪個比較大；圓餅圖：看各占多少；樹狀圖（Treemap）：看占比加上階層；散布圖：看兩個變數有沒有關係；儀表（Gauge）與數字卡：看目前的即時值，例如車廂溫度 −18.2°C\"><rect x=\"8\" y=\"8\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><polyline points=\"32,22 32,104 172,104\" class=\"ln\"/><polyline points=\"38,92 58,86 78,89 98,78 118,72 138,60 156,50 168,42\" class=\"la\"/><text x=\"100\" y=\"136\" class=\"tb tc\">折線圖</text><text x=\"100\" y=\"160\" class=\"t tc\">怎麼變？看趨勢</text><rect x=\"208\" y=\"8\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><polyline points=\"232,22 232,104 372,104\" class=\"ln\"/><rect x=\"246\" y=\"60\" width=\"22\" height=\"44\" class=\"acc\"/><rect x=\"278\" y=\"30\" width=\"22\" height=\"74\" class=\"acc\"/><rect x=\"310\" y=\"74\" width=\"22\" height=\"30\" class=\"acc\"/><rect x=\"342\" y=\"46\" width=\"22\" height=\"58\" class=\"acc\"/><text x=\"300\" y=\"136\" class=\"tb tc\">長條圖（柱狀圖）</text><text x=\"300\" y=\"160\" class=\"t tc\">誰比較大？</text><rect x=\"408\" y=\"8\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><circle cx=\"500\" cy=\"63\" r=\"40\" class=\"box\"/><path d=\"M500,63 L500,23 A40,40 0 0 1 532.36,86.51 Z\" class=\"acc\"/><line x1=\"500\" y1=\"63\" x2=\"476.49\" y2=\"95.36\" class=\"ln\"/><text x=\"500\" y=\"136\" class=\"tb tc\">圓餅圖</text><text x=\"500\" y=\"160\" class=\"t tc\">各占多少？</text><rect x=\"8\" y=\"192\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><rect x=\"32\" y=\"206\" width=\"84\" height=\"50\" class=\"acc\"/><rect x=\"32\" y=\"256\" width=\"84\" height=\"32\" class=\"acc\"/><rect x=\"116\" y=\"206\" width=\"56\" height=\"46\" class=\"box\"/><rect x=\"116\" y=\"252\" width=\"28\" height=\"36\" class=\"box\"/><rect x=\"144\" y=\"252\" width=\"28\" height=\"36\" class=\"box\"/><text x=\"100\" y=\"320\" class=\"tb tc\">樹狀圖 Treemap</text><text x=\"100\" y=\"344\" class=\"t tc\">占多少＋怎麼分層？</text><rect x=\"208\" y=\"192\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><polyline points=\"232,206 232,288 372,288\" class=\"ln\"/><line x1=\"242\" y1=\"282\" x2=\"366\" y2=\"220\" class=\"ln dash\"/><circle cx=\"248\" cy=\"274\" r=\"4\" class=\"acc\"/><circle cx=\"260\" cy=\"270\" r=\"4\" class=\"acc\"/><circle cx=\"272\" cy=\"273\" r=\"4\" class=\"acc\"/><circle cx=\"286\" cy=\"260\" r=\"4\" class=\"acc\"/><circle cx=\"298\" cy=\"258\" r=\"4\" class=\"acc\"/><circle cx=\"310\" cy=\"249\" r=\"4\" class=\"acc\"/><circle cx=\"322\" cy=\"246\" r=\"4\" class=\"acc\"/><circle cx=\"336\" cy=\"237\" r=\"4\" class=\"acc\"/><circle cx=\"348\" cy=\"232\" r=\"4\" class=\"acc\"/><circle cx=\"360\" cy=\"224\" r=\"4\" class=\"acc\"/><text x=\"300\" y=\"320\" class=\"tb tc\">散布圖</text><text x=\"300\" y=\"344\" class=\"t tc\">兩者有關嗎？</text><rect x=\"408\" y=\"192\" width=\"184\" height=\"168\" rx=\"8\" class=\"soft\"/><path d=\"M430,276 A38,38 0 0 1 506,276 Z\" class=\"box\"/><line x1=\"468\" y1=\"276\" x2=\"444\" y2=\"254\" class=\"la\"/><circle cx=\"468\" cy=\"276\" r=\"4\" class=\"acc\"/><rect x=\"514\" y=\"236\" width=\"72\" height=\"40\" rx=\"6\" class=\"acc\"/><text x=\"550\" y=\"262\" class=\"tb tc\">−18.2°C</text><text x=\"500\" y=\"320\" class=\"tb tc\">儀表 Gauge＋數字卡</text><text x=\"500\" y=\"344\" class=\"t tc\">現在是多少？</text></svg>",
+     "caption": "先問「我想知道什麼」，再挑圖。"
+    }
+   ]
   },
   {
    "id": "data-formats",
    "h": "資料格式：同一筆讀值的不同寫法",
-   "body": "<p>感測值要在裝置、雲端與網頁之間流通，最常見的寫法是 <b>JSON（JavaScript Object Notation）</b>：純文字、體積小，幾乎所有程式語言都能解析，用任何文字編輯器都能開。它由物件、陣列與基本值組成，鍵名必須加雙引號，例如 <code>{\"id\":\"t01\",\"temp\":25.3}</code>。</p><p>CSV 只是一張平面表，每列欄位都一樣。資料一旦有上下從屬，例如「冷藏庫→探頭→各項數值」，就要靠 JSON 或 XML 的巢狀寫法表達。論體積，CSV 比這兩者精簡。</p>",
+   "body": "<p>感測值要在裝置、雲端與網頁之間流通，最常見的寫法是 <b>JSON（JavaScript Object Notation）</b>：純文字、體積小，幾乎所有程式語言都能解析，用任何文字編輯器都能開。它由物件、陣列與基本值組成，鍵名必須加雙引號，例如 <code>{\"id\":\"t01\",\"temp\":25.3}</code>。</p><p>CSV 只是一張平面表；資料有上下層級（例如冷藏庫→探頭→各項數值）時，要用 JSON 或 XML 的巢狀寫法。</p>",
    "table": {
     "head": [
      "格式",
@@ -112,116 +91,74 @@
    },
    "lab": "s2-22-formats",
    "more": {
-    "label": "圖片怎麼放、二進位格式，以及機器可讀的公開資料",
-    "body": "<p>JSON 不適合直接放圖片或影片，這類二進位資料要先用 Base64（把位元組轉成文字的編碼）轉換，體積約增加三分之一；通常把大檔放物件儲存（專存大型檔案的雲端空間），JSON 只記連結與描述資訊。</p><p>想進一步省頻寬，可改用二進位格式 <b>Protobuf</b>、<b>MessagePack</b>，它們直接以位元組編碼資料，代價是人眼讀不懂。</p><p>同樣的格式也用在公開資料上。政府資料開放平臺這類網站提供程式能直接解析的<b>機器可讀</b>檔案，例如 JSON、CSV；一般網頁（HTML）是排版給人看的，程式不容易從中取出數值。</p>"
+    "label": "圖片怎麼放，以及機器可讀的公開資料",
+    "body": "<p>JSON 不適合直接放圖片或影片，這類二進位資料要先用 Base64（把位元組轉成文字的編碼）轉換，體積約增加三分之一；通常把大檔放物件儲存（專存大型檔案的雲端空間），JSON 只記連結與描述資訊。</p><p>同樣的格式也用在公開資料上。政府資料開放平臺這類網站提供程式能直接解析的<b>機器可讀</b>檔案，例如 JSON、CSV；一般網頁（HTML）是排版給人看的，程式不容易從中取出數值。</p>"
    }
   },
   {
    "id": "storage",
    "h": "資料庫與儲存：存在哪、壞了怎麼辦",
-   "body": "<p><b>關聯式資料庫（SQL）</b>像事先畫好欄位的表格，適合關係清楚、要求交易一致（例如轉帳時扣款與入帳必須同時成功）的資料，例如使用者與訂單。<b>NoSQL</b> 是非關聯式資料庫的統稱，包含文件、鍵值等類型，結構較有彈性。感測資料常有兩種去處：欄位多變的 JSON 文件適合<b>文件資料庫 MongoDB</b>（內部用類似 JSON 的 BSON 儲存），大量「時間＋數值」的連續讀值適合<b>時序資料庫（Time-Series Database）InfluxDB</b>。</p><p>資料不能只有一份。<b>複寫（Replication）</b>把同一份資料即時複製到多台主機，主機損毀時切換到副本即可，通常比從備份還原快。<b>分片（Sharding）</b>則把資料切開分散存放，目的是分攤負載，不是備援。</p>",
-   "svg": "<svg viewBox=\"0 0 600 250\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Replication 複寫與 Sharding 分片的比較\"><defs><marker id=\"s2-22-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"300\" y1=\"10\" x2=\"300\" y2=\"240\" class=\"ln dash\"/><text x=\"150\" y=\"26\" class=\"th tc\">Replication 複寫</text><rect x=\"90\" y=\"42\" width=\"120\" height=\"36\" rx=\"6\" class=\"acc\"/><text x=\"150\" y=\"66\" class=\"tb tc\">資料 ABC</text><line x1=\"150\" y1=\"80\" x2=\"55\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"15\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"55\" y=\"155\" class=\"tb tc\">故障</text><text x=\"55\" y=\"188\" class=\"ts tc\">主機 1</text><line x1=\"150\" y1=\"80\" x2=\"145\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"105\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"145\" y=\"155\" class=\"tb tc\">ABC</text><text x=\"145\" y=\"188\" class=\"ts tc\">主機 2</text><line x1=\"150\" y1=\"80\" x2=\"235\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"195\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"235\" y=\"155\" class=\"tb tc\">ABC</text><text x=\"235\" y=\"188\" class=\"ts tc\">主機 3</text><text x=\"450\" y=\"26\" class=\"th tc\">Sharding 分片</text><rect x=\"390\" y=\"42\" width=\"120\" height=\"36\" rx=\"6\" class=\"acc\"/><text x=\"450\" y=\"66\" class=\"tb tc\">資料 ABC</text><line x1=\"450\" y1=\"80\" x2=\"355\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"315\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"box\"/><text x=\"355\" y=\"155\" class=\"tb tc\">A</text><text x=\"355\" y=\"188\" class=\"ts tc\">主機 1</text><line x1=\"450\" y1=\"80\" x2=\"445\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"405\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"box\"/><text x=\"445\" y=\"155\" class=\"tb tc\">B</text><text x=\"445\" y=\"188\" class=\"ts tc\">主機 2</text><line x1=\"450\" y1=\"80\" x2=\"535\" y2=\"126\" class=\"ln\" marker-end=\"url(#s2-22-4-arr)\"/><rect x=\"495\" y=\"130\" width=\"80\" height=\"40\" rx=\"6\" class=\"box\"/><text x=\"535\" y=\"155\" class=\"tb tc\">C</text><text x=\"535\" y=\"188\" class=\"ts tc\">主機 3</text><text x=\"150\" y=\"215\" class=\"t tc\">每台都是完整副本</text><text x=\"150\" y=\"236\" class=\"ts tc\">副本須可用；複寫不取代備份</text><text x=\"450\" y=\"215\" class=\"t tc\">每台只放一部分</text><text x=\"450\" y=\"236\" class=\"ts tc\">目的是分攤負載、提升效能</text></svg>",
-   "caption": "複寫讓每台都有完整副本，分片讓每台只放一部分；兩者目的不同。",
-   "table": {
-    "head": [
-     "類型",
-     "代表",
-     "適合"
-    ],
-    "rows": [
-     [
-      "關聯式 SQL",
-      "MySQL、SQL Server、Oracle、SQLite",
-      "欄位固定、關聯清楚、交易一致"
-     ],
-     [
-      "文件型 NoSQL",
-      "MongoDB",
-      "直接存 JSON、欄位常變的裝置資料"
-     ],
-     [
-      "時序資料庫",
-      "InfluxDB",
-      "大量連續感測讀值、趨勢查詢"
-     ],
-     [
-      "NAS",
-      "網路上的檔案伺服器（檔案層級）",
-      "多台設備共享檔案"
-     ],
-     [
-      "SAN",
-      "專用網路的磁碟陣列（區塊層級）",
-      "資料庫等高效能需求"
-     ]
-    ]
-   },
+   "body": "<p><b>關聯式資料庫（SQL）</b>像事先畫好欄位的表格，適合關係清楚、要求交易一致（例如轉帳時扣款與入帳必須同時成功）的資料，例如使用者與訂單。<b>NoSQL</b> 是非關聯式資料庫的統稱，包含文件、鍵值等類型，結構較有彈性。感測資料常有兩種去處：欄位多變的 JSON 文件適合<b>文件資料庫 MongoDB</b>（內部用類似 JSON 的 BSON 儲存），大量「時間＋數值」的連續讀值適合<b>時序資料庫（Time-Series Database）InfluxDB</b>。各類資料庫與代表產品的比較表見<a href=\"s1-24.html#data-storage-analysis\">科一 2.4〈中介軟體與平台〉</a>。</p><p>資料不能只有一份。<b>複寫（Replication）</b>把同一份資料即時複製到多台主機，主機損毀時切換到副本即可，通常比從備份還原快。<b>分片（Sharding）</b>則把資料切開分散存放，目的是分攤負載，不是備援。</p>",
+   "svg": "<svg viewBox=\"0 0 600 262\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"複寫、分片、獨立備份遇到同一場意外的逐步圖：正常時三種做法都能服務；主機 2 整台毀損時複寫可切換、分片少了 B、備份能還原但較慢；誤刪 C 時複寫三台一起刪掉，只有離線備份救得回\"><defs><marker id=\"s2-22-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"200\" y1=\"8\" x2=\"200\" y2=\"256\" class=\"ln dash\"/><line x1=\"400\" y1=\"8\" x2=\"400\" y2=\"256\" class=\"ln dash\"/><text x=\"100\" y=\"24\" class=\"tb tc\">複寫 Replication</text><text x=\"100\" y=\"48\" class=\"t tc ta\">目的：備援、快速切換</text><text x=\"300\" y=\"24\" class=\"tb tc\">分片 Sharding</text><text x=\"300\" y=\"48\" class=\"t tc ta\">目的：分攤負載</text><text x=\"500\" y=\"24\" class=\"tb tc\">獨立備份 Backup</text><text x=\"500\" y=\"48\" class=\"t tc ta\">目的：救誤刪與災難</text><rect x=\"12\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"25\" y=\"146\" class=\"tb tc\">A</text><text x=\"39\" y=\"146\" class=\"tb tc\">B</text><text x=\"53\" y=\"146\" class=\"tb tc\" data-s=\"1 2\">C</text><g data-s=\"3\"><rect x=\"44\" y=\"127\" width=\"18\" height=\"26\" rx=\"3\" class=\"bad\"/><text x=\"53\" y=\"146\" class=\"tb tc\">C</text><line x1=\"44\" y1=\"153\" x2=\"62\" y2=\"127\" class=\"bad\"/></g><text x=\"39\" y=\"180\" class=\"ts tc\">主機 1</text><rect x=\"74\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"87\" y=\"146\" class=\"tb tc\">A</text><text x=\"101\" y=\"146\" class=\"tb tc\">B</text><text x=\"115\" y=\"146\" class=\"tb tc\" data-s=\"1 2\">C</text><g data-s=\"3\"><rect x=\"106\" y=\"127\" width=\"18\" height=\"26\" rx=\"3\" class=\"bad\"/><text x=\"115\" y=\"146\" class=\"tb tc\">C</text><line x1=\"106\" y1=\"153\" x2=\"124\" y2=\"127\" class=\"bad\"/></g><g data-s=\"2\"><rect x=\"74\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"bad\"/><text x=\"101\" y=\"146\" class=\"tb tc\">毀損</text></g><text x=\"101\" y=\"180\" class=\"ts tc\">主機 2</text><rect x=\"136\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"149\" y=\"146\" class=\"tb tc\">A</text><text x=\"163\" y=\"146\" class=\"tb tc\">B</text><text x=\"177\" y=\"146\" class=\"tb tc\" data-s=\"1 2\">C</text><g data-s=\"3\"><rect x=\"168\" y=\"127\" width=\"18\" height=\"26\" rx=\"3\" class=\"bad\"/><text x=\"177\" y=\"146\" class=\"tb tc\">C</text><line x1=\"168\" y1=\"153\" x2=\"186\" y2=\"127\" class=\"bad\"/></g><text x=\"163\" y=\"180\" class=\"ts tc\">主機 3</text><rect x=\"212\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"239\" y=\"146\" class=\"tb tc\">A</text><text x=\"239\" y=\"180\" class=\"ts tc\">主機 1</text><rect x=\"274\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"301\" y=\"146\" class=\"tb tc\">B</text><g data-s=\"2\"><rect x=\"274\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"bad\"/><text x=\"301\" y=\"146\" class=\"tb tc\">毀損</text></g><text x=\"301\" y=\"180\" class=\"ts tc\">主機 2</text><rect x=\"336\" y=\"118\" width=\"54\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"363\" y=\"146\" class=\"tb tc\" data-s=\"1 2\">C</text><g data-s=\"3\"><rect x=\"354\" y=\"127\" width=\"18\" height=\"26\" rx=\"3\" class=\"bad\"/><text x=\"363\" y=\"146\" class=\"tb tc\">C</text><line x1=\"354\" y1=\"153\" x2=\"372\" y2=\"127\" class=\"bad\"/></g><text x=\"363\" y=\"180\" class=\"ts tc\">主機 3</text><rect x=\"412\" y=\"118\" width=\"62\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"429\" y=\"146\" class=\"tb tc\">A</text><text x=\"443\" y=\"146\" class=\"tb tc\">B</text><text x=\"457\" y=\"146\" class=\"tb tc\" data-s=\"1 2\">C</text><g data-s=\"3\"><rect x=\"448\" y=\"127\" width=\"18\" height=\"26\" rx=\"3\" class=\"bad\"/><text x=\"457\" y=\"146\" class=\"tb tc\">C</text><line x1=\"448\" y1=\"153\" x2=\"466\" y2=\"127\" class=\"bad\"/></g><g data-s=\"2\"><rect x=\"412\" y=\"118\" width=\"62\" height=\"44\" rx=\"6\" class=\"bad\"/><text x=\"443\" y=\"146\" class=\"tb tc\">毀損</text></g><text x=\"443\" y=\"180\" class=\"ts tc\">主機</text><rect x=\"526\" y=\"118\" width=\"62\" height=\"44\" rx=\"6\" class=\"soft\"/><rect x=\"526\" y=\"118\" width=\"62\" height=\"44\" rx=\"6\" class=\"ln dash\"/><text x=\"543\" y=\"146\" class=\"tb tc\">A</text><text x=\"557\" y=\"146\" class=\"tb tc\">B</text><text x=\"571\" y=\"146\" class=\"tb tc\">C</text><text x=\"557\" y=\"180\" class=\"ts tc\">離線備份</text><g data-s=\"1\"><line x1=\"476\" y1=\"140\" x2=\"524\" y2=\"140\" class=\"ln dash\" marker-end=\"url(#s2-22-4-arr)\"/><text x=\"500\" y=\"110\" class=\"ts tc\">定期拷貝</text></g><g data-s=\"2 3\"><line x1=\"524\" y1=\"140\" x2=\"476\" y2=\"140\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/><text x=\"500\" y=\"131\" class=\"t tc ta\">拷回</text></g><g data-s=\"2\"><path d=\"M96,116 C88,86 52,86 44,114\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/><text x=\"70\" y=\"84\" class=\"t tc ta\">切換</text></g><g data-s=\"3\"><rect x=\"66\" y=\"64\" width=\"70\" height=\"26\" rx=\"5\" class=\"bad\"/><text x=\"101\" y=\"83\" class=\"tb tc\">誤刪 C</text><line x1=\"101\" y1=\"92\" x2=\"39\" y2=\"115\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/><line x1=\"101\" y1=\"92\" x2=\"101\" y2=\"115\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/><line x1=\"101\" y1=\"92\" x2=\"163\" y2=\"115\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/></g><g data-s=\"3\"><rect x=\"266\" y=\"64\" width=\"70\" height=\"26\" rx=\"5\" class=\"bad\"/><text x=\"301\" y=\"83\" class=\"tb tc\">誤刪 C</text><line x1=\"301\" y1=\"92\" x2=\"363\" y2=\"115\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/></g><g data-s=\"3\"><rect x=\"408\" y=\"64\" width=\"70\" height=\"26\" rx=\"5\" class=\"bad\"/><text x=\"443\" y=\"83\" class=\"tb tc\">誤刪 C</text><line x1=\"443\" y1=\"92\" x2=\"443\" y2=\"115\" class=\"la\" marker-end=\"url(#s2-22-4-arr)\"/></g><g data-s=\"1\"><rect x=\"12\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"229\" class=\"t tc\">每台都是完整副本</text><rect x=\"212\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"229\" class=\"t tc\">每台只放一部分</text><rect x=\"412\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"box\"/><text x=\"500\" y=\"229\" class=\"t tc\">另存一份離線副本</text></g><g data-s=\"2\"><rect x=\"12\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"100\" y=\"217\" class=\"tb tc\">切換到其他主機</text><text x=\"100\" y=\"241\" class=\"t tc\">幾乎不停機</text><rect x=\"212\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"217\" class=\"tb tc\">B 這部分拿不到</text><text x=\"300\" y=\"241\" class=\"t tc\">A、C 照常</text><rect x=\"412\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"warn\"/><text x=\"500\" y=\"217\" class=\"tb tc\">能還原，但拷回較慢</text><text x=\"500\" y=\"241\" class=\"t tc\">上次備份後的會遺失</text></g><g data-s=\"3\"><rect x=\"12\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"bad\"/><text x=\"100\" y=\"217\" class=\"tb tc\">誤刪同步到每台</text><text x=\"100\" y=\"241\" class=\"t tc\">C 救不回來</text><rect x=\"212\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"217\" class=\"tb tc\">C 只有一份</text><text x=\"300\" y=\"241\" class=\"t tc\">刪了就沒了</text><rect x=\"412\" y=\"194\" width=\"176\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"500\" y=\"217\" class=\"tb tc\">從備份救回 C</text><text x=\"500\" y=\"241\" class=\"t tc\">備份不受誤刪影響</text></g></svg>",
+   "caption": "同一場意外，三種做法的結果不同：複寫擋得住主機毀損、擋不住誤刪，所以仍要另做獨立備份。",
    "predict": {
     "q": "車隊持續上傳大量「時間＋溫度」讀值，常要查一週趨勢；客戶訂單則要求資料關聯清楚、交易一致。兩者適合放同一種資料庫嗎？",
     "a": "通常分開。連續讀值適合時序資料庫，訂單適合關聯式資料庫；選型看資料形狀與查詢需求。"
    },
    "more": {
-    "label": "資料表怎麼設計，以及備份、RAID、NAS 和 SAN",
-    "body": "<p>關聯式資料庫的設計從「拆表」開始。冷鏈平台可以分成<b>裝置表</b>（裝置編號、放在哪個冷藏庫、型號）與<b>讀值表</b>（裝置編號、量測時間、溫度）。裝置編號在裝置表中唯一，稱為<b>主鍵</b>（Primary Key）；讀值表用同一個編號指回裝置表，稱為<b>外鍵</b>（Foreign Key）。</p><p>不把冷藏庫名稱重複寫進每一筆讀值，是<b>正規化</b>（Normalization）的直覺：同一件事只存一處，改名時只要改一筆，不會出現前後不一致。讀值表最常用「某台裝置、某段時間」查詢，所以替裝置編號與量測時間建立<b>索引</b>（Index），查詢就不必逐筆掃描整張表；代價是寫入時要多維護索引。</p><p>完整備份要先拷回再還原，較慢；RAID（把多顆硬碟組成一組，通常壞一顆仍可運作）只防硬碟損壞，不防整台主機毀損。</p><p>儲存設備也有兩種接法。<b>NAS（網路附加儲存）</b>是掛在網路上的獨立檔案櫃，自己就有 IP 位址，獲授權的設備都能直接透過網路共用，不必經由某台伺服器轉手。<b>SAN（儲存區域網路）</b>用專用高速網路把磁碟陣列接給伺服器，伺服器看到的就像本機硬碟。簡單說，NAS 以整個檔案為單位存取，SAN 以硬碟上更小的資料區塊為單位存取。</p>"
-   }
+    "label": "主鍵與外鍵、NAS 和 SAN 的差別",
+    "body": "<p>關聯式資料庫的設計從「拆表」開始。冷鏈平台可以分成<b>裝置表</b>（裝置編號、放在哪個冷藏庫、型號）與<b>讀值表</b>（裝置編號、量測時間、溫度）。裝置編號在裝置表中唯一，稱為<b>主鍵</b>（Primary Key）；讀值表用同一個編號指回裝置表，稱為<b>外鍵</b>（Foreign Key）。</p><p>NAS 掛在網路上、以檔案為單位讓多台設備共用；SAN 以區塊為單位，伺服器把遠端磁碟陣列當成本機硬碟，常用於資料庫等高效能需求。</p>"
+   },
+   "steps": [
+    "正常時：複寫讓三台主機都有完整的 A、B、C；分片把資料切成 A、B、C 三塊，各放一台；獨立備份是定期另外拷貝、平常不連線的一份副本。",
+    "主機 2 整台毀損：複寫切換到其他主機就能繼續服務；分片那台上的 B 跟著拿不到；只有一台主機加備份時，要從備份拷回來，比較慢，還會少掉上次備份之後的資料。",
+    "有人誤刪 C：複寫把刪除同步到每一台，三份 C 一起不見；分片的 C 本來就只有一份；離線備份沒有跟著被刪，C 救得回來。"
+   ],
+   "start": 2
   },
   {
    "id": "http-rest",
    "h": "HTTP 與 RESTful API：用網址和動詞存取資料",
-   "body": "<p><b>API（應用程式介面）</b>是程式之間約定好的窗口。<b>RESTful API</b> 用網址（URI）代表資源、用 HTTP 方法代表動作，四個標準動作對應資料的增查改刪：<b>GET 讀取、POST 新增、PUT 整筆替換、DELETE 刪除</b>。</p><p>GET 的參數接在網址後面（<code>?user=a&amp;pwd=123</code>），會留在瀏覽器紀錄與伺服器 log，所以機敏資料不可用 GET 傳。POST、PUT 把資料放在請求本體（body），但這只是位置不同，真正加密傳輸的是 <b>HTTPS</b>。</p><p>回應裡的<b>狀態碼</b>看第一位數：2xx 成功、3xx 轉址、4xx 用戶端的問題、5xx 伺服器的問題。</p>",
-   "svg": "<svg viewBox=\"0 0 600 190\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"瀏覽器或裝置送出 HTTP 請求，伺服器回傳狀態碼與資料\"><defs><marker id=\"s2-22-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"24\" width=\"130\" height=\"110\" rx=\"8\" class=\"box\"/><text x=\"85\" y=\"74\" class=\"tb tc\">用戶端</text><text x=\"85\" y=\"98\" class=\"ts tc\">網頁、App、裝置</text><rect x=\"450\" y=\"24\" width=\"130\" height=\"110\" rx=\"8\" class=\"acc\"/><text x=\"515\" y=\"74\" class=\"tb tc\">伺服器</text><text x=\"515\" y=\"98\" class=\"ts tc\">雲平台的 API</text><line x1=\"154\" y1=\"58\" x2=\"446\" y2=\"58\" class=\"la\" marker-end=\"url(#s2-22-5-arr)\"/><text x=\"300\" y=\"46\" class=\"ts tc\">請求：GET /devices/t01/latest</text><line x1=\"446\" y1=\"108\" x2=\"154\" y2=\"108\" class=\"ln dash\" marker-end=\"url(#s2-22-5-arr)\"/><text x=\"300\" y=\"96\" class=\"ts tc\">回應：200 OK ＋ {\"temp\":25.3}</text><text x=\"300\" y=\"168\" class=\"t tc\">方法說要做什麼，網址說對誰做，狀態碼說結果</text></svg>",
-   "caption": "一次 HTTP 往返：用戶端提出請求，伺服器回傳狀態碼與資料。",
+   "body": "<p><b>API（應用程式介面）</b>是程式之間約定好的窗口。<b>RESTful API</b> 用網址（URI）代表資源、用 HTTP 方法代表動作，四個標準動作對應資料的增查改刪：<b>GET 讀取、POST 新增、PUT 整筆替換、DELETE 刪除</b>。</p><p>回應裡的<b>狀態碼</b>看第一位數：2xx 成功、3xx 轉址、4xx 用戶端的問題、5xx 伺服器的問題。</p><p>參數可以接在網址後面（GET，整串網址會被瀏覽器紀錄和伺服器 log 記下），也可以放進請求本體（body，POST、PUT 用這種）；下圖分四步看兩者在路上和紀錄裡的差別。</p>",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"HTTP 一次往返與參數放在哪裡的逐步圖：先看信封外的方法與網址，方法有 GET 讀、POST 增、PUT 改、DELETE 刪四種，這次用 GET 讀最新溫度，伺服器回 200 OK 和 JSON；接著 GET 把帳密接在網址上，會留在瀏覽器紀錄與伺服器 log，路上也看得到；POST 把參數移進本體，但沒加密時路上照樣讀得到；加上 HTTPS 後路上只看到亂碼\"><defs><marker id=\"s2-22-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"96\" width=\"110\" height=\"80\" rx=\"8\" class=\"box\"/><text x=\"75\" y=\"132\" class=\"tb tc\">用戶端</text><text x=\"75\" y=\"154\" class=\"ts tc\">網頁、App</text><rect x=\"470\" y=\"96\" width=\"110\" height=\"80\" rx=\"8\" class=\"acc\"/><text x=\"525\" y=\"132\" class=\"tb tc\">伺服器</text><text x=\"525\" y=\"154\" class=\"ts tc\">雲平台的 API</text><g data-s=\"4\"><rect x=\"140\" y=\"80\" width=\"320\" height=\"138\" rx=\"18\" class=\"acc\"/><text x=\"300\" y=\"211\" class=\"tb tc ta\">HTTPS 加密通道</text></g><line x1=\"132\" y1=\"138\" x2=\"158\" y2=\"138\" class=\"la\" marker-end=\"url(#s2-22-5-arr)\"/><line x1=\"442\" y1=\"138\" x2=\"468\" y2=\"138\" class=\"la\" marker-end=\"url(#s2-22-5-arr)\"/><rect x=\"160\" y=\"86\" width=\"280\" height=\"104\" rx=\"6\" class=\"box\"/><line x1=\"170\" y1=\"139\" x2=\"430\" y2=\"139\" class=\"ln\"/><text x=\"172\" y=\"107\" class=\"t ta\">信封外：方法＋網址</text><text x=\"172\" y=\"159\" class=\"t ta\">信封內：本體</text><g data-s=\"1\"><text x=\"172\" y=\"129\" class=\"tb\">GET /devices/t01/latest</text><text x=\"172\" y=\"181\" class=\"t\">空的</text></g><g data-s=\"2\"><text x=\"172\" y=\"129\" class=\"tb\">GET /login?user=a&amp;pwd=123</text><text x=\"172\" y=\"181\" class=\"t\">空的</text></g><g data-s=\"3\"><text x=\"172\" y=\"129\" class=\"tb\">POST /login</text><text x=\"172\" y=\"181\" class=\"t\">user=a&amp;pwd=123</text></g><g data-s=\"4\"><text x=\"172\" y=\"129\" class=\"tb\">POST /login</text><text x=\"172\" y=\"181\" class=\"t\">user=a&amp;pwd=123</text></g><g data-s=\"1\"><line x1=\"468\" y1=\"224\" x2=\"132\" y2=\"224\" class=\"ln dash\" marker-end=\"url(#s2-22-5-arr)\"/><text x=\"300\" y=\"214\" class=\"t tc\">回應：200 OK ＋ {\"temp\":25.3}</text><text x=\"300\" y=\"44\" class=\"tb tc\">方法說要做什麼，網址說對誰做，狀態碼說結果</text><text x=\"300\" y=\"256\" class=\"ts tc\">狀態碼看第一位數，見下表</text></g><g data-s=\"1\"><rect x=\"128\" y=\"55\" width=\"70\" height=\"24\" rx=\"12\" class=\"acc\"/><text x=\"163\" y=\"72\" class=\"tb tc\">GET 讀</text><rect x=\"208\" y=\"55\" width=\"78\" height=\"24\" rx=\"12\" class=\"box\"/><text x=\"247\" y=\"72\" class=\"t tc\">POST 增</text><rect x=\"296\" y=\"55\" width=\"70\" height=\"24\" rx=\"12\" class=\"box\"/><text x=\"331\" y=\"72\" class=\"t tc\">PUT 改</text><rect x=\"376\" y=\"55\" width=\"96\" height=\"24\" rx=\"12\" class=\"box\"/><text x=\"424\" y=\"72\" class=\"t tc\">DELETE 刪</text></g><g data-s=\"2 3 4\"><text x=\"266\" y=\"40\" class=\"tb\" text-anchor=\"end\">路上的竊聽者</text><ellipse cx=\"300\" cy=\"35\" rx=\"24\" ry=\"13\" class=\"box\"/><circle cx=\"300\" cy=\"35\" r=\"7\" class=\"acc\"/><line x1=\"300\" y1=\"50\" x2=\"300\" y2=\"78\" class=\"ln dash\"/><line x1=\"75\" y1=\"178\" x2=\"75\" y2=\"226\" class=\"ln dash\"/><line x1=\"525\" y1=\"178\" x2=\"525\" y2=\"226\" class=\"ln dash\"/></g><g data-s=\"2\"><rect x=\"334\" y=\"16\" width=\"200\" height=\"38\" rx=\"8\" class=\"bad\"/><text x=\"434\" y=\"41\" class=\"tb tc\">看得到 pwd=123</text></g><g data-s=\"3\"><rect x=\"334\" y=\"16\" width=\"200\" height=\"38\" rx=\"8\" class=\"bad\"/><text x=\"434\" y=\"41\" class=\"tb tc\">照樣讀到 pwd=123</text></g><g data-s=\"4\"><rect x=\"334\" y=\"16\" width=\"200\" height=\"38\" rx=\"8\" class=\"ok\"/><text x=\"434\" y=\"41\" class=\"tb tc\">只看到亂碼</text></g><g data-s=\"2\"><rect x=\"20\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"warn\"/><text x=\"135\" y=\"250\" class=\"t tc\">瀏覽器紀錄</text><text x=\"135\" y=\"274\" class=\"t tc\">/login?user=a&amp;pwd=123</text><rect x=\"350\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"warn\"/><text x=\"465\" y=\"250\" class=\"t tc\">伺服器 log</text><text x=\"465\" y=\"274\" class=\"t tc\">/login?user=a&amp;pwd=123</text></g><g data-s=\"3\"><rect x=\"20\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"135\" y=\"250\" class=\"t tc\">瀏覽器紀錄</text><text x=\"135\" y=\"274\" class=\"t tc\">/login</text><rect x=\"350\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"465\" y=\"250\" class=\"t tc\">伺服器 log</text><text x=\"465\" y=\"274\" class=\"t tc\">/login</text></g><g data-s=\"4\"><rect x=\"20\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"135\" y=\"250\" class=\"t tc\">瀏覽器紀錄</text><text x=\"135\" y=\"274\" class=\"t tc\">/login</text><rect x=\"350\" y=\"228\" width=\"230\" height=\"58\" rx=\"8\" class=\"ok\"/><text x=\"465\" y=\"250\" class=\"t tc\">伺服器 log</text><text x=\"465\" y=\"274\" class=\"t tc\">/login</text></g><text x=\"300\" y=\"322\" class=\"tb tc\" data-s=\"2\">整串網址被兩端記下來，路上也看得到</text><text x=\"300\" y=\"322\" class=\"tb tc\" data-s=\"3\">POST 只是換位置，不是加密</text><text x=\"300\" y=\"322\" class=\"tb tc\" data-s=\"4\">若仍用 GET，網址照樣留在兩端紀錄</text></svg>",
+   "caption": "參數放在哪裡看方法，路上能不能被偷看看 HTTPS，誰能存取看驗證與授權；三件事要分開想。",
    "table": {
     "head": [
      "狀態碼",
-     "意思",
-     "白話"
+     "意思"
     ],
     "rows": [
      [
       "200 OK",
-      "成功",
-      "要到了"
+      "成功，要到資料了"
      ],
      [
       "201 Created",
-      "已建立",
       "新增成功"
      ],
      [
-      "202 Accepted",
-      "已接收，尚在處理",
-      "收件了，還沒做完"
-     ],
-     [
       "400 Bad Request",
-      "請求格式錯誤",
-      "送來的東西有問題"
+      "請求格式有誤（送來的東西有問題）"
      ],
      [
       "401 Unauthorized",
-      "未通過身分驗證",
-      "還不知道你是誰"
+      "未通過身分驗證，還不知道你是誰"
      ],
      [
       "403 Forbidden",
-      "沒有權限",
-      "知道你是誰，但不准"
+      "知道你是誰，但沒有權限"
      ],
      [
       "404 Not Found",
-      "找不到資源",
-      "這個 URI 沒有東西"
+      "這個 URI 找不到資源"
      ],
      [
-      "429 Too Many Requests",
-      "請求過多",
-      "超過次數上限"
+      "409 Conflict",
+      "和現有資源衝突（例如重複建立）"
      ],
      [
       "500 Internal Server Error",
-      "伺服器內部錯誤",
-      "對方壞了"
+      "伺服器內部出錯"
      ]
     ]
    },
@@ -232,14 +169,26 @@
    "more": {
     "label": "RESTful 為什麼好擴展，以及安全靠什麼",
     "body": "<p>RESTful 的優點是簡單、跨平台、容易擴展：它<b>無狀態（Stateless）</b>，每次請求自帶所需資訊，任何一台伺服器都能處理。</p><p>它本身不保證安全，安全要靠 HTTPS 加上驗證與授權機制，例如 OAuth（讓使用者授權某程式存取資料，又不必交出密碼）與 JWT（伺服器核發、之後可用來證明身分的一段憑證文字，類似通行證）。</p>"
-   }
+   },
+   "steps": [
+    "一次往返：信封外寫方法和網址，方法有 GET 讀、POST 增、PUT 改、DELETE 刪四種；這次用 GET 讀最新溫度，伺服器回 200 OK 和 JSON。",
+    "把帳密接在 GET 的網址後面：瀏覽器紀錄和伺服器 log 都把整串網址存了下來，路上的人也讀得到，所以帳密等機敏資料不可用 GET 傳。",
+    "改用 POST，但仍是 HTTP：帳密移進本體，紀錄裡只剩 /login；本體沒有加密，路上的人照樣讀得到。",
+    "加上 HTTPS：整個請求在路上被加密，竊聽者只看到亂碼；但 HTTPS 只保護路上，若仍用 GET，網址照樣會留在兩端紀錄。"
+   ],
+   "start": 1
   },
   {
    "id": "realtime",
    "h": "網頁即時更新：Polling、Long Polling、WebSocket",
    "body": "<p>HTTP 是一問一答，伺服器不會主動開口。儀表板要即時顯示感測值，有三種做法。</p><ul><li><b>輪詢（Polling）</b>：常用 AJAX（網頁不重新整理就能在背景向伺服器要資料的技術）每隔幾秒發一次請求，就像每隔幾分鐘去信箱看信，多半白跑一趟。</li><li><b>長輪詢（Long Polling）</b>：問了之後伺服器先不回，等有資料才回應，回完再問下一次；較即時，但每次仍是新的 HTTP 請求。</li><li><b>WebSocket</b>：先用 HTTP 打一次招呼、雙方確認切換（稱為握手），之後維持一條<b>持久、全雙工（Full Duplex，雙方可同時傳送）</b>的連線，伺服器有新資料就主動推送，像電話接通後隨時能講。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 390\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Polling、Long Polling、WebSocket 的時序比較\"><defs><marker id=\"s2-22-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"10\" y=\"22\" class=\"tb\">Polling 輪詢：每隔一段時間問一次，多半白問</text><text x=\"10\" y=\"49\" class=\"ts\">瀏覽器</text><text x=\"10\" y=\"99\" class=\"ts\">伺服器</text><line x1=\"90\" y1=\"44\" x2=\"585\" y2=\"44\" class=\"ln\"/><line x1=\"90\" y1=\"94\" x2=\"585\" y2=\"94\" class=\"ln\"/><line x1=\"110\" y1=\"44\" x2=\"124\" y2=\"92\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"134\" y1=\"94\" x2=\"148\" y2=\"46\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"210\" y1=\"44\" x2=\"224\" y2=\"92\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"234\" y1=\"94\" x2=\"248\" y2=\"46\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"310\" y1=\"44\" x2=\"324\" y2=\"92\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"334\" y1=\"94\" x2=\"348\" y2=\"46\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"410\" y1=\"44\" x2=\"424\" y2=\"92\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"434\" y1=\"94\" x2=\"448\" y2=\"46\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"510\" y1=\"44\" x2=\"524\" y2=\"92\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"534\" y1=\"94\" x2=\"548\" y2=\"46\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><circle cx=\"360\" cy=\"94\" r=\"6\" class=\"warn\"/><text x=\"10\" y=\"130\" class=\"tb\">Long Polling 長輪詢：問了先掛著，有資料才回</text><text x=\"10\" y=\"161\" class=\"ts\">瀏覽器</text><text x=\"10\" y=\"211\" class=\"ts\">伺服器</text><line x1=\"90\" y1=\"156\" x2=\"585\" y2=\"156\" class=\"ln\"/><line x1=\"90\" y1=\"206\" x2=\"585\" y2=\"206\" class=\"ln\"/><line x1=\"110\" y1=\"156\" x2=\"124\" y2=\"204\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"130\" y1=\"218\" x2=\"290\" y2=\"218\" class=\"ln dash\"/><text x=\"210\" y=\"236\" class=\"ts tc\">伺服器掛著等</text><circle cx=\"300\" cy=\"206\" r=\"6\" class=\"warn\"/><line x1=\"306\" y1=\"206\" x2=\"320\" y2=\"158\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"334\" y1=\"156\" x2=\"348\" y2=\"204\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"341\" y=\"148\" class=\"ts tc\">再問</text><circle cx=\"480\" cy=\"206\" r=\"6\" class=\"warn\"/><line x1=\"486\" y1=\"206\" x2=\"500\" y2=\"158\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"514\" y1=\"156\" x2=\"528\" y2=\"204\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"10\" y=\"262\" class=\"tb\">WebSocket：建立長連線，有資料可推送</text><text x=\"10\" y=\"293\" class=\"ts\">瀏覽器</text><text x=\"10\" y=\"343\" class=\"ts\">伺服器</text><line x1=\"90\" y1=\"288\" x2=\"585\" y2=\"288\" class=\"ln\"/><line x1=\"90\" y1=\"338\" x2=\"585\" y2=\"338\" class=\"ln\"/><line x1=\"110\" y1=\"288\" x2=\"124\" y2=\"336\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"130\" y1=\"338\" x2=\"144\" y2=\"290\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"128\" y=\"280\" class=\"ts tc\">握手</text><rect x=\"160\" y=\"294\" width=\"420\" height=\"38\" class=\"soft\"/><circle cx=\"300\" cy=\"338\" r=\"6\" class=\"warn\"/><line x1=\"300\" y1=\"332\" x2=\"300\" y2=\"290\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><circle cx=\"400\" cy=\"338\" r=\"6\" class=\"warn\"/><line x1=\"400\" y1=\"332\" x2=\"400\" y2=\"290\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><circle cx=\"480\" cy=\"338\" r=\"6\" class=\"warn\"/><line x1=\"480\" y1=\"332\" x2=\"480\" y2=\"290\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"230\" y=\"318\" class=\"ts tc\">持久全雙工連線</text><circle cx=\"30\" cy=\"376\" r=\"6\" class=\"warn\"/><text x=\"42\" y=\"381\" class=\"ts\">新資料</text><line x1=\"100\" y1=\"376\" x2=\"136\" y2=\"376\" class=\"ln\"/><text x=\"144\" y=\"381\" class=\"ts\">請求</text><line x1=\"190\" y1=\"376\" x2=\"226\" y2=\"376\" class=\"la\"/><text x=\"234\" y=\"381\" class=\"ts\">帶資料的回應或推送</text><line x1=\"380\" y1=\"376\" x2=\"416\" y2=\"376\" class=\"ln dash\"/><text x=\"424\" y=\"381\" class=\"ts\">空回應</text><line x1=\"540\" y1=\"290\" x2=\"540\" y2=\"336\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/></svg>",
-   "caption": "三種方式的時間軸：輪詢常收到空回應，長輪詢等到資料才回，WebSocket 連上後可直接推送。",
+   "figs": [
+    {
+     "pos": "after-body",
+     "svg": "<svg viewBox=\"0 0 600 420\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Polling、Long Polling、WebSocket 的時序比較：同樣兩筆新資料，輪詢要等到下一次去問，長輪詢一有資料就回再重問，WebSocket 直接推送；右端是各自的 HTTP 請求數\"><defs><marker id=\"s2-22-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"220\" y=\"22\" class=\"t tc\">新資料 1</text><line x1=\"220\" y1=\"30\" x2=\"220\" y2=\"374\" class=\"ln dash\"/><text x=\"400\" y=\"22\" class=\"t tc\">新資料 2</text><line x1=\"400\" y1=\"30\" x2=\"400\" y2=\"374\" class=\"ln dash\"/><text x=\"10\" y=\"52\" class=\"tb\">Polling 輪詢</text><text x=\"10\" y=\"79\" class=\"t\">瀏覽器</text><text x=\"10\" y=\"125\" class=\"t\">伺服器</text><line x1=\"80\" y1=\"74\" x2=\"510\" y2=\"74\" class=\"ln\"/><line x1=\"80\" y1=\"120\" x2=\"510\" y2=\"120\" class=\"ln\"/><circle cx=\"220\" cy=\"120\" r=\"6\" class=\"warn\"/><circle cx=\"400\" cy=\"120\" r=\"6\" class=\"warn\"/><text x=\"590\" y=\"103\" class=\"tb\" text-anchor=\"end\">5 次請求</text><line x1=\"90\" y1=\"74\" x2=\"104\" y2=\"118\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"114\" y1=\"120\" x2=\"128\" y2=\"76\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"170\" y1=\"74\" x2=\"184\" y2=\"118\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"194\" y1=\"120\" x2=\"208\" y2=\"76\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"250\" y1=\"74\" x2=\"264\" y2=\"118\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"274\" y1=\"120\" x2=\"288\" y2=\"76\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"330\" y1=\"74\" x2=\"344\" y2=\"118\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"354\" y1=\"120\" x2=\"368\" y2=\"76\" class=\"ln dash\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"410\" y1=\"74\" x2=\"424\" y2=\"118\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"434\" y1=\"120\" x2=\"448\" y2=\"76\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><polyline points=\"220,128 220,134 264,134 264,128\" class=\"ln\"/><text x=\"228\" y=\"154\" class=\"t\">等到下一次輪詢</text><text x=\"10\" y=\"174\" class=\"tb\">Long Polling 長輪詢</text><text x=\"10\" y=\"201\" class=\"t\">瀏覽器</text><text x=\"10\" y=\"247\" class=\"t\">伺服器</text><line x1=\"80\" y1=\"196\" x2=\"510\" y2=\"196\" class=\"ln\"/><line x1=\"80\" y1=\"242\" x2=\"510\" y2=\"242\" class=\"ln\"/><circle cx=\"220\" cy=\"242\" r=\"6\" class=\"warn\"/><circle cx=\"400\" cy=\"242\" r=\"6\" class=\"warn\"/><text x=\"590\" y=\"225\" class=\"tb\" text-anchor=\"end\">3 次請求</text><line x1=\"100\" y1=\"196\" x2=\"114\" y2=\"240\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"120\" y1=\"252\" x2=\"214\" y2=\"252\" class=\"ln dash\"/><line x1=\"268\" y1=\"252\" x2=\"394\" y2=\"252\" class=\"ln dash\"/><line x1=\"448\" y1=\"252\" x2=\"510\" y2=\"252\" class=\"ln dash\"/><text x=\"167\" y=\"272\" class=\"t tc\">伺服器掛著等</text><line x1=\"220\" y1=\"242\" x2=\"234\" y2=\"198\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"248\" y1=\"196\" x2=\"262\" y2=\"240\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"400\" y1=\"242\" x2=\"414\" y2=\"198\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"428\" y1=\"196\" x2=\"442\" y2=\"240\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"256\" y=\"188\" class=\"ts tc\">再問</text><text x=\"10\" y=\"296\" class=\"tb\">WebSocket</text><text x=\"10\" y=\"323\" class=\"t\">瀏覽器</text><text x=\"10\" y=\"369\" class=\"t\">伺服器</text><line x1=\"80\" y1=\"318\" x2=\"510\" y2=\"318\" class=\"ln\"/><line x1=\"80\" y1=\"364\" x2=\"510\" y2=\"364\" class=\"ln\"/><circle cx=\"220\" cy=\"364\" r=\"6\" class=\"warn\"/><circle cx=\"400\" cy=\"364\" r=\"6\" class=\"warn\"/><text x=\"590\" y=\"347\" class=\"tb\" text-anchor=\"end\">1 次請求</text><line x1=\"100\" y1=\"318\" x2=\"114\" y2=\"362\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"120\" y1=\"364\" x2=\"134\" y2=\"320\" class=\"ln\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"117\" y=\"310\" class=\"ts tc\">握手</text><rect x=\"146\" y=\"324\" width=\"364\" height=\"34\" class=\"soft\"/><line x1=\"220\" y1=\"358\" x2=\"220\" y2=\"320\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><line x1=\"400\" y1=\"358\" x2=\"400\" y2=\"320\" class=\"la\" marker-end=\"url(#s2-22-6-arr)\"/><text x=\"310\" y=\"347\" class=\"t tc\">持久全雙工連線</text><line x1=\"20\" y1=\"402\" x2=\"56\" y2=\"402\" class=\"ln\"/><text x=\"64\" y=\"407\" class=\"ts\">請求</text><line x1=\"120\" y1=\"402\" x2=\"156\" y2=\"402\" class=\"la\"/><text x=\"164\" y=\"407\" class=\"ts\">帶資料的回應或推送</text><line x1=\"310\" y1=\"402\" x2=\"346\" y2=\"402\" class=\"ln dash\"/><text x=\"354\" y=\"407\" class=\"ts\">空回應、掛著等</text></svg>",
+     "caption": "同樣兩筆新資料：輪詢要等到下一次去問，長輪詢一有資料就回、回完再問，WebSocket 連上後直接推送。資料變很快時誰的請求最多，到下面的實驗按「貨車每秒更新的追蹤畫面」比比看。"
+    }
+   ],
    "predict": {
     "q": "監控平台每 5 秒輪詢一次，資料每分鐘才變一次。這些輪詢大約有多少比例拿不到新資料？",
     "a": "約 92%。每分鐘 12 次輪詢，只有 1 次拿得到新資料。"
@@ -250,43 +199,9 @@
   {
    "id": "tools-licenses",
    "h": "開發工具與開源授權",
-   "body": "<p><b>Node-RED</b> 是 IBM 開發、現由 OpenJS 基金會維護的<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，像標準貨櫃，到哪裡都能照樣執行（容器與虛擬機的差別見 <a href=\"s1-24.html#vm-container\">科一 2.4〈中介軟體與平台〉</a>）。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。開源授權大致分兩類：<b>Copyleft</b> 要求散布衍生作品時延續相同自由，<b>寬鬆授權</b> 則通常只要求保留聲明。</p>",
-   "svg": "<svg viewBox=\"0 0 600 210\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Node-RED 流程範例：收 MQTT、轉換、判斷門檻、畫圖或告警\"><defs><marker id=\"s2-22-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"acc\"/><text x=\"70\" y=\"69\" class=\"tb tc\">mqtt in</text><text x=\"70\" y=\"87\" class=\"ts tc\">收感測值</text><rect x=\"150\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"box\"/><text x=\"210\" y=\"69\" class=\"tb tc\">function</text><text x=\"210\" y=\"87\" class=\"ts tc\">轉換格式</text><rect x=\"290\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"warn\"/><text x=\"350\" y=\"69\" class=\"tb tc\">switch</text><text x=\"350\" y=\"87\" class=\"ts tc\">溫度＞30？</text><rect x=\"460\" y=\"6\" width=\"120\" height=\"48\" rx=\"10\" class=\"ok\"/><text x=\"520\" y=\"27\" class=\"tb tc\">chart</text><text x=\"520\" y=\"45\" class=\"ts tc\">儀表板畫圖</text><rect x=\"460\" y=\"98\" width=\"120\" height=\"48\" rx=\"10\" class=\"bad\"/><text x=\"520\" y=\"119\" class=\"tb tc\">e-mail</text><text x=\"520\" y=\"137\" class=\"ts tc\">發出告警</text><line x1=\"132\" y1=\"72\" x2=\"146\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><line x1=\"272\" y1=\"72\" x2=\"286\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,64 C435,64 435,30 456,30\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,80 C435,80 435,122 456,122\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><text x=\"300\" y=\"178\" class=\"t tc\">在瀏覽器拖拉節點、連上線，就是一支程式</text><text x=\"300\" y=\"200\" class=\"ts tc\">低程式碼、跑在 Node.js 上，常用來串 MQTT、資料庫與儀表板</text><text x=\"424\" y=\"36\" class=\"ts tc\">否</text><text x=\"424\" y=\"118\" class=\"ts tc\">是</text></svg>",
-   "caption": "Node-RED 流程範例：收到感測值後先轉換格式，再判斷門檻，未超過就畫圖，超過就寄出告警。",
-   "table": {
-    "head": [
-     "授權",
-     "類型",
-     "主要要求"
-    ],
-    "rows": [
-     [
-      "GPL",
-      "強 Copyleft",
-      "散布受規範的作品時，要依條款提供原始碼與相同權利"
-     ],
-     [
-      "LGPL",
-      "弱 Copyleft",
-      "函式庫本身的修改要開放，連結使用的程式限制較少"
-     ],
-     [
-      "MIT",
-      "寬鬆",
-      "保留著作權與授權聲明即可"
-     ],
-     [
-      "BSD",
-      "寬鬆",
-      "保留聲明；3 條款版不得用作者名義背書"
-     ],
-     [
-      "Apache 2.0",
-      "寬鬆",
-      "保留聲明、標示修改，並含專利授權"
-     ]
-    ]
-   },
+   "body": "<p><b>Node-RED</b> 是 IBM 開發、現由 OpenJS 基金會維護的<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，像標準貨櫃，到哪裡都能照樣執行（容器與虛擬機的差別見 <a href=\"s1-24.html#vm-container\">科一 2.4〈中介軟體與平台〉</a>）。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。開源授權大致分兩類：<b>Copyleft</b> 要求散布衍生作品時延續相同自由，GPL、AGPL 屬強 Copyleft，LGPL 屬弱 Copyleft（只管函式庫本身的修改）；<b>寬鬆授權</b>（MIT、BSD、Apache 2.0）則通常只要求保留聲明，Apache 2.0 另含專利授權。</p>",
+   "svg": "<svg viewBox=\"0 0 600 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Node-RED 流程範例：收 MQTT、轉換、判斷門檻、畫圖或告警\"><defs><marker id=\"s2-22-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"acc\"/><text x=\"70\" y=\"69\" class=\"tb tc\">mqtt in</text><text x=\"70\" y=\"87\" class=\"ts tc\">收感測值</text><rect x=\"150\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"box\"/><text x=\"210\" y=\"69\" class=\"tb tc\">function</text><text x=\"210\" y=\"87\" class=\"ts tc\">轉換格式</text><rect x=\"290\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"warn\"/><text x=\"350\" y=\"69\" class=\"tb tc\">switch</text><text x=\"350\" y=\"87\" class=\"ts tc\">溫度＞30？</text><rect x=\"460\" y=\"6\" width=\"120\" height=\"48\" rx=\"10\" class=\"ok\"/><text x=\"520\" y=\"27\" class=\"tb tc\">chart</text><text x=\"520\" y=\"45\" class=\"ts tc\">儀表板畫圖</text><rect x=\"460\" y=\"98\" width=\"120\" height=\"48\" rx=\"10\" class=\"bad\"/><text x=\"520\" y=\"119\" class=\"tb tc\">e-mail</text><text x=\"520\" y=\"137\" class=\"ts tc\">發出告警</text><line x1=\"132\" y1=\"72\" x2=\"146\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><line x1=\"272\" y1=\"72\" x2=\"286\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,64 C435,64 435,30 456,30\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,80 C435,80 435,122 456,122\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><text x=\"424\" y=\"36\" class=\"ts tc\">否</text><text x=\"424\" y=\"118\" class=\"ts tc\">是</text></svg>",
+   "caption": "Node-RED 流程：一個節點是一個步驟，連線決定資料往哪走，不必從頭寫程式，這就是「低程式碼」。",
    "predict": {
     "q": "公司修改一支 GPL 授權的閘道程式，只裝在自家貨車上，沒有交給任何外部對象。需要對外提供原始碼嗎？",
     "a": "不需要。GPL 提供原始碼的義務在散布時才發生；若把程式交給客戶，才要依條款提供。"
@@ -294,12 +209,19 @@
    "more": {
     "label": "Node.js、Shell Script，以及其他軟體類別",
     "body": "<p>Node-RED 跑在 Node.js（讓 JavaScript 能在瀏覽器以外執行的環境）上。</p><p>並非每台裝置都裝得下 Docker 或 Python。Linux 系統通常內建執行 <b>Shell Script</b>（把一連串系統指令寫成的小程式）的環境，不必另外安裝，適合儲存空間有限的小型裝置。</p><p><b>免費軟體（Freeware）</b>只是不收費，<b>共享軟體（Shareware）</b>偏先試用，兩者都不一定開放原始碼。<b>公共領域軟體（Public Domain）</b>則是著作權已放棄或到期。</p>"
-   }
+   },
+   "figs": [
+    {
+     "pos": "end",
+     "svg": "<svg viewBox=\"0 0 600 384\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"開源授權在三種用法下的義務：自己內部用、散布出去交給客戶、放雲端給人連線用。MIT、BSD：內部用免、散布時保留聲明、放雲端免；Apache 2.0：同 MIT，散布時保留聲明並標示修改，另含專利授權；LGPL 弱 Copyleft：內部用免、散布時改過函式庫要開放、放雲端免；GPL 強 Copyleft：內部用免、散布要給原始碼、放雲端免；AGPL 強 Copyleft：內部用免、散布要給原始碼、改過後放雲端給人連線也要給原始碼\"><rect x=\"14\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"ok\"/><text x=\"26\" y=\"26\" class=\"tb tc\">✓</text><text x=\"46\" y=\"26\" class=\"t\">不必給原始碼</text><rect x=\"196\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"warn\"/><text x=\"208\" y=\"26\" class=\"tb tc\">！</text><text x=\"228\" y=\"26\" class=\"t\">只開函式庫的修改</text><rect x=\"414\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"bad\"/><text x=\"426\" y=\"26\" class=\"tb tc\">✗</text><text x=\"446\" y=\"26\" class=\"t\">要給原始碼</text><polygon points=\"204,66 226,46 248,66\" class=\"box\"/><rect x=\"210\" y=\"64\" width=\"32\" height=\"22\" class=\"box\"/><rect x=\"221\" y=\"73\" width=\"10\" height=\"13\" class=\"ln\"/><polygon points=\"318,60 326,50 362,50 354,60\" class=\"box\"/><polygon points=\"354,60 362,50 362,76 354,86\" class=\"box\"/><rect x=\"318\" y=\"60\" width=\"36\" height=\"26\" class=\"box\"/><polyline points=\"330,60 338,50 344,50 336,60 336,70 330,70 330,60\" class=\"soft\"/><path d=\"M434,86 A11,11 0 0 1 432,64 A15,15 0 0 1 460,58 A12,12 0 0 1 468,86 Z\" class=\"box\"/><text x=\"226\" y=\"108\" class=\"tb tc\">自己內部用</text><text x=\"226\" y=\"128\" class=\"t tc\">（自家貨車）</text><text x=\"338\" y=\"108\" class=\"tb tc\">散布出去</text><text x=\"338\" y=\"128\" class=\"t tc\">（交給客戶）</text><text x=\"450\" y=\"108\" class=\"tb tc\">放雲端</text><text x=\"450\" y=\"128\" class=\"t tc\">給人連線用</text><text x=\"450\" y=\"146\" class=\"ts tc\">程式沒交出去</text><text x=\"60\" y=\"182\" class=\"tb\">MIT／BSD</text><rect x=\"172\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"183\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"183\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"183\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"226\" class=\"tb\">Apache 2.0</text><rect x=\"172\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"227\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"227\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"227\" class=\"th tc\">✓ 免</text><text x=\"510\" y=\"226\" class=\"t\">＋專利授權</text><text x=\"60\" y=\"270\" class=\"tb\">LGPL</text><rect x=\"172\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"271\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"warn\"/><text x=\"338\" y=\"271\" class=\"th tc\">！改庫要開</text><rect x=\"396\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"271\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"314\" class=\"tb\">GPL</text><rect x=\"172\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"315\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"315\" class=\"th tc\">✗ 給原始碼</text><rect x=\"396\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"315\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"358\" class=\"tb\">AGPL</text><rect x=\"172\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"359\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"359\" class=\"th tc\">✗ 給原始碼</text><rect x=\"396\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"450\" y=\"359\" class=\"th tc\">✗ 給原始碼</text><polyline points=\"54,158 48,158 48,238 54,238\" class=\"ln\"/><text x=\"24\" y=\"204\" class=\"tb tc\">寬鬆</text><polyline points=\"54,246 48,246 48,282 54,282\" class=\"ln\"/><text x=\"24\" y=\"270\" class=\"tb tc\">弱</text><polyline points=\"54,290 48,290 48,370 54,370\" class=\"ln\"/><text x=\"24\" y=\"336\" class=\"tb tc\">強</text></svg>",
+     "caption": "紅色從哪一欄開始，就是哪種用法才要給原始碼；GPL 和 AGPL 只差在雲端那一欄（AGPL 指改過後放上雲端）。"
+    }
+   ]
   }
  ],
  "keypoints": [
   "IaaS 租基礎設施、PaaS 租開發平台、SaaS 直接用軟體。",
-  "資料管線六站：裝置、協定、平台、儲存、分析、視覺化。",
+  "資料管線六站：裝置、協定、平台、儲存、分析、視覺化；視覺化看目的選圖：趨勢用折線圖、比大小用長條圖、占比用圓餅圖、占比加階層用樹狀圖、兩變數關係用散布圖、即時值用儀表或數字卡。",
   "要層級選 JSON 或 XML，平面表格用 CSV 比 JSON、XML 精簡，要進一步省頻寬選 Protobuf 或 MessagePack。",
   "JSON 文件存 MongoDB，連續感測讀值存時序資料庫，關聯清楚的資料存 SQL。",
   "複寫是為了備援，分片是為了分攤負載。",
@@ -308,12 +230,11 @@
  ],
  "pitfalls": [
   "POST 不等於加密，JSON 也沒有保密功能；傳輸加密靠 HTTPS，誰能存取靠驗證與授權。",
-  "HTTP/1.1 預設就是持久連線，同一條連線可重複使用，不必每次重新建立；部分教材把 HTTP 寫成每次都要重新連線，應考時留意題目的條件。輪詢的成本主要來自反覆的請求，請求數不等於新連線數。",
-  "Google Cloud IoT Core 已於 2023 年停止服務，部分教材仍把它列為現行的 IoT 資料中樞；實務上不能再選用，應考時留意題目的條件。",
-  "複寫會同步誤刪，不能取代獨立備份；RAID 也只防硬碟損壞。",
+  "輪詢的成本主要來自反覆的請求，不是每次重新連線：HTTP/1.1 預設持久連線，同一條連線可重複使用（見 <a href=\"s1-22.html#keypoints\">科一 2.2〈常見通訊協定與網路層技術〉</a>）。",
+  "Google Cloud IoT Core 已於 2023 年停止服務，實務上不能再選用；部分教材仍把它列為現行的 IoT 資料中樞，考題可能採教材說法。",
+  "複寫會同步誤刪，不能取代獨立備份；RAID（多顆硬碟組成一組，壞一顆仍可運作）也只防硬碟損壞，不防整台主機毀損。",
   "NoSQL 不代表沒有結構，關聯式資料庫也能存 JSON；選型要看資料形狀與查詢需求，情境強調原生存放 JSON 文件時才想到 MongoDB。",
-  "自由軟體不等於免費；GPL 的義務在散布時才發生，公司內部自用不必把原始碼公開上網。",
-  "GPL 的散布才觸發義務，但 AGPL 把「透過網路提供服務給別人使用」也算進去；把 AGPL 軟體改過後放在雲端讓客戶使用，就要提供修改後的原始碼。"
+  "自由軟體不等於免費；GPL 散布時才要提供原始碼，內部自用不必，但 AGPL 連「改過後放在雲端讓別人使用」也算，要向使用者提供修改後的原始碼。"
  ],
  "examples": [
   {
@@ -341,32 +262,20 @@
  ],
  "check": [
   {
-   "q": "把感測資料放上雲端後，裝置金鑰與資料權限可以交給業者不管嗎？",
-   "a": "不行，這些仍要依服務分工自己管理，並檢查公開分享設定。"
-  },
-  {
-   "q": "一座冷藏庫底下有多個探頭、每個探頭又有多項數值，用 CSV 存會遇到什麼麻煩？",
-   "a": "CSV 只有平面表格，表達不出這種上下層級，JSON 或 XML 才行。"
-  },
-  {
    "q": "JSON 為什麼不適合儲存大量圖片？",
    "a": "二進位資料要轉 Base64，體積約增加三分之一，通常改放物件儲存，JSON 只記連結。"
-  },
-  {
-   "q": "資料庫主機毀損時，複寫與分片哪個能讓服務較快恢復？",
-   "a": "複寫，因為其他主機有完整副本可切換；分片每台只有一部分。"
-  },
-  {
-   "q": "呼叫 API 收到 404，代表什麼？",
-   "a": "這個 URI 找不到資源，屬於用戶端這側的請求問題。"
   },
   {
    "q": "為什麼密碼不該放在 GET 請求裡？",
    "a": "參數接在網址上，會留在瀏覽器紀錄與伺服器 log。"
   },
   {
-   "q": "GPL 軟體只在公司內部使用，需要公開原始碼嗎？",
-   "a": "不需要，GPL 的提供原始碼義務在散布時才發生。"
+   "q": "內部儀表板只有兩三個人看，資料每 10 分鐘才變一次，一定要改用 WebSocket 嗎？",
+   "a": "不一定。資料變得慢、人數又少時，簡單的輪詢也可能夠用；WebSocket 每條連線都占伺服器資源，還要處理斷線重連。"
+  },
+  {
+   "q": "公司改過的閘道程式若是 AGPL 授權，不交給任何人、只部署在雲端讓客戶透過網路使用，需要提供原始碼嗎？",
+   "a": "需要。AGPL 把透過網路提供使用也算在內，要向這些使用者提供修改後的原始碼；GPL 則是散布時才需要。"
   }
  ],
  "terms": [
@@ -473,11 +382,6 @@
    "term": "外鍵",
    "en": "Foreign Key",
    "def": "指向另一張表主鍵的欄位，用來把兩張表的資料關聯起來。"
-  },
-  {
-   "term": "正規化",
-   "en": "Normalization",
-   "def": "把資料拆成多張表、讓同一件事只存一處，避免重複與不一致的設計方法。"
   }
  ],
  "case": {

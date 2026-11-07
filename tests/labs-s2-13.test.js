@@ -59,18 +59,15 @@ const EXPECT = {
   tamper: {sig: [[P, P, S], L], window: [[P, P, S], L], seq: [[P, P, S], L], nonce: [[P, P, S], L], both: [[P, P, S], L]},
   // replay is 300 s old; RAM cleared, clock kept.
   reboot: {sig: [[P, P, E, B], O], window: [[P, P, E, S], L], seq: [[P, P, E, B], O], nonce: [[P, P, E, B], O], both: [[P, P, E, S], L]},
-  // a7f3 is pushed out by three later nonces; the replay is 31 min old.
-  full: {sig: [[P, P, P, P, B], O], window: [[P, P, P, P, S], L], seq: [[P, P, P, P, S], L], nonce: [[P, P, P, P, B], O], both: [[P, P, P, P, S], L]},
   // first message is 45 s late.
   delay: {sig: [[P, P], O], window: [[F, P], O], seq: [[P, P], O], nonce: [[P, P], O], both: [[F, P], O]},
   reorder: {sig: [[P, P, P], O], window: [[P, P, P], O], seq: [[P, F, P], O], nonce: [[P, P, P], O], both: [[P, P, P], O]},
-  // Only the sequence check keeps the door locked.
-  // Rejecting the late "open" keeps the user's intent (door locked), so it is not a false reject.
-  swap: {sig: [[P, P], O], window: [[P, P], O], seq: [[P, 'right-reject'], L], nonce: [[P, P], O], both: [[P, P], O]},
   // Lock clock +120 s: first message reads as 121 s old; after NTP sync the retry is 1 s old.
   clock: {sig: [[P, E, P], O], window: [[F, E, P], O], seq: [[P, E, P], O], nonce: [[P, E, P], O], both: [[F, E, P], O]},
 };
 assert.deepStrictEqual(Object.keys(EXPECT).sort(), SCENARIOS.map(s => s.id).sort());
+// Scenario chips: 4 attack/device-limit, 3 legit-trouble.
+assert.deepStrictEqual(SCENARIOS.map(s => s.group), ['attack', 'attack', 'attack', 'attack', 'legit', 'legit', 'legit']);
 for (const id of Object.keys(EXPECT)) {
   for (const row of compare(id, 30)) {
     const [out, door] = EXPECT[id][row.mode];

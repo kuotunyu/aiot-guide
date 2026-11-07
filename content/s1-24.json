@@ -15,9 +15,9 @@
   {
    "id": "big-picture",
    "h": "全景：什麼是中介軟體與平台",
-   "body": "<p>探頭的資料經閘道器送出後，還不能直接變成服務，中間要有人接收、暫存、保存、計算。<b>中介軟體（Middleware）</b>泛指這一段所需的軟體元件與通訊協定，像系統之間的翻譯員與交通管理員。在 IoT 常見的三層架構（負責感測的感知層、負責傳送的網路層、負責提供服務的應用層）中，它橫跨<b>網路層</b>與<b>應用層</b>。</p><p><b>IoT 平台（IoT Platform）</b>則把這些常用功能打包好，不必每次從頭重做。判斷平台時要把功能分開看。以冷藏庫為例：平台先登錄每支探頭，再收取溫度並依時間保存；規則引擎發現連續十分鐘超溫就建立告警，維修人員在儀表板找到設備，事件再經 API 送進維修系統。</p>",
-   "svg": "<svg viewBox=\"0 0 600 292\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"從閘道器到應用服務的資料路徑：閘道器、訊息中介軟體、儲存與分析、應用服務，並由身分驗證與裝置管理貫穿全程\"><defs><marker id=\"s1-24-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"26\" class=\"th tc\">閘道器之後、服務之前，都是這一章的範圍</text><text x=\"153\" y=\"54\" class=\"tb tc\">網路層：把資料送到</text><line x1=\"20\" y1=\"64\" x2=\"287\" y2=\"64\" class=\"ln\"/><text x=\"447\" y=\"54\" class=\"tb tc\">應用層：把資料變成服務</text><line x1=\"314\" y1=\"64\" x2=\"581\" y2=\"64\" class=\"ln\"/><rect x=\"20\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"80\" y=\"105\" class=\"tb tc\">閘道器</text><text x=\"80\" y=\"128\" class=\"ts tc\">現場資料的轉接站</text><rect x=\"167\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"227\" y=\"105\" class=\"tb tc\">訊息中介軟體</text><text x=\"227\" y=\"128\" class=\"ts tc\">暫存、依主題分派</text><rect x=\"314\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"374\" y=\"105\" class=\"tb tc\">儲存與分析</text><text x=\"374\" y=\"128\" class=\"ts tc\">存進資料庫再計算</text><rect x=\"461\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"521\" y=\"105\" class=\"tb tc\">應用服務</text><text x=\"521\" y=\"128\" class=\"ts tc\">App、Web、告警</text><line x1=\"141\" y1=\"111\" x2=\"166\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"288\" y1=\"111\" x2=\"313\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"435\" y1=\"111\" x2=\"460\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><rect x=\"20\" y=\"162\" width=\"561\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"186\" class=\"t tc\">身分驗證與傳輸加密：每一段連線都要做</text><rect x=\"20\" y=\"206\" width=\"561\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"230\" class=\"t tc\">裝置管理：登錄、設定、狀態監控、更新</text><text x=\"300\" y=\"272\" class=\"ts tc\">訊息中介軟體可視規模加入；小型系統也可由閘道器直接呼叫後端服務</text></svg>",
-   "caption": "資料由左往右流動。驗證與裝置管理不是其中一站，而是貫穿全程的基礎工作。",
+   "body": "<p>探頭的資料經閘道器送出後，還不能直接變成服務，中間要有人接收、暫存、保存、計算。<b>中介軟體（Middleware）</b>泛指這一段所需的軟體元件與通訊協定，像系統之間的翻譯員與交通管理員。在 IoT 常見的三層架構（負責感測的感知層、負責傳送的網路層、負責提供服務的應用層）中，它橫跨<b>網路層</b>與<b>應用層</b>。</p><p><b>IoT 平台（IoT Platform）</b>則把這些常用功能打包好，不必每次從頭重做。判斷平台時要把功能分開看，下表用冷藏庫逐項舉例。</p>",
+   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"從閘道器到應用服務的資料路徑：閘道器、訊息中介軟體、儲存與分析、應用服務，小型系統可由閘道器直接送進儲存，並由身分驗證與裝置管理貫穿全程\"><defs><marker id=\"s1-24-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"26\" class=\"th tc\">閘道器之後、服務之前，都是這一章的範圍</text><text x=\"153\" y=\"54\" class=\"tb tc\">網路層：把資料送到</text><line x1=\"20\" y1=\"64\" x2=\"287\" y2=\"64\" class=\"ln\"/><text x=\"447\" y=\"54\" class=\"tb tc\">應用層：把資料變成服務</text><line x1=\"314\" y1=\"64\" x2=\"581\" y2=\"64\" class=\"ln\"/><rect x=\"20\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"80\" y=\"105\" class=\"tb tc\">閘道器</text><text x=\"80\" y=\"128\" class=\"ts tc\">現場資料的轉接站</text><rect x=\"167\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"227\" y=\"105\" class=\"tb tc\">訊息中介軟體</text><text x=\"227\" y=\"128\" class=\"ts tc\">暫存、依主題分派</text><rect x=\"314\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"374\" y=\"105\" class=\"tb tc\">儲存與分析</text><text x=\"374\" y=\"128\" class=\"ts tc\">資料庫・規則引擎</text><rect x=\"461\" y=\"76\" width=\"120\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"521\" y=\"105\" class=\"tb tc\">應用服務</text><text x=\"521\" y=\"128\" class=\"ts tc\">儀表板・App・API</text><line x1=\"141\" y1=\"111\" x2=\"166\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"288\" y1=\"111\" x2=\"313\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"435\" y1=\"111\" x2=\"460\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><rect x=\"20\" y=\"214\" width=\"561\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"238\" class=\"t tc\">身分驗證與傳輸加密：每一段連線都要做</text><rect x=\"20\" y=\"258\" width=\"561\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"282\" class=\"t tc\">裝置管理：登錄、設定、狀態監控、更新</text><path d=\"M80,147 V172 H374 V151\" class=\"ln dash\" marker-end=\"url(#s1-24-1-arr)\"/><text x=\"227\" y=\"196\" class=\"t tc\">小型系統可略過</text></svg>",
+   "caption": "資料由左往右流動，下方平台功能表的六項都能在圖上找到位置。驗證與裝置管理不是其中一站，而是貫穿全程的基礎工作。",
    "table": {
     "head": [
      "平台功能",
@@ -65,38 +65,9 @@
   {
    "id": "protocol-layers",
    "h": "通訊協定：硬體管怎麼接，軟體管說什麼",
-   "body": "<p>閘道器要把資料送到後端，得同時決定兩件事。可以想成寄信：<b>實體層協定</b>像道路規格，定義電壓、接腳與連線方式；<b>上層協定</b>像地址與信件格式，定義資料怎麼找路、怎麼送、內容長什麼樣。</p><p>各層由誰負責、有哪些代表協定，見 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a> 的分層表；下圖只列閘道器常碰到的幾個。</p>",
-   "svg": "<svg viewBox=\"0 0 600 295\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"通訊協定分層：應用層、傳輸層、網路層與實體層各有哪些協定\"><text x=\"300\" y=\"26\" class=\"th tc\">硬體管「怎麼接」，軟體管「說什麼」</text><rect x=\"20\" y=\"46\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"65.0\" class=\"tb tc\">應用層</text><text x=\"75\" y=\"83.0\" class=\"ts tc\">格式與邏輯</text><rect x=\"140\" y=\"46\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"74\" class=\"t tc\">HTTP・MQTT・Modbus TCP・DNS</text><rect x=\"20\" y=\"100\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"119.0\" class=\"tb tc\">傳輸層</text><text x=\"75\" y=\"137.0\" class=\"ts tc\">端對端傳送</text><rect x=\"140\" y=\"100\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"128\" class=\"t tc\">TCP（可靠）・UDP（無送達保證）</text><rect x=\"20\" y=\"154\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"75\" y=\"173.0\" class=\"tb tc\">網路層</text><text x=\"75\" y=\"191.0\" class=\"ts tc\">定址與路由</text><rect x=\"140\" y=\"154\" width=\"440\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"360\" y=\"182\" class=\"t tc\">IPv4・IPv6</text><rect x=\"20\" y=\"208\" width=\"110\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"75\" y=\"227.0\" class=\"tb tc\">實體層</text><text x=\"75\" y=\"245.0\" class=\"ts tc\">電壓、接腳、線</text><rect x=\"140\" y=\"208\" width=\"440\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"360\" y=\"236\" class=\"t tc\">RS-232／485・Ethernet 的線材與訊號</text><text x=\"300\" y=\"280\" class=\"ts tc\">連網技術常跨層；本圖省略資料連結層</text></svg>",
-   "caption": "越下層越接近實體線路，越上層越接近應用。Modbus RTU 不在 IP 網路上，通常直接跑在串列線路上。",
-   "table": {
-    "head": [
-     "場景",
-     "常見組合",
-     "說明"
-    ],
-    "rows": [
-     [
-      "智慧城市",
-      "Ethernet＋TCP/IP",
-      "使用一般 IP 網路設備；Ethernet（IEEE 802.3）常用雙絞線或光纖"
-     ],
-     [
-      "工業現場（舊有串列設備）",
-      "RS-232／485＋Modbus RTU",
-      "接線簡單，適合既有設備"
-     ],
-     [
-      "工業現場（已有乙太網路）",
-      "Ethernet＋Modbus TCP",
-      "同樣的 Modbus 功能走 TCP/IP"
-     ],
-     [
-      "工業現場（即時控制）",
-      "Ethernet＋EtherCAT",
-      "跑在乙太網路線路上的工業即時控制匯流排"
-     ]
-    ]
-   },
+   "body": "<p>閘道器要把資料送到後端，得同時決定兩件事。<b>實體層協定</b>定義電壓、接腳與連線方式；<b>上層協定</b>定義資料怎麼找路、怎麼送、內容長什麼樣。</p><p>各層由誰負責、有哪些代表協定，見 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a> 的分層圖。下圖畫的是閘道器兩側：現場側與雲端側各用一套分層組合，閘道器在中間讀值再重新包裝。除了圖中的工業組合，常見的還有：智慧城市用 Ethernet（IEEE 802.3）＋TCP/IP；產線即時控制用 Ethernet＋EtherCAT（跑在乙太網路上的工業即時控制匯流排）。</p>",
+   "svg": "<svg viewBox=\"0 0 600 296\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"閘道器兩側的雙協定堆疊：現場側是 RS-485 上跑 Modbus RTU，不經 IP；雲端側是 Ethernet 或 4G 上跑 IP、TCP 與 MQTT；閘道器讀值後重新包裝\"><defs><marker id=\"s1-24-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"26\" class=\"th tc\">分層讓閘道器兩側各用各的</text><text x=\"180\" y=\"62\" class=\"tb tc\">現場側</text><text x=\"480\" y=\"62\" class=\"tb tc\">雲端側</text><text x=\"20\" y=\"103\" class=\"t\">應用層</text><text x=\"20\" y=\"153\" class=\"t\">傳輸層</text><text x=\"20\" y=\"203\" class=\"t\">網路層</text><text x=\"20\" y=\"253\" class=\"t\">鏈結／實體</text><rect x=\"110\" y=\"76\" width=\"140\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"103\" class=\"t tc\">Modbus RTU</text><rect x=\"110\" y=\"126\" width=\"140\" height=\"92\" rx=\"6\" class=\"ln dash\"/><text x=\"180\" y=\"177\" class=\"t tc\">不經 IP</text><rect x=\"110\" y=\"226\" width=\"140\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"180\" y=\"253\" class=\"t tc\">RS-485</text><rect x=\"272\" y=\"76\" width=\"86\" height=\"192\" rx=\"8\" class=\"soft\"/><text x=\"315\" y=\"104\" class=\"tb tc\">閘道器</text><text x=\"315\" y=\"160\" class=\"t tc\">讀值</text><line x1=\"315\" y1=\"168\" x2=\"315\" y2=\"196\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/><text x=\"315\" y=\"218\" class=\"t tc\">重新包裝</text><rect x=\"380\" y=\"76\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"103\" class=\"t tc\">MQTT 或 Modbus TCP</text><rect x=\"380\" y=\"126\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"153\" class=\"t tc\">TCP</text><rect x=\"380\" y=\"176\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"203\" class=\"t tc\">IP</text><rect x=\"380\" y=\"226\" width=\"200\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"480\" y=\"253\" class=\"t tc\">Ethernet／4G</text><line x1=\"251\" y1=\"97\" x2=\"270\" y2=\"97\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/><line x1=\"359\" y1=\"97\" x2=\"378\" y2=\"97\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/></svg>",
+   "caption": "Modbus RTU 不在 IP 網路上，通常直接跑在串列線路上；Modbus TCP 功能相同，只是下層改走 TCP/IP，工廠已有乙太網路時常用。",
    "predict": {
     "q": "冷藏庫的舊壓縮機控制器只有 RS-485 接頭，用 Modbus RTU。要把資料送上雲端，一定得換掉控制器嗎？",
     "a": "不一定。閘道器可以一邊用 RS-485 與 Modbus RTU 讀值，另一邊走網路送上後端。分層讓兩段各用各的。"
@@ -105,48 +76,35 @@
   {
    "id": "message-middleware",
    "h": "訊息中介軟體：先收下來，再慢慢分派",
-   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p><a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉介紹過的三個角色</a>在這裡一樣：發布者送出帶主題的訊息（例如 <code>coldchain/r1/temp</code>），代理（Broker）依訂閱者的登記分派。</p><p>選用時先問兩個問題。Broker 重開機後，還沒送出的訊息還在嗎？不能接受消失，就要確認訊息會先寫進硬碟，這種能力稱為<b>永久儲存（Persistent Storage）</b>。第二是下表的服務品質 <b>QoS（Quality of Service）</b>，等級越高越可靠，也越耗資源。</p>",
-   "svg": "<svg viewBox=\"0 0 600 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"發布訂閱模式：發布者把帶主題的訊息交給 Broker，Broker 分派給訂閱該主題的訂閱者\"><defs><marker id=\"s1-24-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"85\" y=\"24\" class=\"tb tc\">發布者</text><text x=\"305\" y=\"24\" class=\"tb tc\">代理</text><text x=\"522\" y=\"24\" class=\"tb tc\">訂閱者</text><rect x=\"20\" y=\"50\" width=\"130\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"85\" y=\"75.0\" class=\"tb tc\">溫度感測器</text><text x=\"85\" y=\"93.0\" class=\"ts tc\">coldchain/r1/temp</text><rect x=\"20\" y=\"150\" width=\"130\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"85\" y=\"175.0\" class=\"tb tc\">壓縮機振動</text><text x=\"85\" y=\"193.0\" class=\"ts tc\">coldchain/r1/vib</text><rect x=\"230\" y=\"60\" width=\"150\" height=\"130\" rx=\"6\" class=\"acc\"/><text x=\"305\" y=\"100\" class=\"tb tc\">Broker</text><text x=\"305\" y=\"130\" class=\"t tc\">收下、暫存</text><text x=\"305\" y=\"158\" class=\"t tc\">依主題分派</text><rect x=\"460\" y=\"40\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"62.0\" class=\"tb tc\">儀表板</text><text x=\"522.5\" y=\"80.0\" class=\"ts tc\">訂 …/temp、…/vib</text><rect x=\"460\" y=\"105\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"127.0\" class=\"tb tc\">告警服務</text><text x=\"522.5\" y=\"145.0\" class=\"ts tc\">訂 …/vib</text><rect x=\"460\" y=\"170\" width=\"125\" height=\"50\" rx=\"6\" class=\"box\"/><text x=\"522.5\" y=\"192.0\" class=\"tb tc\">資料儲存</text><text x=\"522.5\" y=\"210.0\" class=\"ts tc\">訂 coldchain/#</text><line x1=\"152\" y1=\"78\" x2=\"227\" y2=\"100\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"152\" y1=\"178\" x2=\"227\" y2=\"152\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"105\" x2=\"457\" y2=\"68\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"125\" x2=\"457\" y2=\"130\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"382\" y1=\"145\" x2=\"457\" y2=\"192\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"300\" y=\"248\" class=\"ts tc\">發布者與訂閱者互不認識（解耦），由 Broker 依主題轉送</text></svg>",
-   "caption": "發布者只管送出，訂閱者只收自己訂的主題，中間由 Broker 暫存並轉送。",
-   "table": {
-    "head": [
-     "服務品質",
-     "保證",
-     "適合情境"
-    ],
-    "rows": [
-     [
-      "最多一次 At-most-once（MQTT QoS 0）",
-      "送了就不管，可能遺失",
-      "週期性讀值，掉一筆無妨"
-     ],
-     [
-      "至少一次 At-least-once（QoS 1）",
-      "收到確認前會重送，可能重複",
-      "接收端能處理重複資料"
-     ],
-     [
-      "恰好一次 Exactly-once（QoS 2）",
-      "協定交換範圍內恰好一次，最耗資源",
-      "重要控制指令；計費等業務仍要以交易 ID 去重"
-     ]
-    ]
-   },
+   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p><a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉介紹過的三個角色</a>在這裡一樣：發布者送出帶主題的訊息（例如 <code>coldchain/r1/temp</code>），代理（Broker）依訂閱者的登記分派。</p><p>選用時先問兩個問題。Broker 重開機後，還沒送出的訊息還在嗎？不能接受消失，就要確認訊息會先寫進硬碟，這種能力稱為<b>永久儲存（Persistent Storage）</b>。第二是送達保證，也就是服務品質 <b>QoS（Quality of Service）</b>：最多一次 At-most-once（可能丟）、至少一次 At-least-once（可能重複）、恰好一次 Exactly-once，對應 MQTT 的 QoS 0／1／2（見 <a href=\"s1-22.html#qos-and-protocols\">2.2〈常見通訊協定與網路層技術〉</a>），等級越高越耗資源；QoS 2 只保證協定層恰好一次，計費等業務仍要用交易 ID 去重。</p>",
+   "figs": [
+    {
+     "pos": "after-body",
+     "svg": "<svg viewBox=\"0 0 600 352\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"削峰時間圖：發布者送進 Broker 的流入量在清晨出現尖峰，高過資料庫寫入上限；超出的部分先在佇列排隊，訂閱者照上限寫出，尖峰過後再把排隊的量補寫完，寫出曲線因此被削平\"><defs><marker id=\"s1-24-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"130\" height=\"72\" rx=\"6\" class=\"box\"/><text x=\"85\" y=\"49\" class=\"tb tc\">發布者</text><text x=\"85\" y=\"75\" class=\"t tc\">探頭</text><rect x=\"225\" y=\"20\" width=\"150\" height=\"72\" rx=\"6\" class=\"acc\"/><text x=\"270\" y=\"49\" class=\"tb tc\">Broker</text><text x=\"270\" y=\"75\" class=\"t tc\">佇列</text><rect x=\"314\" y=\"40\" width=\"10\" height=\"32\" rx=\"2\" class=\"box\"/><rect x=\"327\" y=\"40\" width=\"10\" height=\"32\" rx=\"2\" class=\"box\"/><rect x=\"340\" y=\"40\" width=\"10\" height=\"32\" rx=\"2\" class=\"box\"/><rect x=\"353\" y=\"40\" width=\"10\" height=\"32\" rx=\"2\" class=\"box\"/><rect x=\"450\" y=\"20\" width=\"130\" height=\"72\" rx=\"6\" class=\"box\"/><text x=\"515\" y=\"49\" class=\"tb tc\">訂閱者</text><text x=\"515\" y=\"75\" class=\"t tc\">寫入資料庫</text><line x1=\"152\" y1=\"62\" x2=\"222\" y2=\"62\" class=\"la\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"187\" y=\"52\" class=\"t tc\">流入</text><line x1=\"377\" y1=\"62\" x2=\"447\" y2=\"62\" class=\"ln\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"412\" y=\"52\" class=\"t tc\">寫出</text><line x1=\"70\" y1=\"300\" x2=\"70\" y2=\"128\" class=\"ln\" marker-end=\"url(#s1-24-3-arr)\"/><line x1=\"70\" y1=\"300\" x2=\"580\" y2=\"300\" class=\"ln\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"80\" y=\"140\" class=\"t\">每秒筆數</text><text x=\"580\" y=\"322\" class=\"t\" text-anchor=\"end\">時間</text><line x1=\"262\" y1=\"300\" x2=\"262\" y2=\"306\" class=\"ln\"/><text x=\"262\" y=\"318\" class=\"ts tc\">清晨發車</text><polygon points=\"241,214 262,146 318,156 337.7,214\" class=\"acc\"/><polygon points=\"337.7,214 352,256 459.5,256 459.5,214\" class=\"acc\"/><line x1=\"70\" y1=\"214\" x2=\"572\" y2=\"214\" class=\"ln dash\"/><text x=\"80\" y=\"206\" class=\"t\">資料庫寫入上限</text><polyline points=\"70,256 228,256 262,146 318,156 352,256 572,256\" class=\"la\"/><polyline points=\"70,256 228,256 241,214 459.5,214 459.5,256 572,256\" class=\"ln\"/><text x=\"334\" y=\"166\" class=\"t\">流入</text><text x=\"468\" y=\"241\" class=\"t\">寫出</text><text x=\"225\" y=\"176\" class=\"t\" text-anchor=\"end\">超出的先排隊</text><text x=\"405.7\" y=\"282\" class=\"t tc\">之後慢慢補寫完</text><path d=\"M300,190 Q372,182 405.7,232\" class=\"ln\" marker-end=\"url(#s1-24-3-arr)\"/><text x=\"300\" y=\"344\" class=\"t tc\">總量不變，只是攤開；代價是部分資料晚一點寫入</text></svg>",
+     "caption": "流入是發布者送進 Broker 的量，寫出是訂閱者寫進資料庫的量；兩塊色塊面積相同，代表超出的部分只是延後寫入。Broker 若沒有永久儲存，重開機時還在排隊的訊息會遺失。"
+    }
+   ],
    "predict": {
     "q": "清晨全台貨車同時發車，幾千支探頭的讀值同時湧入，後端資料庫撐不住。只能把資料庫升到最高規格嗎？",
     "a": "不必。可以在中間放一層先把訊息收下來，後端再照自己的速度處理，尖峰就被削平了。"
    },
    "more": {
-    "label": "MQTT、AMQP、Kafka 怎麼分，以及訊息路由與 M2M",
-    "body": "<ul><li><b>MQTT</b>：輕量，常用於 IoT 設備。</li><li><b>AMQP</b>：企業級訊息佇列協定，路由規則豐富，代表軟體為 RabbitMQ。</li><li><b>Kafka</b>：把訊息寫入磁碟保存，適合大量資料流，也是永久儲存的常見例子。</li></ul><p>其他軟體還有 Apache ActiveMQ，雲端服務則有 AWS IoT Core、GCP Pub/Sub。</p><p>在較廣義的訊息交換架構中，決定訊息傳送路徑的功能稱為<b>訊息路由（Message Router）</b>；MQTT 沒有獨立的路由器元件，依主題轉送由 Broker 完成。機器對機器（Machine to Machine, M2M）的資料交換常使用這類服務，但也可以用 Modbus 輪詢（定時逐台詢問）或 HTTP 請求直接交換。</p><p>有了緩衝，後端也不必為了尖峰買到最高規格。</p>"
-   }
+    "label": "MQTT、AMQP、Kafka 怎麼分",
+    "body": "<ul><li><b>MQTT</b>：輕量，給大量小型設備。</li><li><b>AMQP</b>：企業級訊息佇列協定，代表軟體為 RabbitMQ。</li><li><b>Kafka</b>：把訊息寫入磁碟保存，適合大量資料流，也是永久儲存的常見例子。</li></ul>"
+   },
+   "after": "<p>想看佇列怎麼一點一點變長、再慢慢清空，<a href=\"s2-11.html#message-queue\">1-1〈系統元件與架構〉</a>有一支 31 秒的動畫。</p>"
   },
   {
    "id": "cloud-models",
    "h": "地端與雲端：放哪裡、誰來管",
    "body": "<p>第一個問題是系統放哪裡。<b>地端（On-Premise）</b>由企業自己營運管理，重點在「自己管」，不在機器種類，用實體機或虛擬機都算。<b>純雲（Pure-cloud）</b>的元件全在雲端業者環境。<b>混合雲（Hybrid-cloud）</b>則部分在地端、部分在雲端，常見考量是資料安全、內部網路與上雲耗時。</p><p>第二個問題是業者幫忙管到哪一層，用租屋來想最直覺：</p><ul><li><b>IaaS（Infrastructure as a Service，基礎設施即服務）</b>像租毛胚屋：租虛擬機、網路、儲存與頻寬。例如租 EC2 自己裝 SQL Server，作業系統與資料庫的更新、備份都要自己做。</li><li><b>PaaS（Platform as a Service，平台即服務）</b>像租附家具的房子：環境和資料庫都已備好，更新與備份由業者代管，例如 AWS RDS、GCP Cloud SQL、AWS IoT Core。</li><li><b>SaaS（Software as a Service，軟體即服務）</b>像住飯店：直接使用做好的軟體，例如 Google Drive、Gmail、手環 App。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 370\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 的責任分層：使用者自己管的層數逐步減少\"><text x=\"65\" y=\"81\" class=\"t tc\">應用程式</text><text x=\"65\" y=\"127\" class=\"t tc\">資料</text><text x=\"65\" y=\"173\" class=\"t tc\">執行環境</text><text x=\"65\" y=\"219\" class=\"t tc\">作業系統</text><text x=\"65\" y=\"265\" class=\"t tc\">虛擬化</text><text x=\"65\" y=\"311\" class=\"t tc\">硬體網路</text><text x=\"185\" y=\"24\" class=\"tb tc\">地端</text><text x=\"185\" y=\"44\" class=\"ts tc\">自建機房</text><rect x=\"130\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><text x=\"302\" y=\"24\" class=\"tb tc\">IaaS</text><text x=\"302\" y=\"44\" class=\"ts tc\">EC2 虛擬機</text><rect x=\"247\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"247\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"419\" y=\"24\" class=\"tb tc\">PaaS</text><text x=\"419\" y=\"44\" class=\"ts tc\">Cloud SQL</text><rect x=\"364\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"364\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"364\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"536\" y=\"24\" class=\"tb tc\">SaaS</text><text x=\"536\" y=\"44\" class=\"ts tc\">Google Drive</text><rect x=\"481\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><text x=\"536\" y=\"126\" class=\"t tc\">資料權限</text><rect x=\"481\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"170\" y=\"334\" width=\"24\" height=\"18\" rx=\"4\" class=\"acc\"/><text x=\"202\" y=\"349\" class=\"t\">使用者管</text><rect x=\"330\" y=\"334\" width=\"24\" height=\"18\" rx=\"4\" class=\"soft\"/><text x=\"362\" y=\"349\" class=\"t\">雲端業者管</text></svg>",
-   "caption": "典型責任分工，實際依服務契約而定。無論哪種模式，資料權限與使用設定仍須自己負責。",
+   "figs": [
+    {
+     "pos": "after-body",
+     "svg": "<svg viewBox=\"0 0 600 370\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地端、IaaS、PaaS、SaaS 的責任分層：使用者自己管的層數逐步減少\"><text x=\"65\" y=\"81\" class=\"t tc\">應用程式</text><text x=\"65\" y=\"127\" class=\"t tc\">資料</text><text x=\"65\" y=\"173\" class=\"t tc\">執行環境</text><text x=\"65\" y=\"219\" class=\"t tc\">作業系統</text><text x=\"65\" y=\"265\" class=\"t tc\">虛擬化</text><text x=\"65\" y=\"311\" class=\"t tc\">硬體網路</text><text x=\"185\" y=\"24\" class=\"tb tc\">地端</text><text x=\"185\" y=\"44\" class=\"ts tc\">自建機房</text><rect x=\"130\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"130\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><text x=\"302\" y=\"24\" class=\"tb tc\">IaaS</text><text x=\"302\" y=\"44\" class=\"ts tc\">EC2 虛擬機</text><rect x=\"247\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"247\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"247\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"419\" y=\"24\" class=\"tb tc\">PaaS</text><text x=\"419\" y=\"44\" class=\"ts tc\">Cloud SQL</text><rect x=\"364\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"364\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><rect x=\"364\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"364\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"536\" y=\"24\" class=\"tb tc\">SaaS</text><text x=\"536\" y=\"44\" class=\"ts tc\">Google Drive</text><rect x=\"481\" y=\"55\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"101\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\"/><text x=\"536\" y=\"126\" class=\"t tc\">資料權限</text><rect x=\"481\" y=\"147\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"193\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"239\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"481\" y=\"285\" width=\"110\" height=\"40\" rx=\"6\" class=\"soft\"/><rect x=\"170\" y=\"334\" width=\"24\" height=\"18\" rx=\"4\" class=\"acc\"/><text x=\"202\" y=\"349\" class=\"t\">使用者管</text><rect x=\"330\" y=\"334\" width=\"24\" height=\"18\" rx=\"4\" class=\"soft\"/><text x=\"362\" y=\"349\" class=\"t\">雲端業者管</text></svg>",
+     "caption": "典型責任分工，實際依服務契約而定。越往右，自己管的層數越少，省下的維運越多，能調整的設定也越少；地端掌控度最高，人力與設備成本也最高。無論哪種模式，資料權限與使用設定仍須自己負責。"
+    }
+   ],
    "table": {
     "head": [
      "雲端類型",
@@ -194,15 +152,11 @@
    "predict": {
     "q": "倉庫閘道器是一台 Linux 小主機，想同時跑三支程式，還要能快速更新。每支程式各開一台虛擬機好，還是各包一個容器好？",
     "a": "容器較合適。容器共用主機核心，占用少、啟動快；虛擬機各帶一份作業系統，小主機負擔不起。"
-   },
-   "more": {
-    "label": "這兩種技術用在系統的哪一層",
-    "body": "<p>兩者主要用在運算力較強的伺服器。感測節點通常資源不足，也沒有必要；閘道器則看資源與需求，較強的 Linux 閘道器可以跑容器，虛擬機就很少用在這一層。</p>"
    }
   },
   {
    "id": "data-storage-analysis",
-   "h": "資料的存與算：依結構、數量、即時性來選",
+   "h": "資料存哪裡：依結構、數量、存取速度來選",
    "body": "<p>資料庫沒有通吃的選擇，要看資料的<b>結構</b>、<b>數量</b>與<b>存取速度</b>需求。</p><ul><li><b>關聯式資料庫（Relational Database）</b>像一張張欄位固定的表格，靠共同的編號（鍵，Key）把表連起來。它提供 <b>ACID</b>：原子性、一致性、隔離性、持久性，也就是交易要嘛全做、要嘛全不做，完成後也不會遺失。</li><li><b>NoSQL（Not Only SQL）</b>的強項是橫向擴充，加機器就能撐更多資料。</li><li><b>時序資料庫</b>專為依時間持續寫入、依時間範圍查詢的資料設計。</li><li><b>物件儲存（Object Storage）</b>像超大的雲端檔案櫃，放照片、影片這類整個檔案。</li></ul>",
    "table": {
     "head": [
@@ -238,27 +192,51 @@
      ],
      [
       "記憶體快取",
-      "極快（典型低於 5 ms）",
+      "低於 5 ms；搭配資料庫，不取代",
       "Redis、Memcached",
       "最新狀態、熱門查詢"
      ]
     ]
    },
    "predict": {
-    "q": "同一批溫度資料，要「超溫立刻通知」，也要「每月能耗報表」。這兩件事適合用同一種處理時機嗎？",
-    "a": "不適合。立刻通知要資料一到就算（串流），月報可以累積後一次算（批次）。"
+    "q": "八千支探頭每分鐘各一筆讀值，直接和訂單放進同一個 MySQL 就好嗎？",
+    "a": "不理想。每天上千萬筆、依時間寫入的讀值適合時序資料庫；訂單要靠 ACID 交易，留在關聯式資料庫。依資料特性分開存。"
    },
    "lab": "s1-24-storage",
-   "after": "<p>資料存好後，分析由淺到深可分三級：</p><ol><li><b>描述性統計</b>：算出平均、中位數、標準差、最大最小值等數字掌握整體狀況，顯示在儀表板（Dashboard）上，超標時發出警報（Alert）。</li><li><b>資料探勘</b>：從大量資料找出異常或把相似的資料分組。原始資料通常很雜亂，要先做 <b>ETL</b>（擷取、轉換、載入）整理乾淨；資料量大時會用 Spark、Hadoop、BigQuery 這類工具。</li><li><b>人工智慧與機器學習</b>：依任務選用不同模型。</li></ol><p>處理時機也要選：<b>批次（Batch）</b>累積後一次算，如每日能耗報表，吞吐量大但有延遲；<b>串流（Streaming）</b>資料一到就算，如溫度超標立即告警，常見工具有 Flink、Kafka Streams。</p>",
    "more": {
-    "label": "非結構化資料怎麼處理、記憶體快取，以及結果怎麼交給使用者",
-    "body": "<p>照片、掃描文件沒有固定欄位，稱為非結構化資料，原檔通常放在物件儲存。若用文字辨識（OCR）把簽收單內容讀出來，就能存成帶欄位名稱的 JSON 這類半結構化資料（有標籤但欄位不必固定），放進 NoSQL。圖片與文件也可能經向量計算後，存進向量資料庫供相似度搜尋。</p><p><b>記憶體快取（Memory Cache）</b>把常用資料放在速度極快的記憶體，像把常用文具放桌上，通常搭配資料庫使用，不取代它。</p><p>分析結果最後多以 App（Android、iOS，可用 Flutter 跨平台開發）或網頁（本質是 HTML、CSS、JavaScript）提供。</p>"
+    "label": "非結構化與半結構化資料",
+    "body": "<p>照片、掃描文件沒有固定欄位，稱為非結構化資料，原檔通常放在物件儲存。若用文字辨識（OCR）把簽收單內容讀出來，就能存成帶欄位名稱的 JSON 這類半結構化資料（有標籤但欄位不必固定），放進 NoSQL。圖片與文件也可能經向量計算後，存進向量資料庫供相似度搜尋。</p>"
+   }
+  },
+  {
+   "id": "data-analysis",
+   "h": "資料怎麼算：三級分析、批次與串流",
+   "body": "<p>資料存好後，分析由淺到深分三級：</p><ol><li><b>描述性統計</b>：算平均、中位數、標準差、最大最小值掌握整體狀況，顯示在儀表板（Dashboard）上，超標時發出警報（Alert）。</li><li><b>資料探勘</b>：從大量資料找出異常，或把相似的資料分組。</li><li><b>人工智慧與機器學習</b>：用資料訓練模型做預測或判斷。</li></ol><p>原始資料通常很雜亂，分析前要先做 <b>ETL</b>：擷取（Extract）、轉換（Transform）、載入（Load），也就是把資料取出、清洗整理後放進分析用的地方。</p><p>處理時機也要選。<b>批次（Batch）</b>把資料累積一段時間後一次算（如 Hadoop、Spark）；<b>串流（Streaming）</b>每筆資料一到就算（如 Flink、Kafka Streams）。結果最後以儀表板、App 或網頁呈現。</p>",
+   "svg": "<svg viewBox=\"0 0 600 300\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"同一條溫度時間軸上有一次超溫：批次把讀值存起來，月底算月報才發現，中間有延遲；串流每筆一到就比門檻，超溫那一筆立刻告警\"><defs><marker id=\"s1-24-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"28\" class=\"th tc\" data-s=\"1\">批次：先存起來，月底一次算</text><text x=\"300\" y=\"28\" class=\"th tc\" data-s=\"2\">串流：每筆一到就比門檻</text><line x1=\"70\" y1=\"200\" x2=\"70\" y2=\"58\" class=\"ln\" marker-end=\"url(#s1-24-7-arr)\"/><text x=\"80\" y=\"70\" class=\"ts\">溫度</text><line x1=\"70\" y1=\"200\" x2=\"560\" y2=\"200\" class=\"ln\" marker-end=\"url(#s1-24-7-arr)\"/><text x=\"566\" y=\"205\" class=\"ts\">時間</text><line x1=\"70\" y1=\"120\" x2=\"540\" y2=\"120\" class=\"ln dash\"/><text x=\"36\" y=\"125\" class=\"ts tc\">門檻</text><polyline points=\"110,165 160,158 210,170 260,152 310,100 360,160 410,168 460,155\" class=\"ln\"/><circle cx=\"110\" cy=\"165\" r=\"6\" class=\"box\"/><circle cx=\"160\" cy=\"158\" r=\"6\" class=\"box\"/><circle cx=\"210\" cy=\"170\" r=\"6\" class=\"box\"/><circle cx=\"260\" cy=\"152\" r=\"6\" class=\"box\"/><circle cx=\"310\" cy=\"100\" r=\"6\" class=\"box\"/><circle cx=\"360\" cy=\"160\" r=\"6\" class=\"box\"/><circle cx=\"410\" cy=\"168\" r=\"6\" class=\"box\"/><circle cx=\"460\" cy=\"155\" r=\"6\" class=\"box\"/><line x1=\"160\" y1=\"206\" x2=\"160\" y2=\"234\" class=\"la\" marker-end=\"url(#s1-24-7-arr)\"/><line x1=\"310\" y1=\"206\" x2=\"310\" y2=\"234\" class=\"la\" marker-end=\"url(#s1-24-7-arr)\"/><line x1=\"410\" y1=\"206\" x2=\"410\" y2=\"234\" class=\"la\" marker-end=\"url(#s1-24-7-arr)\"/><g data-s=\"1\"><line x1=\"314\" y1=\"80\" x2=\"516\" y2=\"80\" class=\"la\" marker-start=\"url(#s1-24-7-arr)\" marker-end=\"url(#s1-24-7-arr)\"/><text x=\"415\" y=\"70\" class=\"tb tc\">延遲</text><line x1=\"520\" y1=\"80\" x2=\"520\" y2=\"200\" class=\"ln dash\"/><text x=\"520\" y=\"222\" class=\"ts tc\">月底</text><rect x=\"90\" y=\"240\" width=\"340\" height=\"44\" rx=\"6\" class=\"soft\"/><text x=\"260\" y=\"268\" class=\"tb tc\">讀值一路存進來</text><line x1=\"430\" y1=\"262\" x2=\"456\" y2=\"262\" class=\"la\" marker-end=\"url(#s1-24-7-arr)\"/><rect x=\"460\" y=\"240\" width=\"120\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"520\" y=\"268\" class=\"tb tc\">月報</text></g><g data-s=\"2\"><circle cx=\"310\" cy=\"100\" r=\"9\" class=\"bad\"/><line x1=\"318\" y1=\"94\" x2=\"346\" y2=\"76\" class=\"la\" marker-end=\"url(#s1-24-7-arr)\"/><rect x=\"350\" y=\"52\" width=\"120\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"410\" y=\"78\" class=\"tb tc\">立刻告警</text><rect x=\"90\" y=\"240\" width=\"490\" height=\"44\" rx=\"6\" class=\"soft\"/><text x=\"335\" y=\"268\" class=\"tb tc\">每筆到達就比門檻</text></g></svg>",
+   "caption": "同一條溫度時間軸、同一次超溫，差別只在什麼時候算。",
+   "steps": [
+    "批次：讀值一路存起來，月中那次超溫要等月底算出月報才看得到，中間就是延遲。",
+    "串流：每筆讀值一到就和門檻比，超溫那一筆當下就發出告警。"
+   ],
+   "start": 1,
+   "predict": {
+    "q": "同一批溫度資料，要「超溫立刻通知」，也要「每月能耗報表」。這兩件事適合用同一種處理時機嗎？",
+    "a": "不適合。立刻通知要資料一到就算（串流），月報可以累積後一次算（批次）。"
    }
   },
   {
    "id": "communication-auth",
    "h": "元件怎麼溝通、怎麼確認身分",
-   "body": "<p>系統內的元件之間，常見三種溝通模式：</p><ul><li><b>請求－回應（Request-Response）</b>：像打電話問問題，問了才答。代表是 HTTP（REST API）。</li><li><b>非同步訊息驅動</b>：像寄信，交給 Broker 就可以去做別的事。代表是 MQTT。</li><li><b>遠端程序呼叫（Remote Procedure Call, RPC）</b>：呼叫遠端服務就像呼叫本機功能。代表是 gRPC。</li></ul><p>元件通訊前要先確認對方身分，才放行服務與資料。選擇驗證機制的關鍵，是在安全性與設備算力之間取得平衡。雲端平台的資安還包含存取管理、傳輸加密（TLS/SSL）與災害復原；權限應採<b>最小權限</b>，只給完成工作所需的部分。</p>",
+   "body": "<p>元件之間常見三種溝通模式：<b>請求－回應（Request-Response）</b>如 HTTP，送出後要停下來等回覆；<b>非同步訊息驅動</b>如 MQTT，交給 Broker 就繼續做事；<b>遠端程序呼叫（Remote Procedure Call, RPC）</b>如 gRPC，寫起來像呼叫本機函式。</p>",
+   "figs": [
+    {
+     "pos": "after-body",
+     "loop": true,
+     "svg": "<svg viewBox=\"0 0 600 362\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"動畫：兩條跑道比較溝通模式，下方長條是閘道器程式的時間。上列請求－回應（HTTP／REST），像打電話：程式送出請求，圓點跑到伺服器再帶著回應回來，圓點在外面的這段時間，程式的長條停住、變成虛線框，標示等回覆；RPC（gRPC）寫成 getTemp() 像呼叫本機函式，底下仍是這一問一答，所以 gRPC 兩類都算。下列非同步訊息（MQTT），像寄信：程式把訊息交給 Broker 就繼續做事，長條完全不停，Broker 過一會兒才把訊息送到訂閱者，沒有回程。\"><style>@keyframes lp-s124-a1{0%{transform:scaleX(0.001);opacity:1}25%{transform:scaleX(1)}95%{opacity:1}99.25%{opacity:0}100%{transform:scaleX(1);opacity:0}}.lp-s124-a1{animation:lp-s124-a1 4s linear infinite}@keyframes lp-s124-w1{0%{transform:scaleX(0.001);opacity:1}25%{transform:scaleX(0.001)}70%{transform:scaleX(1)}95%{opacity:1}99.25%{opacity:0}100%{transform:scaleX(1);opacity:0}}.lp-s124-w1{animation:lp-s124-w1 4s linear infinite}@keyframes lp-s124-c1{0%{transform:scaleX(0.001);opacity:1}70%{transform:scaleX(0.001)}85%{transform:scaleX(1)}95%{opacity:1}99.25%{opacity:0}100%{transform:scaleX(1);opacity:0}}.lp-s124-c1{animation:lp-s124-c1 4s linear infinite}@keyframes lp-s124-a2{0%{transform:scaleX(0.001);opacity:1}85%{transform:scaleX(1)}95%{opacity:1}99.25%{opacity:0}100%{transform:scaleX(1);opacity:0}}.lp-s124-a2{animation:lp-s124-a2 4s linear infinite}@keyframes lp-s124-t0{0%{transform:translateY(8px);opacity:0}12.5%{transform:translateY(8px);opacity:0}16.25%{transform:translateY(0px);opacity:1}95%{opacity:1}99.25%{opacity:0}100%{transform:translateY(0px);opacity:0}}.lp-s124-t0{animation:lp-s124-t0 4s linear infinite}@keyframes lp-s124-tw{0%{transform:translateY(8px);opacity:0}37.5%{transform:translateY(8px);opacity:0}41.25%{transform:translateY(0px);opacity:1}95%{opacity:1}99.25%{opacity:0}100%{transform:translateY(0px);opacity:0}}.lp-s124-tw{animation:lp-s124-tw 4s linear infinite}@keyframes lp-s124-tk{0%{transform:translateY(8px);opacity:0}46.75%{transform:translateY(8px);opacity:0}50.5%{transform:translateY(0px);opacity:1}95%{opacity:1}99.25%{opacity:0}100%{transform:translateY(0px);opacity:0}}.lp-s124-tk{animation:lp-s124-tk 4s linear infinite}@keyframes lp-s124-tc{0%{transform:translateY(8px);opacity:0}80.25%{transform:translateY(8px);opacity:0}84%{transform:translateY(0px);opacity:1}95%{opacity:1}99.25%{opacity:0}100%{transform:translateY(0px);opacity:0}}.lp-s124-tc{animation:lp-s124-tc 4s linear infinite}@keyframes lp-s124-d1{0%{transform:translate(150px,104px);opacity:0}22.5%{transform:translate(150px,104px);opacity:0}25%{opacity:1}38.75%{transform:translate(452px,104px)}43.75%{transform:translate(452px,104px)}48.75%{transform:translate(452px,130px)}55%{transform:translate(452px,130px)}70%{transform:translate(150px,130px);opacity:1}72.5%{opacity:0}100%{transform:translate(150px,130px);opacity:0}}.lp-s124-d1{animation:lp-s124-d1 4s linear infinite}@keyframes lp-s124-d2{0%{transform:translate(150px,288px);opacity:0}22.5%{transform:translate(150px,288px);opacity:0}25%{opacity:1}31.25%{transform:translate(258px,288px)}55%{transform:translate(258px,288px)}63.75%{transform:translate(452px,288px);opacity:1}66.25%{opacity:0}100%{transform:translate(452px,288px);opacity:0}}.lp-s124-d2{animation:lp-s124-d2 4s linear infinite}</style><defs><marker id=\"s1-24-8-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"8\" y=\"80\" width=\"150\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"440\" y=\"80\" width=\"150\" height=\"74\" rx=\"8\" class=\"box\"/><line x1=\"160\" y1=\"104\" x2=\"438\" y2=\"104\" class=\"la\" marker-end=\"url(#s1-24-8-arr)\"/><line x1=\"438\" y1=\"130\" x2=\"160\" y2=\"130\" class=\"ln dash\" marker-end=\"url(#s1-24-8-arr)\"/><rect x=\"8\" y=\"242\" width=\"150\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"240\" y=\"242\" width=\"120\" height=\"74\" rx=\"8\" class=\"acc\"/><rect x=\"440\" y=\"242\" width=\"150\" height=\"74\" rx=\"8\" class=\"box\"/><line x1=\"160\" y1=\"288\" x2=\"238\" y2=\"288\" class=\"la\" marker-end=\"url(#s1-24-8-arr)\"/><line x1=\"362\" y1=\"288\" x2=\"438\" y2=\"288\" class=\"la\" marker-end=\"url(#s1-24-8-arr)\"/><g class=\"lp-move\"><g transform=\"translate(8,166)\"><rect x=\"0\" y=\"0\" width=\"171.2\" height=\"26\" rx=\"4\" class=\"acc lp-s124-a1\"/></g><g transform=\"translate(179.2,166)\"><rect x=\"0\" y=\"0\" width=\"308.1\" height=\"26\" rx=\"4\" class=\"box dash lp-s124-w1\"/></g><g transform=\"translate(487.3,166)\"><rect x=\"0\" y=\"0\" width=\"102.7\" height=\"26\" rx=\"4\" class=\"acc lp-s124-c1\"/></g><g transform=\"translate(8,326)\"><rect x=\"0\" y=\"0\" width=\"582\" height=\"26\" rx=\"4\" class=\"acc lp-s124-a2\"/></g><text x=\"18\" y=\"185\" class=\"t lp-s124-t0\">做自己的事</text><text x=\"189.2\" y=\"185\" class=\"t lp-s124-tw\">等回覆…</text><text x=\"497.3\" y=\"185\" class=\"t lp-s124-tc\">繼續做事</text><text x=\"18\" y=\"345\" class=\"t lp-s124-t0\">做自己的事</text><text x=\"189.2\" y=\"345\" class=\"t lp-s124-tw\">交出就走，</text><text x=\"269.2\" y=\"345\" class=\"t lp-s124-tk\">繼續做事</text><circle r=\"7\" class=\"mk lp-s124-d1\"/><circle r=\"7\" class=\"mk lp-s124-d2\"/></g><g class=\"lp-still\"><rect x=\"8\" y=\"166\" width=\"171.2\" height=\"26\" rx=\"4\" class=\"acc\"/><rect x=\"179.2\" y=\"166\" width=\"308.1\" height=\"26\" rx=\"4\" class=\"box dash\"/><rect x=\"487.3\" y=\"166\" width=\"102.7\" height=\"26\" rx=\"4\" class=\"acc\"/><rect x=\"8\" y=\"326\" width=\"582\" height=\"26\" rx=\"4\" class=\"acc\"/><text x=\"18\" y=\"185\" class=\"t\">做自己的事</text><text x=\"189.2\" y=\"185\" class=\"t\">等回覆…</text><text x=\"497.3\" y=\"185\" class=\"t\">繼續做事</text><text x=\"18\" y=\"345\" class=\"t\">做自己的事</text><text x=\"189.2\" y=\"345\" class=\"t\">交出就走，</text><text x=\"269.2\" y=\"345\" class=\"t\">繼續做事</text><circle cx=\"258\" cy=\"288\" r=\"7\" class=\"mk\"/></g><text x=\"10\" y=\"22\" class=\"tb\">請求－回應：像打電話（HTTP／REST）</text><text x=\"10\" y=\"46\" class=\"t\">RPC（gRPC）寫成 getTemp() 像呼叫本機函式，</text><text x=\"10\" y=\"67\" class=\"t\">底下仍是這一問一答，所以 gRPC 兩類都算</text><text x=\"83\" y=\"110\" class=\"tb tc\">閘道器程式</text><text x=\"83\" y=\"136\" class=\"t tc\">getTemp()</text><text x=\"515\" y=\"123\" class=\"tb tc\">伺服器</text><text x=\"299\" y=\"96\" class=\"t tc\">請求</text><text x=\"299\" y=\"150\" class=\"t tc\">回應</text><text x=\"10\" y=\"228\" class=\"tb\">非同步訊息：像寄信（MQTT）</text><text x=\"83\" y=\"270\" class=\"tb tc\">閘道器程式</text><text x=\"83\" y=\"300\" class=\"t tc\">發布讀值</text><text x=\"300\" y=\"270\" class=\"tb tc\">Broker</text><text x=\"515\" y=\"270\" class=\"tb tc\">訂閱者</text><text x=\"515\" y=\"300\" class=\"t tc\">寫入資料庫</text></svg>",
+     "caption": "下方長條是閘道器程式的時間：實心是在做自己的事，虛線框是送出後停下來等回覆的空檔。"
+    }
+   ],
+   "after": "<p>元件通訊前要先確認對方身分，才放行服務與資料。選擇驗證機制的關鍵，是在安全性與設備算力之間取得平衡。雲端平台的資安還包含三項：身分驗證與存取管理、傳輸加密（TLS/SSL）、災害復原計畫，基本概念見 <a href=\"s1-25.html#availability-metrics\">2.5〈資安與隱私基本概念〉</a>。</p>",
    "table": {
     "head": [
      "驗證機制",
@@ -299,7 +277,7 @@
    },
    "more": {
     "label": "三種溝通模式還有哪些代表技術",
-    "body": "<p>官方學習指引在每種模式下列了幾個例子，認得各自歸哪一類即可：</p><ul><li>請求－回應：HTTP、REST、gRPC、GraphQL。</li><li>非同步訊息驅動：AMQP、MQTT、Kafka。</li><li>RPC：gRPC、Apache Thrift、Apache Dubbo。</li></ul><p>gRPC 兩邊都出現：它本身是一套 RPC 框架，而每次呼叫都是用戶端送出請求、等伺服器回應，所以也符合請求－回應模式。</p>"
+    "body": "<p>官方學習指引在每種模式下列了幾個例子，認得各自歸哪一類即可：</p><ul><li>請求－回應：HTTP、REST、gRPC、GraphQL。</li><li>非同步訊息驅動：AMQP、MQTT、Kafka。</li><li>RPC：gRPC、Apache Thrift、Apache Dubbo。</li></ul>"
    }
   }
  ],
@@ -309,17 +287,17 @@
   "三個角色記「發布、代理、訂閱」；三種 QoS 記「可能丟、可能重複、恰好一次」。",
   "雲端服務看自己管多少：IaaS 管最多，PaaS 只管程式與資料，SaaS 直接用，但資料權限仍要自己管。",
   "雲端的基礎是虛擬化；虛擬機各帶作業系統，容器共用核心，所以容器較輕、啟動較快。",
-  "選儲存看資料：訂單用 RDB，JSON 事件用文件型 NoSQL，時間序列用 TSDB，影片用物件儲存，要極快再加 Redis。",
+  "選儲存看資料：訂單用 RDB，JSON 事件用文件型 NoSQL，時間序列用 TSDB，影片用物件儲存，要極快再加記憶體快取（Memory Cache，如 Redis）。",
+  "批次累積後算、有延遲；串流一到就算，用於即時告警。",
   "驗證看算力與風險：高安全用 X.509，軟體服務用 Token，算力極低用 PSK。"
  ],
  "pitfalls": [
   "Broker 負責分送訊息，不等於長期資料庫；持久化與保存期限要另外確認，產品名稱本身也不保證不丟資料。訊息路由（Message Router）也不是 MQTT 的組件：MQTT 只有用戶端與 Broker，依主題轉送由 Broker 完成。",
   "容易把雲端、虛擬化與裝置端混在一起：雲端的好處是讓感測器不必有強運算力，不是讓感測器也能跑虛擬機。不過資源足夠的邊緣設備確實可以跑容器。",
   "私有雲與地端都不等於自動安全，權限、修補與備份仍要有人負責。雲端權限應採最小權限，不是最大權限。",
-  "同一個名字可能出現在不同分類：gRPC 同時屬於請求－回應與 RPC（原因見〈元件怎麼溝通、怎麼確認身分〉的收合區），MQTT 在 TCP/IP 分層上屬應用層，在溝通模式上屬非同步訊息驅動。",
-  "部分教材的分類和嚴格定義不同：官方學習指引第 106 頁把定義通訊格式與內容的軟體協定統稱為「網路層協定」，但嚴格分層下網路層只負責定址與路由，格式與內容屬上層；第 111 頁把 Basic Auth 歸入 Token 類，但它實際上是傳送編碼後的帳號密碼，須搭配 TLS。應考時留意題目的條件。",
-  "雲端產品會變動：Google Cloud IoT Core 已於 2023 年停止服務，舊資料若提到它不代表現況；GCP Pub/Sub 是通用訊息服務。",
-  "SaaS 不等於什麼都不用管：軟體與底層由業者負責，帳號、資料權限與使用設定仍在使用者手上。同樣地，影片雖然帶時間，也不代表該放時序資料庫。"
+  "同一個名字可能出現在不同分類，例如 gRPC 同時屬於請求－回應與 RPC：寫起來像呼叫本機函式，底下仍是一問一答（見〈元件怎麼溝通、怎麼確認身分〉的溝通模式圖）。",
+  "嚴格分層下，網路層只負責定址與路由，定義資料格式與內容的屬於上層協定（指引 p.106 寫成「網路層（軟體）通訊協定」）。Basic Auth 實際上是傳送編碼後的帳號密碼，不算 Token，須搭配 TLS（指引 p.111 把它列在 Token 類）。",
+  "影片雖然帶時間，也不代表該放時序資料庫：時序資料庫適合連續數值，整段影片放物件儲存。"
  ],
  "examples": [
   {
@@ -347,36 +325,24 @@
  ],
  "check": [
   {
-   "q": "訊息中介軟體的三種角色是什麼？",
-   "a": "發布者送出、代理分派、訂閱者接收，依主題配對。"
+   "q": "公司在自家機房用虛擬機跑監控系統，這算地端還是雲端？",
+   "a": "地端。判斷看由誰營運管理，不看用的是實體機還是虛擬機。"
   },
   {
-   "q": "QoS 1 和 QoS 2 差在哪裡？",
-   "a": "QoS 1 至少一次、可能重複；QoS 2 在協定交換範圍內恰好一次，但最耗資源，業務去重仍要另外設計。"
+   "q": "Modbus RTU 和 Modbus TCP 差在哪裡？",
+   "a": "功能相同；RTU 直接跑在 RS-485 這類串列線路上，TCP 改走乙太網路的 TCP/IP。"
   },
   {
-   "q": "租 EC2 自己裝 SQL Server，屬於哪種雲端服務？",
-   "a": "IaaS，作業系統與資料庫的更新、備份都要自己做。"
+   "q": "計費訊息已經用 MQTT QoS 2 傳送，後端還需要自己去重嗎？",
+   "a": "需要。QoS 2 只保證協定交換範圍內恰好一次，業務上仍要用交易 ID 去重。"
   },
   {
-   "q": "為什麼容器比虛擬機輕？",
-   "a": "容器共用主機核心，不必各帶一份完整作業系統。"
+   "q": "閘道器把讀值交給 Broker 後不等回覆就去做別的事，這屬於哪種溝通模式？",
+   "a": "非同步訊息驅動；問了要等對方回答的 HTTP 屬於請求－回應。"
   },
   {
-   "q": "貨車事件每種欄位都不一樣，想彈性存下來，適合哪類資料庫？",
-   "a": "文件型 NoSQL，例如 MongoDB，每筆文件的欄位不必相同。"
-  },
-  {
-   "q": "要讓最新狀態的存取達到毫秒等級，可加什麼元件？",
-   "a": "記憶體快取，例如 Redis 或 Memcached。"
-  },
-  {
-   "q": "用 SaaS 監控軟體時，什麼仍是公司自己要管的？",
-   "a": "資料權限與使用設定，例如誰的帳號能看哪些資料。"
-  },
-  {
-   "q": "溫度超過門檻就立即告警，適合批次還是串流？",
-   "a": "串流，因為資料一到就要處理。"
+   "q": "從全台冷藏庫的溫度紀錄中，找出行為和其他庫明顯不同的幾座，屬於三級分析的哪一級？",
+   "a": "資料探勘。只算平均與最大值是描述性統計，訓練模型做預測才是 AI 與機器學習。"
   }
  ],
  "terms": [

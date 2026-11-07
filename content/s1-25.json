@@ -13,7 +13,7 @@
   "說明憑證與 TLS 如何確認對方身分並保護傳輸",
   "替 IoT 系統分層防護，並用最小化、同意與目的限制檢視隱私"
  ],
- "prereq": "<b>明文</b>是看得懂的原始資料，<b>密文</b>是加密後的亂碼；<b>金鑰</b>是用來上鎖與解鎖的一串數字。資料在網路上傳遞就像寄明信片，沿路的設備都可能看到內容，所以才需要加密。<b>埠號（port）</b>是同一台主機上區分服務的編號（<a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a>有說明）。本章不需要會算密碼學的數學，只要知道每個工具解決什麼問題。",
+ "prereq": "<b>明文</b>是看得懂的原始資料，<b>密文</b>是加密後的亂碼；<b>金鑰</b>是用來上鎖與解鎖的一串數字。資料在網路上傳遞就像寄明信片，沿路的設備都可能看到內容，所以才需要加密。<b>埠號（port）</b>是同一台主機上區分服務的編號（<a href=\"s1-22.html#road-and-language\">2.2〈常見通訊協定與網路層技術〉</a>有說明）。本章不需要會算密碼學的數學，只要知道每個工具解決什麼問題。",
  "bridge": "PSK 可想成燒進裝置的共用 secret，mTLS 可想成每台裝置各有一張 client certificate。",
  "sections": [
   {
@@ -23,33 +23,9 @@
     "q": "值班帳號要輸入密碼才能登入監控平台，登入後能看溫度，卻不能遠端關掉壓縮機。這兩道關卡各屬於 AAA（認證、授權、記錄這三道管控）的哪一項？",
     "a": "輸入密碼是認證（確認你是誰），不能關壓縮機是授權（決定你能做什麼）。"
    },
-   "body": "<p>資訊安全的目標常用 <b>CIA</b> 三要素描述：<b>機密性（Confidentiality）</b>是只有被授權者看得到，<b>完整性（Integrity）</b>是資料沒被竄改，<b>可用性（Availability）</b>是需要時能正常使用。遇到任何攻擊，先問它破壞了哪一個，防護方向就清楚了。</p><p>另一組是 <b>AAA</b>：<b>認證（Authentication）</b>確認你是誰，<b>授權（Authorization）</b>決定你能做什麼，<b>記錄／稽核（Accounting）</b>讓事後查得到誰在何時做了什麼，也就是記錄與計量使用行為。授權時只給完成工作所需的權限，叫<b>最小權限</b>原則。</p><p>可用性常用<b>服務水準協議（SLA，Service Level Agreement）</b>量化，也就是服務承諾的上線比例。每月停機上限可這樣算：一個月以 720 小時計，乘上 (1 − SLA)。</p>",
-   "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CIA 三要素三角圖，每個頂點標出定義、典型攻擊與對應防護\"><polygon points=\"300,76 130,290 470,290\" class=\"soft\"/><line x1=\"300\" y1=\"76\" x2=\"130\" y2=\"290\" class=\"ln\"/><line x1=\"130\" y1=\"290\" x2=\"470\" y2=\"290\" class=\"ln\"/><line x1=\"470\" y1=\"290\" x2=\"300\" y2=\"76\" class=\"ln\"/><text x=\"300\" y=\"210\" class=\"th tc\">CIA</text><text x=\"300\" y=\"234\" class=\"ts tc\">資安三大目標</text><rect x=\"210\" y=\"20\" width=\"180\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"44\" class=\"tb tc\">機密性 C</text><text x=\"300\" y=\"66\" class=\"ts tc\">只有授權者看得到</text><text x=\"402\" y=\"40\" class=\"ts\">攻擊：竊聽、中間人</text><text x=\"402\" y=\"60\" class=\"ts ta\">防護：加密、存取控制</text><rect x=\"40\" y=\"290\" width=\"180\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"130\" y=\"314\" class=\"tb tc\">完整性 I</text><text x=\"130\" y=\"336\" class=\"ts tc\">資料沒被竄改</text><text x=\"40\" y=\"368\" class=\"ts\">攻擊：竄改、重放</text><text x=\"40\" y=\"388\" class=\"ts ta\">防護：MAC、數位簽章</text><rect x=\"380\" y=\"290\" width=\"180\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"470\" y=\"314\" class=\"tb tc\">可用性 A</text><text x=\"470\" y=\"336\" class=\"ts tc\">要用時能正常服務</text><text x=\"380\" y=\"368\" class=\"ts\">攻擊：DoS、DDoS、干擾</text><text x=\"380\" y=\"388\" class=\"ts ta\">防護：備援、負載平衡、限流</text></svg>",
-   "caption": "三個頂點各配一組典型攻擊與對應防護，看到攻擊先定位它打的是哪個角。",
-   "table": {
-    "head": [
-     "SLA",
-     "每月可停機（以 30 天計）",
-     "計算"
-    ],
-    "rows": [
-     [
-      "99%",
-      "約 7.2 小時",
-      "720 × 1%"
-     ],
-     [
-      "99.9%",
-      "約 43 分鐘",
-      "720 × 0.1%"
-     ],
-     [
-      "99.99%",
-      "約 4.3 分鐘",
-      "720 × 0.01%"
-     ]
-    ]
-   },
+   "body": "<p>資訊安全的目標常用 <b>CIA</b> 三要素描述：<b>機密性（Confidentiality）</b>是只有被授權者看得到，<b>完整性（Integrity）</b>是資料沒被竄改，<b>可用性（Availability）</b>是需要時能正常使用。遇到任何攻擊，先問它破壞了哪一個，防護方向就清楚了。</p><p>另一組是 <b>AAA</b>：<b>認證（Authentication）</b>確認你是誰，<b>授權（Authorization）</b>決定你能做什麼，<b>記錄／稽核（Accounting）</b>讓事後查得到誰在何時做了什麼，也就是記錄與計量使用行為。授權時只給完成工作所需的權限，叫<b>最小權限</b>原則。</p>",
+   "svg": "<svg viewBox=\"0 0 600 236\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CIA 三要素三欄對照圖：機密性、完整性、可用性各列出定義、典型攻擊與對應防護\"><text x=\"300\" y=\"26\" class=\"tb tc\">CIA 三要素（資安三大目標）</text><text x=\"24\" y=\"148\" class=\"tb tc\">攻擊</text><text x=\"24\" y=\"204\" class=\"tb tc\">防護</text><rect x=\"48\" y=\"42\" width=\"178\" height=\"66\" rx=\"8\" class=\"acc\"/><text x=\"137\" y=\"69\" class=\"tb tc\">機密性 C</text><text x=\"137\" y=\"95\" class=\"t tc\">只有授權者看得到</text><rect x=\"48\" y=\"118\" width=\"178\" height=\"46\" rx=\"8\" class=\"bad\"/><text x=\"137\" y=\"147\" class=\"t tc\">竊聽、中間人</text><rect x=\"48\" y=\"174\" width=\"178\" height=\"46\" rx=\"8\" class=\"box\"/><text x=\"137\" y=\"203\" class=\"t tc ta\">加密、存取控制</text><rect x=\"233\" y=\"42\" width=\"178\" height=\"66\" rx=\"8\" class=\"acc\"/><text x=\"322\" y=\"69\" class=\"tb tc\">完整性 I</text><text x=\"322\" y=\"95\" class=\"t tc\">資料沒被竄改</text><rect x=\"233\" y=\"118\" width=\"178\" height=\"46\" rx=\"8\" class=\"bad\"/><text x=\"322\" y=\"147\" class=\"t tc\">竄改、重放</text><rect x=\"233\" y=\"174\" width=\"178\" height=\"46\" rx=\"8\" class=\"box\"/><text x=\"322\" y=\"203\" class=\"t tc ta\">MAC、數位簽章</text><rect x=\"418\" y=\"42\" width=\"178\" height=\"66\" rx=\"8\" class=\"acc\"/><text x=\"507\" y=\"69\" class=\"tb tc\">可用性 A</text><text x=\"507\" y=\"95\" class=\"t tc\">要用時能正常服務</text><rect x=\"418\" y=\"118\" width=\"178\" height=\"46\" rx=\"8\" class=\"bad\"/><text x=\"507\" y=\"147\" class=\"t tc\">DoS、DDoS、干擾</text><rect x=\"418\" y=\"174\" width=\"178\" height=\"46\" rx=\"8\" class=\"box\"/><text x=\"507\" y=\"203\" class=\"t tc ta\">備援、負載平衡、限流</text></svg>",
+   "caption": "每一欄配一組典型攻擊與對應防護，看到攻擊先定位它打的是哪一欄。",
    "more": {
     "label": "認證的三類依據與多因素認證",
     "body": "<p>認證依據可分三類：你知道的（密碼）、你擁有的（手機、門禁卡）、你本身的（臉、指紋）。同時用兩類以上叫<b>多因素認證</b>，比只靠一組密碼安全得多。</p>"
@@ -112,50 +88,13 @@
     "q": "平台把 App 更新檔和它的 SHA-256 摘要（用檔案內容算出的一串指紋）放在同一台伺服器。攻擊者入侵後換掉了更新檔。使用者比對摘要，一定能發現嗎？",
     "a": "不一定。攻擊者可以連摘要一起換。摘要要從另一個可信來源取得，或改用數位簽章。"
    },
-   "body": "<p><b>雜湊（Hash）</b>把任意長度的資料算成固定長度的「指紋」（摘要）。同樣輸入得到同樣指紋，內容一改指紋就變，而且<b>無法從指紋還原原文</b>。常見演算法有 SHA-256、SHA-512、SHA-3。把下載檔案的指紋與官方公布值比對，就能知道檔案有沒有變動；前提是公布值本身可信。</p><p>如果攻擊者能連指紋一起改，單純雜湊就不夠了。<b>MAC（訊息鑑別碼，Message Authentication Code）</b>把共用金鑰也算進去，常見的是 HMAC，沒有金鑰就算不出正確的值。<b>數位簽章</b>則是先雜湊訊息，再用寄件人私鑰簽署，任何人都能用寄件人公鑰驗證。只有寄件人持有私鑰，所以他事後難以否認，這叫<b>不可否認性（Non-repudiation）</b>。</p><p>下表的對稱加密指單純加密；AES-GCM 這類<b>鑑別式加密（AEAD）</b>才同時提供保密、防竄改，並確認對方持有金鑰。</p>",
-   "table": {
-    "head": [
-     "工具",
-     "保密",
-     "防竄改",
-     "證明來源",
-     "不可否認"
-    ],
-    "rows": [
-     [
-      "對稱加密（AES）",
-      "○",
-      "單純加密不保證",
-      "單純加密不保證",
-      "✕"
-     ],
-     [
-      "雜湊（SHA-256）",
-      "✕",
-      "須有可信摘要可比對",
-      "✕",
-      "✕"
-     ],
-     [
-      "MAC（如 HMAC）",
-      "✕",
-      "○",
-      "只知是持金鑰者",
-      "✕"
-     ],
-     [
-      "數位簽章",
-      "✕",
-      "○",
-      "○",
-      "○"
-     ]
-    ]
-   },
+   "body": "<p><b>雜湊（Hash）</b>把任意長度的資料算成固定長度的「指紋」（摘要）。同樣輸入得到同樣指紋，內容一改指紋就變，而且<b>無法從指紋還原原文</b>。常見演算法有 SHA-256、SHA-512、SHA-3。把下載檔案的指紋與官方公布值比對，就能知道檔案有沒有變動。</p><p>如果攻擊者能連指紋一起改，單純雜湊就不夠了。<b>MAC（訊息鑑別碼，Message Authentication Code）</b>把共用金鑰也算進去，常見的是 HMAC，沒有金鑰就算不出正確的值；但雙方都持有金鑰，分不出是哪一方發的。<b>數位簽章</b>則是先雜湊訊息，再用寄件人私鑰簽署，任何人都能用寄件人公鑰驗證。只有寄件人持有私鑰，所以他事後難以否認，這叫<b>不可否認性（Non-repudiation）</b>。</p>",
    "more": {
     "label": "系統怎麼存密碼：雜湊與加鹽",
     "body": "<p>因為雜湊不可還原，系統存密碼時會存雜湊而非原文，並加上隨機值（<b>加鹽</b>）、使用專用的密碼雜湊函數。</p>"
-   }
+   },
+   "svg": "<svg viewBox=\"0 0 600 380\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"攻擊者換掉韌體並重算檢查碼：只用雜湊時閘道器被騙，HMAC 與數位簽章因攻擊者缺金鑰而擋下；HMAC 只證明出自持金鑰者、沒有不可否認性，數位簽章能確認來源並具不可否認性\"><rect x=\"12\" y=\"10\" width=\"580\" height=\"42\" rx=\"8\" class=\"soft\"/><text x=\"300\" y=\"37\" class=\"tb tc\">情境：攻擊者換掉韌體，再重算一份檢查碼貼上</text><text x=\"154\" y=\"82\" class=\"tb tc\">檢查碼怎麼算</text><text x=\"280\" y=\"82\" class=\"tb tc\">攻擊者缺什麼</text><text x=\"406\" y=\"82\" class=\"tb tc\">閘道器比對</text><text x=\"532\" y=\"82\" class=\"tb tc\">還能證明</text><rect x=\"12\" y=\"96\" width=\"76\" height=\"72\" rx=\"8\" class=\"acc\"/><text x=\"50\" y=\"138\" class=\"tb tc\">雜湊</text><rect x=\"94\" y=\"96\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"154\" y=\"127\" class=\"t tc\">只用檔案</text><text x=\"154\" y=\"150\" class=\"t tc\">算 SHA-256</text><rect x=\"220\" y=\"96\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"280\" y=\"127\" class=\"t tc\">什麼都不缺</text><text x=\"280\" y=\"150\" class=\"t tc\">人人都會算</text><rect x=\"346\" y=\"96\" width=\"120\" height=\"72\" rx=\"8\" class=\"bad\"/><text x=\"406\" y=\"127\" class=\"tb tc\">比對一致</text><text x=\"406\" y=\"150\" class=\"tb tc\">被騙了</text><rect x=\"472\" y=\"96\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"532\" y=\"138\" class=\"t tc\">證明不了來源</text><rect x=\"12\" y=\"176\" width=\"76\" height=\"72\" rx=\"8\" class=\"acc\"/><text x=\"50\" y=\"218\" class=\"tb tc\">HMAC</text><rect x=\"94\" y=\"176\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"154\" y=\"207\" class=\"t tc\">檔案＋</text><text x=\"154\" y=\"230\" class=\"t tc\">共用金鑰</text><rect x=\"220\" y=\"176\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"280\" y=\"218\" class=\"t tc\">缺共用金鑰</text><rect x=\"346\" y=\"176\" width=\"120\" height=\"72\" rx=\"8\" class=\"ok\"/><text x=\"406\" y=\"207\" class=\"tb tc\">比對不符</text><text x=\"406\" y=\"230\" class=\"tb tc\">拒絕更新</text><rect x=\"472\" y=\"176\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"532\" y=\"207\" class=\"t tc\">持金鑰者發的</text><text x=\"532\" y=\"230\" class=\"t tc\">無不可否認</text><rect x=\"12\" y=\"256\" width=\"76\" height=\"72\" rx=\"8\" class=\"acc\"/><text x=\"50\" y=\"298\" class=\"tb tc\">數位簽章</text><rect x=\"94\" y=\"256\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"154\" y=\"287\" class=\"t tc\">先雜湊，再用</text><text x=\"154\" y=\"310\" class=\"t tc\">原廠私鑰簽</text><rect x=\"220\" y=\"256\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"280\" y=\"298\" class=\"t tc\">缺原廠私鑰</text><rect x=\"346\" y=\"256\" width=\"120\" height=\"72\" rx=\"8\" class=\"ok\"/><text x=\"406\" y=\"287\" class=\"tb tc\">驗證不過</text><text x=\"406\" y=\"310\" class=\"tb tc\">拒絕更新</text><rect x=\"472\" y=\"256\" width=\"120\" height=\"72\" rx=\"8\" class=\"box\"/><text x=\"532\" y=\"287\" class=\"t tc\">來源可確認</text><text x=\"532\" y=\"310\" class=\"t tc\">有不可否認</text><text x=\"300\" y=\"362\" class=\"tb tc ta\">關鍵在誰算得出檢查碼：任何人／持共用金鑰者／只有私鑰主人</text></svg>",
+   "caption": "同一招「換檔再重算檢查碼」套在三種工具上，差別只在攻擊者算不算得出新的檢查碼。這三種都不負責保密，韌體內容仍看得到；要保密得另外加密，而單純加密若沒附檢查碼，就發現不了竄改。"
   },
   {
    "id": "pki-tls",
@@ -165,12 +104,21 @@
     "a": "不算。埠號只是慣例，真正要看有沒有設定 TLS、認證與權限。"
    },
    "body": "<p>非對稱加密怕的是公鑰被調包：有人夾在中間，把自己的公鑰假裝成對方的。解法是<b>憑證（Certificate）</b>，由可信任的<b>憑證機構（CA，Certificate Authority）</b>簽名，證明這把公鑰屬於這個伺服器，就像戶政機關核發的身分證。整套發證、驗證、撤銷的制度叫 <b>PKI（公開金鑰基礎建設）</b>，常用的憑證格式是 <b>X.509</b>。</p><p><b>TLS</b>（SSL 的後繼者，舊版 SSL 已淘汰）是 HTTPS 與加密 MQTT（MQTT 是 IoT 常用的輕量訊息協定）背後的那一層：先在握手中驗憑證、協商金鑰，再用對稱加密傳資料。只驗伺服器是單向驗證；雙方都出示憑證叫 <b>mTLS</b>，IoT 平台常讓每台裝置各持一張。</p>",
-   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CA 簽發伺服器憑證、握手時裝置驗證憑證並協商金鑰，再用對稱加密傳資料\"><defs><marker id=\"s1-25-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"220\" y=\"20\" width=\"160\" height=\"50\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"51\" class=\"tb tc\">憑證機構 CA</text><rect x=\"20\" y=\"140\" width=\"170\" height=\"120\" rx=\"8\" class=\"box\"/><text x=\"105\" y=\"196\" class=\"tb tc\">IoT 裝置</text><text x=\"105\" y=\"218\" class=\"ts tc\">內建 CA 根憑證</text><rect x=\"410\" y=\"140\" width=\"170\" height=\"120\" rx=\"8\" class=\"box\"/><text x=\"495\" y=\"196\" class=\"tb tc\">雲端伺服器</text><text x=\"495\" y=\"218\" class=\"ts tc\">持有憑證＋私鑰</text><line x1=\"255\" y1=\"70\" x2=\"130\" y2=\"138\" class=\"ln dash\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"110\" y=\"92\" class=\"ts tc\">① 預裝根憑證</text><line x1=\"345\" y1=\"70\" x2=\"470\" y2=\"138\" class=\"ln\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"425\" y=\"92\" class=\"ts\">② 簽發伺服器憑證</text><line x1=\"408\" y1=\"172\" x2=\"192\" y2=\"172\" class=\"ln\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"164\" class=\"ts tc\">③ 握手：出示憑證，裝置驗證</text><line x1=\"192\" y1=\"212\" x2=\"408\" y2=\"212\" class=\"ln\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"204\" class=\"ts tc\">③ 握手：非對稱方式協商金鑰</text><line x1=\"192\" y1=\"250\" x2=\"408\" y2=\"250\" class=\"la\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"242\" class=\"ts tc ta\">④ 對稱加密傳資料</text><text x=\"300\" y=\"294\" class=\"ts tc\">握手時完成身分驗證與金鑰協商，之後才開始傳資料</text></svg>",
-   "caption": "憑證式 TLS 的流程示意；驗證與協商的先後依 TLS 版本而異，TLS 1.3 會先交換金鑰參數；實作時還要檢查憑證的主機名稱與有效期限。",
+   "svg": "<svg viewBox=\"0 0 600 410\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"TLS 握手逐步圖：CA 事前簽發憑證，伺服器出示憑證，裝置檢查簽名、主機名稱與期限，雙方各自算出同一把金鑰後用對稱加密傳資料；中間人的假憑證在檢查時被擋下\"><defs><marker id=\"s1-25-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"230\" y=\"12\" width=\"140\" height=\"40\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"38\" class=\"tb tc\">憑證機構 CA</text><g data-s=\"1\"><polyline points=\"230,32 95,32 95,68\" class=\"la\" marker-end=\"url(#s1-25-4-arr)\"/><polyline points=\"370,32 505,32 505,68\" class=\"la\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"160\" y=\"24\" class=\"t tc ta\">預裝根憑證</text><text x=\"440\" y=\"24\" class=\"t tc ta\">簽發憑證</text></g><g data-s=\"2 3 4 5 6\"><polyline points=\"230,32 95,32 95,68\" class=\"ln dash\" marker-end=\"url(#s1-25-4-arr)\"/><polyline points=\"370,32 505,32 505,68\" class=\"ln dash\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"160\" y=\"24\" class=\"t tc\">預裝根憑證</text><text x=\"440\" y=\"24\" class=\"t tc\">簽發憑證</text></g><rect x=\"30\" y=\"70\" width=\"130\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"95\" y=\"98\" class=\"tb tc\">IoT 裝置</text><rect x=\"440\" y=\"70\" width=\"130\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"505\" y=\"98\" class=\"tb tc\">MQTT Broker</text><line x1=\"95\" y1=\"114\" x2=\"95\" y2=\"398\" class=\"ln dash\"/><line x1=\"505\" y1=\"114\" x2=\"505\" y2=\"398\" class=\"ln dash\"/><g data-s=\"1\"><rect x=\"200\" y=\"132\" width=\"200\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"155\" class=\"tb tc\">伺服器憑證</text><text x=\"300\" y=\"178\" class=\"t tc\">Broker 公鑰＋CA 簽名</text></g><g data-s=\"2\"><line x1=\"503\" y1=\"160\" x2=\"99\" y2=\"160\" class=\"la\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"150\" class=\"t tc ta\">出示憑證</text></g><g data-s=\"3 4 5\"><line x1=\"503\" y1=\"160\" x2=\"99\" y2=\"160\" class=\"ln\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"150\" class=\"t tc\">出示憑證</text></g><g data-s=\"3 4 5\"><rect x=\"115\" y=\"178\" width=\"175\" height=\"96\" rx=\"8\" class=\"ok\"/><text x=\"130\" y=\"200\" class=\"tb\">裝置檢查憑證</text><text x=\"130\" y=\"223\" class=\"t\">✓ CA 簽名</text><text x=\"130\" y=\"245\" class=\"t\">✓ 主機名稱</text><text x=\"130\" y=\"267\" class=\"t\">✓ 有效期限</text></g><g data-s=\"4\"><line x1=\"99\" y1=\"304\" x2=\"501\" y2=\"304\" class=\"la\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"296\" class=\"t tc ta\">交換金鑰參數</text></g><g data-s=\"5\"><line x1=\"99\" y1=\"304\" x2=\"501\" y2=\"304\" class=\"ln\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"296\" class=\"t tc\">交換金鑰參數</text></g><g data-s=\"4 5\"><rect x=\"40\" y=\"316\" width=\"110\" height=\"32\" rx=\"6\" class=\"acc\"/><text x=\"95\" y=\"338\" class=\"tb tc\">對稱金鑰</text><rect x=\"450\" y=\"316\" width=\"110\" height=\"32\" rx=\"6\" class=\"acc\"/><text x=\"505\" y=\"338\" class=\"tb tc\">對稱金鑰</text><text x=\"300\" y=\"338\" class=\"t tc\">金鑰本身不上網路</text></g><g data-s=\"5\"><line x1=\"99\" y1=\"384\" x2=\"501\" y2=\"384\" class=\"la\" marker-start=\"url(#s1-25-4-arr)\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"300\" y=\"374\" class=\"t tc ta\">對稱加密傳溫度與指令</text></g><g data-s=\"6\"><rect x=\"250\" y=\"126\" width=\"100\" height=\"44\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"154\" class=\"tb tc\">中間人</text><line x1=\"503\" y1=\"148\" x2=\"354\" y2=\"148\" class=\"ln dash\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"430\" y=\"140\" class=\"t tc\">真憑證</text><line x1=\"248\" y1=\"148\" x2=\"99\" y2=\"148\" class=\"la\" marker-end=\"url(#s1-25-4-arr)\"/><text x=\"172\" y=\"140\" class=\"t tc ta\">假憑證</text></g><g data-s=\"6\"><rect x=\"115\" y=\"178\" width=\"175\" height=\"96\" rx=\"8\" class=\"bad\"/><text x=\"130\" y=\"200\" class=\"tb\">裝置檢查憑證</text><text x=\"130\" y=\"223\" class=\"tb\">✕ CA 簽名</text><text x=\"130\" y=\"245\" class=\"t\">✓ 主機名稱</text><text x=\"130\" y=\"267\" class=\"t\">✓ 有效期限</text></g><g data-s=\"6\"><rect x=\"150\" y=\"300\" width=\"300\" height=\"50\" rx=\"8\" class=\"bad\"/><text x=\"300\" y=\"331\" class=\"tb tc\">連線中止，不傳資料</text></g></svg>",
+   "caption": "先驗身分、再協商金鑰、最後才傳資料；憑證擋下的正是「公鑰被調包」。伺服器也要求裝置出示憑證時，就是 mTLS。",
    "more": {
-    "label": "HTTPS 與 MQTT 的埠號慣例，以及 Wi-Fi 的 WEP 到 WPA3",
-    "body": "<p>埠號只是慣例：HTTPS 慣用 443、MQTT 明文慣用 1883、MQTT over TLS 慣用 8883，真正安全與否要看有沒有設定 TLS、認證與權限。</p><p>Wi-Fi 另有自己的保護，只顧裝置到基地台（AP）這一段，由弱到強是 <b>WEP</b>（已可輕易破解）、<b>WPA</b>、<b>WPA2</b>、<b>WPA3</b>（改良連線時的密碼驗證方式 SAE，即使錄下封包也難以離線猜密碼）。TLS 則保護到應用服務的整段連線，兩者可以並用。</p>"
-   }
+    "label": "埠號慣例與 Wi-Fi 加密等級",
+    "body": "<p>HTTPS 慣用 443，MQTT 慣用 1883（明文）和 8883（TLS）。</p><p>Wi-Fi 加密由弱到強是 WEP &lt; WPA &lt; WPA2 &lt; WPA3，只保護裝置到 AP 這段；TLS 保護到應用服務的整段連線，兩者可並用，見 <a href=\"s2-13.html#transport-security\">1-3〈物聯網資訊安全〉</a>。</p>"
+   },
+   "steps": [
+    "事前：CA 用自己的私鑰替伺服器憑證簽名，憑證裡放著伺服器的公鑰，配對的私鑰只留在伺服器；裝置出廠時已內建 CA 的根憑證。",
+    "連線開始，伺服器先出示憑證，等於說「這把公鑰是我的，有 CA 背書」。",
+    "裝置自己檢查：用根憑證驗 CA 的簽名，再看主機名稱是否相符、有沒有過期，三項都通過才往下走。",
+    "雙方用非對稱方式交換金鑰參數（以 ECDHE 為例），各自算出同一把對稱金鑰，這把金鑰本身沒有在網路上傳送。",
+    "之後的溫度讀值與指令都用這把金鑰做對稱加密（例如 AES-GCM，這種模式會附帶一個像 MAC 的檢查碼），速度快，也能發現竄改。",
+    "換成中間人：他攔下真憑證，改出示自己做的假憑證。主機名稱和期限可以照抄，CA 的簽名卻偽造不了，裝置驗不過就中止連線。"
+   ],
+   "start": 5
   },
   {
    "id": "attacks",
@@ -181,7 +129,7 @@
    },
    "body": "<p>辨認攻擊時抓關鍵動作：偷看是竊聽，夾在中間是中間人，錄下再送是重放，灌爆是 DoS，假基地台是 Evil Twin。<b>DoS（阻斷服務）</b>就像有人佔滿櫃檯讓別人辦不了事；<b>DDoS（分散式）</b>則是一大群被控制的裝置同時來。</p>",
    "lab": "s1-25-cia",
-   "after": "<p>IoT 特別容易成為目標：數量多、常沿用<b>出廠預設帳密</b>或弱加密，<b>韌體</b>（跑在晶片上的控制軟體）更新也不易。</p><p><b>Mirai</b>（2016）就是典型：掃描使用預設帳密的攝影機與路由器，收編成<b>殭屍網路（botnet）</b>，再同時發動 DDoS，曾癱瘓 Dyn，一家提供 DNS（把網址翻成 IP 位址的查號服務）的公司。被入侵的裝置不只自己出事，還會反過來攻擊別人。</p>",
+   "after": "<p>IoT 特別容易成為目標：數量多、常沿用<b>出廠預設帳密</b>或弱加密，<b>韌體</b>（跑在晶片上的控制軟體）更新也不易。</p><p><b>Mirai</b>（2016）就是典型：用預設帳密收編大量攝影機與路由器，組成<b>殭屍網路（botnet）</b>一起發動 DDoS（見下圖）。被入侵的裝置還會反過來攻擊別人。</p>",
    "svg": "<svg viewBox=\"0 0 600 290\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Mirai 掃描使用預設帳密的 IoT 裝置組成殭屍網路，同時對目標發動 DDoS\"><defs><marker id=\"s1-25-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"80\" y=\"24\" class=\"ts tc ta\">① 掃描並登入</text><text x=\"290\" y=\"24\" class=\"ts tc ta\">② 收編成殭屍網路</text><text x=\"520\" y=\"24\" class=\"ts tc ta\">③ 同時發動 DDoS</text><rect x=\"20\" y=\"120\" width=\"120\" height=\"56\" rx=\"8\" class=\"bad\"/><text x=\"80\" y=\"144\" class=\"tb tc\">攻擊者</text><text x=\"80\" y=\"165\" class=\"ts tc\">試預設帳密</text><rect x=\"220\" y=\"40\" width=\"140\" height=\"44\" rx=\"8\" class=\"warn\"/><text x=\"290\" y=\"67\" class=\"tb tc\">攝影機</text><rect x=\"220\" y=\"120\" width=\"140\" height=\"44\" rx=\"8\" class=\"warn\"/><text x=\"290\" y=\"147\" class=\"tb tc\">路由器</text><rect x=\"220\" y=\"200\" width=\"140\" height=\"44\" rx=\"8\" class=\"warn\"/><text x=\"290\" y=\"227\" class=\"tb tc\">網路錄影機 DVR</text><line x1=\"140\" y1=\"136\" x2=\"218\" y2=\"64\" class=\"ln dash\" marker-end=\"url(#s1-25-5-arr)\"/><line x1=\"140\" y1=\"148\" x2=\"218\" y2=\"142\" class=\"ln dash\" marker-end=\"url(#s1-25-5-arr)\"/><line x1=\"140\" y1=\"160\" x2=\"218\" y2=\"220\" class=\"ln dash\" marker-end=\"url(#s1-25-5-arr)\"/><rect x=\"465\" y=\"116\" width=\"115\" height=\"60\" rx=\"8\" class=\"box\"/><text x=\"522\" y=\"142\" class=\"tb tc\">目標服務</text><text x=\"522\" y=\"164\" class=\"ts tc\">被灌爆癱瘓</text><line x1=\"360\" y1=\"64\" x2=\"463\" y2=\"134\" class=\"la\" marker-end=\"url(#s1-25-5-arr)\"/><line x1=\"360\" y1=\"142\" x2=\"463\" y2=\"146\" class=\"la\" marker-end=\"url(#s1-25-5-arr)\"/><line x1=\"360\" y1=\"220\" x2=\"463\" y2=\"158\" class=\"la\" marker-end=\"url(#s1-25-5-arr)\"/><text x=\"300\" y=\"274\" class=\"ts tc\">單台流量不大，但成千上萬台同時送出，足以癱瘓服務</text></svg>",
    "caption": "Mirai 的三個步驟：用預設帳密登入、收編成殭屍網路、同時灌爆目標。",
    "table": {
@@ -206,21 +154,15 @@
      ],
      [
       "Evil Twin／Rogue AP",
-      "在咖啡廳開一個和店家名稱相同的假 Wi-Fi，讓人連上後攔截流量",
+      "架同名假 Wi-Fi 攔截流量",
       "C",
       "企業級認證、確認 AP"
-     ],
-     [
-      "側通道 Side-channel",
-      "量耗電、時間、電磁波推出金鑰",
-      "C",
-      "硬體防護、恆定時間實作（運算時間不隨金鑰變化）"
      ],
      [
       "暴力破解／預設帳密",
       "自動化工具猜帳密取得控制權",
       "C、I",
-      "改密碼、限制嘗試、多因素（密碼之外再加第二種驗證）"
+      "改預設密碼、限制嘗試、多因素認證"
      ],
      [
       "竄改 Tampering",
@@ -236,39 +178,21 @@
      ],
      [
       "DoS／DDoS",
-      "大量請求耗盡資源，如 SYN Flood：大量發起連線卻不完成",
+      "大量請求耗盡資源（如 SYN Flood）",
       "A",
       "限流、防火牆、備援"
-     ],
-     [
-      "廣播風暴 Broadcast Storm",
-      "廣播封包（發給網路內所有設備的封包）被大量重複轉送、佔滿頻寬",
-      "A",
-      "切割廣播網域（VLAN）、防迴圈機制（STP）、風暴控制"
      ],
      [
       "干擾 Jamming",
       "用雜訊蓋掉無線訊號",
       "A",
       "跳頻（通訊頻率不斷切換）、有線備援"
-     ],
-     [
-      "天坑 Sinkhole",
-      "謊稱路由最好，把流量吸過來丟棄或竄改",
-      "I、A",
-      "節點認證、路由檢查"
-     ],
-     [
-      "女巫 Sybil",
-      "一個節點偽造多個身分",
-      "I、A",
-      "節點身分認證"
      ]
     ]
    },
    "more": {
-    "label": "IoT 的其他破口：弱加密、N 日攻擊與除錯接腳",
-    "body": "<ul><li>弱加密：已被破解的舊演算法，如 RC2、RC4。</li><li>韌體更新不易，已公開的漏洞可能存在多年，這類攻擊稱為 N 日攻擊。</li><li>電路板上的 <b>JTAG／UART／Console</b> 等除錯用的接腳，可能被直接接線取得管理權限。</li></ul>"
+    "label": "其他攻擊與 IoT 破口",
+    "body": "<ul><li>側通道：量耗電、時間推出金鑰；破壞 C，靠硬體防護。</li><li>廣播風暴：封包被重複轉送、佔滿頻寬；破壞 A，靠 VLAN 切割、STP 防迴圈。</li><li>天坑 Sinkhole：謊稱最佳路由，吸走流量；破壞 I、A，靠節點認證。</li><li>女巫 Sybil：一個節點偽造多個身分；破壞 I、A，靠節點認證。</li><li>弱加密：已被破解的 RC2、RC4 等舊演算法。</li><li>N 日攻擊：韌體難更新，已公開的漏洞留存多年。</li><li>除錯接腳：<b>JTAG／UART／Console</b> 可被接線取得管理權限。</li></ul>"
    }
   },
   {
@@ -278,8 +202,8 @@
     "q": "貨車閘道器被入侵後，攻擊者想進一步連到冷藏庫的控制系統。哪一種網路設計能讓問題不擴散？",
     "a": "網路切割：把車輛、冷藏庫控制與辦公設備分在互不相通的區域，一區出事不會直接波及另一區。"
    },
-   "body": "<p>安全不能只靠一組密碼。就像大樓有門禁、樓層卡與保險箱，每一層都要有防線，一層被突破還有下一層。下圖列出五層的代表措施，各層細節收在本節最後。</p><p>資料層要特別記兩個復原指標。<b>災難復原（DR，Disaster Recovery）</b>中，<b>RPO</b> 是可能遺失多久的資料，一天備份一次則 RPO 為 24 小時；<b>RTO</b> 是停機多久能恢復，靠自動化與事先演練的復原流程來縮短。</p><p>軟體則要在開發生命週期（SDLC）的不同階段做不同檢查：</p>",
-   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護：裝置實體、通訊、平台雲端、資料、軟體，以及各層的代表措施\"><rect x=\"20\" y=\"10\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"44\" class=\"tb tc\">裝置實體</text><rect x=\"170\" y=\"10\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"34\" class=\"t\">改預設密碼、關閉 JTAG／UART</text><text x=\"184\" y=\"55\" class=\"ts\">安全開機、韌體簽章、OTA 更新</text><rect x=\"20\" y=\"76\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"110\" class=\"tb tc\">通訊</text><rect x=\"170\" y=\"76\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"100\" class=\"t\">TLS／mTLS、X.509 憑證</text><text x=\"184\" y=\"121\" class=\"ts\">依能力選 PSK、API key、Token；網路切割</text><rect x=\"20\" y=\"142\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"176\" class=\"tb tc\">平台／雲端</text><rect x=\"170\" y=\"142\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"166\" class=\"t\">防火牆白名單（限來源 IP、port）</text><text x=\"184\" y=\"187\" class=\"ts\">WAF 擋 SQL Injection、XSS（應用層）</text><rect x=\"20\" y=\"208\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"242\" class=\"tb tc\">資料</text><rect x=\"170\" y=\"208\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"232\" class=\"t\">存取控制、加密、遮罩、備份</text><text x=\"184\" y=\"253\" class=\"ts\">災難復原：RPO＝掉多少資料，RTO＝停多久</text><rect x=\"20\" y=\"274\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"308\" class=\"tb tc\">軟體</text><rect x=\"170\" y=\"274\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"298\" class=\"t\">源碼掃描 → 黑箱掃描 → 滲透測試</text><text x=\"184\" y=\"319\" class=\"ts\">外部函式庫弱點掃描，上線前與定期都要做</text></svg>",
+   "body": "<p>安全不能只靠一組密碼。就像大樓有門禁、樓層卡與保險箱，每一層都要有防線，一層被突破還有下一層。下圖列出五層的代表措施，軟體在開發生命週期（SDLC）各階段的檢查見下表，網路切割與 WAF 見本節最後。</p>",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護與代表措施：裝置實體有改預設密碼、關閉 JTAG／UART、安全開機、韌體簽章、OTA 更新；通訊有 TLS／mTLS、X.509 憑證、依能力選 PSK、API key、Token，以及網路切割；平台雲端有防火牆白名單與 WAF（擋 SQL Injection、XSS）；資料有存取控制、加密、遮罩、備份、監控與災難復原；軟體在 SDLC 各階段掃描\"><rect x=\"20\" y=\"10\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"44\" class=\"tb tc\">裝置實體</text><rect x=\"170\" y=\"10\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"34\" class=\"t\">改預設密碼、關閉 JTAG／UART</text><text x=\"184\" y=\"55\" class=\"ts\">安全開機、韌體簽章、OTA 更新</text><rect x=\"20\" y=\"76\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"110\" class=\"tb tc\">通訊</text><rect x=\"170\" y=\"76\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"100\" class=\"t\">TLS／mTLS、X.509 憑證</text><text x=\"184\" y=\"121\" class=\"ts\">依能力選 PSK、API key、Token；網路切割</text><rect x=\"20\" y=\"142\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"176\" class=\"tb tc\">平台／雲端</text><rect x=\"170\" y=\"142\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"166\" class=\"t\">防火牆白名單（限來源 IP、port）</text><text x=\"184\" y=\"187\" class=\"ts\">WAF 擋 SQL Injection、XSS（應用層）</text><rect x=\"20\" y=\"208\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"242\" class=\"tb tc\">資料</text><rect x=\"170\" y=\"208\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"232\" class=\"t\">存取控制、加密、遮罩、備份</text><text x=\"184\" y=\"253\" class=\"ts\">監控、災難復原（RPO／RTO 見下一節）</text><rect x=\"20\" y=\"274\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"308\" class=\"tb tc\">軟體</text><rect x=\"170\" y=\"274\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"308\" class=\"t\">SDLC 各階段掃描，上線前與定期都要做</text></svg>",
    "caption": "五層各記一兩個代表措施，判斷措施屬於哪一層時可以從這裡找。",
    "table": {
     "head": [
@@ -311,8 +235,39 @@
     ]
    },
    "more": {
-    "label": "裝置、通訊、平台、資料各層的做法",
-    "body": "<ul><li><b>裝置實體：</b>改預設密碼；量產品關閉 JTAG／Console。用韌體簽章與<b>安全開機（Secure boot）</b>確保只跑可信韌體，搭配加密的 <b>OTA</b>（無線遠端更新）。感測節點攻擊價值相對低，閘道器要特別留意。</li><li><b>通訊：</b>依裝置能力選身分證明方式，由簡到強：PSK、API key 與 Token（可當通行證的一串字元）、mTLS 搭配 X.509 憑證。重要系統做<b>網路切割（Network isolation）</b>，把設備分在互不相通的區域，異常時才不會擴散；常見做法是 VLAN（在同一台交換器上劃出虛擬的獨立網路）搭配防火牆存取規則；獨立的 Wi-Fi 名稱（SSID）要綁定到不同 VLAN 才有隔離效果。中繼器（Repeater）只放大訊號，沒有隔離作用。</li><li><b>平台：</b>防火牆白名單主要看來源位址與 port，運作在網路層與傳輸層（Layer 3／4），簡單快速；<b>WAF（網頁應用程式防火牆）</b>會看請求內容，能擋 SQL Injection（在輸入欄夾帶資料庫指令）、XSS（在網頁夾帶惡意腳本）與惡意機器人流量（Bot attack）。</li><li><b>資料：</b>存取控制、加密、遮罩、備份、監控，以及災難復原。</li></ul>"
+    "label": "網路切割與 WAF",
+    "body": "<ul><li><b>網路切割（Network isolation）</b>常用 VLAN（在同一台交換器上劃出互不相通的虛擬網路）搭配防火牆規則；SSID 要綁到不同 VLAN 才算隔離。中繼器只放大訊號，不能隔離。細節見 <a href=\"s2-13.html#network-defense\">1-3〈物聯網資訊安全〉</a>。</li><li>只看 IP、port 的防火牆擋不到藏在內容裡的攻擊，要靠 <b>WAF（網頁應用程式防火牆）</b>擋 SQL Injection（在輸入欄夾帶資料庫指令）、XSS（在網頁夾帶惡意腳本）和 Bot。</li><li>閘道器比感測節點更值得優先保護。</li></ul>"
+   }
+  },
+  {
+   "id": "availability-metrics",
+   "h": "可用性的三個數字：SLA、RPO、RTO",
+   "body": "<p>SLA 是事前承諾的停機上限；RPO、RTO 是出事後掉多少資料、多久恢復。<b>災難復原（DR，Disaster Recovery）</b>計畫裡，<b>RPO（Recovery Point Objective）</b>是可能遺失多久的資料；<b>RTO（Recovery Time Objective）</b>是停機多久能恢復。</p><p><b>服務水準協議（SLA，Service Level Agreement）</b>是服務承諾的上線比例。每月停機上限可這樣算：一個月以 720 小時計，乘上 (1 − SLA)。</p>",
+   "svg": "<svg viewBox=\"0 0 600 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"事故時間軸：每 6 小時備份，15:00 損毀、用 12:00 的備份還原、17:00 恢復；RPO 從事故點往回量，RTO 往後量\"><defs><marker id=\"s1-25-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"30\" y1=\"130\" x2=\"585\" y2=\"130\" class=\"ln\" marker-end=\"url(#s1-25-7-arr)\"/><circle cx=\"60.0\" cy=\"130\" r=\"8\" class=\"acc\"/><text x=\"60.0\" y=\"110\" class=\"t tc\">備份</text><circle cx=\"310.0\" cy=\"130\" r=\"8\" class=\"acc\"/><text x=\"310.0\" y=\"110\" class=\"t tc\">備份</text><circle cx=\"435.0\" cy=\"130\" r=\"9\" class=\"bad\"/><text x=\"435.0\" y=\"110\" class=\"tb tc\">損毀</text><circle cx=\"518.3\" cy=\"130\" r=\"9\" class=\"ok\"/><text x=\"518.3\" y=\"110\" class=\"tb tc\">恢復</text><text x=\"60.0\" y=\"156\" class=\"t tc\">06:00</text><text x=\"310.0\" y=\"156\" class=\"t tc\">12:00</text><text x=\"435.0\" y=\"156\" class=\"t tc\">15:00</text><text x=\"518.3\" y=\"156\" class=\"t tc\">17:00</text><line x1=\"310.0\" y1=\"68\" x2=\"310.0\" y2=\"82\" class=\"ln\"/><line x1=\"435.0\" y1=\"68\" x2=\"435.0\" y2=\"82\" class=\"ln\"/><line x1=\"433.0\" y1=\"75\" x2=\"312.0\" y2=\"75\" class=\"la\" marker-end=\"url(#s1-25-7-arr)\"/><text x=\"372.5\" y=\"36\" class=\"tb tc ta\">RPO 往回量</text><text x=\"372.5\" y=\"58\" class=\"t tc\">這次實際掉 3 小時</text><line x1=\"435.0\" y1=\"168\" x2=\"435.0\" y2=\"182\" class=\"ln\"/><line x1=\"518.3\" y1=\"168\" x2=\"518.3\" y2=\"182\" class=\"ln\"/><line x1=\"437.0\" y1=\"175\" x2=\"516.3\" y2=\"175\" class=\"la\" marker-end=\"url(#s1-25-7-arr)\"/><text x=\"476.7\" y=\"204\" class=\"tb tc ta\">RTO 往後量</text><text x=\"476.7\" y=\"226\" class=\"t tc\">這次停機 2 小時</text><line x1=\"60.0\" y1=\"168\" x2=\"60.0\" y2=\"182\" class=\"ln\"/><line x1=\"310.0\" y1=\"168\" x2=\"310.0\" y2=\"182\" class=\"ln\"/><line x1=\"60.0\" y1=\"175\" x2=\"310.0\" y2=\"175\" class=\"ln dash\"/><text x=\"185\" y=\"204\" class=\"t tc\">每 6 小時備份一次</text><text x=\"185\" y=\"226\" class=\"t tc\">最多掉 6 小時＝RPO 上限</text></svg>",
+   "caption": "從事故點出發：RPO 往回量到上一次備份，RTO 往後量到服務恢復。要縮短 RPO 就備份得更勤，要縮短 RTO 就靠自動化與事先演練。",
+   "table": {
+    "head": [
+     "SLA",
+     "每月可停機（以 30 天計）",
+     "計算"
+    ],
+    "rows": [
+     [
+      "99%",
+      "約 7.2 小時",
+      "720 × 1%"
+     ],
+     [
+      "99.9%",
+      "約 43 分鐘",
+      "720 × 0.1%"
+     ],
+     [
+      "99.99%",
+      "約 4.3 分鐘",
+      "720 × 0.01%"
+     ]
+    ]
    }
   },
   {
@@ -363,12 +318,12 @@
   "隱私四重點：去識別化、資料最小化、使用者同意、目的限制。"
  ],
  "pitfalls": [
-  "數位簽章不會隱藏內容。它支持完整性、來源與不可否認性，前提是私鑰沒外洩、身分綁定可信。部分教材以「A 用自己的金鑰加密、B 用 A 的公鑰解開」說明非對稱加密（如官方學習指引第 124 頁章後評量）；這種配對對應的是簽章的來源驗證，並不保密，要保密須用收件人公鑰，應考時留意題目的條件。",
-  "雜湊不是可解密的加密，也不提供 MAC 的金鑰保護。部分教材把雜湊直接稱為 MAC（如官方學習指引第 119 頁）；標準定義中 MAC 需要金鑰，應考時留意題目的條件。",
-  "認證與授權容易搞混：認證問你是誰，授權問你能做什麼。AAA 的第三個 A 通行說法是 Accounting；部分教材寫成 Auditing（稽核，如官方學習指引第 119 頁），應考時留意題目的條件。",
+  "要保密須用收件人的公鑰加密；用寄件人私鑰加密、以寄件人公鑰解開是簽章的配對，只證來源、不保密（指引 p.124 把「A 用自己的金鑰加密、B 用 A 的公鑰解開」當成非對稱加密傳輸）。",
+  "雜湊不是可解密的加密；MAC 要把共用金鑰一起算進去，沒有金鑰算不出來，單純雜湊不是 MAC（指引 p.119 把雜湊直接稱為 MAC）。",
+  "認證與授權容易搞混：認證問你是誰，授權問你能做什麼。AAA 的第三個 A 通行說法是 Accounting，也就是記錄（指引 p.119 寫成 Auditing 稽核）。",
   "重放攻擊不必解開內容，也不必破解簽章，原封不動再送即可，所以要靠 nonce、序號或時間戳判斷訊息是否為新的。",
-  "GDPR 是歐盟的個資保護法規；Safe Harbor 與 Privacy Shield 則是歐美之間傳輸個資的協議框架，且已先後被歐盟法院判決無效，兩者不是同一類東西。",
-  "部分教材把依 IP、port 過濾的防火牆寫成 Layer 2／3（如官方學習指引第 120 頁）；port 屬 Layer 4，應考時留意題目的條件。"
+  "GDPR 是歐盟的個資保護法規；Safe Harbor、Privacy Shield 是歐美之間傳輸個資的協議（皆已失效），兩者不是同一類。",
+  "依 IP、port 過濾的防火牆白名單屬 Layer 3／4，因為 port 屬 Layer 4（指引 p.120 寫成 Layer 2／3）。"
  ],
  "examples": [
   {
@@ -396,36 +351,20 @@
  ],
  "check": [
   {
-   "q": "DDoS 主要破壞 CIA 的哪一項？",
-   "a": "可用性（A）。"
+   "q": "MAC 和數位簽章都能發現資料被改，兩者差在哪？",
+   "a": "MAC 用雙方共用的金鑰，持金鑰的任一方都算得出，分不出是誰發的；簽章只有寄件人的私鑰簽得出，所以能證明來源，也有不可否認性。"
   },
   {
-   "q": "AES、RSA、ECC 各屬於對稱還是非對稱？",
-   "a": "AES 是對稱，RSA 與 ECC 是非對稱。"
+   "q": "TLS 只驗伺服器憑證時，平台能確定連上來的是自己的裝置嗎？",
+   "a": "不能，單向驗證只證明伺服器是真的。要確認裝置身分，可改用 mTLS 讓每台裝置出示憑證，或另用 PSK、Token 驗證。"
   },
   {
-   "q": "A 要讓只有 B 看得到訊息，該用哪把鑰匙加密？",
-   "a": "用 B 的公鑰加密，B 再用自己的私鑰解開。"
+   "q": "雲端服務 SLA 99.9%，代表出事時最多只會掉 43 分鐘的資料嗎？",
+   "a": "不是。SLA 限的是每月停機時間；掉多少資料看 RPO，也就是上一次備份離事故多遠。"
   },
   {
-   "q": "數位簽章能提供什麼，不能提供什麼？",
-   "a": "支持完整性、來源與不可否認性，但不提供內容保密。"
-  },
-  {
-   "q": "HMAC 比單純雜湊多了什麼？",
-   "a": "多了共用金鑰，沒有金鑰的人無法算出正確值，因此能防止連摘要一起竄改。"
-  },
-  {
-   "q": "SLA 99.9% 每月大約可停機多久？",
-   "a": "720 小時 × 0.1%，約 43 分鐘。"
-  },
-  {
-   "q": "為什麼中繼器無法做到網路切割？",
-   "a": "它只放大或重整訊號，沒有區隔網路的功能。"
-  },
-  {
-   "q": "門禁系統只記進出時間、不存影像，符合哪個隱私原則？",
-   "a": "資料最小化。"
+   "q": "為了監控車廂溫度而蒐集的貨車軌跡，之後想拿來考核駕駛，可以直接用嗎？",
+   "a": "通常不行。這是另作他用，依目的限制要再取得同意，除非新用途與原目的相容或法規另有依據。"
   }
  ],
  "terms": [

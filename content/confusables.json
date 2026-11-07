@@ -153,8 +153,8 @@
   },
   {
    "title": "TCP、UDP",
-   "chapter": "s1-23",
-   "sec": "network-layers",
+   "chapter": "s1-22",
+   "sec": "road-and-language",
    "items": [
     {
      "term": "TCP",
@@ -233,7 +233,7 @@
   {
    "title": "RPO、RTO",
    "chapter": "s1-25",
-   "sec": "layered-defense",
+   "sec": "availability-metrics",
    "items": [
     {
      "term": "RPO",

@@ -54,13 +54,11 @@
     return {accepted: true, code: 'ok', reason: '簽章正確' + (notes.length ? '，' + notes.join('，') : '，門鎖沒有其他檢查') + '。', after};
   }
 
-  // staleOk: a legitimate message that arrives after a newer command, so rejecting it is the right call.
-  function outcome(from, accepted, staleOk) {
+  function outcome(from, accepted) {
     if (from === 'attacker') return accepted ? 'breach' : 'stopped';
-    if (accepted) return 'pass';
-    return staleOk ? 'right-reject' : 'false-reject';
+    return accepted ? 'pass' : 'false-reject';
   }
-  const OUTCOME = {pass: '通過', 'false-reject': '誤擋', 'right-reject': '擋對了', stopped: '擋下', breach: '得逞'};
+  const OUTCOME = {pass: '通過', 'false-reject': '誤擋', stopped: '擋下', breach: '得逞'};
 
   function msg(from, cmd, seq, nonce, ts, arrive, label, extra) {
     return Object.assign({kind: 'msg', from, cmd, seq, nonce, ts, arrive, sig: true, label}, extra);
@@ -86,13 +84,6 @@
       {kind: 'event', act: 'reboot', at: at(8, 4), label: '門鎖斷電重開，RAM 內容清空'},
       replay41(at(8, 5), '攻擊者重送舊訊息'),
     ], lesson: '記憶一清空，舊訊息又變成「沒看過」。序號與防重放狀態要存進斷電不會消失的記憶體（如 flash）；時間窗不靠記憶，所以不受影響，前提是時鐘還準。'},
-    {id: 'full', group: 'attack', name: 'nonce 記憶滿了', desc: '門鎖只能記住最近 3 個 nonce。開門之後又來了三則合法訊息，最舊的 nonce 就被擠掉。', steps: [
-      OPEN41,
-      msg('app', 'lock', 42, '9c20', at(8, 10), at(8, 10, 1), '手機上鎖'),
-      msg('app', 'status', 43, '51be', at(8, 20), at(8, 20, 1), '手機查電量'),
-      msg('app', 'status', 44, 'd04c', at(8, 30), at(8, 30, 1), '手機查電量'),
-      replay41(at(8, 31), '攻擊者重送開門'),
-    ], lesson: 'nonce 要記得用過的值，而小裝置的記憶體有限。加上時間窗後，只需記住窗內的 nonce，更舊的訊息直接以過期拒絕；容量要足以涵蓋窗內的訊息量。'},
     {id: 'delay', group: 'legit', name: '合法訊息延遲', desc: '倉庫訊號不好，員工按下開門後，訊息在路上卡了 45 秒，於是他又按了一次。', steps: [
       msg('app', 'open', 41, 'a7f3', at(8, 0), at(8, 0, 45), '手機開門（路上卡 45 秒）'),
       msg('app', 'open', 42, '3e88', at(8, 0, 46), at(8, 0, 47), '手機再按一次'),
@@ -102,10 +93,6 @@
       msg('app', 'open', 41, 'a7f3', at(8, 0), at(8, 0, 6), '開門後到'),
       msg('app', 'open', 43, '3e88', at(8, 0, 10), at(8, 0, 11), '手機再按一次'),
     ], lesson: '「不大於上次就拒絕」的嚴格序號會誤擋後到的合法訊息，使用者只能重按。UDP 這類不保證順序的傳輸常改用滑動視窗：容許小範圍亂序，並記住窗內哪些序號收過。'},
-    {id: 'swap', group: 'legit', name: '亂序：上鎖先到', desc: '員工先按開門、再按上鎖，兩則訊息卻對調抵達。他的本意是門最後鎖著。', steps: [
-      msg('app', 'lock', 42, '9c20', at(8, 0, 2), at(8, 0, 3), '上鎖先到'),
-      msg('app', 'open', 41, 'a7f3', at(8, 0), at(8, 0, 6), '開門後到', {staleOk: true}),
-    ], lesson: '同樣是亂序，這次拒絕反而是對的：序號能保住指令順序，時間窗與 nonce 不看順序，門最後開著。門鎖這類有狀態的控制，順序本身也重要。'},
     {id: 'clock', group: 'legit', name: '門鎖時鐘不準', desc: '門鎖時鐘快了 2 分鐘，員工送出的訊息一到就顯得太舊。之後用 NTP（網路校時）校正。', skew: 120, steps: [
       OPEN41,
       {kind: 'event', act: 'sync', at: at(8, 1), label: '門鎖以 NTP 校時，誤差歸零'},
@@ -128,7 +115,7 @@
       }
       const r = receive(lock, mode, step, win);
       lock = r.after;
-      return {step, accepted: r.accepted, code: r.code, reason: r.reason, outcome: outcome(step.from, r.accepted, step.staleOk), after: r.after};
+      return {step, accepted: r.accepted, code: r.code, reason: r.reason, outcome: outcome(step.from, r.accepted), after: r.after};
     });
     return {rows, initial: newLock(s.skew), final: lock};
   }

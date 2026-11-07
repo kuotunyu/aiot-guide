@@ -127,7 +127,7 @@ test('glossary: search handles plain-keyboard spellings', async ({page}) => {
   await expect(page.locator('.gsec:visible')).toHaveCount(0);
 });
 
-test('glossary: grouped by chapter by default, A–Z puts acronyms first', async ({page}) => {
+test('glossary: grouped by chapter by default, name order puts acronyms first', async ({page}) => {
   await page.goto('/glossary.html');
   await expect(page.locator('#gch')).toBeVisible();
   await expect(page.locator('.gsec').first()).toHaveAttribute('id', 'g-s1-21');
@@ -135,6 +135,43 @@ test('glossary: grouped by chapter by default, A–Z puts acronyms first', async
   await expect(page.locator('#gch')).toBeHidden();
   await expect(page.locator('#gaz .gitem b').first()).toHaveText(/^[A-Za-z0-9]/);
   await expect(page.locator('#gcount')).toHaveText(/^\d+ 個名詞$/);
+});
+
+// Reader feedback: someone looking for a chapter must not have to hunt for the list.
+test('home: chapter lists are reachable at once', async ({page}) => {
+  await page.goto('/index.html');
+  const vh = page.viewportSize().height;
+  const top = await page.locator('#chapters .subject h2').first().evaluate(el => el.getBoundingClientRect().top);
+  expect(top).toBeLessThan(vh);
+  await page.locator('.nav a', {hasText: '章節'}).click();
+  await expect(page).toHaveURL(/#chapters$/);
+  await expect(page.locator('#chapters .subject h2').first()).toBeInViewport();
+});
+
+test('loop figure: plays on screen, shows the still picture when motion is reduced', async ({page}) => {
+  await page.goto('/s2-11.html#message-queue');
+  const f = page.locator('#message-queue figure.loop');
+  await f.scrollIntoViewIfNeeded();
+  await expect(f).toHaveClass(/anim/);
+  await expect(f).toHaveClass(/run/);
+  await expect(f.locator('.lp-move')).toBeVisible();
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await expect(f.locator('.lp-still')).toBeVisible();
+  await expect(f.locator('.lp-move')).toBeHidden();
+});
+
+test('step figure: starts at step 1 and walks forward and back', async ({page}) => {
+  await page.goto('/s1-23.html');
+  const f = page.locator('#network-layers .stepfig');
+  await expect(f).toHaveAttribute('data-cur', '1');
+  await expect(f.locator('.stepn')).toHaveText('1 / 7');
+  await f.locator('[data-d="1"]').click();
+  await f.locator('[data-d="1"]').click();
+  await expect(f).toHaveAttribute('data-cur', '3');
+  await expect(f.locator('.stepcap li:visible')).toHaveCount(1);
+  await expect(f.locator('.stepcap li:visible')).toContainText('TCP');
+  await f.locator('[data-d="-1"]').click();
+  await expect(f.locator('.stepn')).toHaveText('2 / 7');
 });
 
 test('chapter: terms from other chapters open a definition in place', async ({page}) => {

@@ -16,11 +16,35 @@ setHdr(); addEventListener('resize', setHdr);
 
 // ----- diagram zoom -----
 document.addEventListener('click', e => {
-  const f = e.target.closest('article .dg'); if (!f || document.body.classList.contains('reading')) return;
+  const f = e.target.closest('article .dg'); if (!f || f.matches('.stepfig, .loop') || document.body.classList.contains('reading')) return;
   const z = document.createElement('div'); z.className = 'zoom'; z.innerHTML = '<figure class="dg">' + f.innerHTML + '</figure>';
   z.onclick = () => z.remove(); document.body.appendChild(z);
 });
 addEventListener('keydown', e => { if (e.key === 'Escape') $$('.zoom').forEach(z => z.remove()); });
+
+// ----- loop figures: a short animation that only runs while on screen, and never when motion is reduced -----
+(function(){
+  const loops = $$('.loop'); if (!loops.length) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(x => x.target.classList.toggle('run', x.isIntersecting))) : null;
+  const apply = () => loops.forEach(f => { f.classList.toggle('anim', !reduce.matches); if (!io) f.classList.add('run'); });
+  loops.forEach(f => io && io.observe(f));
+  apply(); reduce.addEventListener && reduce.addEventListener('change', apply);
+})();
+
+// ----- step figures: one diagram, a few states, previous/next -----
+$$('.stepfig').forEach(f => {
+  const n = +f.dataset.n, ctl = $('.stepctl', f), lis = $$('.stepcap li', f), num = $('.stepn', f), [prev, next] = $$('button', ctl);
+  const go = k => {
+    k = Math.max(1, Math.min(n, k)); f.dataset.cur = k;
+    lis.forEach((li, i) => li.classList.toggle('on', i === k - 1));
+    num.textContent = k + ' / ' + n; prev.disabled = k === 1; next.disabled = k === n;
+  };
+  prev.onclick = () => go(+f.dataset.cur - 1); next.onclick = () => go(+f.dataset.cur + 1);
+  f.addEventListener('keydown', e => { if (e.key === 'ArrowRight') next.click(); if (e.key === 'ArrowLeft') prev.click(); });
+  // Without JS (and in print) the figure shows its most telling step; with JS it starts from the beginning.
+  f.classList.add('js'); ctl.hidden = false; go(1);
+});
 
 // ----- worked examples -----
 $$('.ex[data-a]').forEach(ex => {
@@ -45,7 +69,7 @@ if (gq) {
   const byCh = $('#gch'), az = $('#gaz'), conf = $('#gconf'), chips = $('.gchips'), btns = $$('.gview button');
   const home = items.map(it => it.parentNode);
   const coll = new Intl.Collator('zh-TW-u-co-zhuyin', {numeric: true, sensitivity: 'base'});
-  // English and acronyms first (A–Z), then Chinese by zhuyin order.
+  // English and acronyms first (A–Z), then Chinese terms.
   const name = it => it.querySelector('b').textContent, latin = s => /^[A-Za-z0-9]/.test(s) ? 0 : 1;
   const sorted = items.slice().sort((a, b) => latin(name(a)) - latin(name(b)) || coll.compare(name(a), name(b)));
   let view = 'ch';

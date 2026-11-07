@@ -17,7 +17,7 @@
 
 ## 正確性
 - 依據順序：標準與原廠規格的通行事實、官方學習指引、既有教材。數字標「典型」。不確定就不寫。
-- 官方指引與通行事實衝突時，主文寫正確事實，並在 `pitfalls` 中性註明：「部分教材寫法相反（如官方學習指引第 N 頁）；應考時留意題目的條件。」
+- 官方指引與通行事實衝突時，主文寫正確事實；`pitfalls` 事實放前面，句尾加短標記「（指引 p.N 寫成 X）」或「（指引 p.N 寫法相反）」。頁面會自動說明這個標記。只是名稱或慣例不同的不加標記，寫成具體一句（例如「題目會指定用 2ⁿ 或 2ⁿ－1」）；沒有頁碼的教材說法差異，留一句「考題可能採教材說法」。
 - 已知要處理的例子：應變規拉伸時電阻增加（指引 PDF 第 134、141 頁寫反）；Google Cloud IoT Core 已於 2023 年停止服務；HTTP/1.1 預設持久連線；MTConnect 的 Adapter 不一定輸出 XML。
 
 ## 著作權（嚴格）
@@ -59,9 +59,9 @@
   "terms": [{"term": "MQTT", "en": "Message Queuing Telemetry Transport", "def": "一句白話定義"}]
 }
 ```
-數量：`sections` 4–7 節，其中至少 2 節有 svg（沿用底稿中好的圖，可修改）；`examples` 2 題；`check` 5–8 題；`terms` 8–20 個本章核心名詞（`en` 可省略）。
+數量：`sections` 4–8 節，其中至少 2 節有 svg（沿用底稿中好的圖，可修改）；`examples` 2 題；`check` 3–5 題（不重問本章 predict、examples 已問過的情境，也不只是把 keypoints 或 terms 的一句改成問句；優先留正文講過但沒人練到的反向題、對比題）；`terms` 8–20 個本章核心名詞（`en` 可省略）。
 
-`video` 只能用：`mqtt-http`（s1-22）、`adc-sampling`、`sampling-aliasing`、`serial-interfaces`（s1-32）、`pwm-duty`、`battery-duty`（s2-21）、`buffered-recovery`（s2-11）、`oee-losses`（s2-23）。
+`video` 只能用：`mqtt-http`（s1-22）、`sampling-aliasing`（s1-32）、`peak-shaving`（s2-11）、`oee-losses`（s2-23）；首頁用 `data-journey`。新影片只做「連續變化、停在任何一格都看不出道理」而且同一節的實驗或逐步圖做不到的內容。
 
 ## SVG 規格
 - 開頭 `<svg viewBox="0 0 600 H" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一句描述">`，H 120–440，根元素不設 width/height。
@@ -70,3 +70,23 @@
 - 只用 rect、circle、ellipse、line、polyline、polygon、path、text、tspan、g、defs、marker。
 - 文字不可出界、重疊或超出方框（中文字寬約等於字級）。
 - 圖要傳達結構，不當裝飾。圖中文字同樣不可有出題頻率或個人化語氣。
+
+## 逐步圖與第二張圖
+- **逐步圖**：同一張 SVG 用「上一步／下一步」切換 3–8 個狀態，用在先後、因果、狀態變化。只在三種情況用它：時間順序、一步步改變的狀態、拆開後才看得懂的過程。要並排比較或一眼看全貌的，用靜態圖。
+  - 在節上加 `"steps": ["每一步一句說明", ...]` 與 `"start": n`（沒有 JS 與列印時顯示第 n 步，選最能代表全貌的一步）。
+  - SVG 裡只在某幾步出現的圖形加 `data-s="2 3"`（可放在 `<g>` 上）；沒有 data-s 的永遠顯示。步數 = steps 的長度，最多 12。
+  - 每步說明一句話，寫「這一步看到什麼、代表什麼」；不要和 caption 重複。
+  - 範本：`content/s1-23.json` 的 network-layers。
+- **第二張圖**：一節需要多一張圖時，用 `"figs": [{"pos": "...", "svg": "...", "caption": "...", "steps": [...], "start": n}]`。`pos` 決定位置：`after-predict`（先想一想之後、正文之前）、`after-body`（正文之後、實驗之前）、`after-after`（after 之後、主圖之前）、`end`（主圖之後，預設）。圖不可以排在 predict 前面洩漏答案。
+- **手機可讀**：600 寬的圖在 375px 手機上約縮成 0.62 倍。主要文字用 `t`、`tb`（16px），`ts`（13px）只用在單位、刻度等次要資訊。每張圖約 15 個標籤以內，長說明放 caption 或 steps。
+- **配色語意**：`ok／bad／warn` 只表示對錯與警示；中性分類用 `box／soft／acc`；`la` 實線是主要路徑，`ln dash` 是控制或回程。
+- **檢查**：`node scripts/figure-shots.js <頁>.html <節 id> <輸出資料夾>` 會截下每一步在桌機、手機、淺色、深色的樣子，交付前要逐張看過。
+
+## 循環小動畫
+- 只用在「流動、週期、時間差」：靜止看不出、但動起來一眼就懂的概念（例如封包排隊、輪子在閃光下倒轉）。靜止就看得懂的不要動。每支都要取代一張靜態圖或一段文字，不另外加。
+- 寫法：在節或 figs 項目加 `"loop": true`，svg 裡固定兩個圖層：`<g class="lp-move">` 放會動的元素，`<g class="lp-still">` 放靜止版要補的元素（例如掉落的紅點、排好隊的點）。兩層共用同一張底圖（底圖放在兩層之外）。
+- 動畫寫在 svg 裡的 `<style>`：只能有 `.lp-` 開頭的 class 與 `@keyframes lp-` 開頭的動畫，只改 `transform`、`opacity`；不可寫任何顏色（顏色仍用 box acc ok bad warn soft 等 class）。同一張圖所有元素共用一個週期（3–6 秒；逐站走流程的圖每站停約 1.2 秒，可放寬到 10 秒），相位用負的 `animation-delay` 錯開；要跳格用 `steps(n)`。
+- 靜止版（讀者設定減少動態效果、沒有 JS、列印、截圖的 -still）必須自己就看得懂、能答題；caption 寫成對靜止版也成立的句子。
+- 動畫只在捲到畫面內時播放；點圖不放大。
+- 可讀性：圓點半徑至少 6（viewBox 單位），會動的標籤不小於 `t`，不可蓋住方塊裡的文字。
+- 檢查：`node scripts/figure-shots.js` 會截四個時間點（-a1～-a4）與靜止版（-still），都要看過。

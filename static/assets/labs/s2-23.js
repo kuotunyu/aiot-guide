@@ -67,7 +67,77 @@
   function pct(x) { return (x * 100).toFixed(1) + '%'; }
   function money(x) { return (x < 0 ? '−' : '') + Math.round(Math.abs(x)).toLocaleString('en-US'); }
 
-  const api = {computeOee, computePayback, chartHorizon, fmt, pct, money};
+  // Payback chart coordinates (viewBox 440 wide): months to x, cash to y.
+  function chartScale(r, v) {
+    const H = chartHorizon(r.months), X0 = 62, X1 = 428, Y0 = 34, Y1 = 196;
+    const end = -v.invest + r.net * H, top = Math.max(0, end), bottom = Math.min(-v.invest, end);
+    return {H, X0, X1, Y0, Y1, end, x: m => X0 + (X1 - X0) * m / H, y: c => Y0 + (Y1 - Y0) * (top - c) / (top - bottom)};
+  }
+
+  // Rough width of 13px text: CJK and full-width characters are square, the rest about 0.6 em.
+  function textWidth(s, size) {
+    let w = 0;
+    for (const ch of s) w += ch.charCodeAt(0) >= 0x2e80 ? size : size * 0.6;
+    return w;
+  }
+
+  // The "forgot the fee" line: from the start straight to where the gross saving alone would cross zero.
+  // Drawn only when there is a fee and that wrong month falls inside the chart; it never changes the scale.
+  // The label sits under the zero line, in empty space left of the dashed line (or right of the true line);
+  // lx is null when neither side has room, and the line is then drawn without a label.
+  function naiveMark(r, v) {
+    if (!r.ok || !(v.fee > 0) || r.naiveMonths === null) return null;
+    const sc = chartScale(r, v);
+    if (r.naiveMonths > sc.H) return null;
+    const x0 = sc.x(0), y0 = sc.y(-v.invest), x1 = sc.x(r.naiveMonths), y1 = sc.y(0);
+    const label = '忘了扣月費：第 ' + fmt(r.naiveMonths) + ' 個月（錯）', w = textWidth(label, 13);
+    const ly = y1 + 18, bandTop = y1 + 5, bandBottom = y1 + 21;
+    // x of a line from the start point (x0, y0) to (xa, y1) at height yy
+    const at = (xa, yy) => xa - (yy - y1) * (xa - x0) / (y0 - y1);
+    let lx = null, anchor = 'end';
+    if (bandBottom <= sc.Y1 - 6) {
+      const left = at(x1, bandBottom) - 6;
+      if (left - w >= sc.X0 + 4) lx = left;
+      else if (r.months !== null) {
+        const xm = sc.x(r.months), right = Math.max(at(xm, bandTop) + 8, xm + 10); // clear the true line and its payback dot
+        if (right + w <= sc.X1) { lx = right; anchor = 'start'; }
+      }
+    }
+    return {x0, y0, x1, y1, label, w, lx, ly, anchor};
+  }
+
+  // The worked arithmetic under the payback chart, one line each: net saving, payback, first-year ROI.
+  // Plain text; the page escapes it. "＝" when the shown number is exact, "≈" when it was rounded.
+  function paybackLines(r, v) {
+    const eq = (x, shown) => (Math.abs(x - shown) < 1e-9 ? '＝' : '≈');
+    const signed = s => s.replace('-', '−');
+    const net = '每月淨節省＝' + money(v.saving) + '－' + money(v.fee) + '＝' + money(r.net) + ' 元';
+    let payback;
+    if (!r.recovers) {
+      payback = r.net === 0 ? '回不了本。節省剛好被費用抵銷，一次投入永遠收不回來。' : '回不了本。每月節省小於費用，用越久虧越多。';
+    } else {
+      payback = '回收期＝' + money(v.invest) + '÷' + money(r.net) + eq(r.months, +fmt(r.months)) + fmt(r.months) + ' 個月';
+      if (v.fee > 0 && r.naiveMonths !== null) {
+        payback += '（忘了扣月費：' + money(v.invest) + '÷' + money(v.saving) + eq(r.naiveMonths, +fmt(r.naiveMonths)) + fmt(r.naiveMonths) + ' 個月，錯）';
+      }
+      if (r.months > 60) payback += '。超過 5 年才回本，圖只畫到第 60 個月，還要考慮設備撐不撐得到那時候。';
+    }
+    const roiPct = r.roiNet * 100, tcoPct = r.roiTco * 100;
+    const roi = '首年 ROI＝(' + money(r.net) + '×12－' + money(v.invest) + ')÷' + money(v.invest) + eq(roiPct, +fmt(roiPct)) + signed(fmt(roiPct)) + '%';
+    const note = v.fee > 0 ? '若把首年持續費用也算進成本，首年 ROI ' + eq(tcoPct, +fmt(tcoPct)) + ' ' + signed(fmt(tcoPct)) + '%。比較方案時口徑要一致。' : null;
+    return {lines: [net, payback, roi], note};
+  }
+
+  // On a phone the lines wrap: keep each operand ("120,000", "(12,000×12－120,000)÷") and "10 個月" in one piece,
+  // so a line only breaks around "＝", after "÷", or before an aside. U+2060 is a zero-width word joiner, U+200B a zero-width break.
+  function keepTogether(s) {
+    return s.replace(/([0-9,.()×－−%])(?=[0-9,.()×÷－−%])/g, '$1\u2060')
+      .replace(/ (個月|元)/g, (m, u) => '\u00a0' + u.split('').join('\u2060'))
+      .replace(/，錯）/g, '\u2060，\u2060錯\u2060）')
+      .replace(/÷/g, '÷\u200b'); // "÷" sticks to the number after it unless given a zero-width break
+  }
+
+  const api = {computeOee, computePayback, chartHorizon, chartScale, naiveMark, paybackLines, keepTogether, textWidth, fmt, pct, money};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof document === 'undefined') return;
 
@@ -161,14 +231,17 @@
   }
 
   function paybackChart(r, v) {
-    const H = chartHorizon(r.months), X0 = 62, X1 = 428, Y0 = 34, Y1 = 196;
-    const end = -v.invest + r.net * H, top = Math.max(0, end), bottom = Math.min(-v.invest, end);
-    const x = m => X0 + (X1 - X0) * m / H, y = c => Y0 + (Y1 - Y0) * (top - c) / (top - bottom);
-    let s = '<svg viewBox="0 0 440 236" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="累積淨現金折線：從 ' + esc(money(-v.invest)) + ' 元開始，每月變動 ' + esc(money(r.net)) + ' 元">';
+    const {H, X0, X1, end, x, y} = chartScale(r, v), nm = naiveMark(r, v);
+    const wrong = nm ? '；紅色虛線是忘了扣月費的誤算，看起來第 ' + fmt(r.naiveMonths) + ' 個月就回本' : '';
+    let s = '<svg viewBox="0 0 440 236" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="累積淨現金折線：從 ' + esc(money(-v.invest)) + ' 元開始，每月變動 ' + esc(money(r.net)) + ' 元' + wrong + '">';
     s += '<text x="' + X0 + '" y="18" class="ts">累積淨現金（元）</text>';
     s += '<line x1="' + X0 + '" y1="' + y(0).toFixed(1) + '" x2="' + X1 + '" y2="' + y(0).toFixed(1) + '" class="ln dash"/>';
     s += '<text x="' + (X0 - 8) + '" y="' + (y(0) + 4).toFixed(1) + '" class="ts" text-anchor="end">0</text>';
     s += '<text x="' + (X0 - 8) + '" y="' + (y(-v.invest) + 4).toFixed(1) + '" class="ts" text-anchor="end">−' + fmt(v.invest / 10000) + ' 萬</text>';
+    if (nm) {
+      s += '<line x1="' + nm.x0 + '" y1="' + nm.y0.toFixed(1) + '" x2="' + nm.x1.toFixed(1) + '" y2="' + nm.y1.toFixed(1) + '" class="bad dash"/>';
+      if (nm.lx !== null) s += '<text x="' + nm.lx.toFixed(1) + '" y="' + nm.ly.toFixed(1) + '" class="ts" text-anchor="' + nm.anchor + '">' + esc(nm.label) + '</text>';
+    }
     s += '<line x1="' + x(0) + '" y1="' + y(-v.invest).toFixed(1) + '" x2="' + x(H) + '" y2="' + y(end).toFixed(1) + '" class="la"/>';
     s += '<circle cx="' + x(0) + '" cy="' + y(-v.invest).toFixed(1) + '" r="5" class="bad"/>';
     if (r.months !== null && r.months <= H) {
@@ -185,7 +258,7 @@
 
   function paybackLab(el) {
     const FIELDS = [
-      {key: 'invest', id: 'pay-invest', label: '一次投入', min: 10000, max: 600000, step: 10000, unit: ' 元'},
+      {key: 'invest', id: 'pay-invest', label: '一次投入（設備＋安裝＋訓練）', min: 10000, max: 600000, step: 10000, unit: ' 元'},
       {key: 'saving', id: 'pay-saving', label: '每月節省', min: 0, max: 60000, step: 1000, unit: ' 元'},
       {key: 'fee', id: 'pay-fee', label: '每月持續費用', min: 0, max: 30000, step: 1000, unit: ' 元'},
     ];
@@ -197,24 +270,27 @@
     let active = 0;
     el.innerHTML = '<h3>實驗：這項投資多久回本？</h3><p class="small">調整三個數字。把每月持續費用調到比節省還高，看看會發生什麼。</p>' + chips(PRESETS, '投資情境') +
       '<div class="lab-form">' + FIELDS.map(f => slider(f.id, f.label, f.min, f.max, f.step, PRESETS[0].v[f.key], f.unit)).join('') + '</div>' +
-      '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p>' +
-      '<p class="small muted">簡化模型：每月節省與費用固定，不計利息、折舊與稅，也不考慮「今天的錢比明年值錢」。</p>';
-    const viz = el.querySelector('.lab-viz'), say = el.querySelector('.lab-say');
+      '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="small muted lab-note" hidden></p>' +
+      '<p class="small muted">簡化模型：每月節省與費用固定，不計利息、折舊與稅，也不考慮「今天的錢比明年值錢」；要考慮時改用 NPV（淨現值）。</p>';
+    const viz = el.querySelector('.lab-viz'), say = el.querySelector('.lab-say'), note = el.querySelector('.lab-note');
     function draw() {
       $$('[data-p]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === active)));
-      const v = readSliders(el, FIELDS), r = computePayback(v);
+      const v = readSliders(el, FIELDS), r = computePayback(v), out = paybackLines(r, v);
       viz.innerHTML = paybackChart(r, v);
-      let text = '每月淨節省 ' + money(r.net) + ' 元。';
-      if (!r.recovers) {
-        text += r.net === 0 ? '<b>回不了本。</b>節省剛好被費用抵銷，一次投入永遠收不回來。' : '<b>回不了本。</b>每月節省小於費用，用越久虧越多。';
-      } else {
-        text += '<b>回收期 ' + fmt(r.months) + ' 個月</b>';
-        if (r.naiveMonths !== null && v.fee > 0) text += '（忘了扣費用會誤算成 ' + fmt(r.naiveMonths) + ' 個月）';
-        text += '。';
-        if (r.months > 60) text += '超過 5 年才回本，圖只畫到第 60 個月，還要考慮設備撐不撐得到那時候。';
-      }
-      text += '首年 ROI ' + pct(r.roiNet).replace('-', '−') + '；若把首年持續費用也算進成本，則是 ' + pct(r.roiTco).replace('-', '−') + '。比較方案時口徑要一致。';
-      say.innerHTML = text;
+      // Bold the payback result, not the "forgot the fee" aside. One block per formula with a hanging indent,
+      // so on a phone, where each formula wraps onto two or three rows, the three formulas still read apart.
+      const LINE = '<span style="display:block;padding-left:1em;text-indent:-1em">', GAP = '<span style="display:block;padding-left:1em;text-indent:-1em;margin-top:.35em">';
+      say.innerHTML = out.lines.map((t, i) => {
+        let h;
+        if (i !== 1) h = esc(keepTogether(t));
+        else {
+          const k = t.indexOf('（');
+          h = k < 0 ? '<b>' + esc(keepTogether(t)) + '</b>' : '<b>' + esc(keepTogether(t.slice(0, k))) + '</b>' + esc(keepTogether(t.slice(k)));
+        }
+        return (i ? GAP : LINE) + h + '</span>';
+      }).join('');
+      note.textContent = out.note || '';
+      note.hidden = !out.note;
     }
     bindSliders(el, FIELDS, () => { active = -1; draw(); });
     setSliders(el, FIELDS, PRESETS[0].v);

@@ -23,52 +23,12 @@
     "q": "冷藏庫的壓縮機控制板只會說 Modbus，雲端平台只收 MQTT。要改壓縮機，還是改平台？",
     "a": "通常都不用改。中間放一台閘道器負責翻譯，兩邊維持原本的協定。"
    },
-   "body": "<p>物聯網（Internet of Things, IoT）系統不論用在冷鏈、工廠或農場，骨架都差不多：現場有東西負責<b>感覺</b>，有東西負責<b>動作</b>，中間有東西負責<b>判斷與傳話</b>，遠端有地方負責<b>彙整與管理</b>。</p><p>看懂一套系統，只要追兩條路。<b>資料往上</b>：探頭量到溫度，控制器讀取並數位化，閘道器翻譯後上傳，平台收下、存進資料庫，再顯示在儀表板。<b>控制往下</b>：平台的<b>規則引擎</b>（rule engine，事先寫好「若超過多少就做什麼」的機制）發現超溫，就發出告警通知人員，或下指令，經閘道器、控制器傳到現場的執行器動作。</p>",
-   "svg": "<svg viewBox=\"0 0 600 400\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網系統全貌：感測器、控制器、閘道器在現場，經 MQTT 與平台雙向連接，資料往上進資料庫與儀表板；規則觸發告警，或由平台下指令，經閘道器、控制器到執行器\"><defs><marker id=\"s2-11-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"10\" width=\"265\" height=\"310\" rx=\"10\" class=\"soft\"/><rect x=\"322\" y=\"10\" width=\"268\" height=\"310\" rx=\"10\" class=\"soft\"/><text x=\"150\" y=\"36\" class=\"th tc\">現場（邊緣）</text><text x=\"450\" y=\"36\" class=\"th tc\">平台／雲端</text><rect x=\"30\" y=\"50\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"85\" y=\"74\" class=\"tb tc\">感測器</text><text x=\"85\" y=\"94\" class=\"ts tc\">溫度、振動</text><rect x=\"160\" y=\"50\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"215\" y=\"74\" class=\"tb tc\">執行器</text><text x=\"215\" y=\"94\" class=\"ts tc\">馬達、警示燈</text><rect x=\"30\" y=\"150\" width=\"240\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"150\" y=\"174\" class=\"tb tc\">控制器（MCU／PLC）</text><text x=\"150\" y=\"194\" class=\"ts tc\">讀感測值、數位化、就地控制</text><rect x=\"30\" y=\"250\" width=\"240\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"150\" y=\"274\" class=\"tb tc\">閘道器 Gateway</text><text x=\"150\" y=\"294\" class=\"ts tc\">協定轉換、邊緣運算、斷線暫存</text><rect x=\"330\" y=\"50\" width=\"240\" height=\"56\" rx=\"8\" class=\"warn\"/><text x=\"450\" y=\"74\" class=\"tb tc\">告警通知</text><text x=\"450\" y=\"94\" class=\"ts tc\">簡訊、App 推播</text><rect x=\"330\" y=\"150\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"385\" y=\"174\" class=\"tb tc\">資料庫</text><text x=\"385\" y=\"194\" class=\"ts tc\">依時間存數值</text><rect x=\"460\" y=\"150\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"515\" y=\"174\" class=\"tb tc\">儀表板</text><text x=\"515\" y=\"194\" class=\"ts tc\">即時圖表</text><rect x=\"330\" y=\"250\" width=\"240\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"450\" y=\"274\" class=\"tb tc\">平台（含 MQTT Broker）</text><text x=\"450\" y=\"294\" class=\"ts tc\">收訊息、規則引擎、裝置管理</text><line x1=\"85\" y1=\"106\" x2=\"85\" y2=\"148\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"215\" y1=\"150\" x2=\"215\" y2=\"108\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"150\" y1=\"208\" x2=\"150\" y2=\"248\" class=\"ln\" marker-start=\"url(#s2-11-1-arr)\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"272\" y1=\"278\" x2=\"328\" y2=\"278\" class=\"la\" marker-start=\"url(#s2-11-1-arr)\" marker-end=\"url(#s2-11-1-arr)\"/><text x=\"298\" y=\"268\" class=\"ts tc\">MQTT</text><text x=\"298\" y=\"296\" class=\"ts tc\">指令</text><line x1=\"385\" y1=\"250\" x2=\"385\" y2=\"208\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"440\" y1=\"178\" x2=\"458\" y2=\"178\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><polyline points=\"570,270 584,270 584,86 572,86\" class=\"ln\" marker-end=\"url(#s2-11-1-arr)\"/><text x=\"20\" y=\"352\" class=\"ts\">資料往上：感測器 → 控制器 → 閘道器 → 平台 → 資料庫 → 儀表板</text><text x=\"20\" y=\"378\" class=\"ts ta\">控制往下：規則觸發 → 平台下指令 → 閘道器 → 控制器 → 執行器動作</text></svg>",
-   "caption": "左邊在現場、右邊在平台；閘道器站在交界，也是斷線時暫存資料的常見位置。",
-   "table": {
-    "head": [
-     "元件",
-     "負責什麼",
-     "生活比喻",
-     "例子"
-    ],
-    "rows": [
-     [
-      "感測器 Sensor",
-      "把溫度、振動等物理量變成訊號",
-      "感官",
-      "溫度計、加速度計"
-     ],
-     [
-      "控制器 Controller",
-      "讀值、做簡單判斷、就地控制",
-      "脊髓反射",
-      "MCU 微控制器、PLC 工業控制器"
-     ],
-     [
-      "閘道器 Gateway",
-      "翻譯協定、轉送與暫存資料",
-      "郵局轉運站",
-      "把 Modbus 轉成 MQTT"
-     ],
-     [
-      "平台 Platform",
-      "收訊息、存資料、管裝置、跑規則",
-      "總部辦公室",
-      "MQTT Broker、資料庫、儀表板"
-     ],
-     [
-      "執行器 Actuator",
-      "把電訊號變成實際動作",
-      "手腳",
-      "馬達、閥門、警示燈"
-     ]
-    ]
-   },
+   "body": "<p>物聯網（Internet of Things, IoT）系統不論用在冷鏈、工廠或農場，骨架都差不多：現場有東西負責<b>感覺</b>，有東西負責<b>動作</b>，中間有東西負責<b>判斷與傳話</b>，遠端有地方負責<b>彙整與管理</b>。</p><p>看懂一套系統只要追兩條路：<b>資料往上</b>、<b>控制往下</b>（見下圖）。往下那條路的起點常是平台的<b>規則引擎</b>（rule engine，事先寫好「若超過多少就做什麼」的機制）：發現超溫就發告警通知人員，或下指令讓執行器動作。</p>",
+   "svg": "<svg viewBox=\"0 0 600 424\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網系統全貌：上半部是平台，下半部是現場。資料沿實線往上：感測器、控制器、閘道器、平台、資料庫、儀表板；控制沿虛線往下：平台、閘道器、控制器、執行器；告警由平台的規則觸發\"><defs><marker id=\"s2-11-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"8\" width=\"580\" height=\"152\" rx=\"10\" class=\"soft\"/><text x=\"20\" y=\"40\" class=\"th\">平台／雲端</text><rect x=\"10\" y=\"184\" width=\"580\" height=\"232\" rx=\"10\" class=\"soft\"/><text x=\"20\" y=\"214\" class=\"th\">現場（邊緣）</text><rect x=\"150\" y=\"20\" width=\"140\" height=\"52\" rx=\"8\" class=\"box\"/><text x=\"220\" y=\"51\" class=\"tb tc\">資料庫</text><rect x=\"320\" y=\"20\" width=\"140\" height=\"52\" rx=\"8\" class=\"box\"/><text x=\"390\" y=\"51\" class=\"tb tc\">儀表板</text><rect x=\"150\" y=\"100\" width=\"280\" height=\"52\" rx=\"8\" class=\"acc\"/><text x=\"290\" y=\"122\" class=\"tb tc\">平台（含 MQTT Broker）</text><text x=\"290\" y=\"142\" class=\"ts tc\">收訊息、管裝置、跑規則</text><rect x=\"480\" y=\"100\" width=\"108\" height=\"52\" rx=\"8\" class=\"warn\"/><text x=\"534\" y=\"131\" class=\"tb tc\">告警通知</text><rect x=\"150\" y=\"196\" width=\"300\" height=\"52\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"218\" class=\"tb tc\">閘道器 Gateway</text><text x=\"300\" y=\"238\" class=\"ts tc\">翻譯協定、斷線暫存</text><rect x=\"150\" y=\"276\" width=\"300\" height=\"52\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"298\" class=\"tb tc\">控制器（MCU／PLC）</text><text x=\"300\" y=\"318\" class=\"ts tc\">讀值、就地控制</text><rect x=\"150\" y=\"356\" width=\"140\" height=\"52\" rx=\"8\" class=\"box\"/><text x=\"220\" y=\"378\" class=\"tb tc\">感測器</text><text x=\"220\" y=\"398\" class=\"ts tc\">量溫度、振動</text><rect x=\"310\" y=\"356\" width=\"140\" height=\"52\" rx=\"8\" class=\"box\"/><text x=\"380\" y=\"378\" class=\"tb tc\">執行器</text><text x=\"380\" y=\"398\" class=\"ts tc\">開閥、轉馬達</text><line x1=\"220\" y1=\"356\" x2=\"220\" y2=\"330\" class=\"la\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"220\" y1=\"276\" x2=\"220\" y2=\"250\" class=\"la\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"220\" y1=\"196\" x2=\"220\" y2=\"154\" class=\"la\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"220\" y1=\"100\" x2=\"220\" y2=\"74\" class=\"la\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"290\" y1=\"46\" x2=\"318\" y2=\"46\" class=\"la\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"380\" y1=\"152\" x2=\"380\" y2=\"194\" class=\"ln dash\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"380\" y1=\"248\" x2=\"380\" y2=\"274\" class=\"ln dash\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"380\" y1=\"328\" x2=\"380\" y2=\"354\" class=\"ln dash\" marker-end=\"url(#s2-11-1-arr)\"/><line x1=\"430\" y1=\"126\" x2=\"478\" y2=\"126\" class=\"ln dash\" marker-end=\"url(#s2-11-1-arr)\"/><text x=\"455\" y=\"117\" class=\"ts tc\">觸發</text><text x=\"300\" y=\"177\" class=\"ts tc\">MQTT</text><text x=\"300\" y=\"267\" class=\"ts tc\">Modbus</text><line x1=\"474\" y1=\"226\" x2=\"506\" y2=\"226\" class=\"la\"/><text x=\"514\" y=\"231\" class=\"t\">資料往上</text><line x1=\"474\" y1=\"262\" x2=\"506\" y2=\"262\" class=\"ln dash\"/><text x=\"514\" y=\"267\" class=\"t\">控制往下</text></svg>",
+   "caption": "上半部是平台、下半部是現場。閘道器站在交界，負責翻譯協定，也是斷線時暫存資料的常見位置。",
    "more": {
-    "label": "三層架構，以及圖中的 Modbus、MQTT、Broker",
-    "body": "<p>這些元件也對應常見的三層架構：感測器、控制器、執行器屬<b>感知層</b>，閘道器與通訊屬<b>網路層</b>，平台與儀表板屬<b>應用層</b>。</p><p>圖中的 <b>Modbus</b> 是工廠機台常用的傳統協定，<b>MQTT</b> 是物聯網常用的輕量協定，裝置把訊息發布給 <b>Broker</b>，再由它轉給訂閱者；閘道器就在這類協定之間翻譯。MQTT 的角色、Topic 與 QoS 見 <a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉</a>。</p>"
+    "label": "這些元件對應三層架構的哪一層",
+    "body": "<p>這些元件也對應常見的三層架構：感測器、控制器、執行器屬<b>感知層</b>，閘道器與通訊屬<b>網路層</b>，平台與儀表板屬<b>應用層</b>，見 <a href=\"s1-21.html#three-layers\">2.1〈物聯網架構與功能〉</a>。</p>"
    }
   },
   {
@@ -78,9 +38,9 @@
     "q": "貨車開進山區斷網。車上的超溫蜂鳴器和總部的全車隊溫度排行，哪個還能運作？",
     "a": "蜂鳴器可以，前提是判斷邏輯已部署在車上；排行要靠雲端彙整各車資料，會停止更新。"
    },
-   "body": "<p>同一份資料可以在不同距離處理。<b>邊緣運算</b>（edge computing）在裝置或閘道器附近就地處理；<b>霧運算</b>（fog computing）在廠區或區域的伺服器彙整多個邊緣節點；<b>雲端運算</b>（cloud computing）在遠端資料中心集中處理。</p><p>好比社區小診所、區域醫院和醫學中心：小病就近看、速度快；複雜的病往上送，資源多但路程遠。沒有哪一層永遠最好，要看任務。</p>",
-   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"邊緣、霧、雲三層：越往上算力通常越大、延遲通常越高，越靠近現場越省頻寬\"><defs><marker id=\"s2-11-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"200\" y=\"20\" width=\"200\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"300\" y=\"48\" class=\"tb tc\">雲端 Cloud</text><text x=\"300\" y=\"72\" class=\"ts tc\">算力大、跨廠分析、訓練</text><text x=\"415\" y=\"48\" class=\"ts\">延遲高、要有網路</text><text x=\"415\" y=\"70\" class=\"ts\">適合歷史與全局</text><rect x=\"130\" y=\"110\" width=\"340\" height=\"70\" rx=\"8\" class=\"soft\"/><text x=\"300\" y=\"138\" class=\"tb tc\">霧 Fog（廠區／區域伺服器）</text><text x=\"300\" y=\"162\" class=\"ts tc\">彙整多個邊緣、區域儲存與分析</text><text x=\"482\" y=\"140\" class=\"ts\">延遲中</text><text x=\"482\" y=\"162\" class=\"ts\">折衷</text><rect x=\"60\" y=\"200\" width=\"480\" height=\"70\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"228\" class=\"tb tc\">邊緣 Edge（裝置／閘道器旁）</text><text x=\"300\" y=\"252\" class=\"ts tc\">就地處理，可設計斷線仍運作</text><line x1=\"36\" y1=\"270\" x2=\"36\" y2=\"22\" class=\"la\" marker-end=\"url(#s2-11-2-arr)\"/><text x=\"48\" y=\"36\" class=\"ts ta\">延遲、算力 ↑</text><text x=\"300\" y=\"296\" class=\"ts tc\">越靠近現場反應越快、上傳越少；實際效能仍看設備與網路</text></svg>",
-   "caption": "越往上算力通常越大、路程越遠；分工要依任務，不是全部搬到同一層。",
+   "body": "<p>同一份資料可以在不同距離處理。<b>邊緣運算</b>（edge computing）在裝置或閘道器附近就地處理；<b>霧運算</b>（fog computing）在廠區或區域的伺服器彙整多個邊緣節點；<b>雲端運算</b>（cloud computing）在遠端資料中心集中處理。</p><p>好比社區小診所、區域醫院和醫學中心：小病就近看、速度快；複雜的病往上送，資源多但路程遠。沒有哪一層永遠最好，要看任務。</p><p>實務上三層常搭著用，例如現場用 AI 模型即時判斷、雲端用累積的資料訓練模型，見 <a href=\"s1-11.html#edge-ai\">1.1〈AI 基礎概念〉</a>。</p>",
+   "svg": "<svg viewBox=\"0 0 600 344\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"邊緣、霧、雲三層：越往上算力越大、延遲越高、越依賴對外網路。廠區對外網路斷線時，跨廠比較停止更新，整廠看板在廠內照常，過溫斷電照常；前提是判斷邏輯已部署在現場\"><defs><marker id=\"s2-11-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"28\" y1=\"300\" x2=\"28\" y2=\"46\" class=\"la\" marker-end=\"url(#s2-11-2-arr)\"/><text x=\"40\" y=\"62\" class=\"tb\">越往上</text><text x=\"40\" y=\"88\" class=\"t\">算力越大</text><text x=\"40\" y=\"112\" class=\"t\">延遲越高</text><text x=\"40\" y=\"136\" class=\"t\">越依賴</text><text x=\"40\" y=\"160\" class=\"t\">對外網路</text><text x=\"500\" y=\"32\" class=\"tb tc\">廠區對外網路斷線時</text><rect x=\"120\" y=\"44\" width=\"270\" height=\"60\" rx=\"8\" class=\"box\"/><text x=\"255\" y=\"70\" class=\"tb tc\">雲端 Cloud</text><text x=\"255\" y=\"94\" class=\"t tc\">遠端資料中心</text><rect x=\"410\" y=\"52\" width=\"180\" height=\"44\" rx=\"8\" class=\"bad\"/><text x=\"500\" y=\"80\" class=\"tb tc\">跨廠比較：停止更新</text><rect x=\"120\" y=\"168\" width=\"270\" height=\"60\" rx=\"8\" class=\"box\"/><text x=\"255\" y=\"194\" class=\"tb tc\">霧 Fog</text><text x=\"255\" y=\"218\" class=\"t tc\">廠區／區域伺服器</text><rect x=\"410\" y=\"176\" width=\"180\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"500\" y=\"204\" class=\"tb tc\">整廠看板：廠內照常</text><rect x=\"120\" y=\"252\" width=\"270\" height=\"60\" rx=\"8\" class=\"acc\"/><text x=\"255\" y=\"278\" class=\"tb tc\">邊緣 Edge</text><text x=\"255\" y=\"302\" class=\"t tc\">裝置／閘道器旁</text><rect x=\"410\" y=\"260\" width=\"180\" height=\"44\" rx=\"8\" class=\"ok\"/><text x=\"500\" y=\"288\" class=\"tb tc\">過溫斷電：照常</text><line x1=\"255\" y1=\"104\" x2=\"255\" y2=\"124\" class=\"ln\"/><circle cx=\"255\" cy=\"136\" r=\"12\" class=\"bad\"/><text x=\"255\" y=\"142\" class=\"tb tc\">✕</text><line x1=\"255\" y1=\"148\" x2=\"255\" y2=\"168\" class=\"ln\"/><text x=\"276\" y=\"141\" class=\"t\">對外網路</text><line x1=\"255\" y1=\"228\" x2=\"255\" y2=\"252\" class=\"ln\"/><text x=\"300\" y=\"334\" class=\"t tc\">前提：判斷邏輯已部署在現場</text></svg>",
+   "caption": "軸上的特性是典型情況，實際仍看設備與網路。",
    "table": {
     "head": [
      "考量（典型情況）",
@@ -102,12 +62,6 @@
       "原始資料全上傳時最多"
      ],
      [
-      "對外網路斷線時",
-      "已部署的功能可繼續",
-      "廠區內可繼續",
-      "依賴雲端的功能中斷"
-     ],
-     [
       "隱私",
       "原始資料可不離開現場",
       "可不離開廠區",
@@ -118,18 +72,8 @@
       "小，受設備限制",
       "中",
       "大，可彈性擴充"
-     ],
-     [
-      "典型任務",
-      "安全停機、即時剔除瑕疵品",
-      "整廠彙整、區域看板",
-      "跨廠分析、模型訓練、長期保存"
      ]
     ]
-   },
-   "more": {
-    "label": "三層怎麼搭著用：現場推論、雲端訓練",
-    "body": "<p>實務上常把三層搭著用，例如現場用 AI 模型即時判斷（稱為<b>推論</b>，inference），雲端則用累積的資料調整模型、讓它學得更準（稱為<b>訓練</b>，training），並管理版本。</p>"
    }
   },
   {
@@ -191,13 +135,11 @@
     "q": "清晨所有貨車同時開機上傳，資料庫寫不及而變慢。加一層快取（cache）能解決嗎？",
     "a": "不對症。快取主要加速讀取，這裡的問題是寫入尖峰，應讓訊息先排隊再寫入。"
    },
-   "body": "<p>上千台裝置可能同時回報，資料庫一時寫不完就會變慢甚至出錯。常見解法是在<b>接入伺服器</b>（Access Server，負責接住裝置連線）和資料庫之間放一個<b>訊息佇列</b>（Message Queue）：訊息先排隊，後端再依自己的速度取用。</p><p>就像郵局尖峰時發號碼牌，人潮再多，櫃台也是一位一位服務。這種把尖峰流量攤平的效果叫<b>削峰填谷</b>。</p>",
-   "svg": "<svg viewBox=\"0 0 600 250\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"比較：裝置直接寫入資料庫，尖峰時可能過載；中間加訊息佇列可先排隊再寫入\"><defs><marker id=\"s2-11-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"10\" y=\"24\" class=\"tb\">✘ 直連：尖峰流量直接打到資料庫</text><rect x=\"10\" y=\"40\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"65\" y=\"74\" class=\"tb tc\">數千台裝置</text><rect x=\"470\" y=\"40\" width=\"120\" height=\"56\" rx=\"8\" class=\"bad\"/><text x=\"530\" y=\"64\" class=\"tb tc\">NoSQL DB</text><text x=\"530\" y=\"84\" class=\"ts tc\">尖峰可能過載</text><line x1=\"120\" y1=\"68\" x2=\"468\" y2=\"68\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><text x=\"295\" y=\"58\" class=\"ts tc\">瞬間湧入、沒有緩衝</text><text x=\"10\" y=\"146\" class=\"tb ta\">✔ 加訊息佇列：尖峰先排隊，後端照自己的速度處理</text><rect x=\"10\" y=\"162\" width=\"110\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"65\" y=\"196\" class=\"tb tc\">數千台裝置</text><rect x=\"150\" y=\"162\" width=\"130\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"215\" y=\"186\" class=\"tb tc\">接入伺服器</text><text x=\"215\" y=\"206\" class=\"ts tc\">Access Server</text><rect x=\"310\" y=\"162\" width=\"130\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"375\" y=\"186\" class=\"tb tc\">訊息佇列</text><text x=\"375\" y=\"206\" class=\"ts tc\">先排隊再送</text><rect x=\"470\" y=\"162\" width=\"120\" height=\"56\" rx=\"8\" class=\"ok\"/><text x=\"530\" y=\"186\" class=\"tb tc\">NoSQL DB</text><text x=\"530\" y=\"206\" class=\"ts tc\">依自身速度寫</text><line x1=\"120\" y1=\"190\" x2=\"148\" y2=\"190\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"280\" y1=\"190\" x2=\"308\" y2=\"190\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"440\" y1=\"190\" x2=\"468\" y2=\"190\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/></svg>",
-   "caption": "佇列讓前後端的速度不必同步；可靠度仍取決於持久化、容量與確認機制的設定。",
-   "more": {
-    "label": "佇列的可靠度前提、NoSQL 與快取",
-    "body": "<p>後端若暫時停機，訊息也能先留在佇列裡等待，不過這要靠持久化（寫入磁碟）與確認機制的設定，而且佇列容量仍有上限。</p><p>圖中的 <b>NoSQL</b> 資料庫是不採傳統表格結構的資料庫，容量不夠時可以靠增加機器擴充（稱為橫向擴充），常用來存大量裝置資料。至於<b>快取</b>（cache），主要用途是加速讀取，並不是為可靠的寫入緩衝而設計。</p>"
-   }
+   "body": "<p>上千台裝置可能同時回報，資料庫一時寫不完就會變慢甚至出錯。常見解法是在<b>接入伺服器</b>（Access Server，負責接住裝置連線）和資料庫（圖中是存大量裝置資料常用的 NoSQL 資料庫）之間放一個<b>訊息佇列</b>（Message Queue）：訊息先排隊，後端再依自己的速度取用。</p><p>這種把尖峰流量攤平的效果叫<b>削峰填谷</b>。</p>",
+   "svg": "<svg viewBox=\"0 0 600 270\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"動畫：同一批封包流量送往兩種架構。上列沒有訊息佇列，一團封包同時從接入伺服器湧到資料庫，只進得去一兩顆，其餘變紅掉落、資料庫過載；下列封包先進訊息佇列排隊，再每隔固定時間一顆寫入資料庫，資料庫一直正常，佇列清空後再接下一波，這就是削峰填谷。\"><style>@keyframes lp-mq-q{0%{transform:translateX(106px);opacity:0}21.27%{transform:translateX(374px)}22.94%{transform:translateX(374px)}31.27%{transform:translateX(392px)}36.27%{transform:translateX(392px)}44.6%{transform:translateX(410px)}49.6%{transform:translateX(410px)}57.94%{transform:translateX(428px)}62.94%{transform:translateX(428px)}71.27%{transform:translateX(446px)}76.27%{transform:translateX(446px)}84.6%{transform:translateX(464px)}100%{transform:translateX(464px);opacity:0}}@keyframes lp-mq-o0{0%{opacity:0}5%{opacity:1}22.94%{opacity:1}23.27%{opacity:0}100%{opacity:0}}.lp-mq-q0{animation:lp-mq-q 3s linear infinite,lp-mq-o0 3s linear infinite}@keyframes lp-mq-o1{0%{opacity:0}5%{opacity:1}36.27%{opacity:1}36.6%{opacity:0}100%{opacity:0}}.lp-mq-q1{animation:lp-mq-q 3s linear infinite,lp-mq-o1 3s linear infinite}@keyframes lp-mq-o2{0%{opacity:0}5%{opacity:1}49.6%{opacity:1}49.94%{opacity:0}100%{opacity:0}}.lp-mq-q2{animation:lp-mq-q 3s linear infinite,lp-mq-o2 3s linear infinite}@keyframes lp-mq-o3{0%{opacity:0}5%{opacity:1}62.94%{opacity:1}63.27%{opacity:0}100%{opacity:0}}.lp-mq-q3{animation:lp-mq-q 3s linear infinite,lp-mq-o3 3s linear infinite}@keyframes lp-mq-o4{0%{opacity:0}5%{opacity:1}76.27%{opacity:1}76.6%{opacity:0}100%{opacity:0}}.lp-mq-q4{animation:lp-mq-q 3s linear infinite,lp-mq-o4 3s linear infinite}@keyframes lp-mq-o5{0%{opacity:0}5%{opacity:1}89.6%{opacity:1}89.94%{opacity:0}100%{opacity:0}}.lp-mq-q5{animation:lp-mq-q 3s linear infinite,lp-mq-o5 3s linear infinite}@keyframes lp-mq-f{0%{transform:translateX(374px);opacity:1}35%{opacity:1}40%{transform:translateX(505px);opacity:0}100%{transform:translateX(505px);opacity:0}}.lp-mq-f{animation:lp-mq-f 3s linear infinite}.lp-mq-f0{animation-delay:-2.312s}.lp-mq-f1{animation-delay:-1.912s}.lp-mq-f2{animation-delay:-1.512s}.lp-mq-f3{animation-delay:-1.112s}.lp-mq-f4{animation-delay:-0.712s}.lp-mq-f5{animation-delay:-0.312s}.lp-mq-f6{animation-delay:-2.912s}@keyframes lp-mq-s{0%{transform:translateX(106px);opacity:0}5%{opacity:1}18.41%{transform:translateX(338px)}21.75%{transform:translateX(338px)}30.08%{transform:translateX(356px)}35.08%{transform:translateX(356px)}43.41%{transform:translateX(374px)}48.41%{opacity:1}48.75%{opacity:0}100%{transform:translateX(374px);opacity:0}}.lp-mq-s{animation:lp-mq-s 3s linear -1.364s infinite}@keyframes lp-mq-a{0%{transform:translateX(106px);opacity:0}5%{opacity:1}29.52%{opacity:1}32.86%{transform:translateX(520px);opacity:0}100%{transform:translateX(520px);opacity:0}}.lp-mq-a{animation:lp-mq-a 3s linear infinite}.lp-mq-a1{animation-delay:-1.364s}@keyframes lp-mq-b{0%{transform:translateX(106px);opacity:0}5%{opacity:1}30.08%{transform:translateX(485px);opacity:1}32.08%{opacity:0}100%{transform:translateX(485px);opacity:0}}.lp-mq-b{animation:lp-mq-b 3s linear infinite}@keyframes lp-mq-r{0%{transform:translate(485px,0px);opacity:0}30.08%{opacity:0}32.08%{opacity:1}33.41%{transform:translate(485px,0px)}40.08%{transform:translate(488px,9px)}44.08%{opacity:1}48.41%{transform:translate(492px,44px);opacity:0}100%{transform:translate(492px,44px);opacity:0}}.lp-mq-r{animation:lp-mq-r 3s linear infinite}@keyframes lp-mq-d{0%{opacity:0}30.08%{opacity:0}31.41%{opacity:1}34.08%{opacity:1}53.41%{opacity:0}100%{opacity:0}}.lp-mq-d{animation:lp-mq-d 3s linear infinite}</style><defs><marker id=\"s2-11-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"8\" y=\"38\" width=\"100\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"126\" y=\"38\" width=\"110\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"256\" y=\"38\" width=\"132\" height=\"74\" rx=\"8\" class=\"ln dash\"/><rect x=\"476\" y=\"38\" width=\"114\" height=\"74\" rx=\"8\" class=\"box\"/><line x1=\"108\" y1=\"98\" x2=\"124\" y2=\"98\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"236\" y1=\"98\" x2=\"474\" y2=\"98\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><rect x=\"8\" y=\"186\" width=\"100\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"126\" y=\"186\" width=\"110\" height=\"74\" rx=\"8\" class=\"box\"/><rect x=\"256\" y=\"186\" width=\"132\" height=\"74\" rx=\"8\" class=\"acc\"/><rect x=\"476\" y=\"186\" width=\"114\" height=\"74\" rx=\"8\" class=\"ok\"/><line x1=\"108\" y1=\"246\" x2=\"124\" y2=\"246\" class=\"ln\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"236\" y1=\"246\" x2=\"254\" y2=\"246\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/><line x1=\"388\" y1=\"246\" x2=\"474\" y2=\"246\" class=\"la\" marker-end=\"url(#s2-11-4-arr)\"/><g class=\"lp-move\"><rect x=\"476\" y=\"38\" width=\"114\" height=\"74\" rx=\"8\" class=\"bad lp-mq-d\"/><g transform=\"translate(0,98)\"><circle r=\"7\" class=\"mk lp-mq-a\"/></g><g transform=\"translate(-18,98)\"><circle r=\"7\" class=\"mk lp-mq-a\"/></g><g transform=\"translate(0,98)\"><circle r=\"7\" class=\"mk lp-mq-a lp-mq-a1\"/></g><g transform=\"translate(-36,98)\"><circle r=\"7\" class=\"mk lp-mq-b\"/></g><g transform=\"translate(-54,98)\"><circle r=\"7\" class=\"mk lp-mq-b\"/></g><g transform=\"translate(-72,98)\"><circle r=\"7\" class=\"mk lp-mq-b\"/></g><g transform=\"translate(-90,98)\"><circle r=\"7\" class=\"mk lp-mq-b\"/></g><g transform=\"translate(-36,98)\"><circle r=\"7\" class=\"bad lp-mq-r\"/></g><g transform=\"translate(-54,98)\"><circle r=\"7\" class=\"bad lp-mq-r\"/></g><g transform=\"translate(-72,98)\"><circle r=\"7\" class=\"bad lp-mq-r\"/></g><g transform=\"translate(-90,98)\"><circle r=\"7\" class=\"bad lp-mq-r\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-q0\"/></g><g transform=\"translate(-18,246)\"><circle r=\"7\" class=\"mk lp-mq-q1\"/></g><g transform=\"translate(-36,246)\"><circle r=\"7\" class=\"mk lp-mq-q2\"/></g><g transform=\"translate(-54,246)\"><circle r=\"7\" class=\"mk lp-mq-q3\"/></g><g transform=\"translate(-72,246)\"><circle r=\"7\" class=\"mk lp-mq-q4\"/></g><g transform=\"translate(-90,246)\"><circle r=\"7\" class=\"mk lp-mq-q5\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-s\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f0\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f1\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f2\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f3\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f4\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f5\"/></g><g transform=\"translate(0,246)\"><circle r=\"7\" class=\"mk lp-mq-f lp-mq-f6\"/></g></g><g class=\"lp-still\"><rect x=\"476\" y=\"38\" width=\"114\" height=\"74\" rx=\"8\" class=\"bad\"/><circle cx=\"460\" cy=\"124\" r=\"7\" class=\"bad\"/><circle cx=\"441\" cy=\"138\" r=\"7\" class=\"bad\"/><text x=\"428\" y=\"142\" class=\"t\" text-anchor=\"end\">寫入失敗</text><circle cx=\"374\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"356\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"338\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"320\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"406\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"426\" cy=\"246\" r=\"7\" class=\"mk\"/><circle cx=\"446\" cy=\"246\" r=\"7\" class=\"mk\"/></g><text x=\"10\" y=\"24\" class=\"tb\">✘ 直連：尖峰流量直接打到資料庫</text><text x=\"58\" y=\"68\" class=\"tb tc\">數千台裝置</text><text x=\"181\" y=\"62\" class=\"tb tc\">接入伺服器</text><text x=\"181\" y=\"80\" class=\"ts tc\">Access Server</text><text x=\"322\" y=\"68\" class=\"t tc\">（沒有佇列）</text><text x=\"533\" y=\"62\" class=\"tb tc\">NoSQL DB</text><text x=\"533\" y=\"80\" class=\"ts tc\">尖峰可能過載</text><text x=\"10\" y=\"172\" class=\"tb ta\">✔ 加訊息佇列：尖峰先排隊，後端照自己的速度處理</text><text x=\"58\" y=\"216\" class=\"tb tc\">數千台裝置</text><text x=\"181\" y=\"210\" class=\"tb tc\">接入伺服器</text><text x=\"181\" y=\"228\" class=\"ts tc\">Access Server</text><text x=\"322\" y=\"216\" class=\"tb tc\">訊息佇列</text><text x=\"533\" y=\"216\" class=\"tb tc\">NoSQL DB</text></svg>",
+   "loop": true,
+   "caption": "佇列削峰填谷，讓前後端速度不必同步；但它不是無底洞，可靠度仍取決於持久化、容量與確認機制。",
+   "video": "peak-shaving"
   },
   {
    "id": "store-and-forward",
@@ -209,13 +151,14 @@
    "body": "<p>現場網路遲早會斷，所以要事先設計<b>暫存後轉送</b>（Store and Forward），概念就像郵差遇到封路：信先留在分局，路通了再送。流程如下：</p><ol><li>斷線時，現場依既定規則<b>繼續控制</b>，資料寫入閘道器的<b>本地暫存</b>。</li><li>每筆資料帶<b>時間戳</b>（timestamp，何時發生）與<b>事件編號</b>（event ID，第幾筆、來自誰）。</li><li>恢復連線後依序<b>補傳</b>，收到對方的 <b>ACK</b>（acknowledgement，確認收到）才刪除暫存。</li><li>暫存空間有上限，要先定好快滿時怎麼辦。</li></ol>",
    "lab": "s2-11-outage",
    "after": "<p>暫存能撐多久可以直接算：<b>容量 ÷ 每分鐘筆數</b>。超過之後，丟舊或丟新只是決定犧牲哪一段，遺失的筆數一樣。實務上會先想辦法少丟，例如降低取樣、優先保留告警，並通知維運人員。</p>",
-   "svg": "<svg viewBox=\"0 0 600 280\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"斷線暫存與補傳時間線：連線時即時上傳，斷線時本地暫存，恢復後補傳並去重\"><defs><marker id=\"s2-11-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"110\" y=\"44\" class=\"tb tc\">連線正常</text><rect x=\"20\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"110\" y=\"92\" class=\"ts tc\">即時上傳</text><text x=\"110\" y=\"118\" class=\"ts tc\">收到 ACK 才刪</text><rect x=\"210\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"bad\"/><text x=\"300\" y=\"44\" class=\"tb tc\">斷線中</text><rect x=\"210\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"300\" y=\"92\" class=\"ts tc\">現場照常控制</text><text x=\"300\" y=\"118\" class=\"ts tc\">寫入本地暫存</text><text x=\"300\" y=\"144\" class=\"ts tc\">帶時間戳＋編號</text><rect x=\"400\" y=\"20\" width=\"180\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"490\" y=\"44\" class=\"tb tc\">恢復連線</text><rect x=\"400\" y=\"66\" width=\"180\" height=\"96\" rx=\"8\" class=\"soft\"/><text x=\"490\" y=\"92\" class=\"ts tc\">依序補傳</text><text x=\"490\" y=\"118\" class=\"ts tc\">確認後清暫存</text><text x=\"490\" y=\"144\" class=\"ts tc\">雲端依編號去重</text><rect x=\"218\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"243\" y=\"212\" class=\"ts tc\">101</text><rect x=\"274\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"299\" y=\"212\" class=\"ts tc\">102</text><rect x=\"330\" y=\"190\" width=\"50\" height=\"34\" rx=\"4\" class=\"warn\"/><text x=\"355\" y=\"212\" class=\"ts tc\">103</text><text x=\"300\" y=\"248\" class=\"ts tc\">本地暫存（事件編號 101–103）</text><line x1=\"382\" y1=\"207\" x2=\"438\" y2=\"207\" class=\"la\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"410\" y=\"198\" class=\"ts tc ta\">補傳</text><rect x=\"440\" y=\"186\" width=\"140\" height=\"42\" rx=\"8\" class=\"box\"/><text x=\"510\" y=\"213\" class=\"tb tc\">雲端 DB</text><text x=\"300\" y=\"272\" class=\"ts tc\">暫存空間有上限：快滿時要告警，並依事先定好的策略處理</text></svg>",
-   "caption": "要先定義 ACK 代表確認到哪一層；若要求完整歷史，暫存快滿時不能默默丟棄。",
-   "video": "buffered-recovery",
-   "more": {
-    "label": "MQTT 的 QoS 與持久工作階段能幫到哪裡",
-    "body": "<p>MQTT 的服務品質等級（QoS）與持久工作階段（persistent session，裝置離線時由 Broker 記住它的訂閱與未送達訊息）能協助重送，但它們只處理連線與訊息確認，長時間斷線仍要靠現場暫存。</p>"
-   }
+   "svg": "<svg viewBox=\"0 0 600 326\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"序列圖：閘道器補傳 e101 給 Broker，Broker 回 ACK，QoS 只涵蓋這一段；Broker 再轉送到資料庫，寫入成功後由應用層回確認給閘道器。只要求送到平台時，收到 ACK 就能刪暫存；要求歷史完整，要等應用層確認才刪\"><defs><marker id=\"s2-11-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"180\" y=\"14\" width=\"120\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"240\" y=\"42\" class=\"tb tc\">閘道器</text><rect x=\"345\" y=\"14\" width=\"110\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"400\" y=\"42\" class=\"tb tc\">Broker</text><rect x=\"485\" y=\"14\" width=\"104\" height=\"44\" rx=\"8\" class=\"box\"/><text x=\"537\" y=\"42\" class=\"tb tc\">資料庫</text><rect x=\"248\" y=\"74\" width=\"152\" height=\"80\" class=\"soft\" data-s=\"1 2 3\"/><line x1=\"240\" y1=\"58\" x2=\"240\" y2=\"318\" class=\"ln dash\"/><line x1=\"400\" y1=\"58\" x2=\"400\" y2=\"260\" class=\"ln dash\"/><line x1=\"400\" y1=\"260\" x2=\"400\" y2=\"292\" class=\"ln dash\" data-s=\"1 2\"/><line x1=\"400\" y1=\"292\" x2=\"400\" y2=\"318\" class=\"ln dash\"/><line x1=\"537\" y1=\"58\" x2=\"537\" y2=\"318\" class=\"ln dash\"/><rect x=\"232\" y=\"70\" width=\"16\" height=\"100\" rx=\"3\" class=\"acc\" data-s=\"1\"/><rect x=\"232\" y=\"70\" width=\"16\" height=\"196\" rx=\"3\" class=\"acc\" data-s=\"2\"/><rect x=\"232\" y=\"70\" width=\"16\" height=\"214\" rx=\"3\" class=\"acc\" data-s=\"3\"/><text x=\"120\" y=\"88\" class=\"tb tc\">暫存：e101</text><g data-s=\"1 2 3\"><line x1=\"248\" y1=\"100\" x2=\"398\" y2=\"100\" class=\"la\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"320\" y=\"92\" class=\"t tc\">補傳 e101</text><line x1=\"400\" y1=\"140\" x2=\"250\" y2=\"140\" class=\"ln dash\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"320\" y=\"132\" class=\"t tc\">ACK（PUBACK）</text><path d=\"M248,158 L248,166 L400,166 L400,158\" class=\"la\"/><text x=\"320\" y=\"188\" class=\"tb tc ta\">QoS 只涵蓋這一段</text><line x1=\"172\" y1=\"140\" x2=\"230\" y2=\"140\" class=\"ln dash\"/><text x=\"110\" y=\"136\" class=\"tb tc\">只要求送到平台</text><text x=\"110\" y=\"160\" class=\"t tc\">這時就能刪</text></g><g data-s=\"2 3\"><line x1=\"402\" y1=\"212\" x2=\"535\" y2=\"212\" class=\"la\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"468\" y=\"204\" class=\"t tc\">轉送 e101</text><rect x=\"483\" y=\"226\" width=\"106\" height=\"30\" rx=\"6\" class=\"ok\"/><text x=\"536\" y=\"247\" class=\"tb tc\">✓ 寫入成功</text></g><g data-s=\"3\"><line x1=\"537\" y1=\"284\" x2=\"250\" y2=\"284\" class=\"ln dash\" marker-end=\"url(#s2-11-5-arr)\"/><text x=\"390\" y=\"276\" class=\"t tc\">應用層確認：已寫入 e101</text><line x1=\"172\" y1=\"284\" x2=\"230\" y2=\"284\" class=\"ln dash\"/><text x=\"110\" y=\"280\" class=\"tb tc\">要求歷史完整</text><text x=\"110\" y=\"304\" class=\"t tc\">等到這時才刪</text></g></svg>",
+   "steps": [
+    "Broker 回 PUBACK：只代表 Broker 收到，QoS 只管這一段",
+    "Broker 轉送，資料庫這時才寫入成功",
+    "應用層確認回到閘道器，要求歷史完整的話，這時才刪暫存"
+   ],
+   "start": 3,
+   "caption": "何時刪暫存，看事先定義確認到哪一層。"
   },
   {
    "id": "dedupe-and-order",
@@ -224,40 +167,19 @@
     "q": "補傳完成後，隧道裡量到的超溫，在圖表上卻顯示成貨車出隧道時才發生。問題最可能出在哪裡？",
     "a": "平台用收到時間排序。應改用資料本身帶的發生時間。"
    },
-   "body": "<p>重送解決了掉資料，卻帶來新問題：<b>重複</b>。裝置送出後沒等到 ACK，可能其實對方已收到、只是 ACK 掉了，於是又送一次。MQTT 的 <b>QoS 1</b> 保證「至少一次」，所以可能重複；<b>QoS 0</b> 是最多一次，<b>QoS 2</b> 是恰好一次，但流程較多、開銷較大，而且「恰好一次」只限 MQTT 協定交換的範圍，應用程式處理訊息時仍可能重複，所以平台端還是要能去重。</p><p>處理重複的方法是<b>冪等</b>（idempotency）：同一件事處理多次，結果和一次相同，就像電梯按鈕按兩下也只會停一次。做法是接收端記住處理過的事件編號，看到相同編號就略過。編號要能區分來源，例如「裝置代碼加流水號」。</p><p>處理亂序則靠時間戳：補傳的資料晚到，應依<b>發生時間</b>而非<b>收到時間</b>排序。</p>",
-   "table": {
-    "head": [
-     "機制",
-     "解決的問題"
-    ],
-    "rows": [
-     [
-      "本地暫存",
-      "斷線時資料不掉"
-     ],
-     [
-      "ACK 確認＋重試",
-      "確定對方真的收到"
-     ],
-     [
-      "事件編號去重",
-      "重送造成的重複資料"
-     ],
-     [
-      "時間戳（發生時間）",
-      "補傳晚到造成的亂序"
-     ]
-    ]
-   },
-   "more": {
-    "label": "時間戳的前提：時鐘要準（NTP、RTC）",
-    "body": "<p>依發生時間排序的前提是裝置時鐘準確：連線時用 <b>NTP</b>（網路校時協定）對時，斷線期間靠裝置的<b>即時時鐘</b>（RTC，Real-Time Clock）維持，或由閘道器或 GPS 提供時間；長時間斷線仍可能有漂移，恢復連線後要重新對時。</p>"
-   }
+   "body": "<p>重送解決了掉資料，卻帶來新問題：<b>重複</b>。裝置送出後沒等到 ACK，可能其實對方已收到、只是 ACK 掉了，於是又送一次。MQTT 的 <b>QoS 1</b>（至少一次）本來就可能重複；就算用 QoS 2，「恰好一次」也只管協定傳輸這一段，應用程式處理時仍可能重複，所以平台端一定要能去重（QoS 三級見 <a href=\"s1-22.html#qos-and-protocols\">2.2〈常見通訊協定與網路層技術〉</a>）。</p><p>處理重複的方法是<b>冪等</b>（idempotency）：同一件事處理多次，結果和一次相同，就像電梯按鈕按兩下也只會停一次。做法是接收端記住處理過的事件編號，看到相同編號就略過。編號要能區分來源，例如「裝置代碼加流水號」。</p><p>處理亂序則靠時間戳：補傳的資料晚到，應依<b>發生時間</b>而非<b>收到時間</b>排序。</p>",
+   "svg": "<svg viewBox=\"0 0 600 284\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"溫度折線圖的兩種排法：依發生時間排，隧道裡的超溫出現在 10:15；依收到時間排，隧道裡補傳的資料全擠在出隧道那一刻，超溫看起來像在出口發生\"><defs><marker id=\"s2-11-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"206\" y=\"52\" width=\"228\" height=\"196\" class=\"soft\"/><text x=\"320\" y=\"238\" class=\"t tc\">隧道／斷線</text><line x1=\"60\" y1=\"250\" x2=\"580\" y2=\"250\" class=\"ln\"/><line x1=\"60\" y1=\"250\" x2=\"60\" y2=\"52\" class=\"ln\"/><text x=\"18\" y=\"64\" class=\"t\">溫度</text><line x1=\"70\" y1=\"250\" x2=\"70\" y2=\"256\" class=\"ln\"/><text x=\"70\" y=\"274\" class=\"ts tc\">9:45</text><line x1=\"195\" y1=\"250\" x2=\"195\" y2=\"256\" class=\"ln\"/><text x=\"195\" y=\"274\" class=\"ts tc\">10:00</text><line x1=\"320\" y1=\"250\" x2=\"320\" y2=\"256\" class=\"ln\"/><text x=\"320\" y=\"274\" class=\"ts tc\">10:15</text><line x1=\"445\" y1=\"250\" x2=\"445\" y2=\"256\" class=\"ln\"/><text x=\"445\" y=\"274\" class=\"ts tc\">10:30</text><line x1=\"570\" y1=\"250\" x2=\"570\" y2=\"256\" class=\"ln\"/><text x=\"562\" y=\"274\" class=\"ts tc\">10:45</text><line x1=\"60\" y1=\"120\" x2=\"580\" y2=\"120\" class=\"ln dash\"/><text x=\"66\" y=\"113\" class=\"ts\">溫度上限</text><rect x=\"200\" y=\"6\" width=\"200\" height=\"34\" rx=\"8\" class=\"ok\" data-s=\"1\"/><text x=\"300\" y=\"29\" class=\"tb tc\" data-s=\"1\">依發生時間排</text><rect x=\"200\" y=\"6\" width=\"200\" height=\"34\" rx=\"8\" class=\"bad\" data-s=\"2\"/><text x=\"300\" y=\"29\" class=\"tb tc\" data-s=\"2\">依收到時間排</text><polyline points=\"70,184 111.667,180 153.333,187 195,182\" class=\"la\"/><polyline points=\"445,184 486.667,188 528.333,181 570,185\" class=\"la\"/><polyline points=\"195,182 236.667,174 278.333,148 320,90 361.667,128 403.333,160 445,184\" class=\"la\" data-s=\"1\"/><polyline points=\"445,184 466,174 466,148 466,90 466,128 466,160 486.667,188\" class=\"la\" data-s=\"2\"/><circle cx=\"70\" cy=\"184\" r=\"4.5\" class=\"box\"/><circle cx=\"111.667\" cy=\"180\" r=\"4.5\" class=\"box\"/><circle cx=\"153.333\" cy=\"187\" r=\"4.5\" class=\"box\"/><circle cx=\"195\" cy=\"182\" r=\"4.5\" class=\"box\"/><circle cx=\"445\" cy=\"184\" r=\"4.5\" class=\"box\"/><circle cx=\"486.667\" cy=\"188\" r=\"4.5\" class=\"box\"/><circle cx=\"528.333\" cy=\"181\" r=\"4.5\" class=\"box\"/><circle cx=\"570\" cy=\"185\" r=\"4.5\" class=\"box\"/><g data-s=\"1\"><circle cx=\"236.667\" cy=\"174\" r=\"4.5\" class=\"acc\"/><circle cx=\"278.333\" cy=\"148\" r=\"4.5\" class=\"acc\"/><circle cx=\"361.667\" cy=\"128\" r=\"4.5\" class=\"acc\"/><circle cx=\"403.333\" cy=\"160\" r=\"4.5\" class=\"acc\"/><circle cx=\"320\" cy=\"90\" r=\"6.5\" class=\"warn\"/></g><g data-s=\"2\"><circle cx=\"466\" cy=\"174\" r=\"4.5\" class=\"acc\"/><circle cx=\"466\" cy=\"148\" r=\"4.5\" class=\"acc\"/><circle cx=\"466\" cy=\"128\" r=\"4.5\" class=\"acc\"/><circle cx=\"466\" cy=\"160\" r=\"4.5\" class=\"acc\"/><circle cx=\"466\" cy=\"90\" r=\"6.5\" class=\"warn\"/></g><text x=\"320\" y=\"76\" class=\"tb tc\" data-s=\"1\">超溫 10:15</text><g data-s=\"2\"><text x=\"466\" y=\"76\" class=\"tb tc\">超溫像在出口發生</text><text x=\"306\" y=\"164\" class=\"t tc\">隧道裡的資料</text><text x=\"306\" y=\"188\" class=\"t tc\">擠到同一刻</text><line x1=\"368\" y1=\"170\" x2=\"456\" y2=\"170\" class=\"la\" marker-end=\"url(#s2-11-6-arr)\"/></g></svg>",
+   "steps": [
+    "依發生時間排：隧道裡的資料雖然出隧道後才補傳，仍回到各自量到的時刻，超溫落在 10:15，貨車正在隧道中段。",
+    "依收到時間排：補傳的資料全在出隧道後才送達，疊成一根直柱；超溫看起來像出隧道才發生，隧道那段反而空著。"
+   ],
+   "start": 2,
+   "caption": "同一批資料，只差排序用哪個時間。依發生時間排序的前提是時鐘要準：連線時用 NTP（網路校時）對時，斷線期間靠裝置上的即時時鐘（RTC）維持。"
   },
   {
    "id": "design-judgement",
    "h": "設計時的基本判斷",
-   "body": "<p>架構之外，還有幾項一開始就要想清楚的條件：</p><ul><li><b>從需求出發：</b>先寫清楚要解決誰的什麼問題，再選技術，不要反過來。</li><li><b>資安：</b>無線訊號在空中傳播，範圍內都可能被接收，比有線更容易被攔截，所以無線傳輸更要做好加密與身分驗證。</li><li><b>隱私與法規：</b>用感測器蒐集人的行為資料，要遵守當地個資與隱私法規。</li><li><b>供電與通訊：</b>偏遠、難以拉電的地點，可用太陽能加電池供電，搭配 LoRa、NB-IoT 這類低功耗、長距離的通訊方式。</li><li><b>介面與責任：</b>設備、網路、平台、應用之間要定好介面與分工，日後換掉其中一塊才不會牽動全部。</li></ul>"
+   "body": "<p>架構之外，有兩件事一開始就要想清楚：</p><ul><li><b>從需求出發：</b>先寫清楚要解決誰的什麼問題，再選技術，不要反過來。</li><li><b>資安：</b>無線訊號在空中傳播，範圍內都可能被接收，比有線更容易被攔截，所以無線傳輸更要做好加密與身分驗證。</li></ul><p>另外還要顧及隱私法規（見 <a href=\"s1-25.html#privacy\">2.5〈資安與隱私基本概念〉</a>）、偏遠地點的電池續航（見 <a href=\"s2-21.html#power-battery\">2-1〈物聯網硬體設計基礎〉</a>）與 LoRa、NB-IoT 這類低功耗長距離通訊（見 <a href=\"s1-22.html#lpwan-cellular\">2.2〈常見通訊協定與網路層技術〉</a>），並先定好設備、網路、平台、應用之間的介面與分工，日後換掉其中一塊才不會牽動全部。</p>"
   }
  ],
  "keypoints": [
@@ -266,8 +188,7 @@
   "分工口訣：急的留現場、大的先過濾、跨點才上雲。",
   "安全保護不能只靠雲端，現場要有獨立可靠的執行路徑。",
   "訊息佇列負責削峰填谷，讓前後端速度不必同步。",
-  "可靠傳輸四件組：暫存、確認、重試、去重，只加重送次數不夠；去重也救不回已遺失的資料。",
-  "事件編號管重複，時間戳管順序。"
+  "斷線補傳：暫存＋確認重送防遺失、事件編號去重防重複、時間戳排序防亂序；只加重送次數不夠，去重也救不回已遺失的資料。"
  ],
  "pitfalls": [
   "邊緣能在斷線時運作，前提是所需的邏輯與資料已部署在現場，不是放在邊緣就自動具備。",
@@ -303,36 +224,20 @@
  ],
  "check": [
   {
-   "q": "感測器和執行器有什麼不同？",
-   "a": "感測器把物理量變成訊號，執行器把電訊號變成動作。"
-  },
-  {
-   "q": "Modbus 機台資料要轉成 MQTT，由哪個元件負責？",
-   "a": "閘道器。"
-  },
-  {
-   "q": "霧運算的位置在哪裡？",
-   "a": "介於邊緣與雲之間，例如廠區或區域伺服器。"
-  },
-  {
-   "q": "緊急停機功能為什麼不該只放雲端？",
-   "a": "網路一斷就失效，現場必須有可靠的執行路徑。"
-  },
-  {
-   "q": "大量裝置同時寫入時，中間可加什麼元件緩衝？",
-   "a": "訊息佇列（Message Queue），讓尖峰先排隊。"
-  },
-  {
-   "q": "斷線暫存的資料何時可以刪除？",
-   "a": "收到對方確認（ACK）之後，且確認的層級要事先定義。"
-  },
-  {
    "q": "為什麼重送會造成重複資料？",
    "a": "對方可能已收到但 ACK 遺失，傳送端以為失敗而再送一次。"
   },
   {
-   "q": "補傳的資料要依什麼時間排序？",
-   "a": "依原始發生時間，不是收到時間，且裝置時鐘要準確（連線時對時，斷線靠 RTC 維持）。"
+   "q": "改用 QoS 2（恰好一次）後，平台端還需要去重嗎？",
+   "a": "仍需要。恰好一次只管協定傳輸這一段，應用程式處理時仍可能重複。"
+  },
+  {
+   "q": "暫存快滿時，丟最舊的資料和丟最新的資料，哪個遺失的筆數比較少？",
+   "a": "一樣多，只差犧牲哪一段；要少丟得靠降低取樣、優先保留告警。"
+  },
+  {
+   "q": "補傳資料依發生時間排序，前提是什麼？",
+   "a": "裝置時鐘要準：連線時用 NTP 對時，斷線期間靠 RTC 維持。"
   }
  ],
  "terms": [

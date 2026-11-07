@@ -7,7 +7,7 @@
   "區分自動化與智慧製造，判斷方案是否真的用到物聯網",
   "說出 ERP、MES、SCADA、PLC 各層的職責與反應時間",
   "計算 OEE，並從三率找出該先改善的環節",
-  "比較事後、預防性、預測性三種維護策略",
+  "比較三種維護策略（對照圖見 1.2），說明 P-F 間隔與預測性維護的效益",
   "用 TCO 與淨節省計算回收期與 ROI"
  ],
  "prereq": "不需要工廠經驗。只要知道工廠裡有<b>機台</b>（做事的設備）和<b>感測器</b>（量溫度、振動、件數的元件）即可。本章的計算只用乘法與除法，記得先把百分比換成小數：90% 就是 0.9。",
@@ -16,33 +16,43 @@
   {
    "id": "smart-vs-automation",
    "h": "智慧製造不等於自動化",
-   "body": "<p><b>自動化</b>（Automation）是讓機器自己動；<b>智慧製造</b>（Smart Manufacturing）則再往上加三件事：設備<b>連網收資料</b>、<b>分析資料</b>、<b>依分析結果做決策與調整</b>。</p><p>判斷方案有沒有用到物聯網，可以看它是否做到：<b>自動感測 → 上傳 → 系統比對 → 留下紀錄</b>。下表用「確認急凍櫃溫度」同一件事來比較。</p><p>要實現<b>智慧工廠</b>（Smart Factory），設備連網、資料平台、分析能力缺一不可；反過來，大量人工抄錄和紙本表單正是它要取代的做法。</p>",
+   "body": "<p><b>自動化</b>（Automation）是讓機器自己動；<b>智慧製造</b>（Smart Manufacturing）則再往上加三件事：設備<b>連網收資料</b>、<b>分析資料</b>、<b>依分析結果做決策與調整</b>。</p><p>判斷方案有沒有用到物聯網，可以看它是否做到：<b>自動感測 → 上傳 → 系統比對 → 留下紀錄</b>。下表用「確認急凍櫃溫度」同一件事來比較。表中要認物聯網方案，只看「上傳留紀錄」欄；機器有沒有自己動不影響，例如秤重機只把重量傳回系統比對也算。</p><p>要實現<b>智慧工廠</b>（Smart Factory），設備連網、資料平台、分析能力缺一不可。</p>",
    "table": {
     "head": [
      "做法",
      "屬於",
-     "為什麼"
+     "機器自己動",
+     "上傳留紀錄",
+     "預測調整"
     ],
     "rows": [
      [
-      "領班每小時巡視，抄在紙本上",
+      "紙本巡視",
       "人工管理",
-      "沒有自動收資料，也容易漏記"
+      "—",
+      "—",
+      "—"
      ],
      [
-      "換成會自動控溫的急凍櫃",
+      "自動控溫櫃",
       "自動化",
-      "機器自己做，但沒有連網和紀錄"
+      "✓",
+      "—",
+      "—"
      ],
      [
-      "溫度自動上傳生產系統，逐批比對並留存",
+      "自動上傳＋比對留存",
       "物聯網方案",
-      "自動感測＋上傳＋查核＋可追溯"
+      "✓",
+      "✓",
+      "—"
      ],
      [
-      "用累積資料預測異常，自動調整參數",
+      "預測異常並自動調參",
       "智慧製造",
-      "資料驅動，能自主應變"
+      "✓",
+      "✓",
+      "✓"
      ]
     ]
    },
@@ -58,39 +68,48 @@
   {
    "id": "isa-95",
    "h": "工廠系統怎麼分層：自動化金字塔與 ISA-95",
-   "body": "<p>一座工廠同時跑著許多系統。越上層越管「生意」，時間尺度以天和月計；越下層越貼近機台，反應要快到毫秒。資料由下往上彙整，指令由上往下傳達。</p><ul><li><b>ERP</b>（Enterprise Resource Planning，企業資源規劃）：接訂單、管採購、庫存與財務。</li><li><b>MES</b>（Manufacturing Execution System，製造執行系統）：把訂單變成工單（交給現場的生產指示）並派工，記錄每一批的來源以便追溯，統計設備效率（OEE，本章後面會算）。它是辦公室和現場之間的橋樑。</li><li><b>SCADA</b>（Supervisory Control and Data Acquisition，監控與資料擷取）與 <b>HMI</b>（Human-Machine Interface，人機介面）：集中看設備數據、發告警、遠端下指令。</li><li><b>PLC</b>（Programmable Logic Controller，可程式邏輯控制器）：在現場即時控制馬達與閥門。</li><li>最底層是<b>感測器、執行器</b>（Actuator，會動的元件，如馬達、閥）與機台本身。</li></ul><p>可以想成一間餐廳：ERP 是老闆算帳和叫貨，MES 是內場經理排單，SCADA 是監看所有爐台的儀表牆，PLC 是爐火的自動開關。</p>",
-   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"自動化金字塔，與 ISA-95 層級大致對應：由上而下是 ERP、MES、SCADA 與 HMI、PLC、現場設備\"><polygon points=\"150,20 230,20 254,70 126,70\" class=\"acc\"/><text x=\"190\" y=\"51\" class=\"tb tc\">L4 ERP</text><text x=\"375\" y=\"41\" class=\"tb\">企業資源規劃</text><text x=\"375\" y=\"61\" class=\"ts\">訂單、採購、財務｜天～月</text><polygon points=\"123,76 257,76 281,126 99,126\" class=\"acc\"/><text x=\"190\" y=\"107\" class=\"tb tc\">L3 MES</text><text x=\"375\" y=\"97\" class=\"tb\">製造執行系統</text><text x=\"375\" y=\"117\" class=\"ts\">派工、追溯、統計效率｜班～時</text><polygon points=\"96,132 284,132 308,182 72,182\" class=\"box\"/><text x=\"190\" y=\"163\" class=\"tb tc\">L2 SCADA/HMI</text><text x=\"375\" y=\"153\" class=\"tb\">監控與資料擷取</text><text x=\"375\" y=\"173\" class=\"ts\">集中監看、告警｜分～秒</text><polygon points=\"69,188 311,188 335,238 45,238\" class=\"warn\"/><text x=\"190\" y=\"219\" class=\"tb tc\">L1 PLC</text><text x=\"375\" y=\"209\" class=\"tb\">可程式邏輯控制器</text><text x=\"375\" y=\"229\" class=\"ts\">邏輯與順序控制｜毫秒</text><polygon points=\"42,244 338,244 362,294 18,294\" class=\"warn\"/><text x=\"190\" y=\"275\" class=\"tb tc\">L0 現場設備</text><text x=\"375\" y=\"265\" class=\"tb\">感測器、執行器、機台</text><text x=\"375\" y=\"285\" class=\"ts\">實際的物理製程</text></svg>",
-   "caption": "業界常見的自動化金字塔畫法，與 ISA-95 的層級大致對應。ISA-95 原始分法是 L0 實體製程、L1 感測器與執行器、L2 PLC／SCADA 等控制與監控；各家畫法略有差異，時間尺度也只是典型值。上層偏資訊系統（IT），下層偏營運技術（OT，直接控制實體設備的技術）。",
+   "body": "<p>一座工廠同時跑著許多系統。越上層越管「生意」，時間尺度以天和月計；越下層越貼近機台，反應要快到毫秒。資料由下往上彙整，指令由上往下傳達。</p><ul><li><b>ERP</b>（Enterprise Resource Planning，企業資源規劃）：接訂單、管採購、庫存與財務。</li><li><b>MES</b>（Manufacturing Execution System，製造執行系統）：把訂單變成工單（交給現場的生產指示）並派工，記錄每一批的來源以便追溯，統計設備效率（OEE，本章後面會算）。它是辦公室和現場之間的橋樑。</li><li><b>SCADA</b>（Supervisory Control and Data Acquisition，監控與資料擷取）與 <b>HMI</b>（Human-Machine Interface，人機介面）：集中看設備數據、發告警、遠端下指令。</li><li><b>PLC</b>（Programmable Logic Controller，可程式邏輯控制器）：在現場即時控制馬達與閥門。</li><li>最底層是<b>感測器、執行器</b>（Actuator，會動的元件，如馬達、閥）與機台本身。</li></ul>",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"一張訂單穿過五層的逐步圖：ERP 接訂單、MES 排成工單並綁定批號、SCADA/HMI 按開工、PLC 驅動馬達、感測器量測；資料再經 PLC 往上，由 SCADA 告警、MES 記錄、ERP 更新庫存\"><defs><marker id=\"s2-23-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"251\" y=\"24\" class=\"tb tc ta\">指令往下 ↓</text><text x=\"479\" y=\"24\" class=\"tb tc ta\">資料往上 ↑</text><rect x=\"10\" y=\"36\" width=\"580\" height=\"54\" rx=\"8\" class=\"soft\"/><text x=\"20\" y=\"60\" class=\"tb\">ERP</text><text x=\"20\" y=\"80\" class=\"ts\">L4｜天～月</text><rect x=\"10\" y=\"96\" width=\"580\" height=\"54\" rx=\"8\" class=\"soft\"/><text x=\"20\" y=\"120\" class=\"tb\">MES</text><text x=\"20\" y=\"140\" class=\"ts\">L3｜班～時</text><rect x=\"10\" y=\"156\" width=\"580\" height=\"54\" rx=\"8\" class=\"soft\"/><text x=\"20\" y=\"180\" class=\"tb\">SCADA/HMI</text><text x=\"20\" y=\"200\" class=\"ts\">L2｜分～秒</text><rect x=\"10\" y=\"216\" width=\"580\" height=\"54\" rx=\"8\" class=\"soft\"/><text x=\"20\" y=\"240\" class=\"tb\">PLC</text><text x=\"20\" y=\"260\" class=\"ts\">L1｜毫秒</text><rect x=\"10\" y=\"276\" width=\"580\" height=\"54\" rx=\"8\" class=\"soft\"/><text x=\"20\" y=\"300\" class=\"tb\">現場設備</text><text x=\"20\" y=\"320\" class=\"ts\">L0｜實體製程</text><rect x=\"146\" y=\"44\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"2\"/><rect x=\"146\" y=\"44\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"3 4 5 6 7 8\"/><text x=\"251\" y=\"69\" class=\"t tc\" data-s=\"2 3 4 5 6 7 8\">訂單：水餃 3,000 箱</text><rect x=\"146\" y=\"104\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"3\"/><rect x=\"146\" y=\"104\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"4 5 6 7 8\"/><text x=\"251\" y=\"129\" class=\"t tc\" data-s=\"3 4 5 6 7 8\">排成工單、綁定批號</text><rect x=\"146\" y=\"164\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"4\"/><rect x=\"146\" y=\"164\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"5 6 7 8\"/><text x=\"251\" y=\"189\" class=\"t tc\" data-s=\"4 5 6 7 8\">HMI 按開工、下參數</text><rect x=\"146\" y=\"224\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"5\"/><rect x=\"146\" y=\"224\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"6 7 8\"/><text x=\"251\" y=\"249\" class=\"t tc\" data-s=\"5 6 7 8\">每圈掃描、驅動馬達</text><rect x=\"146\" y=\"284\" width=\"438\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"5\"/><rect x=\"146\" y=\"284\" width=\"438\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"6 7 8\"/><text x=\"365\" y=\"309\" class=\"t tc\" data-s=\"5 6 7 8\">馬達動作；感測器量件數、重量、溫度</text><rect x=\"374\" y=\"164\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"6\"/><rect x=\"374\" y=\"164\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"7 8\"/><text x=\"479\" y=\"189\" class=\"t tc\" data-s=\"6 7 8\">溫度偏低，發出告警</text><rect x=\"374\" y=\"104\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"7\"/><rect x=\"374\" y=\"104\" width=\"210\" height=\"38\" rx=\"6\" class=\"box\" data-s=\"8\"/><text x=\"479\" y=\"129\" class=\"t tc\" data-s=\"7 8\">記錄良品、停機、批號</text><rect x=\"374\" y=\"44\" width=\"210\" height=\"38\" rx=\"6\" class=\"acc\" data-s=\"8\"/><text x=\"479\" y=\"69\" class=\"t tc\" data-s=\"8\">完工入庫、更新庫存</text><line x1=\"251\" y1=\"83\" x2=\"251\" y2=\"103\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"3 4 5 6 7 8\"/><line x1=\"251\" y1=\"143\" x2=\"251\" y2=\"163\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"4 5 6 7 8\"/><line x1=\"251\" y1=\"203\" x2=\"251\" y2=\"223\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"5 6 7 8\"/><line x1=\"251\" y1=\"263\" x2=\"251\" y2=\"283\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"5 6 7 8\"/><line x1=\"479\" y1=\"283\" x2=\"479\" y2=\"203\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"6 7 8\"/><text x=\"489\" y=\"248\" class=\"ts\" data-s=\"6 7 8\">經 PLC 回傳</text><line x1=\"479\" y1=\"163\" x2=\"479\" y2=\"143\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"7 8\"/><line x1=\"479\" y1=\"103\" x2=\"479\" y2=\"83\" class=\"la\" marker-end=\"url(#s2-23-2-arr)\" data-s=\"8\"/></svg>",
+   "caption": "這五層常畫成上窄下寬的「自動化金字塔」；上層偏資訊系統（IT），下層偏營運技術（OT，直接控制實體設備的技術）。",
    "predict": {
     "q": "「今天分裝 3,000 箱」要變成現場工單派到產線，還要記下每批原料來源。有三個系統：管訂單與帳務的 ERP、在工廠裡排工單與追蹤生產的 MES、直接控制馬達與閥門的 PLC。這件事該由誰負責？",
     "a": "MES。ERP 只管到訂單與庫存，PLC 只管馬達與閥門，把訂單轉成工單並追溯批次是中間這一層的工作。"
    },
    "more": {
     "label": "這套分層的標準：ISA-95",
-    "body": "<p><b>ISA-95</b>（對應國際標準 IEC 62264）把工廠系統分成五層。標準本身主要規範上面兩層（圖中的 L3、L4）的功能與介面，下層的畫法各家略有差異。</p>"
-   }
+    "body": "<p><b>ISA-95</b>（對應國際標準 IEC 62264）主要規範 MES＝L3、ERP＝L4 的功能與介面；下層編號各家畫法不同，ISA-95 原文 L1 是感測器與執行器、L2 是 PLC 與 SCADA，本圖把 PLC 畫在 L1。記住 ERP、MES、SCADA、PLC 由上而下的職責與反應時間就夠了。</p>"
+   },
+   "steps": [
+    "左欄是五層與各自的時間尺度。按「下一步」，跟著一張訂單走一趟。",
+    "ERP 接到客戶訂單：冷凍水餃 3,000 箱，週五交貨。ERP 管訂單、庫存與帳務，不管產線怎麼排。",
+    "MES 把訂單排成工單 #A-0715：分裝線 A 早班生產 3,000 箱，並綁定原料批號 L-0715，之後才查得到每箱的來源。",
+    "操作員在 SCADA 的人機介面（HMI）按下開工，生產參數送到產線的控制器。",
+    "PLC 一圈圈掃描，讀秤重、驅動封口馬達，以毫秒計；現場感測器同時量件數、重量與封口溫度。資料從這裡開始往上走。",
+    "現場資料經 PLC 回傳到 SCADA 集中監看，發現封口溫度偏低，幾秒內發出告警，讓人及時處理。",
+    "MES 記錄良品數、停機分鐘與批號：每一批都能追溯，也是之後計算設備效率的資料來源。",
+    "ERP 收到完工入庫，更新庫存與成本。指令一路往下、資料一路往上，這張訂單走完一趟。"
+   ],
+   "start": 8
   },
   {
    "id": "plc",
    "h": "PLC：工廠的反射神經",
    "body": "<p><b>PLC</b> 是為工廠環境設計的工業控制器：耐高溫、耐振動、抗電氣雜訊，能長年穩定運作。它不斷重複同一個循環：讀取輸入、執行程式、更新輸出，這個循環稱為<b>掃描週期</b>（Scan Cycle）。</p><p>大量運算不是它的主要工作。影像分析、長期趨勢預測、訓練 AI 模型這類分析，通常交給工業電腦或邊緣伺服器（放在工廠現場、就近處理資料的電腦），或雲端（透過網路使用的遠端機房）。就像人體：手碰到燙的東西靠反射立刻縮回，想清楚為什麼會燙則是大腦的事。</p>",
    "svg": "<svg viewBox=\"0 0 600 180\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"PLC 掃描週期：讀取輸入、執行程式、更新輸出，反覆循環\"><defs><marker id=\"s2-23-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"20\" y=\"30\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"100\" y=\"56\" class=\"tb tc\">① 讀取輸入</text><text x=\"100\" y=\"80\" class=\"ts tc\">按鈕、感測器</text><rect x=\"220\" y=\"30\" width=\"160\" height=\"64\" rx=\"8\" class=\"acc\"/><text x=\"300\" y=\"56\" class=\"tb tc\">② 執行程式</text><text x=\"300\" y=\"80\" class=\"ts tc\">階梯圖邏輯運算</text><rect x=\"420\" y=\"30\" width=\"160\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"500\" y=\"56\" class=\"tb tc\">③ 更新輸出</text><text x=\"500\" y=\"80\" class=\"ts tc\">馬達、閥門、燈號</text><line x1=\"182\" y1=\"62\" x2=\"216\" y2=\"62\" class=\"la\" marker-end=\"url(#s2-23-3-arr)\"/><line x1=\"382\" y1=\"62\" x2=\"416\" y2=\"62\" class=\"la\" marker-end=\"url(#s2-23-3-arr)\"/><polyline points=\"500,96 500,124 100,124 100,98\" class=\"la\" marker-end=\"url(#s2-23-3-arr)\"/><text x=\"300\" y=\"150\" class=\"ts tc\">反覆循環＝掃描週期（典型為數毫秒到數十毫秒一圈）</text><text x=\"300\" y=\"170\" class=\"ts tc\">重點是穩定、即時，不是運算力</text></svg>",
-   "caption": "PLC 一圈一圈重複「讀輸入、算邏輯、寫輸出」，追求穩定即時，而非算力。",
+   "caption": "PLC 一圈一圈重複「讀輸入、算邏輯、寫輸出」，這個循環就是掃描週期。",
    "predict": {
     "q": "輸送帶末端的光電感測器偵測到卡箱，要在毫秒內停下馬達。這個判斷該放在雲端平台還是 PLC？",
     "a": "PLC。停機判斷不能等網路來回，也不能因斷網而失效；雲端適合事後分析卡箱的規律。"
    },
    "more": {
     "label": "PLC 怎麼寫程式、怎麼和其他設備對話",
-    "body": "<p>程式常用<b>階梯圖</b>（Ladder Diagram，一種長得像電路圖的程式寫法）撰寫，這是 IEC 61131-3 標準定義的語言之一。</p><p>工廠看中 PLC，是因為它能連續多年照同一套邏輯管好馬達與閥門，故障少、換線時改程式也方便。它也能用 <b>Modbus、PROFINET、EtherNet/IP</b> 這類工業通訊協定（設備之間約定好的對話規則）和其他設備交換資料。</p>"
+    "body": "<p>程式常用<b>階梯圖</b>（Ladder Diagram，一種長得像電路圖的程式寫法）撰寫，這是 IEC 61131-3 標準定義的語言之一。</p><p>PLC 也能用 <b>Modbus、PROFINET、EtherNet/IP</b> 這類工業通訊協定（設備之間約定好的對話規則）和其他設備交換資料。</p>"
    }
   },
   {
    "id": "oee",
    "h": "OEE：三率相乘，看設備的真實效率",
    "body": "<p>機器「有在跑」不代表有效率：它可能常停機、跑得慢，或做出不良品。<b>OEE</b>（Overall Equipment Effectiveness，整體設備效率）用一個數字回答「計畫的時間裡，有多少真的在用標準速度做良品」。</p><p><b>OEE ＝ 可用率 × 效能率 × 良率</b>。三率各扣掉兩種損失，合稱<b>六大損失</b>（見下表）。業界常把 85% 當作世界級水準的參考值（典型值，依產業而異）。</p>",
-   "svg": "<svg viewBox=\"0 0 600 265\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OEE 損失分解：計畫時間經停機、速度、不良三種損失後，剩下做出良品的時間\"><text x=\"180\" y=\"18\" class=\"ts\">單位：分鐘（理想週期 6 秒／箱）</text><text x=\"170\" y=\"52\" class=\"tb\" text-anchor=\"end\">計畫生產時間</text><rect x=\"180\" y=\"30\" width=\"400\" height=\"34\" class=\"box\"/><text x=\"190\" y=\"52\" class=\"t\">500 分</text><text x=\"170\" y=\"102\" class=\"tb\" text-anchor=\"end\">運轉時間</text><rect x=\"180\" y=\"80\" width=\"360\" height=\"34\" class=\"acc\"/><text x=\"190\" y=\"102\" class=\"t\">450 分｜可用率 90%</text><rect x=\"540\" y=\"80\" width=\"40\" height=\"34\" class=\"bad\"/><text x=\"560\" y=\"102\" class=\"ts tc\">停機</text><text x=\"170\" y=\"152\" class=\"tb\" text-anchor=\"end\">淨運轉時間</text><rect x=\"180\" y=\"130\" width=\"288\" height=\"34\" class=\"acc\"/><text x=\"190\" y=\"152\" class=\"t\">360 分｜效能率 80%</text><rect x=\"468\" y=\"130\" width=\"72\" height=\"34\" class=\"bad\"/><text x=\"504\" y=\"152\" class=\"ts tc\">速度</text><text x=\"170\" y=\"202\" class=\"tb\" text-anchor=\"end\">良品時間</text><rect x=\"180\" y=\"180\" width=\"273.6\" height=\"34\" class=\"acc\"/><text x=\"190\" y=\"202\" class=\"t\">342 分｜良率 95%</text><rect x=\"453.6\" y=\"180\" width=\"14.4\" height=\"34\" class=\"bad\"/><text x=\"474\" y=\"202\" class=\"ts\">不良 18</text><text x=\"300\" y=\"250\" class=\"tb tc\">OEE ＝ 342 ÷ 500 ＝ 0.9 × 0.8 × 0.95 ＝ 68.4%</text></svg>",
-   "caption": "500 分鐘被停機、速度、不良三種損失一層層吃掉，只剩 342 分鐘真正在做良品（3,420 箱 × 0.1 分鐘）。",
    "table": {
     "head": [
      "比率（別名）",
@@ -101,17 +120,17 @@
      [
       "可用率（稼動率）",
       "運轉時間 ÷ 計畫生產時間",
-      "設備故障、換線與調機"
+      "設備故障、換線（改做別的產品前的準備）與調機"
      ],
      [
       "效能率（性能率）",
       "（理想週期時間 × 總產量）÷ 運轉時間",
-      "小停頓與空轉、速度降低"
+      "小停頓與空轉（短暫卡料、空等）、速度降低"
      ],
      [
       "良率（品質率）",
       "良品數 ÷ 總產量",
-      "製程不良與重工、開機試產損失"
+      "製程不良與重工（返工重做）、開機試產損失（參數未穩時的損耗）"
      ]
     ]
    },
@@ -121,88 +140,23 @@
     "a": "不是，約 72.9%。三種損失會疊加：0.9×0.9×0.9＝0.729。"
    },
    "lab": "s2-23-oee",
-   "after": "<p>把實驗一開始的那一班算一次：計畫生產 <b>500 分鐘</b>，故障與換線停了 <b>50 分鐘</b>；理想週期時間（做一箱的標準時間）<b>6 秒／箱</b>，也就是 0.1 分鐘，共做 <b>3,600 箱</b>，其中 <b>3,420 箱</b>是良品。</p><ol><li>可用率＝運轉時間 (500−50) ÷ 計畫生產時間 500＝450÷500＝<b>90%</b></li><li>效能率＝(理想週期時間 0.1 × 總產量 3,600) ÷ 運轉時間 450＝360÷450＝<b>80%</b></li><li>良率＝良品數 3,420 ÷ 總產量 3,600＝<b>95%</b></li><li>OEE＝0.90×0.80×0.95＝<b>68.4%</b></li></ol><p>驗算捷徑：良品數 × 理想週期時間 ÷ 計畫時間＝3,420×0.1÷500＝68.4%。要改善時先抓<b>最低的那一率</b>，本例是效能率，代表速度損失最大。改善前後也要用同一套定義比較，數字才有意義。</p>",
-   "more": {
-    "label": "表中現場用語的意思",
-    "body": "<p>換線是改做另一種產品的準備時間；小停頓是短暫卡料或空轉造成的中斷；重工是把不良品返工重做；開機試產是剛開機、參數還沒穩定時做出的損耗。</p>"
-   }
+   "after": "<p>把實驗的「本節的例子」（按一下可回到這組數字）算一次：計畫生產 <b>500 分鐘</b>，故障與換線停了 <b>50 分鐘</b>；理想週期時間（做一箱的標準時間）<b>6 秒／箱</b>，也就是 0.1 分鐘，共做 <b>3,600 箱</b>，其中 <b>3,420 箱</b>是良品。</p><ol><li>可用率＝運轉時間 (500−50) ÷ 計畫生產時間 500＝450÷500＝<b>90%</b></li><li>效能率＝(理想週期時間 0.1 × 總產量 3,600) ÷ 運轉時間 450＝360÷450＝<b>80%</b></li><li>良率＝良品數 3,420 ÷ 總產量 3,600＝<b>95%</b></li><li>OEE＝0.90×0.80×0.95＝<b>68.4%</b></li></ol><p>驗算捷徑：良品數 × 理想週期時間 ÷ 計畫時間＝3,420×0.1÷500＝68.4%。要改善時先抓<b>最低的那一率</b>，本例是效能率，代表速度損失最大。改善前後也要用同一套定義比較，數字才有意義。</p>"
   },
   {
    "id": "predictive-maintenance",
    "h": "預測性維護：在壞掉之前修",
-   "body": "<p>機器一定會劣化，差別在什麼時候處理。<b>事後維修</b>是車子拋錨才送修；<b>預防性維護</b>是不管狀況，每 5,000 公里就保養；<b>預測性維護</b>（PdM，Predictive Maintenance）則是持續看儀表，發現異常才安排進廠。</p><p>設備從可偵測到異常（P）到真的失效（F）之間的 <b>P-F 間隔</b>，就是 PdM 能爭取到的安排維修時間。它的價值是<b>減少非計畫停機</b>，直接拉高 OEE 的可用率，同時降低備品庫存、避免過早換件。代價是要投資感測器、資料平台與模型，而且只能降低風險，無法保證零停機。</p>",
-   "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"P-F 曲線：設備從可偵測到異常到故障之間，有一段可安排維修的時間窗\"><defs><marker id=\"s2-23-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"60\" y1=\"250\" x2=\"580\" y2=\"250\" class=\"ln\" marker-end=\"url(#s2-23-5-arr)\"/><line x1=\"60\" y1=\"250\" x2=\"60\" y2=\"24\" class=\"ln\" marker-end=\"url(#s2-23-5-arr)\"/><text x=\"70\" y=\"30\" class=\"ts\">設備健康度</text><text x=\"545\" y=\"270\" class=\"ts\">時間</text><polyline points=\"62,62 200,63 300,68 330,72 370,82 410,104 450,140 480,180 500,215 512,248\" class=\"la\"/><line x1=\"330\" y1=\"78\" x2=\"330\" y2=\"275\" class=\"ln dash\"/><line x1=\"500\" y1=\"221\" x2=\"500\" y2=\"275\" class=\"ln dash\"/><circle cx=\"330\" cy=\"72\" r=\"6\" class=\"acc\"/><circle cx=\"500\" cy=\"215\" r=\"6\" class=\"bad\"/><text x=\"330\" y=\"52\" class=\"ts tc\">P：感測器可偵測到異常</text><text x=\"514\" y=\"205\" class=\"ts\">F：故障</text><line x1=\"332\" y1=\"282\" x2=\"498\" y2=\"282\" class=\"la\" marker-start=\"url(#s2-23-5-arr)\" marker-end=\"url(#s2-23-5-arr)\"/><text x=\"415\" y=\"302\" class=\"ts tc\">P-F 間隔＝安排維修的時間窗</text><text x=\"80\" y=\"150\" class=\"ts\">預防性維護：固定週期保養，不看狀態</text><text x=\"80\" y=\"175\" class=\"ts ta\">預測性維護：在 P 之後、F 之前出手</text><text x=\"80\" y=\"200\" class=\"ts\">事後維修：到 F 才修，非計畫停機</text></svg>",
-   "caption": "設備從「可偵測的異常 P」走到「故障 F」之間有一段時間窗，預測性維護靠感測器在這段時間內出手。",
-   "table": {
-    "head": [
-     "策略",
-     "何時維修",
-     "優點",
-     "缺點"
-    ],
-    "rows": [
-     [
-      "事後維修 Reactive",
-      "壞了才修",
-      "不花監測成本",
-      "非計畫停機，損失大"
-     ],
-     [
-      "預防性 Preventive",
-      "固定時間或使用次數",
-      "容易排程",
-      "可能過度保養，也可能來不及"
-     ],
-     [
-      "預測性 Predictive",
-      "狀態顯示快壞時",
-      "減少停機與過早更換",
-      "要投資感測器、資料與模型"
-     ]
-    ]
-   },
+   "body": "<p>三種維護策略一句話對照：<b>事後維修</b>看故障，<b>預防性維護</b>看日曆，<b>預測性維護</b>（PdM，Predictive Maintenance）看狀態；三條泳道的對照圖在 <a href=\"s1-12.html#maintenance-strategies\">1.2〈AIoT 應用案例〉</a>。</p><p>PdM 用感測器監測<b>振動、溫度、電流、聲音</b>，以異常偵測找出和平常不同的訊號，並估計剩餘使用壽命（RUL），做法見 <a href=\"s1-12.html#pdm-ai\">1.2 的「PdM 裡的 AI」</a>。從可偵測到潛在異常的 P 點（Potential failure）到真的失效的 F 點（Functional failure），中間的 <b>P-F 間隔</b>就是可以安排維修的時間。</p><p>PdM 減少<b>非計畫停機</b>，直接拉高 OEE 的可用率，也降低備品庫存、避免過早換件。代價是要投資感測器、資料平台與模型，而且不保證零停機。</p>",
    "predict": {
     "q": "封口機馬達的振動變大，系統提早排定週末換軸承，避開了上班時間突然停線。OEE 三率中哪一率最直接受益？",
     "a": "可用率。它減少的是非計畫停機，也就是運轉時間的損失。"
-   },
-   "more": {
-    "label": "PdM 怎麼知道快壞了：異常偵測與 RUL",
-    "body": "<p>PdM 的做法是用感測器監測<b>振動、溫度、電流、聲音</b>，再用資料分析或機器學習（讓程式從歷史資料找出規律），找出和平常不一樣的訊號，稱為<b>異常偵測</b>，並估計<b>剩餘使用壽命</b>（RUL，Remaining Useful Life）。</p><p>P 是可偵測到潛在異常的時間點（Potential failure），F 是真的失效的時間點（Functional failure）。</p>"
    }
   },
   {
    "id": "quality-safety",
    "h": "品質檢驗與機械安全",
-   "body": "<p>品質檢驗沿著生產流程分段進行，每一段都要做，因為不良品越早攔下越省錢。IoT 與 AI 的角色是讓檢驗自動化並留下資料：產線用相機做 <b>AOI</b>（Automated Optical Inspection，自動光學檢測），以影像辨識瑕疵；感測器即時監測製程參數，數據回到 MES 供追溯。</p><p>工廠裡另一條底線是人員安全，對應的標準是 <b>ISO 13849</b>：它管的是機器會不會傷人，不是產能或環保。</p>",
-   "table": {
-    "head": [
-     "檢驗",
-     "英文",
-     "時機與目的"
-    ],
-    "rows": [
-     [
-      "IQC 進料檢驗",
-      "Incoming Quality Control",
-      "原料、零件進廠時檢驗，不良料不上線"
-     ],
-     [
-      "IPQC 製程檢驗",
-      "In-Process Quality Control",
-      "生產途中巡檢，及早發現製程異常"
-     ],
-     [
-      "FQC 最終檢驗",
-      "Final Quality Control",
-      "成品完成後全檢或抽檢"
-     ],
-     [
-      "OQC 出貨檢驗",
-      "Outgoing Quality Control",
-      "出貨前確認符合客戶要求"
-     ]
-    ]
-   },
+   "body": "<p>品質檢驗沿著生產流程分成四段（見下圖）。IoT 與 AI 的角色是讓檢驗自動化並留下資料：產線用相機做 <b>AOI</b>（Automated Optical Inspection，自動光學檢測），以影像辨識瑕疵；感測器即時監測製程參數，數據回到 MES 供追溯。</p><p>工廠裡另一條底線是人員安全，對應的標準是 <b>ISO 13849</b>：它管的是機器會不會傷人，不是產能或環保。</p>",
+   "svg": "<svg viewBox=\"0 0 600 240\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"品質檢驗四段沿生產流程排開：IQC 進料檢驗在進廠時、IPQC 製程檢驗在生產中、FQC 最終檢驗在完工後，入庫後再由 OQC 出貨檢驗在出貨前把關；下方的條由左往右升高，表示越晚發現，已投入的加工與重工越多\"><defs><marker id=\"s2-23-6-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"30\" width=\"110\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"65\" y=\"56\" class=\"tb tc\">IQC</text><text x=\"65\" y=\"80\" class=\"t tc\">進料檢驗</text><text x=\"65\" y=\"120\" class=\"t tc ta\">進廠時</text><rect x=\"145\" y=\"30\" width=\"110\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"200\" y=\"56\" class=\"tb tc\">IPQC</text><text x=\"200\" y=\"80\" class=\"t tc\">製程檢驗</text><text x=\"200\" y=\"120\" class=\"t tc ta\">生產中</text><rect x=\"280\" y=\"30\" width=\"110\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"335\" y=\"56\" class=\"tb tc\">FQC</text><text x=\"335\" y=\"80\" class=\"t tc\">最終檢驗</text><text x=\"335\" y=\"120\" class=\"t tc ta\">完工後</text><rect x=\"480\" y=\"30\" width=\"110\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"535\" y=\"56\" class=\"tb tc\">OQC</text><text x=\"535\" y=\"80\" class=\"t tc\">出貨檢驗</text><text x=\"535\" y=\"120\" class=\"t tc ta\">出貨前</text><line x1=\"122\" y1=\"62\" x2=\"143\" y2=\"62\" class=\"la\" marker-end=\"url(#s2-23-6-arr)\"/><line x1=\"257\" y1=\"62\" x2=\"278\" y2=\"62\" class=\"la\" marker-end=\"url(#s2-23-6-arr)\"/><line x1=\"392\" y1=\"62\" x2=\"478\" y2=\"62\" class=\"la\" marker-end=\"url(#s2-23-6-arr)\"/><text x=\"435\" y=\"52\" class=\"t tc\">入庫</text><polygon points=\"10,196 590,196 590,140 10,188\" class=\"warn\"/><text x=\"300\" y=\"226\" class=\"t tc\">越晚發現，已投入的加工與重工越多</text></svg>",
+   "caption": "縮寫看開頭的字母：I＝Incoming（進料）、IP＝In-Process（製程中）、F＝Final（最終）、O＝Outgoing（出貨），QC＝Quality Control（品質管制）。",
    "predict": {
     "q": "一批外箱進廠時就有破損，到封箱時才被發現，已經裝進幾百箱食品。哪一段檢驗本來該攔下它？",
     "a": "進料檢驗 IQC。不良品越早攔下越省錢，等到後段才發現，加工與重工的成本都已經花了。"
@@ -215,57 +169,12 @@
   {
    "id": "cost-benefit",
    "h": "值不值得：TCO、回收期與 ROI",
-   "body": "<p>評估 IoT 不能只看硬體標價。買車除了車價，還有保險、油錢和保養；同理，<b>總持有成本</b>（TCO，Total Cost of Ownership）要包含硬體、安裝、雲端月費、維護與教育訓練。效益則來自減少的停機、不良、人力與能源損失。</p><p><b>投資回收期</b>（Payback Period）＝一次投入成本 ÷ 每期<b>淨節省</b>，淨節省是節省金額再扣掉新增的持續費用。<b>ROI</b>（Return on Investment，投資報酬率）＝（收益－成本）÷ 成本。回收期越短、ROI 越高，通常越值得做。</p>",
-   "svg": "<svg viewBox=\"0 0 600 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"累積淨現金折線：從負十二萬元開始，每月增加一萬二千元，第十個月回到零\"><defs><marker id=\"s2-23-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"70\" y1=\"230\" x2=\"585\" y2=\"230\" class=\"ln\" marker-end=\"url(#s2-23-7-arr)\"/><line x1=\"70\" y1=\"230\" x2=\"70\" y2=\"20\" class=\"ln\" marker-end=\"url(#s2-23-7-arr)\"/><text x=\"80\" y=\"30\" class=\"ts\">累積淨現金（元）</text><line x1=\"70\" y1=\"90\" x2=\"575\" y2=\"90\" class=\"ln dash\"/><text x=\"62\" y=\"94\" class=\"ts\" text-anchor=\"end\">0</text><text x=\"62\" y=\"214\" class=\"ts\" text-anchor=\"end\">−12 萬</text><polyline points=\"70,210 550,66\" class=\"la\"/><circle cx=\"70\" cy=\"210\" r=\"5\" class=\"bad\"/><circle cx=\"470\" cy=\"90\" r=\"6\" class=\"acc\"/><circle cx=\"550\" cy=\"66\" r=\"5\" class=\"acc\"/><line x1=\"470\" y1=\"96\" x2=\"470\" y2=\"230\" class=\"ln dash\"/><text x=\"400\" y=\"72\" class=\"ts tc ta\">第 10 個月回本</text><text x=\"590\" y=\"48\" class=\"ts\" text-anchor=\"end\">第 12 個月 ＋24,000</text><text x=\"100\" y=\"225\" class=\"ts\">起點：一次投入 120,000</text><text x=\"240\" y=\"180\" class=\"ts\">每月淨節省 12,000 元</text><text x=\"70\" y=\"250\" class=\"ts tc\">0</text><text x=\"270\" y=\"250\" class=\"ts tc\">5</text><text x=\"470\" y=\"250\" class=\"ts tc\">10</text><text x=\"550\" y=\"250\" class=\"ts tc\">12</text><text x=\"585\" y=\"218\" class=\"ts\" text-anchor=\"end\">時間（月）</text></svg>",
-   "caption": "依下表數字繪製：累積淨現金從 −120,000 元起算，每月增加 12,000 元，第 10 個月回到零。",
-   "table": {
-    "head": [
-     "項目",
-     "算式",
-     "結果"
-    ],
-    "rows": [
-     [
-      "一次投入（設備與安裝、訓練）",
-      "100,000＋20,000",
-      "120,000 元"
-     ],
-     [
-      "每月毛節省（停機與不良減少）",
-      "—",
-      "15,000 元"
-     ],
-     [
-      "每月持續費用（雲端月費＋維護）",
-      "—",
-      "3,000 元"
-     ],
-     [
-      "每月淨節省",
-      "15,000－3,000",
-      "12,000 元"
-     ],
-     [
-      "簡單回收期",
-      "120,000÷12,000",
-      "10 個月"
-     ],
-     [
-      "第一年 ROI",
-      "(12,000×12－120,000)÷120,000",
-      "20%"
-     ]
-    ]
-   },
+   "body": "<p>評估 IoT 不能只看硬體標價。買車除了車價，還有保險、油錢和保養；同理，<b>總持有成本</b>（TCO，Total Cost of Ownership）要包含硬體、安裝、雲端月費、維護與教育訓練。效益則來自減少的停機、不良、人力與能源損失。</p><p><b>投資回收期</b>（Payback Period）＝一次投入成本（設備＋安裝＋訓練）÷ 每期<b>淨節省</b>，淨節省是節省金額再扣掉新增的持續費用。<b>ROI</b>（Return on Investment，投資報酬率）＝（收益－成本）÷ 成本。回收期越短、ROI 越高，通常越值得做。</p>",
    "predict": {
     "q": "監測方案一次投入 12 萬元，每月省下 1.5 萬元，但雲端與維護每月要 3 千元。有人說 8 個月回本，對嗎？",
     "a": "不對，是 10 個月。8 個月是拿毛節省去除；要先扣掉持續費用，用每月淨節省 1.2 萬元來算。"
    },
-   "lab": "s2-23-payback",
-   "more": {
-    "label": "ROI 的兩種口徑，以及回收期沒算到的事",
-    "body": "<p>上表的 ROI 以淨節省當收益（持續費用已先扣除），成本只計一次投入，得 20%；若把第一年持續費用 36,000 元算入成本，則為 (180,000－156,000)÷156,000≈15.4%。比較方案時口徑要一致。</p><p>簡單回收期不考慮「今天的錢比明年的錢值錢」；需要納入時，改用 <b>NPV</b>（Net Present Value，淨現值）。</p>"
-   }
+   "lab": "s2-23-payback"
   }
  ],
  "keypoints": [
@@ -311,14 +220,6 @@
  ],
  "check": [
   {
-   "q": "把手動機台換成全自動機台，但沒有連網也沒有紀錄，算智慧製造嗎？",
-   "a": "不算，這只是自動化，缺少資料收集、分析與決策。"
-  },
-  {
-   "q": "負責把訂單變成工單、派工、記錄批次來源的是哪一層系統？",
-   "a": "MES 製造執行系統。"
-  },
-  {
    "q": "PLC 的掃描週期包含哪三步？",
    "a": "讀取輸入、執行程式、更新輸出，然後反覆循環。"
   },
@@ -327,20 +228,12 @@
    "a": "0.85×0.90×0.96＝73.44%。"
   },
   {
-   "q": "預測性維護主要提升 OEE 的哪一率？",
-   "a": "可用率，因為它減少非計畫停機。"
+   "q": "分裝線在裝盒之後、封箱之前，用 AOI 相機逐盒檢查封膜有沒有破損。這屬於四段品質檢驗的哪一段？",
+   "a": "IPQC 製程檢驗，因為產品還在生產途中；等成品完工、入庫前再檢查才是 FQC。"
   },
   {
-   "q": "生產途中進行的品質檢驗簡稱是什麼？",
-   "a": "IPQC 製程檢驗。"
-  },
-  {
-   "q": "一次投入 240,000 元，每月節省 25,000 元、持續費用 5,000 元，回收期多久？",
-   "a": "240,000÷20,000＝12 個月。"
-  },
-  {
-   "q": "ISO 13849 規範什麼？",
-   "a": "機械控制系統安全相關部件的功能安全。"
+   "q": "一次投入 240,000 元，每月節省 25,000 元、持續費用 5,000 元，第一年 ROI 是多少？",
+   "a": "每月淨節省 25,000－5,000＝20,000 元，一年 240,000 元；ROI＝(240,000－240,000)÷240,000＝0%，第一年剛好回本。"
   }
  ],
  "terms": [
