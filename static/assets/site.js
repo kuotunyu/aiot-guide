@@ -687,10 +687,10 @@ if (reader) (function(){
 })();
 
 // On narrow screens the first lab result box is pinned with a height cap and may scroll; keyboard users must be able to reach it.
+// Labs draw their result boxes after this script runs, so look them up again on load and when the screen width changes.
 (function(){
-  const boxes = [...document.querySelectorAll('.lab')].filter(l => l.querySelector('.lab-slider')).map(l => l.querySelector('.lab-say')).filter(Boolean);
-  if (!boxes.length) return;
   const mq = matchMedia('(max-width:900px)');
-  const set = () => boxes.forEach(b => { if (mq.matches) { b.tabIndex = 0; b.setAttribute('aria-label', '實驗結果'); } else { b.removeAttribute('tabindex'); b.removeAttribute('aria-label'); } });
-  set(); mq.addEventListener && mq.addEventListener('change', set);
+  const set = () => [...document.querySelectorAll('.lab')].filter(l => l.querySelector('.lab-slider')).map(l => l.querySelector('.lab-say')).filter(Boolean)
+    .forEach(b => { if (mq.matches) { b.tabIndex = 0; b.setAttribute('aria-label', '實驗結果'); } else { b.removeAttribute('tabindex'); b.removeAttribute('aria-label'); } });
+  set(); addEventListener('load', set); mq.addEventListener && mq.addEventListener('change', set);
 })();
