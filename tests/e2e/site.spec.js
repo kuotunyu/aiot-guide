@@ -9,7 +9,8 @@ function watchErrors(page) {
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   page.on('requestfailed', r => { if (!r.url().endsWith('.mp4')) errors.push('failed ' + r.url()); });
-  page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1:8799')) errors.push('external ' + r.url()); });
+  // blob: and data: stay inside the page (WebKit loads some in-page resources as blob: URLs); only real network hosts count.
+  page.on('request', r => { const u = r.url(); if (!u.startsWith('http://127.0.0.1:8799') && !/^(blob|data):/.test(u)) errors.push('external ' + u); });
   return errors;
 }
 const overflow = page => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
