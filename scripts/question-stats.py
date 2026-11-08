@@ -16,6 +16,7 @@ def merged():
         d = json.loads(f.read_text(encoding='utf-8'))
         drops |= set(d.get('drop', []))
         edits.update(d.get('edits', {}))
+        bank += d.get('add', [])
     return [{**q, **edits.get(q['id'], {})} for q in bank if q['id'] not in drops]
 
 
@@ -44,3 +45,5 @@ for ch in sorted(by):
     print(f'{ch}: {len(xs):3d} 題  最長即正解 {h / len(xs):5.0%}  排除只／僅後 {h2 / len(xs):5.0%}  沒有小節連結 {sum(1 for q in xs if not q.get("sec"))}')
 if tot:
     print(f'合計 {tot} 題  最長即正解 {hit / tot:.0%}  排除只／僅後 {hit2 / tot:.0%}')
+    xs = [q for v in by.values() for q in v]
+    print(f'有選項短評 w {sum(1 for q in xs if q.get("w"))} 題  有解題線索 tip {sum(1 for q in xs if q.get("tip"))} 題')

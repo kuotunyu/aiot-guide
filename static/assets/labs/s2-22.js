@@ -100,10 +100,10 @@
   // Horizontal bars, linear scale. rows: [[label, value, valueText], ...]
   function bars(title, rows, top) {
     const max = Math.max(...rows.map(r => r[1]), 1e-9);
-    let s = '<text x="0" y="' + (top + 16) + '" class="tb">' + esc(title) + '</text>';
+    let s = '<text x="2" y="' + (top + 16) + '" class="tb">' + esc(title) + '</text>';
     rows.forEach((r, i) => {
       const y = top + 28 + i * 34, w = Math.max(2, r[1] / max * 190);
-      s += '<text x="0" y="' + (y + 18) + '" class="ts">' + esc(r[0]) + '</text><rect x="100" y="' + y + '" width="' + w.toFixed(1) + '" height="24" rx="3" class="acc"/><text x="420" y="' + (y + 18) + '" class="ts" text-anchor="end">' + esc(r[2]) + '</text>';
+      s += '<text x="2" y="' + (y + 18) + '" class="ts">' + esc(r[0]) + '</text><rect x="100" y="' + y + '" width="' + w.toFixed(1) + '" height="24" rx="3" class="acc"/><text x="418" y="' + (y + 18) + '" class="ts" text-anchor="end">' + esc(r[2]) + '</text>';
     });
     return s;
   }
@@ -119,7 +119,7 @@
       {name: '只有一人看的倉庫螢幕', p: 6, c: 6, u: 0},
     ];
     let idx = {p: 3, c: 5, u: 4};
-    el.innerHTML = '<h3>實驗：儀表板怎麼即時更新</h3><p class="small">選一個情境，或拉滑桿調整，比較三種做法一小時內的請求數與延遲。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div>' +
+    el.innerHTML = '<h3>實驗：儀表板怎麼即時更新</h3><p class="small">比較三種做法一小時內的請求數與延遲。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div>' +
       slider('s222-p', '輪詢間隔', 0, POLL.length - 1, 1, idx.p, '') + slider('s222-c', '資料多久變一次', 0, CHANGE.length - 1, 1, idx.c, '') + slider('s222-u', '同時線上人數', 0, USERS.length - 1, 1, idx.u, '') +
       '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><ul class="rank"></ul><p class="small muted">這是簡化模型：資料固定週期變化、與瀏覽器不同步；網路單程固定 50 毫秒；長輪詢逾時 30 秒後重問；不計伺服器處理時間與斷線重連。長條為線性比例，太短時以最小寬度顯示。請求數不等於新連線數，HTTP/1.1 可重複使用同一條連線。</p>';
     const inputs = {p: el.querySelector('#s222-p'), c: el.querySelector('#s222-c'), u: el.querySelector('#s222-u')};
@@ -152,7 +152,7 @@
   function formatsLab(el) {
     const COUNTS = [1, 2, 5, 10, 50, 100];
     let idx = 0, header = 0;
-    el.innerHTML = '<h3>實驗：同一批讀值，三種格式有多大</h3><p class="small">調一次打包幾筆。下面的長度由頁面實際組出字串後計算，每個英數字元算 1。</p>' + slider('s222-n', '一次打包', 0, COUNTS.length - 1, 1, idx, '') + '<div class="lab-form">' + radios('s222-h', 'CSV 要不要標題列？', ['要', '不要'], header) + '</div><div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><div class="lab-samples"></div><p class="small muted">只比較未壓縮的文字長度，也都用同一組平面欄位。CSV 不要標題列時，接收方必須事先知道每欄的意思；有上下層級的資料，CSV 也寫不出來。</p>';
+    el.innerHTML = '<h3>實驗：同一批讀值，三種格式有多大</h3><p class="small">長度是頁面實際組出的字串長度，每個英數字元算 1。</p>' + slider('s222-n', '一次打包', 0, COUNTS.length - 1, 1, idx, '') + '<div class="lab-form">' + radios('s222-h', 'CSV 要不要標題列？', ['要', '不要'], header) + '</div><div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><div class="lab-samples"></div><p class="small muted">只比較未壓縮的文字長度，也都用同一組平面欄位。CSV 不要標題列時，接收方必須事先知道每欄的意思；有上下層級的資料，CSV 也寫不出來。</p>';
     const input = el.querySelector('#s222-n');
     function sample(name, text) {
       const cut = text.length > 170 ? text.slice(0, 170) + '…' : text;

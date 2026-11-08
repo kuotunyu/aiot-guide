@@ -86,7 +86,7 @@
   function labEdgeCloud(el) {
     const state = Object.assign({int8: false}, PRESETS[0].v);
     let active = 0;
-    el.innerHTML = '<h3>實驗：判斷放邊緣還是雲端</h3><p class="small">選一個冷鏈情境，或拖動滑桿，看哪個條件決定了答案。要看量化的效果，選「探頭上的小模型」再把模型格式切成 INT8，結論會改變；再試「冷藏庫溫度趨勢」，INT8 後仍放不進 MCU。</p>'
+    el.innerHTML = '<h3>實驗：判斷放邊緣還是雲端</h3><p class="small">看哪個條件決定了答案。要看量化的效果，選「探頭上的小模型」再把模型格式切成 INT8，結論會改變；再試「冷藏庫溫度趨勢」，INT8 後仍放不進 MCU。</p>'
       + '<div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div>'
       + '<div class="lab-form">' + FIELDS.map(([k, label]) => slider('ec-' + k, label, 0, STOPS[k].length - 1, 1, 0, '')).join('')
       + '<div class="ec-radios"></div></div>'
@@ -110,7 +110,7 @@
       const w = Math.min(340, r.rttMs / scale * 340), lim = state.limitMs / scale * 340;
       const fp = fmtMB(state.modelMB), q = fmtMB(quantize(state.modelMB));
       viz.innerHTML = '<svg viewBox="0 0 360 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="雲端往返時間與延遲上限的比較，以及 FP32 與 INT8 的模型大小">'
-        + '<text x="0" y="14" class="ts">雲端往返 ' + esc(r.saturated ? '傳不及' : fmtMs(r.rttMs)) + '／上限 ' + esc(fmtMs(state.limitMs)) + '</text>'
+        + '<text x="0" y="17" class="ts">雲端往返 ' + esc(r.saturated ? '傳不及' : fmtMs(r.rttMs)) + '／上限 ' + esc(fmtMs(state.limitMs)) + '</text>'
         + '<rect x="0" y="24" width="' + (r.saturated ? 340 : w.toFixed(1)) + '" height="18" rx="3" class="' + (r.tooSlow ? 'bad' : 'ok') + '"/>'
         + '<line x1="' + lim.toFixed(1) + '" y1="20" x2="' + lim.toFixed(1) + '" y2="46" class="la"/>'
         + '<text x="0" y="74" class="ts">模型大小（INT8 約為 FP32 的 1/4）</text>'
@@ -128,14 +128,14 @@
       const r = assess(state), dev = DEVICES[state.device];
       say.textContent = VERDICT[r.verdict];
       const rows = [
-        [r.tooSlow ? 'no' : 'ok', '往返時間', r.saturated
+        [r.tooSlow ? 'bad' : 'ok', '往返時間', r.saturated
           ? '上傳需要 ' + r.mbps.toFixed(1) + ' Mbps，超過頻寬，資料會越積越多，雲端傳不及'
           : fmtMs(r.rttMs) + '，' + (r.tooSlow ? '超過' : '在') + '上限 ' + fmtMs(state.limitMs) + (r.tooSlow ? '，雲端來不及' : '內，雲端來得及')],
         [r.heavy ? 'maybe' : 'ok', '傳輸量', '全上傳每天約 ' + fmtVolume(r.perDayGB) + '，占上行 ' + (r.mbps < 0.005 ? '不到 0.01' : +r.mbps.toFixed(2)) + ' Mbps' + (r.heavy ? '，流量費用值得算一下' : '')],
         [r.shaky ? 'maybe' : 'ok', '連線', '每天約斷線 ' + +r.downMin.toFixed(1) + ' 分鐘' + (r.shaky ? '，這段時間雲端無法判斷' : '')],
-        [r.fits ? 'ok' : 'no', '模型', (state.int8 ? 'INT8 約 ' : 'FP32 ') + fmtMB(r.modelMB) + '，' + dev.name + '可放 ' + fmtMB(r.cap) + (r.fits ? '，放得進去' : '，放不進去')],
+        [r.fits ? 'ok' : 'bad', '模型', (state.int8 ? 'INT8 約 ' : 'FP32 ') + fmtMB(r.modelMB) + '，' + dev.name + '可放 ' + fmtMB(r.cap) + (r.fits ? '，放得進去' : '，放不進去')],
       ];
-      const label = {ok: '沒問題', maybe: '留意', no: '卡關'};
+      const label = {ok: '沒問題', maybe: '留意', bad: '卡關'};
       rank.innerHTML = rows.map(([s, name, why]) => '<li class="' + s + '"><span class="st">' + label[s] + '</span><b>' + esc(name) + '</b><span class="why">' + esc(why) + '</span></li>').join('');
       drawViz(r);
     }

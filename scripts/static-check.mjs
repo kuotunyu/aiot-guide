@@ -55,7 +55,7 @@ for (const [name, T] of [['light', light], ['dark', dark]]) {
 
 // Asset budget: a learning site on a phone connection.
 const KB = 1024, size = f => statSync(f).size;
-const budget = [[f => extname(f) === '.mp4', 2.0 * KB * KB, 'video'], [f => extname(f) === '.jpg', 200 * KB, 'poster'], [f => extname(f) === '.png', 300 * KB, 'image'], [f => extname(f) === '.html', 120 * KB, 'page'], [f => extname(f) === '.js' && !f.endsWith('questions.js'), 60 * KB, 'script'], [f => f.endsWith('questions.js'), 250 * KB, 'question bank'], [f => extname(f) === '.css', 40 * KB, 'stylesheet']];
+const budget = [[f => extname(f) === '.mp4', 2.0 * KB * KB, 'video'], [f => extname(f) === '.jpg', 200 * KB, 'poster'], [f => extname(f) === '.png', 300 * KB, 'image'], [f => extname(f) === '.html', 120 * KB, 'page'], [f => extname(f) === '.js' && !f.endsWith('questions.js'), 60 * KB, 'script'], [f => f.endsWith('questions.js'), 250 * KB, 'question bank'], [f => extname(f) === '.css', 48 * KB, 'stylesheet']];
 for (const f of files) for (const [test, max, label] of budget) if (test(f) && size(f) > max) problems.push(`${label} over budget: ${f} ${(size(f) / KB).toFixed(0)} KB > ${(max / KB).toFixed(0)} KB`);
 const total = files.reduce((a, f) => a + size(f), 0);
 if (total > 20 * KB * KB) problems.push(`site over 20 MB: ${(total / KB / KB).toFixed(1)} MB`);

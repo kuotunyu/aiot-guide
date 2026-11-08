@@ -115,7 +115,7 @@
       {name: '偏遠產地的田間感測器', need: {range: 3, data: 1, power: 0, mobile: 0}, say: 'LoRaWAN 和 NB-IoT 都符合。行動訊號不穩又能自建閘道就選 LoRaWAN；當地電信涵蓋好、不想維運就選 NB-IoT。'},
     ];
     let need = Object.assign({}, PRESETS[0].need), say = PRESETS[0].say, active = 0;
-    el.innerHTML = '<h3>實驗：替需求選無線技術</h3><p class="small">選一個冷鏈情境，或自己調條件。看哪些技術被排除，以及原因。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form"></div><p class="lab-say" aria-live="polite"></p><div class="lab-out"></div><p class="small muted">排序只看這四個條件，是選型的起點。實際還要看成本、當地涵蓋、法規與現場測試。</p>';
+    el.innerHTML = '<h3>實驗：替需求選無線技術</h3><p class="small">看哪些技術被排除，以及原因。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form"></div><p class="lab-say" aria-live="polite"></p><div class="lab-out"></div><p class="small muted">排序只看這四個條件，是選型的起點。實際還要看成本、當地涵蓋、法規與現場測試。</p>';
     const form = el.querySelector('.lab-form'), out = el.querySelector('.lab-out'), sayEl = el.querySelector('.lab-say');
     function drawForm() {
       form.innerHTML = radios('w-range', '要傳多遠？', WORDS.range, need.range) + radios('w-data', '資料多大？', WORDS.data, need.data) + radios('w-power', '電從哪來？', WORDS.power, need.power) + radios('w-mobile', '會不會移動？', ['固定不動', '一直移動'], need.mobile);
@@ -160,7 +160,7 @@
   function qosLab(el) {
     const FAULTS = [['none', '一切順利'], ['message', '訊息在途中遺失'], ['ack', '確認在途中遺失']];
     let qos = 1, fault = 'ack', revealed = false;
-    el.innerHTML = '<h3>實驗：網路出問題時，訂閱者會收到幾次？</h3><p class="small">選等級和狀況，先猜再看。這裡示範裝置到 Broker 這一段。</p><div class="lab-form">' + radios('q-level', 'QoS 等級', ['QoS 0', 'QoS 1', 'QoS 2'], qos) + radios('q-fault', '狀況', FAULTS.map(x => x[1]), 2) + '</div><div class="guess"><b>你猜訂閱者會收到幾次？</b><div class="row"><button type="button" class="btn ghost" data-g="0">0 次</button><button type="button" class="btn ghost" data-g="1">1 次</button><button type="button" class="btn ghost" data-g="2">2 次</button></div></div><div class="lab-out" aria-live="polite"></div>';
+    el.innerHTML = '<h3>實驗：網路出問題時，訂閱者會收到幾次？</h3><p class="small">先猜再看。這裡只示範裝置到 Broker 這一段。</p><div class="lab-form">' + radios('q-level', 'QoS 等級', ['QoS 0', 'QoS 1', 'QoS 2'], qos) + radios('q-fault', '狀況', FAULTS.map(x => x[1]), 2) + '</div><div class="guess"><b>你猜訂閱者會收到幾次？</b><div class="row"><button type="button" class="btn ghost" data-g="0">0 次</button><button type="button" class="btn ghost" data-g="1">1 次</button><button type="button" class="btn ghost" data-g="2">2 次</button></div></div><div class="lab-out" aria-live="polite"></div>';
     const out = el.querySelector('.lab-out'), guess = el.querySelector('.guess');
     function draw(g) {
       guess.hidden = revealed;

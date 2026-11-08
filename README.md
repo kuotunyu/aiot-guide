@@ -27,7 +27,7 @@
 
 ## 內容
 
-15 章對應官方評鑑內容，共 25 個互動實驗、81 張圖解、8 支動畫、205 題自編練習與 267 個名詞。
+15 章對應官方評鑑內容，共 25 個互動實驗、81 張圖解、8 支動畫、205 題自編練習與 267 個關鍵字。
 
 | 科目 | 章 | 動手做什麼 |
 |---|---|---|
@@ -47,7 +47,7 @@
 | 科二 | 2-2 雲端數據與平台 | 比較輪詢、長輪詢與 WebSocket；比較資料格式大小 |
 | 科二 | 2-3 智慧製造與成本 | 拆解 OEE；算投資回收期 |
 
-另有[練習](https://kuotunyu.github.io/aiot-guide/practice.html)、[名詞](https://kuotunyu.github.io/aiot-guide/glossary.html)、[公式與重點速查](https://kuotunyu.github.io/aiot-guide/reference.html)與[考試資訊](https://kuotunyu.github.io/aiot-guide/exam.html)。每章都能由瀏覽器語音朗讀。
+另有[練習](https://kuotunyu.github.io/aiot-guide/practice.html)、[關鍵字](https://kuotunyu.github.io/aiot-guide/glossary.html)、[公式與重點速查](https://kuotunyu.github.io/aiot-guide/reference.html)與[考試資訊](https://kuotunyu.github.io/aiot-guide/exam.html)。每章都能由瀏覽器語音朗讀。
 
 ## 教學設計
 
@@ -63,7 +63,7 @@
 
 | 檢查 | 內容 |
 |---|---|
-| Playwright | 桌面與手機兩種裝置，每頁無 console 錯誤、無外部請求、無橫向捲動；每個實驗實際操作 40 步；練習、名詞搜尋、朗讀、深淺色流程 |
+| Playwright | 桌面與手機兩種裝置，每頁無 console 錯誤、無外部請求、無橫向捲動；每個實驗實際操作 40 步；練習、關鍵字搜尋、朗讀、深淺色流程 |
 | axe-core | 不允許 critical 與 serious 等級的無障礙問題 |
 | 實驗邏輯 | 每章的純函式都有測試，數值經手算核對；MQTT 比對用規格書的範例 |
 | 靜態檢查 | 內部連結與錨點、結構化資料、對比度下限、資產預算、禁用語、sitemap |

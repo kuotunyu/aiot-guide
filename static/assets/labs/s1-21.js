@@ -115,7 +115,8 @@
         row.querySelector('.mark').textContent = done[i] ? '✓' : '○';
         res.textContent = '　' + g.text;
       };
-      row.querySelector('[data-show]').onclick = () => { sel = CLUES[i].a; res.textContent = ''; draw(); };
+      // Show the answer in the row itself as well, so the tap visibly does something; the mark stays as it was.
+      row.querySelector('[data-show]').onclick = () => { sel = CLUES[i].a; draw(); res.textContent = '　答案：' + SEGMENTS[sel].name + '。先查：' + SEGMENTS[sel].look + '（上面的路徑圖已標出）'; };
     });
     draw();
   }

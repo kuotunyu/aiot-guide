@@ -132,7 +132,7 @@
   function outageLab(el) {
     const input = {minutes: 20, perMinute: 30, capacity: 450, policy: 'old', dedupe: false};
     const POLICIES = ['old', 'new'];
-    el.innerHTML = '<h3>實驗：貨車進隧道斷線</h3><p class="small">調整斷線長度、資料量與閘道暫存容量，看哪一段資料留下、哪一段遺失，以及重送的重複有沒有被去除。</p><div class="lab-form"><div>' +
+    el.innerHTML = '<h3>實驗：貨車進隧道斷線</h3><p class="small">看哪一段資料留下、哪一段遺失，以及重送的重複有沒有被去除。</p><div class="lab-form"><div>' +
       slider('o-minutes', '斷線長度', 5, 120, 5, input.minutes, ' 分鐘') +
       slider('o-rate', '每分鐘產生', 5, 60, 5, input.perMinute, ' 筆') +
       slider('o-capacity', '閘道暫存容量', 50, 2000, 50, input.capacity, ' 筆') +

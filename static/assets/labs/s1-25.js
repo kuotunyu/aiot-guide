@@ -92,7 +92,7 @@
   }
 
   function ciaLab(el) {
-    el.innerHTML = '<h3>實驗：這起事件打中 CIA 哪一角</h3><p class="small">讀冷鏈公司的六起事件，選它最直接破壞的目標，選完才看回饋。</p>' + EVENTS.map((e, i) => '<div class="tasks" data-e="' + i + '">' + radios('s1-25-cia-' + i, (i + 1) + '. ' + e.q, CIA, -1) + '<p class="lab-say" aria-live="polite" hidden></p></div>').join('') + '<p class="small muted">真實事件常同時傷到多項，這裡只看描述中最直接的損害。</p>';
+    el.innerHTML = '<h3>實驗：這起事件打中 CIA 哪一角</h3><p class="small">每起事件選它最直接破壞的目標。</p>' + EVENTS.map((e, i) => '<div class="tasks" data-e="' + i + '">' + radios('s1-25-cia-' + i, (i + 1) + '. ' + e.q, CIA, -1) + '<p class="lab-say" aria-live="polite" hidden></p></div>').join('') + '<p class="small muted">真實事件常同時傷到多項，這裡只看描述中最直接的損害。</p>';
     $$('[data-e]', el).forEach((d, i) => {
       const say = d.querySelector('.lab-say');
       $$('input', d).forEach(input => input.onchange = () => {

@@ -138,7 +138,7 @@
 
   function tempLab(el) {
     let mode = 0, alpha = 0.004, temp = 100, hot = 100, ref = 25;
-    el.innerHTML = '<h3>實驗：算一算溫度感測器</h3><p class="small">拉動滑桿，看公式算出什麼，以及少了一步會差多少。</p><div class="lab-form">' + radios('s131-mode', '感測器', ['Pt100', 'K 型熱電偶'], mode) + '</div><div class="temp-body"></div>';
+    el.innerHTML = '<h3>實驗：算一算溫度感測器</h3><p class="small">看公式算出什麼，以及少了一步會差多少。</p><div class="lab-form">' + radios('s131-mode', '感測器', ['Pt100', 'K 型熱電偶'], mode) + '</div><div class="temp-body"></div>';
     const body = el.querySelector('.temp-body');
     function bind(id, fn) { const i = el.querySelector('#' + id); i.oninput = () => { fn(+i.value); update(); }; }
     function setOut(id, text) { el.querySelector('#' + id).parentElement.querySelector('output').textContent = text; }
@@ -167,7 +167,7 @@
       const ticksY = [80, 100, 120, 140, 160].map(v => '<line x1="54" y1="' + Y(v) + '" x2="60" y2="' + Y(v) + '" class="ln"/><text x="50" y="' + (Y(v) + 4) + '" class="ts" text-anchor="end">' + v + '</text>').join('');
       el.querySelector('.lab-viz').innerHTML = '<svg viewBox="0 0 400 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pt100 電阻與溫度的直線：選定係數與標準係數 0.00385 比較">'
         + '<line x1="60" y1="200" x2="380" y2="200" class="ln"/><line x1="60" y1="200" x2="60" y2="20" class="ln"/>' + ticksX + ticksY
-        + '<text x="10" y="14" class="ts">電阻（Ω）</text><text x="220" y="240" class="ts tc">溫度（°C）</text>'
+        + '<text x="10" y="17" class="ts">電阻（Ω）</text><text x="220" y="240" class="ts tc">溫度（°C）</text>'
         + '<line ' + ends(STD_ALPHA) + ' class="ln dash"/><line ' + ends(alpha) + ' class="la"/>'
         + '<circle cx="' + X(temp) + '" cy="' + Y(rs).toFixed(1) + '" r="5" class="box"/><circle cx="' + X(temp) + '" cy="' + Y(r).toFixed(1) + '" r="6" class="acc"/>'
         + '<text x="200" y="262" class="ts tc">實線：選定的 α；虛線：標準 0.00385</text></svg>';

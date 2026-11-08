@@ -115,7 +115,7 @@
       floating: 'pinMode(腳位, INPUT);  // 按鈕接 GND，卻沒有任何電阻',
     };
     let mode = 2, pressed = 0;
-    el.innerHTML = '<h3>實驗：按鈕腳位會讀到什麼？</h3><p class="small">切換接法與按鈕狀態，看腳位讀到 HIGH、LOW 或不確定。粗線是決定腳位電位的路徑。</p><div class="lab-form">' + radios('p-mode', '接法', MODES.map(m => m[1]), mode) + radios('p-press', '按鈕', ['放開', '按下'], pressed) + '</div><div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="small">程式：<code class="p-code"></code></p><p class="small">連讀 8 次：<code class="p-reads"></code> <button type="button" class="linkbtn">再讀一次</button></p><p class="small muted">電路為簡化示意，浮接時的跳動是模擬，實際行為取決於雜訊與晶片。內建電阻依晶片而異：Uno 只有內建上拉，下拉要外接。</p>';
+    el.innerHTML = '<h3>實驗：按鈕腳位會讀到什麼？</h3><p class="small">看腳位讀到 HIGH、LOW 或不確定。粗線是決定腳位電位的路徑。</p><div class="lab-form">' + radios('p-mode', '接法', MODES.map(m => m[1]), mode) + radios('p-press', '按鈕', ['放開', '按下'], pressed) + '</div><div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="small">程式：<code class="p-code"></code></p><p class="small">連讀 8 次：<code class="p-reads"></code> <button type="button" class="linkbtn">再讀一次</button></p><p class="small muted">電路為簡化示意，浮接時的跳動是模擬，實際行為取決於雜訊與晶片。內建電阻依晶片而異：Uno 只有內建上拉，下拉要外接。</p>';
     const viz = el.querySelector('.lab-viz'), say = el.querySelector('.lab-say'), code = el.querySelector('.p-code'), reads = el.querySelector('.p-reads');
     function read() { reads.textContent = sampleReads(pinState(MODES[mode][0], !!pressed).level, 8).join(' '); }
     function draw() {
@@ -143,7 +143,7 @@
     const v = Object.assign({}, BATTERY_PRESETS[0].v);
     const UNIT = {active: 'mA', sleep: 'µA', sec: ' 秒', min: ' 分鐘', cap: 'mAh'};
     let active = 0;
-    el.innerHTML = '<h3>實驗：探頭的電池能撐多久？</h3><p class="small">選一組設定，或拖動滑桿，看平均電流、續航天數，以及電量花在哪一段。</p>' +
+    el.innerHTML = '<h3>實驗：探頭的電池能撐多久？</h3><p class="small">看平均電流、續航天數，以及電量花在哪一段。</p>' +
       '<div class="chips" role="group" aria-label="設定">' + BATTERY_PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form">' +
       slider('b-active', '工作電流', 1, 300, 1, v.active, UNIT.active) +
       slider('b-sleep', '休眠電流（1000µA＝1mA）', 1, 1000, 1, v.sleep, UNIT.sleep) +

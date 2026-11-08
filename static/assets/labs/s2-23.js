@@ -74,7 +74,7 @@
     return {H, X0, X1, Y0, Y1, end, x: m => X0 + (X1 - X0) * m / H, y: c => Y0 + (Y1 - Y0) * (top - c) / (top - bottom)};
   }
 
-  // Rough width of 13px text: CJK and full-width characters are square, the rest about 0.6 em.
+  // Rough width of text at a given size (the chart's .ts is 15px): CJK and full-width characters are square, the rest about 0.6 em.
   function textWidth(s, size) {
     let w = 0;
     for (const ch of s) w += ch.charCodeAt(0) >= 0x2e80 ? size : size * 0.6;
@@ -90,7 +90,7 @@
     const sc = chartScale(r, v);
     if (r.naiveMonths > sc.H) return null;
     const x0 = sc.x(0), y0 = sc.y(-v.invest), x1 = sc.x(r.naiveMonths), y1 = sc.y(0);
-    const label = '忘了扣月費：第 ' + fmt(r.naiveMonths) + ' 個月（錯）', w = textWidth(label, 13);
+    const label = '忘扣月費：第 ' + fmt(r.naiveMonths) + ' 個月（錯）', w = textWidth(label, 15);
     const ly = y1 + 18, bandTop = y1 + 5, bandBottom = y1 + 21;
     // x of a line from the start point (x0, y0) to (xa, y1) at height yy
     const at = (xa, yy) => xa - (yy - y1) * (xa - x0) / (y0 - y1);
@@ -202,7 +202,7 @@
     const LOSS = {down: '停機', speed: '速度', defect: '不良'};
     const MATCH = {avail: 'down', perf: 'speed', quality: 'defect'};
     let active = 0;
-    el.innerHTML = '<h3>實驗：拆開一條分裝線的 OEE</h3><p class="small">選一班的狀況，或自己調滑桿。看計畫時間被哪種損失吃掉，以及改善該從哪裡下手。</p>' + chips(PRESETS, '班次情境') +
+    el.innerHTML = '<h3>實驗：拆開一條分裝線的 OEE</h3><p class="small">看計畫時間被哪種損失吃掉，以及改善該從哪裡下手。</p>' + chips(PRESETS, '班次情境') +
       '<div class="lab-form">' + FIELDS.map(f => slider(f.id, f.label, f.min, f.max, f.step, PRESETS[0].v[f.key], f.unit)).join('') + '</div>' +
       '<p class="lab-err" role="alert" hidden></p><div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p>' +
       '<p class="small muted">簡化模型：一條線只做一種產品。業界常把 OEE 85% 當世界級參考值，實際水準依產業而異。</p>';
@@ -237,7 +237,8 @@
     s += '<text x="' + X0 + '" y="18" class="ts">累積淨現金（元）</text>';
     s += '<line x1="' + X0 + '" y1="' + y(0).toFixed(1) + '" x2="' + X1 + '" y2="' + y(0).toFixed(1) + '" class="ln dash"/>';
     s += '<text x="' + (X0 - 8) + '" y="' + (y(0) + 4).toFixed(1) + '" class="ts" text-anchor="end">0</text>';
-    s += '<text x="' + (X0 - 8) + '" y="' + (y(-v.invest) + 4).toFixed(1) + '" class="ts" text-anchor="end">−' + fmt(v.invest / 10000) + ' 萬</text>';
+    // The start label keeps a line's height below the 0 label, so a small investment never prints over it.
+    s += '<text x="' + (X0 - 8) + '" y="' + Math.max(y(-v.invest) + 4, y(0) + 22).toFixed(1) + '" class="ts" text-anchor="end">−' + fmt(v.invest / 10000) + ' 萬</text>';
     if (nm) {
       s += '<line x1="' + nm.x0 + '" y1="' + nm.y0.toFixed(1) + '" x2="' + nm.x1.toFixed(1) + '" y2="' + nm.y1.toFixed(1) + '" class="bad dash"/>';
       if (nm.lx !== null) s += '<text x="' + nm.lx.toFixed(1) + '" y="' + nm.ly.toFixed(1) + '" class="ts" text-anchor="' + nm.anchor + '">' + esc(nm.label) + '</text>';
@@ -268,7 +269,7 @@
       {name: '大額投入', v: {invest: 600000, saving: 30000, fee: 5000}},
     ];
     let active = 0;
-    el.innerHTML = '<h3>實驗：這項投資多久回本？</h3><p class="small">調整三個數字。把每月持續費用調到比節省還高，看看會發生什麼。</p>' + chips(PRESETS, '投資情境') +
+    el.innerHTML = '<h3>實驗：這項投資多久回本？</h3><p class="small">把每月持續費用調到比節省還高，看看會發生什麼。</p>' + chips(PRESETS, '投資情境') +
       '<div class="lab-form">' + FIELDS.map(f => slider(f.id, f.label, f.min, f.max, f.step, PRESETS[0].v[f.key], f.unit)).join('') + '</div>' +
       '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="small muted lab-note" hidden></p>' +
       '<p class="small muted">簡化模型：每月節省與費用固定，不計利息、折舊與稅，也不考慮「今天的錢比明年值錢」；要考慮時改用 NPV（淨現值）。</p>';

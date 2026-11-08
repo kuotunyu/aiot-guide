@@ -3,153 +3,290 @@
   "drop": [],
   "edits": {
     "legacy-s1-21": {
-      "e": "CoAP 是給受限裝置的輕量 REST 協定，使用 UDP（預設埠 5683），支援 GET/POST/PUT/DELETE 與 Observe。此處指 RFC 7252 的典型 UDP 傳輸；RFC 8323 另定義 TCP、TLS 及 WebSocket 傳輸。",
-      "o": [
-        "跑在 TCP 上、開銷最大",
-        "採發布／訂閱模式、必須有 Broker",
-        "跑在 UDP 上、方法類似 HTTP",
-        "只能用於工業乙太網"
+      "e": "CoAP 是給受限裝置的輕量 REST 協定，預設埠 5683。此處指 RFC 7252 的典型 UDP 傳輸；RFC 8323 另定義 TCP 等傳輸。",
+      "o": ["跑在 TCP 上、開銷最大", "採發布／訂閱模式、必須有 Broker", "跑在 UDP 上、方法類似 HTTP", "只能用於工業乙太網"],
+      "sec": "qos-and-protocols",
+      "w": [
+        "CoAP 走 UDP，標頭僅 4 bytes，開銷很小",
+        "發布／訂閱加 Broker 是 MQTT 的做法",
+        "走 UDP，用 GET、POST、PUT、DELETE",
+        "為受限的微型感測器設計，不限乙太網"
       ],
-      "sec": "qos-and-protocols"
+      "tip": "CoAP 走 UDP，像輕量版 HTTP，沒有 Broker"
     },
     "legacy-s1-22": {
-      "e": "LoRa 走非授權 Sub-GHz（可自建私網）；NB-IoT 建構在電信商的授權頻段上（通常需支付電信資費、室內穿透佳）。",
-      "o": [
-        "LoRa 用電信授權頻段、NB-IoT 用非授權頻段可自建",
-        "LoRa 可用非授權頻段自建，NB-IoT 走電信頻段",
-        "兩者都必須申請電信執照",
-        "NB-IoT 傳輸速率高於 Wi-Fi"
+      "e": "LoRa 用非授權 Sub-GHz（台灣 920–925 MHz）；NB-IoT 走電信授權頻譜與 SIM 卡，需付資費、室內穿透佳。",
+      "o": ["LoRa 用電信授權頻段、NB-IoT 用非授權頻段可自建", "LoRa 可用非授權頻段自建，NB-IoT 走電信頻段", "兩者都必須申請電信執照", "NB-IoT 傳輸速率高於 Wi-Fi"],
+      "sec": "lpwan-cellular",
+      "w": [
+        "把兩者對調了：用授權頻段的是 NB-IoT",
+        "LoRa 免執照可自架閘道，NB-IoT 租用電信網路",
+        "LoRa 用非授權頻段，不需執照",
+        "NB-IoT 速率極低，遠不及 Wi-Fi"
       ],
-      "sec": "lpwan-cellular"
+      "tip": "想自建私網找 LoRa，插 SIM 卡付資費找 NB-IoT",
+      "conf": "s1-22-lpwan-cellular"
     },
     "legacy-s1-25": {
       "lesson": "s1-22",
-      "e": "被動式標籤沒有電池，靠讀取器發出的電磁場感應取電，因此便宜但讀取距離短。內建電池的是主動式標籤；標籤體積很小，不會配太陽能板，也不接市電。",
-      "sec": "rfid-nfc"
+      "e": "NFC 距離短，比遠距技術不易被側錄，但專用設備仍可能在較遠處竊聽。",
+      "sec": "rfid-nfc",
+      "q": "關於 RFID 與 NFC，下列敘述何者「不」正確？",
+      "o": ["被動式標籤沒有電池，靠讀寫器的電波取電", "主動式標籤自帶電池，讀取距離較遠", "NFC 距離極短，傳機敏資料也不必加密", "NFC 固定使用 13.56 MHz 的高頻"],
+      "a": 2,
+      "w": [
+        "正確：被動標籤靠讀寫器的電波取電",
+        "正確：自帶電池，距離遠但較貴",
+        "距離短不等於安全，機敏資料仍要加密",
+        "正確：NFC 由高頻 RFID 演變而來"
+      ],
+      "tip": "反向題先圈「不」；「不必加密」這類絕對話多半錯"
     },
     "legacy-s1-9": {
-      "sec": "lpwan-cellular"
+      "sec": "lpwan-cellular",
+      "e": "低資料量＋長距離＋超低功耗＝LPWAN 的主場；LoRa 用非授權頻段，可自建網路。",
+      "w": [
+        "Wi-Fi 耗電高，電池撐不了數年",
+        "BLE 省電，但典型距離約數十公尺",
+        "遠距、省電、少量資料，正是 LPWAN",
+        "eMBB 為高速大流量設計，耗電高又用不到"
+      ],
+      "tip": "選路先問：多遠、多大、電從哪來、會不會移動"
     },
     "legacy-s1-15": {
-      "sec": "road-and-language"
+      "sec": "road-and-language",
+      "w": [
+        "正確：TCP 先三方交握建立連線",
+        "正確：UDP 像平信，不保證送達與順序",
+        "正確：MQTT 走 TCP，預設埠 1883",
+        "說反了：可靠的是 TCP，交易要用 TCP"
+      ],
+      "tip": "要可靠選 TCP，要即時且可容忍遺失選 UDP",
+      "e": "TCP 像掛號信，可靠有序；UDP 像平信，快而輕，適合串流與 CoAP。",
+      "conf": "s1-22-road-and-language"
     },
     "legacy-s1-17": {
-      "sec": "mqtt"
+      "sec": "mqtt",
+      "e": "MQTT 依 Topic 分送訊息，新增接收端時不必更動感測器。",
+      "w": [
+        "輪詢是 Modbus 這類主從協定的做法",
+        "兩端都只連 Broker，彼此解耦",
+        "兩端不直連，要經 Broker 轉送",
+        "廣播風暴是網路故障，不是傳遞模式"
+      ],
+      "tip": "MQTT 三角色：發布者、Broker、訂閱者"
     },
     "legacy-s1-18": {
-      "sec": "qos-and-protocols"
+      "sec": "qos-and-protocols",
+      "q": "關於 MQTT 的 QoS，下列敘述何者「不」正確？",
+      "o": ["QoS 0 最多送一次，訊息可能遺失", "QoS 共有 0 到 3 四個等級", "QoS 1 至少送一次，可能收到重複", "QoS 2 恰好一次，交換步驟最多"],
+      "a": 1,
+      "e": "QoS 決定 MQTT 的送達保證；QoS 2 的恰好一次只限協定交換範圍。",
+      "w": [
+        "正確：送出就不管，可能遺失",
+        "QoS 只有 0、1、2 三級，沒有 3",
+        "正確：沒收到確認，重連後重送，可能重複",
+        "正確：四步交換做到恰好一次"
+      ],
+      "tip": "QoS 口訣：0 可能掉、1 可能重複、2 恰好一次",
+      "conf": "s1-22-qos-and-protocols"
     },
     "legacy-s1-19": {
-      "sec": "mqtt"
+      "sec": "mqtt",
+      "w": [
+        "1883 是一般未加密 MQTT 的預設埠",
+        "MQTT over TLS 慣用 8883",
+        "443 是 HTTPS 常用的埠",
+        "502 是 Modbus TCP 常用的埠"
+      ],
+      "tip": "MQTT 記 1883，加 TLS 把開頭的 1 換成 8",
+      "e": "埠號只是慣例；實際有沒有加密取決於 TLS 配置，不是只改埠號。"
     },
     "legacy-s1-20": {
-      "e": "遺囑訊息（Last Will and Testament）在連線異常中斷時由 Broker 代發，用於通知裝置離線。保留訊息是 Broker 替主題保存最新一則、給新訂閱者，與斷線無關；心跳（Keep Alive）是定期確認連線還活著，不是替斷線裝置發的訊息；MQTT 也沒有名為廣播訊息的機制，訊息一律經 Broker 依主題轉送。",
-      "sec": "mqtt"
+      "e": "遺囑訊息（Last Will and Testament）在建立連線時就先交給 Broker 保管。",
+      "sec": "mqtt",
+      "w": [
+        "保留訊息存主題最新一則，給新訂閱者",
+        "非正常斷線時由 Broker 代發，通知離線",
+        "Keep Alive 只定期確認連線還活著",
+        "MQTT 一律經 Broker 依主題轉送，無此機制"
+      ],
+      "tip": "斷線通知找遺囑，新訂閱者要最新值找保留"
     },
     "legacy-s1-23": {
-      "sec": "ble-wifi-zigbee"
+      "sec": "ble-wifi-zigbee",
+      "e": "Zigbee 基於 IEEE 802.15.4，低速、低功耗；手機通常沒有 Zigbee 晶片，要靠閘道器轉接。",
+      "w": [
+        "節點可互相接力，斷路時會自動繞路",
+        "NFC 只在 10 公分內一對一互動",
+        "LoRaWAN 靠閘道長距離收發，不靠接力",
+        "UART 是有線串列介面，不是無線技術"
+      ],
+      "tip": "看到 Mesh、節點接力，先想 Zigbee"
     },
     "legacy-s1-24": {
-      "sec": "lpwan-cellular"
+      "sec": "lpwan-cellular",
+      "q": "關於物聯網常見無線技術的定位，下列敘述何者「不」正確？",
+      "o": ["LoRa 與 NB-IoT 都屬於 LPWAN", "5G 的 mMTC 為海量低功耗裝置設計", "BLE 耗電很低，所以也屬於 LPWAN", "5G 的 URLLC 主打低延遲與高可靠"],
+      "a": 2,
+      "e": "LPWAN 必須同時遠距又省電。5G 三場景記 eMBB 快、mMTC 多、URLLC 準。",
+      "w": [
+        "正確：兩者都遠距、省電、低速",
+        "正確：mMTC 對應海量機器連線",
+        "BLE 省電但距離短，屬短距技術",
+        "正確：URLLC 主打低延遲、高可靠"
+      ],
+      "tip": "LPWAN 要「遠」也要「省」，短距技術一律不算"
     },
     "new-s1-22-1": {
-      "sec": "mqtt"
+      "sec": "mqtt",
+      "w": [
+        "Publisher 只送給 Broker，不管訂閱者",
+        "Broker 依主題與訂閱關係分送訊息",
+        "Subscriber 彼此不知道對方存在",
+        "DNS 只做名稱解析，不管主題路由"
+      ],
+      "e": "發布者與訂閱者都只連 Broker；這種解耦讓新增接收端時不必改設備。"
     },
     "new-s1-22-2": {
-      "o": [
-        "UDP 會確認並重送，保證資料必定到達",
-        "TCP 本身會加密所有內容",
-        "TCP 提供可靠、有序的位元組串流",
-        "使用 UDP 就不需要網路位址"
+      "o": ["UDP 會確認並重送，保證資料必定到達", "TCP 本身會加密所有內容", "TCP 提供可靠、有序的位元組串流", "使用 UDP 就不需要網路位址"],
+      "e": "TCP 連線導向、可靠有序；UDP 無連線、負擔輕，適合即時串流。",
+      "sec": "road-and-language",
+      "w": [
+        "這是 TCP 的做法，UDP 不確認也不重送",
+        "TCP 本身不加密，加密要靠 TLS",
+        "TCP 像掛號信：可靠且順序正確",
+        "UDP 仍要 IP 位址與 port 才知送給誰"
       ],
-      "e": "可靠、有序的位元組串流是 TCP 的特性。UDP 不確認也不重送，不保證送達；TCP 本身不加密，加密要靠 TLS；UDP 通訊仍需要 IP 位址與 port 才知道送給誰。",
-      "sec": "road-and-language"
+      "conf": "s1-22-road-and-language"
     },
     "new-s1-22-3": {
       "q": "冷鏈平台的設計文件列出幾個名詞。依「路與語言」的分法，下列哪一組全都屬於「語言」（通訊協定）？",
-      "o": [
-        "MQTT、HTTP、CoAP",
-        "Wi-Fi、BLE、LoRa",
-        "MQTT、Wi-Fi、NB-IoT",
-        "Zigbee、4G、HTTP"
-      ],
+      "o": ["MQTT、HTTP、CoAP", "Wi-Fi、BLE、LoRa", "MQTT、Wi-Fi、NB-IoT", "Zigbee、4G、HTTP"],
       "a": 0,
-      "e": "MQTT、HTTP、CoAP 規定的是連上之後資料怎麼包裝與交換，屬於語言。Wi-Fi、BLE、LoRa、NB-IoT、Zigbee、4G 回答的是裝置怎麼連上網，屬於路；其餘三組不是全是路，就是混入了路。",
-      "sec": "road-and-language"
+      "e": "路回答裝置怎麼連上網，語言規定連上後資料怎麼包裝與交換，兩者多半可分開選，有些路要經閘道器轉換。",
+      "sec": "road-and-language",
+      "w": [
+        "三者都規定連上後資料怎麼交換",
+        "三者都是無線連線技術，屬於路",
+        "Wi-Fi、NB-IoT 是路，混進了語言組",
+        "Zigbee、4G 是路，只有 HTTP 是語言"
+      ],
+      "tip": "問「怎麼連上」是路，問「資料怎麼交換」是語言"
     },
     "new-s1-22-4": {
-      "o": [
-        "正確，任何 MQTT 連線都自動加密",
-        "正確，主題名稱夠長就不會被猜到",
-        "正確，改用 QoS 2 就不會被偷看",
-        "不對，加密要另外配置 TLS"
+      "o": ["正確，任何 MQTT 連線都自動加密", "不對，要把主題名稱取長才不會被猜到", "不對，要改用 QoS 2 才不會被偷看", "不對，加密要另外配置 TLS"],
+      "e": "完整防護除了 TLS 加密，還要搭配身分驗證與主題權限控管。",
+      "sec": "mqtt",
+      "w": [
+        "MQTT 不會自動加密，要另外配 TLS",
+        "主題名稱長短與加密無關",
+        "QoS 管送達保證，不負責保密",
+        "加密靠 TLS，常用埠 8883"
       ],
-      "e": "MQTT 不會自動加密，要另外配置 TLS（常用埠 8883），並搭配身分驗證與權限。主題名稱長短與加密無關；QoS 管的是送達保證（最多一次、至少一次、恰好一次），不負責保密。",
-      "sec": "mqtt"
+      "tip": "保密找 TLS，送達找 QoS，兩者別混"
     },
     "exam-s1-22-1": {
       "sec": "lpwan-cellular",
-      "o": [
-        "選峰值速度最高的 Wi-Fi，不必查涵蓋範圍",
-        "以 NFC 直接連到數公里外基地台",
-        "評估 NB-IoT 涵蓋、功耗模式與費用",
-        "為降低延遲，把每小時回報改成持續傳送影像"
-      ]
+      "o": ["選峰值速度最高的 Wi-Fi，不必查涵蓋範圍", "以 NFC 直接連到數公里外基地台", "評估 NB-IoT 涵蓋、功耗模式與費用", "為降低延遲，把每小時回報改成持續傳送影像"],
+      "w": [
+        "Wi-Fi 耗電高，也沒有數公里涵蓋",
+        "NFC 只在 10 公分內，到不了基地台",
+        "少量、遠距、電池供電，NB-IoT 合適",
+        "改傳影像就變了需求，LPWAN 也傳不了"
+      ],
+      "tip": "選型題先列需求，再刪掉改變需求的選項",
+      "e": "選了 NB-IoT 仍要核對實際涵蓋、省電模式下的耗電與電信資費。"
     },
     "exam-s1-22-2": {
       "q": "新加入的 MQTT 儀表板一連上，就想看到某主題最近一次發布的狀態，不必等設備下次發布。最直接使用什麼功能？",
-      "o": [
-        "把 QoS 提高到 2",
-        "更換 TLS 憑證",
-        "設定遺囑訊息（Last Will）",
-        "保留訊息（retained）"
+      "o": ["把 QoS 提高到 2", "更換 TLS 憑證", "設定遺囑訊息（Last Will）", "保留訊息（retained）"],
+      "e": "保留訊息只存每個 Topic 最新一則，不是歷史資料庫；發布者可要求 Broker 保留。",
+      "sec": "mqtt",
+      "w": [
+        "QoS 管送達保證，不保存最新狀態",
+        "TLS 只保護傳輸內容",
+        "遺囑只在裝置非正常斷線時發出",
+        "Broker 存主題最新一則，新訂閱者立刻拿到"
       ],
-      "e": "retained 讓 Broker 保存該主題最新一則，新訂閱者一連上就拿得到。QoS 處理送達保證，TLS 保護傳輸內容，遺囑訊息只在裝置非正常斷線時發出；三者都不會把最新狀態交給新訂閱者。",
-      "sec": "mqtt"
+      "tip": "新訂閱者要最新值找保留，斷線通知找遺囑"
     },
     "transfer-s1-22-1": {
-      "o": [
-        "把訊息格式改成 JSON",
-        "啟用 TLS，讓重複事件自動消失",
-        "改用 QoS 0，就不會重複也不會遺失",
-        "以穩定事件 ID 辨認並去重"
+      "o": ["把訊息格式改成 JSON", "啟用 TLS，讓重複事件自動消失", "改用 QoS 0，就不會重複也不會遺失", "以穩定事件 ID 辨認並去重"],
+      "e": "QoS 1 是至少一次，確認遺失、重連後就重送；重複要由接收端自己處理。",
+      "sec": "qos-and-protocols",
+      "w": [
+        "JSON 只是資料格式，不處理重複",
+        "TLS 只保護傳輸內容，不會去重",
+        "QoS 0 不重送，但可能遺失訊息",
+        "QoS 1 會重送，接收端用事件 ID 去重"
       ],
-      "e": "QoS 1 是至少一次，重送可能產生重複；用穩定事件 ID 讓接收端認出同一事件後去重。JSON 只是資料格式、TLS 只保護傳輸內容，都不處理重複；QoS 0 雖然不重送，卻可能遺失訊息，不能說兩者都不會發生。",
-      "sec": "qos-and-protocols"
+      "tip": "去重題：TLS、資料格式、主題名稱都不管重複，找穩定 ID",
+      "conf": "s1-22-qos-and-protocols"
     },
     "transfer-s1-22-2": {
       "q": "車門狀態看板向 Broker 訂閱 coldchain/+/door。下列哪個主題的訊息會被轉送給它？",
-      "o": [
-        "coldchain/truck07/door",
-        "coldchain/truck07/temp",
-        "coldchain/room2/dock1/door",
-        "fleet/truck07/door"
-      ],
+      "o": ["coldchain/truck07/door", "coldchain/truck07/temp", "coldchain/room2/dock1/door", "fleet/truck07/door"],
       "a": 0,
-      "e": "+ 只比對一層任意名稱，所以 coldchain/truck07/door 符合。coldchain/truck07/temp 的最後一層不是 door；coldchain/room2/dock1/door 中間有兩層，+ 只能代一層（比對多層要用 #）；fleet/truck07/door 第一層就不是 coldchain。",
-      "sec": "mqtt"
+      "e": "萬用字元只用於訂閱，發布時要寫完整主題；# 只能放在最後一層。",
+      "sec": "mqtt",
+      "w": [
+        "+ 剛好代 truck07 這一層",
+        "最後一層是 temp，不是 door",
+        "中間有兩層，+ 只能代一層",
+        "第一層是 fleet，不是 coldchain"
+      ],
+      "tip": "逐層對齊斜線：+ 代一層，# 代其後所有層",
+      "fig": "<svg viewBox=\"0 0 390 164\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"訂閱式 coldchain/+/door 與兩個主題逐層對齊：truck07 那排三層全符合；room2/dock1 那排多一層，第三層對不上\"><rect x=\"8\" y=\"8\" width=\"100\" height=\"36\" rx=\"6\" class=\"acc\"/><text x=\"58\" y=\"32\" class=\"t tb tc\">coldchain</text><line x1=\"112\" y1=\"38\" x2=\"118\" y2=\"14\" class=\"ln\"/><rect x=\"122\" y=\"8\" width=\"76\" height=\"36\" rx=\"6\" class=\"acc\"/><text x=\"160\" y=\"32\" class=\"t tb tc\">+</text><line x1=\"202\" y1=\"38\" x2=\"208\" y2=\"14\" class=\"ln\"/><rect x=\"212\" y=\"8\" width=\"76\" height=\"36\" rx=\"6\" class=\"acc\"/><text x=\"250\" y=\"32\" class=\"t tb tc\">door</text><line x1=\"8\" y1=\"57\" x2=\"382\" y2=\"57\" class=\"ln\"/><rect x=\"8\" y=\"70\" width=\"100\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"58\" y=\"94\" class=\"t tb tc\">coldchain</text><line x1=\"112\" y1=\"100\" x2=\"118\" y2=\"76\" class=\"ln\"/><rect x=\"122\" y=\"70\" width=\"76\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"160\" y=\"94\" class=\"t tb tc\">truck07</text><line x1=\"202\" y1=\"100\" x2=\"208\" y2=\"76\" class=\"ln\"/><rect x=\"212\" y=\"70\" width=\"76\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"250\" y=\"94\" class=\"t tb tc\">door</text><rect x=\"8\" y=\"118\" width=\"100\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"58\" y=\"142\" class=\"t tb tc\">coldchain</text><line x1=\"112\" y1=\"148\" x2=\"118\" y2=\"124\" class=\"ln\"/><rect x=\"122\" y=\"118\" width=\"76\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"160\" y=\"142\" class=\"t tb tc\">room2</text><line x1=\"202\" y1=\"148\" x2=\"208\" y2=\"124\" class=\"ln\"/><rect x=\"212\" y=\"118\" width=\"76\" height=\"36\" rx=\"6\" class=\"bad\"/><text x=\"250\" y=\"142\" class=\"t tb tc\">dock1</text><line x1=\"292\" y1=\"148\" x2=\"298\" y2=\"124\" class=\"ln\"/><rect x=\"302\" y=\"118\" width=\"76\" height=\"36\" rx=\"6\" class=\"bad\"/><text x=\"340\" y=\"142\" class=\"t tb tc\">door</text></svg>",
+      "figcap": "上排是訂閱式，按斜線逐層對齊：+ 只補一格，多一層就對不上"
     },
     "reserved-s1-22-1": {
-      "o": [
-        "依交易識別碼檢查是否已入帳",
-        "把主題名稱改得更長、更好辨認",
-        "把連線改為 TLS 加密通道",
-        "替收到的每筆訊息加上新的接收時間"
+      "o": ["依交易識別碼檢查是否已入帳", "把主題名稱改得更長、更好辨認", "把連線改為 TLS 加密通道", "替收到的每筆訊息加上新的接收時間"],
+      "e": "QoS 1 確認遺失、重連後就重送，同一筆會到兩次；去重靠穩定識別碼搭配處理紀錄。",
+      "sec": "qos-and-protocols",
+      "w": [
+        "穩定交易 ID 能認出已入帳的那筆",
+        "主題名稱長短不提供業務去重",
+        "TLS 只加密傳輸，擋不住重送",
+        "新時間戳讓兩筆看起來像不同交易"
       ],
-      "e": "線索是同一交易因確認遺失而重送；用穩定的交易識別碼搭配處理紀錄，就能認出已入帳的那筆。主題名稱長短與 TLS 加密都不提供業務去重；替每筆加上新的接收時間，反而讓兩筆看起來像不同交易。",
-      "sec": "qos-and-protocols"
+      "tip": "去重題：TLS、資料格式、主題名稱都不管重複，找穩定 ID",
+      "conf": "s1-22-qos-and-protocols",
+      "fig": "<svg viewBox=\"0 0 400 290\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"時序圖：販賣機送出交易 #A，伺服器已寫入，回程的 PUBACK 遺失，連線中斷後重連，販賣機重送 #A，伺服器查到已有 #A 而略過\"><defs><marker id=\"q-reserved-s1-22-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"60\" y1=\"42\" x2=\"60\" y2=\"282\" class=\"ln dash\"/><line x1=\"320\" y1=\"42\" x2=\"320\" y2=\"282\" class=\"ln dash\"/><rect x=\"10\" y=\"8\" width=\"100\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"60\" y=\"31\" class=\"t tb tc\">販賣機</text><rect x=\"270\" y=\"8\" width=\"100\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"320\" y=\"31\" class=\"t tb tc\">伺服器</text><text x=\"180\" y=\"72\" class=\"t tc\">PUBLISH #A</text><line x1=\"60\" y1=\"82\" x2=\"274\" y2=\"98\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><rect x=\"276\" y=\"88\" width=\"88\" height=\"34\" rx=\"6\" class=\"acc\"/><text x=\"320\" y=\"111\" class=\"t tb tc\">寫入 #A</text><line x1=\"276\" y1=\"130\" x2=\"190\" y2=\"143\" class=\"ln dash\"/><circle cx=\"180\" cy=\"145\" r=\"10\" class=\"bad\"/><line x1=\"174\" y1=\"139\" x2=\"186\" y2=\"151\" class=\"ln\"/><line x1=\"186\" y1=\"139\" x2=\"174\" y2=\"151\" class=\"ln\"/><text x=\"180\" y=\"178\" class=\"t tb tc\">PUBACK 遺失 → 斷線重連</text><text x=\"160\" y=\"214\" class=\"t tc\">PUBLISH #A</text><line x1=\"60\" y1=\"224\" x2=\"238\" y2=\"240\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><rect x=\"240\" y=\"230\" width=\"156\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"318\" y=\"254\" class=\"t tb tc\">已有 #A → 略過</text></svg>",
+      "figcap": "伺服器其實已寫入，只是確認沒回到販賣機，重連後同一筆又送來一次"
     },
     "reserved-s1-22-2": {
       "q": "冷藏庫用 Zigbee 組網，門邊的開關感測器靠電池運作、多半時間在休眠，只收發自己的資料。它最適合擔任哪個角色？",
-      "o": [
-        "終端裝置",
-        "路由器",
-        "協調器",
-        "MQTT Broker"
-      ],
+      "o": ["終端裝置", "路由器", "協調器", "MQTT Broker"],
       "a": 0,
-      "e": "只收發自己的資料、不轉發、多半在休眠，正是終端裝置，適合電池設備。路由器要轉發封包、延伸範圍，需常時供電；協調器負責建立網路、分配位址，每個網路只有一個；MQTT Broker 是 MQTT 協定裡轉送訊息的角色，不是 Zigbee 網路的角色。",
-      "sec": "ble-wifi-zigbee"
+      "e": "終端裝置只和父節點（協調器或路由器）通訊，醒來才收發，因此最省電。",
+      "sec": "ble-wifi-zigbee",
+      "w": [
+        "不轉發、多半休眠，適合電池設備",
+        "路由器要轉發封包，需常時供電",
+        "協調器負責建網且要常時供電，每網只有一個",
+        "Broker 是 MQTT 的角色，不屬於 Zigbee"
+      ],
+      "tip": "電池供電、多半休眠的節點，就是終端裝置"
     }
-  }
+  },
+  "add": [
+    {
+      "id": "add-s1-22-1",
+      "subject": "s1",
+      "lesson": "s1-22",
+      "q": "冷凍櫃的金屬櫃壁上直接貼了 UHF RFID 被動標籤，盤點時常讀不到。下列哪個做法最可能「無效」？",
+      "o": ["改用抗金屬標籤", "在標籤與櫃壁之間墊一層間隔材", "把讀寫器的發射功率調高", "把標籤改貼在櫃門的塑膠把手上"],
+      "a": 2,
+      "e": "金屬會反射電波，也讓標籤天線失諧，標籤取不到電、回不了正確訊號。",
+      "sec": "rfid-nfc",
+      "w": [
+        "抗金屬標籤專為貼金屬設計，有效",
+        "墊出間距讓標籤脫離金屬影響，有效",
+        "問題在標籤旁的金屬，加大功率多半救不回",
+        "改貼到非金屬處避開干擾，有效"
+      ],
+      "tip": "反向題圈「無效」；RFID 遇金屬，對策都是避開金屬"
+    }
+  ]
 }

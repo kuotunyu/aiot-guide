@@ -161,7 +161,7 @@
     ];
     const WORDS = {dist: ['同一塊板', '數公尺', '數百公尺'], speed: ['約 100 kbps 內', '數百 kbps', '數 Mbps 以上'], duplex: ['輪流即可', '要同時收發'], clock: ['不拘', '要時脈線（同步）', '不拉時脈線（非同步）']};
     let need = Object.assign({}, PRESETS[0].need), say = PRESETS[0].say, active = 0;
-    el.innerHTML = '<h3>實驗：替連線選介面</h3><p class="small">選一個情境或自己調條件，看 UART、I²C、SPI、RS-485 誰留下、誰被哪個條件排除。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form"></div><p class="lab-say" aria-live="polite"></p><div class="lab-out"></div><p class="small muted">線數只算訊號線，另外都要共地（RS-485 依配線而定）。速率與距離取典型值，實際依晶片、線材與規格而定。排序只看這些條件；RS-232 也是點對點、約 15 公尺的選項，這裡未列入。</p>';
+    el.innerHTML = '<h3>實驗：替連線選介面</h3><p class="small">看 UART、I²C、SPI、RS-485 誰留下、誰被哪個條件排除。</p><div class="chips" role="group" aria-label="情境">' + PRESETS.map((p, i) => '<button type="button" data-p="' + i + '">' + esc(p.name) + '</button>').join('') + '</div><div class="lab-form"></div><p class="lab-say" aria-live="polite"></p><div class="lab-out"></div><p class="small muted">線數只算訊號線，另外都要共地（RS-485 依配線而定）。速率與距離取典型值，實際依晶片、線材與規格而定。排序只看這些條件；RS-232 也是點對點、約 15 公尺的選項，這裡未列入。</p>';
     const form = el.querySelector('.lab-form'), out = el.querySelector('.lab-out'), sayEl = el.querySelector('.lab-say');
     function drawForm() {
       form.innerHTML = '<div>' + slider('b-wires', '可用訊號線', 2, 8, 1, need.wires, ' 條') + slider('b-devices', '要連的從屬裝置', 1, 12, 1, need.devices, ' 台') + '</div>' + radios('b-dist', '距離', WORDS.dist, need.dist) + radios('b-speed', '速率', WORDS.speed, need.speed) + radios('b-duplex', '方向', WORDS.duplex, need.duplex) + radios('b-clock', '時脈', WORDS.clock, need.clock);

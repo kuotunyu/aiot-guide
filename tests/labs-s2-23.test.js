@@ -91,8 +91,8 @@ const {naiveMark, chartScale, textWidth} = require('../static/assets/labs/s2-23.
 const mark = v => naiveMark(computePayback(v), v);
 let m = mark({invest: 120000, saving: 15000, fee: 3000});
 near(m.x0, 62); near(m.y0, 196); near(m.x1, 306); near(m.y1, 61);
-assert.strictEqual(m.label, '忘了扣月費：第 8 個月（錯）');
-near(m.w, 12 * 13 + 3 * 7.8);
+assert.strictEqual(m.label, '忘扣月費：第 8 個月（錯）');
+near(m.w, 11 * 15 + 3 * 9);
 // Under the zero line (baseline 79), ending 6 px left of where the dashed line is at y 82:
 // 306 − 21 × 244/135 = 268.044…, so lx = 262.044…
 near(m.ly, 79); assert.strictEqual(m.anchor, 'end');
@@ -100,7 +100,7 @@ near(m.lx, 306 - 21 * 244 / 135 - 6); assert(m.lx - m.w >= 66);
 // Large investment: H 29, zero line at 34 + 162 × 125000/725000, wrong month 20 at 62 + 366 × 20/29
 m = mark({invest: 600000, saving: 30000, fee: 5000});
 near(m.x1, 62 + 366 * 20 / 29); near(m.y1, 34 + 162 * 125000 / 725000);
-assert.strictEqual(m.label, '忘了扣月費：第 20 個月（錯）'); assert.strictEqual(m.anchor, 'end');
+assert.strictEqual(m.label, '忘扣月費：第 20 個月（錯）'); assert.strictEqual(m.anchor, 'end');
 assert(m.lx !== null && m.lx - m.w >= 66);
 // The scale is the same with or without the dashed line
 near(chartScale(computePayback({invest: 600000, saving: 30000, fee: 5000}), {invest: 600000, saving: 30000, fee: 5000}).H, 29);

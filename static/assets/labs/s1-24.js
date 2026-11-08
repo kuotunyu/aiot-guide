@@ -114,7 +114,7 @@
 
   function storageLab(el) {
     const choices = {}, open = {};
-    el.innerHTML = '<h3>實驗：替資料選家</h3><p class="small">冷鏈公司有四種資料。讀完每種資料的特徵，替它選一個儲存方式，看回饋的原因與代價；選錯也沒關係，可以改選。</p>' +
+    el.innerHTML = '<h3>實驗：替資料選家</h3><p class="small">替每種資料選一個儲存方式，看回饋的原因與代價；選錯可以改選。</p>' +
       DATA.map(d => '<div class="lab-form" data-d="' + d.id + '"><p><b>' + esc(d.name) + '</b><br><span class="small">' + esc(d.facts) + '</span></p>' +
         radios('st-' + d.id, '存到哪裡？', STORES.map(s => s.name), -1) + '</div><div class="lab-out" data-o="' + d.id + '" aria-live="polite"></div>').join('') +
       '<div class="lab-sum" aria-live="polite"></div><p class="small muted">這裡只比這四種常見選擇，數字都是假設。實務還要看成本、團隊熟悉度與保存期限，而且常常混用。</p>';

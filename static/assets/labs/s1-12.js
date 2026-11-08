@@ -81,15 +81,15 @@
   function thresholdLab(el) {
     let t = 5.0, sc = 0;
     const ticks = [2, 3, 4, 5, 6, 7].map(v => '<line x1="' + X(v) + '" y1="118" x2="' + X(v) + '" y2="123" class="ln"/><text x="' + X(v) + '" y="137" class="ts tc">' + v + '</text>').join('');
-    const legend = [[26, 'box', '未告警'], [92, 'warn', '誤報'], [146, 'ok', '抓到'], [200, 'bad dash', '漏報']].map(a => '<circle cx="' + a[0] + '" cy="168" r="5" class="' + a[1] + '"/><text x="' + (a[0] + 9) + '" y="172" class="ts">' + a[2] + '</text>').join('');
-    el.innerHTML = '<h3>實驗：壓縮機告警門檻要設多少？</h3><p class="small">拖動門檻，振動值達到門檻就告警。再換情境，看最省的門檻怎麼移動。下面 24 台的數值是寫死的示範資料，不是真實量測。</p>' +
+    const legend = [[26, 'box', '未告警'], [92, 'warn', '誤報'], [146, 'ok', '抓到'], [200, 'bad dash', '漏報']].map(a => '<circle cx="' + a[0] + '" cy="177" r="5" class="' + a[1] + '"/><text x="' + (a[0] + 9) + '" y="182" class="ts">' + a[2] + '</text>').join('');
+    el.innerHTML = '<h3>實驗：壓縮機告警門檻要設多少？</h3><p class="small">振動值達到門檻就告警。換情境，看最省的門檻怎麼移動。24 台的數值是示範資料，不是真實量測。</p>' +
       slider('s1-12-t', '告警門檻', T_MIN, T_MAX, 0.1, t.toFixed(1), ' mm/s') +
-      '<div class="lab-viz"><svg viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg" role="img">' +
+      '<div class="lab-viz"><svg viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg" role="img">' +
       '<rect data-zone x="0" y="20" width="0" height="98" class="soft"/>' +
-      '<text x="20" y="34" class="ts">健康 18 台</text>' + HEALTHY.map((v, i) => dot(v, i % 2 ? 60 : 46, 'h')).join('') +
+      '<text x="20" y="36" class="ts">健康 18 台</text>' + HEALTHY.map((v, i) => dot(v, i % 2 ? 60 : 46, 'h')).join('') +
       '<text x="20" y="84" class="ts">即將故障 6 台</text>' + FAILING.map(v => dot(v, 100, 'f')).join('') +
-      '<line x1="20" y1="118" x2="340" y2="118" class="ln"/>' + ticks + '<text x="180" y="153" class="ts tc">振動值 mm/s（示範資料）</text>' +
-      '<line data-line x1="0" y1="20" x2="0" y2="118" class="la"/><text data-label x="0" y="14" class="ts tc"></text>' + legend + '</svg></div>' +
+      '<line x1="20" y1="118" x2="340" y2="118" class="ln"/>' + ticks + '<text x="180" y="158" class="ts tc">振動值 mm/s（示範資料）</text>' +
+      '<line data-line x1="0" y1="20" x2="0" y2="118" class="la"/><text data-label x="0" y="16" class="ts tc"></text>' + legend + '</svg></div>' +
       '<ul class="rank" data-counts></ul><p class="small" data-rates></p><p class="lab-say" aria-live="polite"></p><p class="small muted">從 3.7 到 5.2，健康與即將故障的機台讀值重疊，所以沒有任何門檻能讓誤報和漏報同時歸零。</p>' +
       '<div class="lab-form">' + radios('s1-12-sc', '這批壓縮機的情境', SCENARIOS.map(s => s.name), sc) + '</div><p class="small" data-prices></p><ul class="rank" data-costs></ul><p class="lab-say" data-win aria-live="polite"></p>' +
       '<button type="button" class="linkbtn" data-best>把門檻移到這個情境最省的位置</button>' +
