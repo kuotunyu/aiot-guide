@@ -38,8 +38,8 @@ const css = readFileSync(join(DIST, 'assets/site.css'), 'utf8');
 const tokens = block => Object.fromEntries([...block.matchAll(/--([\w-]+):(#[0-9A-Fa-f]{6})/g)].map(m => [m[1], m[2]]));
 const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
-const light = tokens(css.match(/:root\{[\s\S]*?\n\}/)[0]);
-const dark = {...light, ...tokens(css.match(/:root\[data-theme="dark"\]\{[\s\S]*?\n\}/)[0])};
+const light = tokens(css.match(/:root\{[^}]*\}/)[0]);
+const dark = {...light, ...tokens(css.match(/:root\[data-theme="dark"\]\{[^}]*\}/)[0])};
 for (const [name, T] of [['light', light], ['dark', dark]]) {
   for (const [fg, min] of [['text', 7], ['muted', 5.5], ['accent', 4.5], ['s1', 4.5], ['s2', 4.5], ['ok', 4.5], ['bad', 4.5], ['warn', 4.5]]) {
     for (const bg of ['bg', 'surface']) {
@@ -64,7 +64,7 @@ for (const n of pages) for (const m of read(n).matchAll(/<video\b[^>]*>/g)) if (
 // Discovery files
 const sm = read('sitemap.xml');
 for (const n of pages) if (n !== '404.html' && n !== 'index.html' && !sm.includes(n)) problems.push(`sitemap missing ${n}`);
-for (const f of ['robots.txt', 'llms.txt', '.nojekyll', 'favicon.svg', 'assets/og-card.png']) if (!existsSync(join(DIST, f))) problems.push(`missing ${f}`);
+for (const f of ['robots.txt', 'llms.txt', '.nojekyll', 'favicon.svg', 'assets/og-card-2.png']) if (!existsSync(join(DIST, f))) problems.push(`missing ${f}`);
 
 if (problems.length) { console.error(problems.join('\n')); console.error(`\n${problems.length} problem(s)`); process.exit(1); }
 console.log(`static check passed: ${pages.length} pages, ${files.length} files, ${(total / KB / KB).toFixed(1)} MB`);

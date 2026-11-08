@@ -2,6 +2,11 @@ const {defineConfig, devices} = require('@playwright/test');
 
 // CI installs Chromium; locally PW_CHANNEL=msedge reuses the installed browser.
 const channel = process.env.PW_CHANNEL ? {channel: process.env.PW_CHANNEL} : {};
+// WebKit (Safari family) runs the per-page smoke test only: in CI, or locally with PW_WEBKIT=1
+// after `npx playwright install webkit`. Plain local runs never need WebKit.
+const webkit = process.env.CI || process.env.PW_WEBKIT
+  ? [{name: 'webkit-phone', grep: /loads clean, fits the screen, passes axe/, use: {...devices['iPhone 13']}}]
+  : [];
 
 module.exports = defineConfig({
   testDir: 'tests/e2e',
@@ -13,5 +18,6 @@ module.exports = defineConfig({
   projects: [
     {name: 'desktop', use: {...devices['Desktop Chrome'], ...channel, viewport: {width: 1400, height: 900}}},
     {name: 'mobile', use: {...devices['Pixel 7'], ...channel}},
+    ...webkit,
   ],
 });

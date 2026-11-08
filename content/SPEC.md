@@ -69,6 +69,7 @@
 - 箭頭 marker id 必須全站唯一：`<id>-<節序>-arr`，`viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"`，內含 `<path d="M0,0 L10,5 L0,10 z" class="mk"/>`。
 - 只用 rect、circle、ellipse、line、polyline、polygon、path、text、tspan、g、defs、marker。
 - 文字不可出界、重疊或超出方框（中文字寬約等於字級）。
+- 新畫的方框圓角用 `rx="6"`（小標籤、色塊 4）；膠囊、圓點等形狀照形狀需要。既有的圖不為統一圓角重畫。
 - 圖要傳達結構，不當裝飾。圖中文字同樣不可有出題頻率或個人化語氣。
 
 ## 逐步圖與第二張圖

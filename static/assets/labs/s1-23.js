@@ -153,7 +153,7 @@
         row('ok', '節點', '型別', esc(n.dataType) + '（DataType）') +
         row('ok', '節點', '存取', (n.write ? '可讀可寫' : '唯讀') + '（AccessLevel）') +
         row('ok', '節點', '狀態', 'Good（StatusCode）') +
-        row('maybe', '定位', 'NodeId', '<code>' + esc(n.nodeId) + '</code>') + '</ul><p class="lab-say">' + esc(BRANDS[s.brand].label) + '：比例因子對這裡沒有作用，換算在 Server 端做完了。</p>';
+        row('maybe', '定位', 'NodeId', '<code>' + esc(n.nodeId).replace(';', ';<wbr>') + '</code>') + '</ul><p class="lab-say">' + esc(BRANDS[s.brand].label) + '：比例因子對這裡沒有作用，換算在 Server 端做完了。</p>';
       $$('.task', el).forEach((d, i) => {
         // Tasks 1 and 2 need different brands, so a finished task stays ticked.
         const done = reached[i] = reached[i] || TASKS[i].done(s);

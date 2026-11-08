@@ -148,7 +148,7 @@
   function replayLab(el) {
     let scen = SCENARIOS[0], modeIdx = 0, win = DEFAULT_WINDOW, idx = 0, last = '';
     const chips = g => SCENARIOS.map((s, i) => s.group === g ? '<button type="button" data-s="' + i + '">' + esc(s.name) + '</button>' : '').join('');
-    el.innerHTML = '<h3>實驗：冷藏庫門鎖擋得住重放嗎？</h3><p class="small">選防護與情境，一步步把訊息送到門鎖。可以先猜接受或拒絕；中途換防護，前面的步驟會用新防護重算。</p>' +
+    el.innerHTML = '<h3>實驗：冷藏庫門鎖擋得住重放嗎？</h3><p class="small">選防護與情境，一步步把訊息送到門鎖，可以先猜接受或拒絕。中途換防護，前面的步驟會重算。</p>' +
       '<div class="lab-form">' + radios('rp-mode', '門鎖的防護', MODES.map(m => m.name), modeIdx) + slider('rp-win', '時間窗（只有含時間窗的防護會用到）', 10, 120, 5, win, ' 秒') + '</div>' +
       '<p class="small muted">攻擊與裝置限制</p><div class="chips" role="group" aria-label="攻擊與裝置限制的情境">' + chips('attack') + '</div>' +
       '<p class="small muted">合法訊息出狀況</p><div class="chips" role="group" aria-label="合法訊息出狀況的情境">' + chips('legit') + '</div>' +

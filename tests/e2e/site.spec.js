@@ -186,6 +186,21 @@ test('glossary: grouped by chapter by default, name order puts acronyms first', 
   await expect(page.locator('#gcount')).toHaveText(/^\d+ 個關鍵字$/);
 });
 
+// Owner feedback: the repeated 「也在」 lines were noise. Grouped by chapter, a term carries no chapter links; by name, it ends with chapter codes.
+// Some groups open with one picture of how their terms fit together, out of the way while searching.
+test('glossary: no repeated chapter lines, codes in the name view, pictures only while browsing by chapter', async ({page}) => {
+  await page.goto('/glossary.html');
+  await expect(page.locator('main')).not.toContainText('也在');
+  await expect(page.locator('#g-s1-21 .gfig figure.dg')).toBeVisible();
+  await expect(page.locator('#g-s1-21 .gfig a[href="s1-21.html#three-layers"]')).toHaveText('看詳解');
+  await expect(page.locator('#gch .gitem:visible .gw').first()).toBeHidden();
+  await page.fill('#gq', 'mqtt');
+  await expect(page.locator('.gfig:visible')).toHaveCount(0);
+  await page.fill('#gq', '');
+  await page.click('[data-v="az"]');
+  await expect(page.locator('#gaz .gitem', {hasText: 'MQTT'}).first().locator('.gw a').first()).toHaveAttribute('href', 's1-22.html');
+});
+
 // Reader feedback: someone looking for a chapter must not have to hunt for the list.
 test('home: chapter lists are reachable at once', async ({page}) => {
   await page.goto('/index.html');
@@ -480,9 +495,22 @@ test('glossary: nothing found says so in the page and hides the empty chapter ch
   await page.fill('#gq', 'zzzz');
   await expect(page.locator('#gempty')).toContainText('找不到「zzzz」');
   await expect(page.locator('.gchips')).toBeHidden();
+  // An acronym that is not there is not told to try an acronym.
+  await expect(page.locator('#gempty')).not.toContainText('英文縮寫');
+  await page.fill('#gq', '查無此詞');
+  await expect(page.locator('#gempty')).toContainText('英文縮寫');
+});
+
+// Reader feedback: searching MQTT while the confusables were shown said nothing was found.
+test('glossary: a search with no confusable match shows the matching keywords instead', async ({page}) => {
+  await page.goto('/glossary.html');
   await page.locator('.gview button[data-v="conf"]').click();
-  await page.locator('#gempty .linkbtn').click();
+  await page.fill('#gq', 'MQTT');
   await expect(page.locator('.gview button[data-v="ch"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#gempty')).toContainText('易混淆裡沒有「MQTT」');
+  await expect(page.locator('#gch .gitem:visible').first()).toContainText('MQTT');
+  // The view switched by itself, so the reader's own choice is not overwritten.
+  expect(await page.evaluate(() => localStorage.getItem('aiot-guide-gview'))).toBe('conf');
 });
 
 test('practice: a run in progress is still there after visiting a chapter and going back', async ({page}) => {
@@ -717,9 +745,11 @@ test('practice results: right answers fold below 901px, wrong ones stay open, th
   await expect(ok.first().locator('summary')).toContainText('第 1 題');
   await expect(page.locator('div.ex .why.bad')).toHaveCount(1);
   const again = page.locator('.qacts [data-act]');
-  await expect(again).toHaveText(['換一組題目', '重做答錯的 1 題', '做完沒作答的 7 題']);
+  // 2 of 3 is below 70%: redoing the wrong one leads, and the repeated row is all quiet buttons.
+  await expect(again).toHaveText(['重做答錯的 1 題', '做完沒作答的 7 題', '重新設定']);
+  await expect(page.locator('.qacts .btn:not(.ghost)')).toHaveCount(0);
   await expect(page.locator('.qacts [id]')).toHaveCount(0);
-  await again.nth(1).click();
+  await again.nth(0).click();
   await expect(page.locator('.qhead span').first()).toContainText('/ 1');
 });
 
@@ -777,4 +807,204 @@ test('reading pages: exam and about keep a narrow column from the header\'s left
     expect(p.width).toBeLessThanOrEqual(800);
     if (url === '/exam.html') expect((await page.locator('.tblwrap.facts').first().boundingBox()).width).toBeLessThanOrEqual(960);
   }
+});
+
+// Chapters are listed in the reading order everywhere (章號 keep the official numbers), like the home page.
+test('chapter order: practice list and review page follow the home page order', async ({page}) => {
+  await page.goto('/index.html');
+  await expect(page.locator('#chapters .chnote')).toHaveText('章號沿用官方編號，依建議順序排列。');
+  const home = await page.locator('#chapters .chlist a').evaluateAll(as => as.map(a => a.getAttribute('href').replace('.html', '')));
+  // Each home entry says how long it reads and how many questions it has.
+  await expect(page.locator('#chapters .chlist .m').first()).toHaveText(/^約 \d+ 分鐘・\d+ 題$/);
+  await page.goto('/practice.html');
+  expect(await page.locator('#fChapter option').evaluateAll(os => os.map(o => o.value).filter(Boolean))).toEqual(home);
+  await page.goto('/reference.html#chapters');
+  expect(await page.locator('.refgrid .panel').evaluateAll(ps => ps.map(p => p.id.slice(2)))).toEqual(home);
+  expect(await page.locator('.gchips a').evaluateAll(as => as.map(a => a.hash.slice(3)))).toEqual(home);
+});
+
+test('chapter: the address follows the section being read, without new history entries', async ({page}) => {
+  await page.goto('/s1-23.html');
+  const n = await page.evaluate(() => history.length);
+  const id = await page.locator('article section[id]').nth(2).getAttribute('id');
+  await page.locator('#' + id).evaluate(s => scrollTo(0, scrollY + s.getBoundingClientRect().top - 20));
+  await expect(page).toHaveURL(new RegExp('#' + id + '$'));
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect(page).toHaveURL(/s1-23\.html$/);
+  expect(await page.evaluate(() => history.length)).toBe(n);
+  expect(await page.evaluate(() => Object.keys(localStorage).filter(k => !/theme|gview/.test(k)))).toEqual([]);
+});
+
+// Reader feedback: reloading in the middle of a run lost it. Same tab only: a finished run does not come back on reload.
+test('practice: a reload in the middle of a run picks it up again; a finished run starts over', async ({page}) => {
+  await page.goto('/practice.html#s1-24');
+  await page.selectOption('#fCount', '10');
+  await page.click('#qStart');
+  await page.locator('.opt').first().click();
+  await page.click('#qNext');
+  await page.reload();
+  await expect(page.locator('#quizSetup')).toBeHidden();
+  await expect(page.locator('.qhead span').first()).toContainText('第 2 / 10');
+  await page.click('#qPrev');
+  await expect(page.locator('.why')).toBeVisible();
+  await page.click('#qEnd');
+  await expect(page.locator('.score')).toBeVisible();
+  await page.reload();
+  await expect(page.locator('#quizSetup')).toBeVisible();
+  await expect(page.locator('.quiz')).toHaveCount(0);
+  expect(await page.evaluate(() => Object.keys(localStorage).filter(k => /run|ans|wrong/.test(k)))).toEqual([]);
+});
+
+// Reader feedback: 「看結果」 sat between 上一題 and 下一題, easy to tap by mistake on a phone.
+test('practice: learn mode keeps the early finish out of the previous / next row', async ({page}) => {
+  await page.goto('/practice.html#s1-21');
+  await page.selectOption('#fCount', '10');
+  await page.click('#qStart');
+  await expect(page.locator('.qnav button')).toHaveText(['上一題', '下一題']);
+  await expect(page.locator('.qtop #qEnd')).toHaveText('提早看結果');
+  for (let i = 0; i < 9; i++) await page.click('#qNext');
+  await expect(page.locator('#qEnd')).toHaveCount(0);
+  await expect(page.locator('#qNext')).toHaveText('看結果');
+});
+
+test('practice results: one solid button chosen by the score; each chapter row starts that chapter', async ({page}) => {
+  await page.goto('/practice.html');
+  await page.selectOption('#fCount', '10');
+  await page.click('#qStart');
+  for (let i = 0; i < 10; i++) {
+    const a = await page.evaluate(t => window.AIOT_QUESTIONS.find(x => x.q === t).a, await page.locator('.qtext').innerText());
+    await page.locator(`.opt[data-k="${i < 4 ? (a + 1) % 4 : a}"]`).click();
+    await page.click('#qNext');
+  }
+  await expect(page.locator('.res .panel')).toContainText('及格參考 70%');
+  // 6 of 10 is below 70%: redo leads.
+  await expect(page.locator('.res .btn:not(.ghost)')).toHaveText(['重做答錯的 4 題']);
+  const row = page.locator('.res tbody tr').first();
+  const id = (await row.locator('a').getAttribute('href')).replace('.html', '');
+  const n = await page.evaluate(c => window.AIOT_QUESTIONS.filter(q => q.lesson === c).length, id);
+  await row.locator('[data-drill]').click();
+  await expect(page.locator('.qhead span').first()).toContainText(`/ ${n} 題`);
+  const t = await page.locator('.qtext').innerText();
+  expect(await page.evaluate(x => window.AIOT_QUESTIONS.find(q => q.q === x).lesson, t)).toBe(id);
+  // All right on a one-chapter drill: the next chapter leads; 重新設定 goes back to the setup.
+  await page.goto('/practice.html#s1-21');
+  await page.selectOption('#fCount', '10');
+  await page.click('#qStart');
+  for (let i = 0; i < 10; i++) {
+    const a = await page.evaluate(t => window.AIOT_QUESTIONS.find(x => x.q === t).a, await page.locator('.qtext').innerText());
+    await page.locator(`.opt[data-k="${a}"]`).click();
+    await page.click('#qNext');
+  }
+  await expect(page.locator('.res .btn:not(.ghost)')).toHaveCount(1);
+  await expect(page.locator('.res .btn:not(.ghost)')).toContainText('下一章');
+  await page.click('#qAgain');
+  await expect(page.locator('#quizSetup')).toBeVisible();
+});
+
+test('practice: a link to another chapter on the page preselects it', async ({page}) => {
+  await page.goto('/practice.html#s1-21');
+  await expect(page.locator('#fChapter')).toHaveValue('s1-21');
+  await page.evaluate(() => { location.hash = 's2-12'; });
+  await expect(page.locator('#fSubject')).toHaveValue('s2');
+  await expect(page.locator('#fChapter')).toHaveValue('s2-12');
+  await expect(page.locator('#fCount')).toHaveValue('0');
+});
+
+// Paper is always dark text on white, whatever theme the screen uses; the chapter head prints as plain text, and the extras open.
+test('print: dark text on white in both themes, chapter head included', async ({page}) => {
+  const lum = c => { const [r, g, b] = c.match(/[\d.]+/g).slice(0, 3).map(v => +v / 255).map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const vsWhite = c => 1.05 / (lum(c) + 0.05);
+  for (const theme of ['light', 'dark']) {
+    await page.emulateMedia({media: 'screen', colorScheme: theme});
+    await page.goto('/s1-22.html');
+    await page.evaluate(t => { document.documentElement.dataset.theme = t; }, theme);
+    await page.emulateMedia({media: 'print', colorScheme: theme});
+    for (const sel of ['.chead h1', '.chead .sub', 'article section p', '.chead .tag']) {
+      const c = await page.locator(sel).first().evaluate(el => getComputedStyle(el).color);
+      expect(vsWhite(c), `${theme} ${sel} ${c}`).toBeGreaterThanOrEqual(4.5);
+    }
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(255, 255, 255)');
+    expect(await page.locator('.chead').evaluate(el => getComputedStyle(el).backgroundColor)).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/);
+    await expect(page.locator('[data-read-all]')).toBeHidden();
+  }
+  await page.evaluate(() => dispatchEvent(new Event('beforeprint')));
+  await expect(page.locator('details.pr:not([open]), details.fl:not([open])')).toHaveCount(0);
+  await page.evaluate(() => dispatchEvent(new Event('afterprint')));
+  await expect(page.locator('details.pr[open]')).toHaveCount(0);
+});
+
+// Without JavaScript nothing promises a control that cannot work: the theme button, the glossary views and the practice setup hide, the confusables show.
+test('no JavaScript: pages say what needs it and hide controls that cannot work', async ({browser}) => {
+  const ctx = await browser.newContext({javaScriptEnabled: false});
+  const page = await ctx.newPage();
+  await page.goto('/practice.html');
+  await expect(page.locator('main')).toContainText('練習需要 JavaScript');
+  await expect(page.locator('#quizSetup')).toBeHidden();
+  await expect(page.locator('#themeBtn')).toBeHidden();
+  await page.goto('/glossary.html');
+  await expect(page.locator('.gview')).toBeHidden();
+  await expect(page.locator('#gconf')).toBeVisible();
+  await expect(page.locator('#gch')).toBeVisible();
+  await page.goto('/s1-22.html');
+  await expect(page.locator('.lab').first()).toContainText('需要 JavaScript');
+  await expect(page.locator('.lab-wait').first()).toBeHidden();
+  await ctx.close();
+});
+
+test('labs: the loading placeholder is replaced when the lab draws; a missing question bank says so', async ({page}) => {
+  await page.goto('/s1-22.html');
+  await expect(page.locator('.lab h3').first()).toBeVisible();
+  await expect(page.locator('.lab-wait')).toHaveCount(0);
+  await expect(page.locator('.nojs').first()).toBeHidden();
+  await page.route('**/questions.js*', r => r.abort());
+  await page.goto('/practice.html');
+  await expect(page.locator('#quizApp')).toContainText('題庫沒有載入');
+  await expect(page.locator('#quizSetup')).toBeHidden();
+});
+
+// Zoom works without a mouse: each figure has a 放大 button; the copy is a modal dialog that takes focus and gives it back.
+test('zoom: keyboard opens a figure as a dialog and Escape returns focus', async ({page, isMobile}) => {
+  test.skip(isMobile, 'keyboard');
+  await page.goto('/s1-21.html');
+  const f = page.locator('article figure.dg:not(.loop)').first();
+  const b = f.locator('.zbtn');
+  await b.focus();
+  await expect(b).toBeVisible();
+  await page.keyboard.press('Enter');
+  const z = page.locator('.zoom');
+  await expect(z).toHaveAttribute('role', 'dialog');
+  await expect(z).toHaveAttribute('aria-modal', 'true');
+  await expect(z.locator('.zbtn')).toHaveCount(0);
+  expect(await page.evaluate(() => document.activeElement.classList.contains('zx'))).toBe(true);
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => document.activeElement.classList.contains('zx'))).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(z).toHaveCount(0);
+  expect(await page.evaluate(() => document.activeElement.classList.contains('zbtn'))).toBe(true);
+  await expect(page.locator('figure.loop .zbtn')).toHaveCount(0);
+});
+
+// A phone's address bar folding away changes only the height; the definition stays open until the width changes.
+test('glossary pop: stays open when only the height changes', async ({page}) => {
+  await page.goto('/s2-22.html');
+  const term = page.locator('.gl').first();
+  await term.scrollIntoViewIfNeeded();
+  await term.click();
+  await expect(page.locator('.glpop')).toBeVisible();
+  const vp = page.viewportSize();
+  await page.setViewportSize({width: vp.width, height: vp.height - 60});
+  await page.waitForTimeout(100);
+  await expect(page.locator('.glpop')).toBeVisible();
+  await page.setViewportSize({width: vp.width - 40, height: vp.height - 60});
+  await expect(page.locator('.glpop')).toBeHidden();
+});
+
+test('video: the poster loads only once the video is opened', async ({page}) => {
+  const posters = [];
+  page.on('request', r => { if (r.url().includes('-poster.jpg')) posters.push(r.url()); });
+  await page.goto('/index.html');
+  await page.waitForLoadState('networkidle');
+  expect(posters).toEqual([]);
+  await page.locator('details.vid summary').first().click();
+  await expect(page.locator('details.vid video').first()).toHaveAttribute('poster', /-poster\.jpg$/);
 });

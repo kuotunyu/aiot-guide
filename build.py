@@ -31,7 +31,7 @@ def clean(html, where):
 def video(key, title=True):
     v = SITE['videos'][key]
     name = f'：{e(v["title"])}' if title else ''
-    out = f'<details class="vid"><summary>看動畫{name}（{v["seconds"]} 秒）</summary><video controls preload="none" playsinline src="media/{key}.mp4" poster="media/{key}-poster.jpg"></video>'
+    out = f'<details class="vid"><summary>看動畫{name}（{v["seconds"]} 秒）</summary><video controls preload="none" playsinline src="media/{key}.mp4" data-poster="media/{key}-poster.jpg"></video>'
     if v.get('transcript'):
         out += f'<p class="small muted noread">{e(v["transcript"])}</p>'
     return out + '</details>'
@@ -189,27 +189,29 @@ def page(name, title, main, desc, scripts='', current=None, jsonld=None):
 <title>{e(full)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{abs_url}">
-<meta name="theme-color" content="#22434C">
+<meta name="theme-color" content="#22434C" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1D363C" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="{'website' if name == 'index.html' else 'article'}">
 <meta property="og:site_name" content="{e(SITE["name"])}">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:title" content="{e(full)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{abs_url}">
-<meta property="og:image" content="{SITE["url"]}assets/og-card.png">
+<meta property="og:image" content="{SITE["url"]}assets/og-card-2.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AIoT 導讀：一筆感測資料從感測、訊號、控制器、傳輸、平台走到分析與行動">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 {ld}
-<script>try{{var t=localStorage.getItem('aiot-guide-theme');if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
+<script>document.documentElement.className='js';try{{var t=localStorage.getItem('aiot-guide-theme');if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 <a class="skip" href="#main">跳到主要內容</a>
-<header class="top"><div class="wrap"><a class="brand" href="index.html">{LOGO}{e(SITE["name"])}</a><nav class="nav" aria-label="主要導覽">{nav}</nav><button type="button" class="theme" id="themeBtn">深淺色</button></div></header>
+<header class="top"><div class="wrap"><a class="brand" href="index.html">{LOGO}{e(SITE["name"])}</a><nav class="nav" aria-label="主要導覽">{nav}</nav><button type="button" class="theme jsonly" id="themeBtn">深淺色</button></div></header>
 {main}
-<footer class="site"><div class="wrap">{e(SITE["footer"])}<br>更新 {SITE["updated"]}・程式碼 MIT・內容 CC BY 4.0・<a href="{SITE["repo"]}" rel="noopener">原始碼與回報</a></div></footer>
+<footer class="site"><div class="wrap">{e(SITE["footer"])}<br>程式碼 MIT・內容 CC BY 4.0・<a href="{SITE["repo"]}" rel="noopener">原始碼與回報</a></div></footer>
 {READER}
 {scripts}<script src="assets/site.js"></script>
 </body>
@@ -280,7 +282,7 @@ def chapter(cid):
         sections += link(clean(s.get('body', ''), where))
         sections += ''.join(figs.pop('after-body', []))
         if s.get('lab'):
-            sections += f'<div class="lab" data-lab="{e(s["lab"])}"><noscript><p>這個互動實驗需要 JavaScript。</p></noscript></div>'
+            sections += f'<div class="lab" data-lab="{e(s["lab"])}"><p class="lab-wait jsonly">實驗載入中…</p><p class="nojs">這個互動實驗需要 JavaScript。</p></div>'
         if s.get('after'):
             sections += link(clean(s['after'], where))
         sections += ''.join(figs.pop('after-after', []))
@@ -345,7 +347,7 @@ def chapter(cid):
 <article id="main">
 <details class="sidemenu"><summary>全部章節</summary><div class="side">{sidebar(cid)}</div></details>
 <details class="sidemenu tocmenu noread"><summary>本章目錄</summary><div class="in"><a href="#main">{e(UI["menuTop"])}</a>{toc}{tail}<div class="tmx">{menu_x}</div></div></details>
-<header class="chead">{locator(cid)}<div class="meta"><span class="tag">{e(c["code"])}</span><span>{e(SUBJ[c["subject"]]["short"])}</span>{official}<span class="noread">約 {minutes(c)} 分鐘</span><button type="button" class="btn ghost noread" data-read-all>朗讀整章</button></div>
+<header class="chead">{locator(cid)}<div class="meta"><span class="tag">{e(c["code"])}</span><span>{e(SUBJ[c["subject"]]["short"])}</span>{official}<span class="noread">約 {minutes(c)} 分鐘</span><button type="button" class="btn ghost noread noprint" data-read-all>朗讀整章</button></div>
 <h1>{e(c["title"])}</h1><p class="sub">{e(c["subtitle"])}</p><p>{e(c["summary"])}</p></header>
 {case}<div class="learn"><h2>讀完這章，你能</h2><ul>{learn}</ul></div>
 {prereq}{bridge}
@@ -371,16 +373,16 @@ def home():
     h = SITE['home']
     stops = ''
     for st in h['stops']:
-        links = ''.join(f'<a href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in st['chapters'])
+        links = ''.join(f'<a class="tag {CH[x]["subject"]}" href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in st['chapters'])
         stops += f'<div class="stop"><b>{e(st["name"])}</b><span class="what">{e(st["what"])}</span><span class="codes">{links}</span></div>'
-    across = '｜'.join(e(name) + ' ' + ''.join(f'<a href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in ids) for name, ids in h['acrossGroups'])
+    across = ''.join(f'<span class="ag">{e(name)}' + ''.join(f'<a class="tag {CH[x]["subject"]}" href="{x}.html" title="{e(CH[x]["title"])}">{e(CH[x]["code"])}</a>' for x in ids) + '</span>' for name, ids in h['acrossGroups'])
     subs = ''
     for s, sub in SUBJ.items():
         # Listed in the recommended reading order, the same order as the sidebar and the pager.
         items = ''
         for cid in [x for x in SITE['reading'] if CH[x]['subject'] == s]:
             c = CH[cid]
-            items += f'<li><a href="{cid}.html" data-title="{e(c["code"] + " " + c["title"])}"><span class="tag">{e(c["code"])}</span><span><span class="t">{e(c["title"])}</span><span class="d">{e(c["subtitle"])}</span></span></a></li>'
+            items += f'<li><a href="{cid}.html" data-title="{e(c["code"] + " " + c["title"])}"><span class="tag">{e(c["code"])}</span><span><span class="t">{e(c["title"])}</span><span class="d">{e(c["subtitle"])}</span><span class="m">約 {minutes(c)} 分鐘・{QCOUNT.get(cid, 0)} 題</span></span></a></li>'
         body = f'<ul class="chlist">{items}</ul>'
         subs += f'<div class="subject {s}"><h2>{e(sub["name"])}</h2><p class="desc">{e(sub["desc"])}</p>{body}</div>'
     # {conf} in a tool description is the number of confusable groups, so it never goes stale.
@@ -390,7 +392,7 @@ def home():
     main = f'''<main id="main">
 <div class="wrap hero"><h1>{e(h["title"])}</h1><p class="lead">{e(h["lead"])}</p>
 <div class="row"><a class="btn" href="{SITE["reading"][0]}.html" data-start>{e(h["startBtn"])}</a></div></div>
-<div class="band" id="chapters"><div class="wrap"><div class="subjects">{subs}</div></div></div>
+<div class="band" id="chapters"><div class="wrap"><div class="subjects">{subs}</div><p class="small muted chnote">章號沿用官方編號，依建議順序排列。</p></div></div>
 <div class="band" id="map"><div class="wrap"><h2>{e(h["mapTitle"])}</h2>
 {video(h["video"], False) if h.get("video") else ""}<div class="trace">{stops}</div>
 <p class="across"><b>{e(h["acrossLabel"])}</b>{across}</p></div></div>
@@ -541,18 +543,20 @@ def practice():
     # next: the chapter after this one in the recommended reading order, so a finished chapter drill can point onward.
     READ = SITE['reading']
     nxt = {c: (READ[k + 1] if k + 1 < len(READ) else None) for k, c in enumerate(READ)}
-    chs = [{'id': c, 'subject': CH[c]['subject'], 'code': CH[c]['code'], 'title': CH[c]['title'], 'next': nxt.get(c), 'secs': {s['id']: s['h'] for s in CH[c]['sections']}} for c in ORDER]
+    chs = [{'id': c, 'subject': CH[c]['subject'], 'code': CH[c]['code'], 'title': CH[c]['title'], 'next': nxt.get(c), 'secs': {s['id']: s['h'] for s in CH[c]['sections']}} for c in READ]
     # Names of the confusable groups that questions point at, for the 「易混淆：…」 link under an explanation.
     used = {q['conf'] for q in out if q.get('conf')}
     confs = {g['cid']: g['title'] for g in CONF if g['cid'] in used}
     js = 'window.AIOT_QUESTIONS=' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\nwindow.AIOT_CHAPTERS=' + json.dumps(chs, ensure_ascii=False, separators=(',', ':')) + ';\nwindow.AIOT_CONF=' + json.dumps(confs, ensure_ascii=False, separators=(',', ':')) + ';\n'
     # Practice wording that lives in site.json (keyboard hint, the buttons repeated under the review list).
-    js += 'window.AIOT_UI=' + json.dumps({k: UI[k] for k in ('keyHint', 'keyHintExam', 'redo', 'again', 'rest')}, ensure_ascii=False, separators=(',', ':')) + ';\n'
+    ui = {k: UI[k] for k in ('keyHint', 'keyHintExam', 'redo', 'rest', 'again')}
+    js += 'window.AIOT_UI=' + json.dumps(ui, ensure_ascii=False, separators=(',', ':')) + ';\n'
     (DIST / 'assets' / 'questions.js').write_text(js.replace('</', '<\\/'), encoding='utf-8')
     n = {s: sum(1 for q in out if q['subject'] == s) for s in SUBJ}
     opts = ''.join(f'<option value="{s}">{e(SUBJ[s]["name"])}（{n[s]} 題）</option>' for s in SUBJ)
     main = f'''<main id="main" class="wrap page"><h1>練習</h1>
-<div class="panel noprint" id="quizSetup"><div class="formgrid"><div class="qmain">
+<p class="nojs">練習需要 JavaScript，請開啟後重新整理。</p>
+<div class="panel noprint jsonly" id="quizSetup"><div class="formgrid"><div class="qmain">
 <label for="fSubject">科目<select id="fSubject"><option value="">兩科</option>{opts}</select></label>
 <label for="fChapter">章節<select id="fChapter"></select></label>
 <label for="fMode">方式<select id="fMode"><option value="learn">逐題看解析</option><option value="exam">限時（每題 90 秒，本站估算）</option></select></label>
@@ -637,13 +641,38 @@ def chip(href, c):
     return f'<a href="#{href}" class="{c["subject"]}" title="{e(c["title"])}" aria-label="{e(c["code"] + " " + c["title"])}"><span class="c">{e(c["code"])}</span> <span class="n">{e(c["title"])}</span></a>'
 
 
+# One picture at the top of some chapter groups, showing how that group's terms fit together: chapter -> section (and which of its figures).
+# Only static figures with an upright phone drawing; a step figure is shown as its last step, the whole story at once.
+# Eight pictures keep the page under its 120 KB budget with room to spare (each adds about 5 KB with its phone copy).
+GLOSS_FIGS = {'s1-21': ('three-layers', 0), 's1-32': ('interfaces', 0), 's1-22': ('road-and-language', 0), 's1-25': ('symmetric-asymmetric', 0),
+              's1-11': ('ai-in-aiot', 0), 's1-12': ('integrated-cycle', 0), 's2-11': ('edge-fog-cloud', 0), 's2-23': ('isa-95', 0)}
+
+
+def last_step(svg, n):
+    # Keep the parts shown at step n (and the parts always shown), drop the rest, and lose the step marks.
+    svg = re.sub(r'<(\w+)[^<>]*\sdata-s="([^"]+)"[^<>]*?(?:/>|>[^<]*(?:<tspan[^<>]*>[^<]*</tspan>[^<]*)*</>)',
+                 lambda m: m[0] if str(n) in m[2].split() else '', svg)
+    return re.sub(r'\sdata-s="[^"]+"', '', svg)
+
+
 def glossary():
     def item(t):
-        links = [f'<a href="{c}.html">{e(CH[c]["code"] + " " + CH[c]["title"])}</a>' for c in t['where']]
-        where = links[0] + ('<span class="also">也在：</span>' + ''.join(links[1:]) if len(links) > 1 else '')
-        subjects = ' '.join(sorted({CH[c]['subject'] for c in t['where']}))
+        # data-s lists the chapters that teach the term: the subject filter matches "s1"/"s2" in it, and the name view shows them as chapter codes.
         en = ' <span class="en">' + e(t['en']) + '</span>' if t.get('en') else ''
-        return f'<div class="gitem" data-s="{subjects}"><b>{e(t["term"])}</b>{en}<p>{e(t["def"])}</p><div class="where">{where}</div></div>'
+        return f'<div class="gitem" data-s="{" ".join(t["where"])}"><b>{e(t["term"])}</b>{en}<p>{e(t["def"])}</p></div>'
+
+    def gfig(cid):
+        if cid not in GLOSS_FIGS:
+            return ''
+        sid, i = GLOSS_FIGS[cid]
+        sec = next(x for x in CH[cid]['sections'] if x['id'] == sid)
+        f = ([sec] + sec.get('figs', []))[i]
+        svg, svgm = f['svg'], f.get('svgm')
+        if f.get('steps'):
+            svg, svgm = last_step(svg, len(f['steps'])), svgm and last_step(svgm, len(f['steps']))
+        if not svgm or f.get('loop'):
+            problems.append(f'glossary figure {cid} {sid}: needs a phone drawing and no loop')
+        return f'<div class="gfig">{figure(svg, f.get("caption"), f"glossary {cid}", svgm=svgm)}<p class="small"><a href="{cid}.html#{sid}">看詳解</a></p></div>'
     # Default view groups terms by the chapter that first teaches them, in reading order.
     groups, chips = '', ''
     for cid in SITE['reading']:
@@ -652,7 +681,7 @@ def glossary():
             continue
         c = CH[cid]
         chips += chip(f'g-{cid}', c)
-        groups += f'<section class="gsec" id="g-{cid}" data-s="{c["subject"]}"><h2><a href="{cid}.html">{e(c["code"] + " " + c["title"])}</a><a class="small noprint gtop" href="#gq">搜尋</a></h2><div class="glist">{"".join(item(t) for t in mine)}</div></section>'
+        groups += f'<section class="gsec {c["subject"]}" id="g-{cid}" data-s="{c["subject"]}"><h2><a href="{cid}.html"><span class="tag">{e(c["code"])}</span> {e(c["title"])}</a><a class="small noprint gtop" href="#gq">搜尋</a></h2>{gfig(cid)}<div class="glist">{"".join(item(t) for t in mine)}</div></section>'
     conf = ''
     groups_c = CONF
     for g in groups_c:
@@ -667,7 +696,7 @@ def glossary():
     opts = ''.join(f'<option value="{s}">{e(SUBJ[s]["short"])}</option>' for s in SUBJ)
     views = '<button type="button" data-v="ch" aria-pressed="true">依章節</button><button type="button" data-v="az" aria-pressed="false">依名稱</button>' + (f'<button type="button" id="conf" data-v="conf" aria-pressed="false">易混淆（{len(groups_c)} 組）</button>' if conf else '')
     main = f'''<main id="main" class="wrap page gloss"><h1>關鍵字</h1>
-<div class="gside"><div class="gctl"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="MQTT、遲滯、OEE" aria-describedby="gcount"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><div class="seg gview" role="group" aria-label="呈現方式">{views}</div><span class="small muted" id="gcount" role="status"></span></div>
+<div class="gside"><div class="gctl"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="MQTT、遲滯、OEE" aria-describedby="gcount"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><div class="seg gview jsonly" role="group" aria-label="呈現方式">{views}</div><span class="small muted" id="gcount" role="status"></span></div>
 </div><nav class="gchips" aria-label="跳到章節">{chips}</nav></div>
 <div class="gbody"><div id="gch">{groups}</div><div class="glist" id="gaz" hidden></div><div class="confs" id="gconf" hidden>{conf}</div></div></main>'''
     page('glossary.html', '關鍵字', main, f'{len(TERMS)} 個物聯網與 AIoT 關鍵字的白話解釋，依章節整理，並對照容易混淆的概念。')
@@ -693,13 +722,14 @@ def reference():
         eg = '<div class="feg"><span class="lb">例</span><div>' + ''.join(f'<p>{e(x)}</p>' for x in lines(f['eg'])) + '</div></div>' if f.get('eg') else ''
         note = f'<p class="fnote">{e(f["note"])}</p>' if f.get('note') else ''
         return f'<div class="fm"><h4><a class="tag" href="{f["chapter"]}.html" aria-label="{e(c["code"] + " " + c["title"])}">{e(c["code"])}</a> {e(f["name"])}</h4><div class="fx">{expr}</div>{eg}{note}</div>'
-    # Formulas follow the official chapter order, split by subject like the chapter cards.
-    fms = sorted(SITE['formulas'], key=lambda f: ORDER.index(f['chapter']))
+    # Formulas follow the reading order, split by subject like the chapter cards.
+    fms = sorted(SITE['formulas'], key=lambda f: SITE['reading'].index(f['chapter']))
     fm = ''.join(f'<h3>{e(sub["name"])}</h3><div class="formula {s}">' + ''.join(card(f) for f in fms if CH[f['chapter']]['subject'] == s) + '</div>' for s, sub in SUBJ.items())
     diffs, blocks, chips = '', '', ''
     for s, sub in SUBJ.items():
         cards = ''
-        for cid in ORDER:
+        # Chapters in the reading order, like the home page, the sidebar, the glossary and the practice list.
+        for cid in SITE['reading']:
             c = CH[cid]
             if c['subject'] != s:
                 continue
@@ -716,7 +746,7 @@ def reference():
             cards += f'<div class="panel {s}" id="r-{cid}"><h3><a href="{cid}.html"><span class="tag">{e(c["code"])}</span> {e(c["title"])}</a></h3><ul>' + ''.join(f'<li>{clean(x, cid)}</li>' for x in c['keypoints']) + f'</ul>{fig}{pits}{note}</div>'
         blocks += f'<h2>{e(sub["name"])}</h2><div class="refgrid">{cards}</div>'
     pages = '、'.join(f'{CH[x]["code"]} p.{CH[x]["guidePages"][0]}–{CH[x]["guidePages"][1]}（{CH[x]["guideQuiz"]}）' for x in ORDER if CH[x].get('guidePages'))
-    guide = f'''<h2 id="guide">官方指引寫法不同的地方</h2><div class="pits gdiff"><p class="small muted noread">括號「指引 p.N」是官方指引寫法；作答依題目條件判斷。p.N 為 PDF 頁碼。</p>
+    guide = f'''<h2 id="guide">指引差異</h2><div class="pits gdiff"><p class="small muted noread">「指引 p.N」是官方指引 PDF 第 N 頁的寫法；作答依題目條件判斷。</p>
 <ul>{diffs}</ul><details class="more noread"><summary>頁段對照</summary><p class="small">各章在指引的頁段，括號內是評量題開始的頁：{pages}。</p></details><p class="small muted">指引評量答案代號與解析不一致：p.154 第 7、8 題，以解析文字為準。</p></div>'''
     # One part at a time: site.js shows the part the tab or address points at. Without JS, and in print, all three parts follow one another.
     tabs = '<nav class="rtabs noprint" aria-label="速查內容"><a href="#formulas" data-part="formulas">公式</a><a href="#guide" data-part="guide">指引差異</a><a href="#chapters" data-part="chapters">各章重點</a></nav>'
@@ -739,10 +769,10 @@ def exam():
                 alias = '' if c['title'] == c['official'] else f'（本站：{e(c["title"])}）'
                 head = f'<th scope="rowgroup" rowspan="{n_sub}" class="nw">{e(sub["short"])}</th>' if ti == 0 and ci == 0 else ''
                 head += f'<td rowspan="{len(tp["chapters"])}">{e(tp["name"])}</td>' if ci == 0 else ''
-                scope += f'<tr>{head}<td><a href="{cid}.html">{e(c["code"])} {e(c["official"])}</a>{alias}</td></tr>'
+                scope += f'<tr>{head}<td><a href="{cid}.html"><span class="tag {c["subject"]}">{e(c["code"])}</span> {e(c["official"])}</a>{alias}</td></tr>'
     links = ''.join(f'<li><a href="{u}" rel="noopener" target="_blank">{e(t)}</a></li>' for t, u in x['links'])
     tips = ''.join(f'<li>{e(t)}</li>' for t in x['tips'])
-    main = f'''<main id="main" class="wrap page read"><h1>考試資訊</h1><p class="intro">{e(x["intro"])}</p>
+    main = f'''<main id="main" class="wrap page read"><h1>考試資訊</h1>{f'<p class="intro">{e(x["intro"])}</p>' if x["intro"] else ""}
 <div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><tbody>{rows}</tbody></table></div><p class="small muted">{e(x["checked"])}</p>
 <h2 id="scope">考試範圍與本站章節</h2><div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>科目</th><th>評鑑主題</th><th>評鑑內容</th></tr></thead><tbody>{scope}</tbody></table></div>
 <h2>作答提醒</h2><ul>{tips}</ul>
@@ -753,7 +783,7 @@ def exam():
 def about():
     a = SITE['about']
     body = ''.join(f'<h2>{e(h)}</h2>' + ''.join(f'<p>{e(p)}</p>' for p in ps) for h, ps in a)
-    page('about.html', '關於', f'<main id="main" class="wrap page read">{"<h1>關於</h1>"}{body}</main>', '這個網站的內容來源、使用範圍、隱私與授權。')
+    page('about.html', '關於', f'<main id="main" class="wrap page read">{"<h1>關於</h1>"}{body}</main>', '這個網站是什麼、隱私與內容來源。')
 
 
 def not_found():
@@ -774,7 +804,7 @@ def discovery():
     lines = [f'# {SITE["name"]}', '', f'> {SITE["description"]}', '', '本站為個人製作的非官方網站，與 iPAS 及其主辦、承辦、執行單位無關。內容採 CC BY 4.0。', '']
     for k, sub in SUBJ.items():
         lines.append(f'## {sub["name"]}')
-        for cid in ORDER:
+        for cid in SITE['reading']:
             if CH[cid]['subject'] == k:
                 lines.append(f'- [{CH[cid]["code"]} {CH[cid]["title"]}]({SITE["url"]}{cid}.html)：{CH[cid]["summary"]}')
         lines.append('')
@@ -787,9 +817,11 @@ if __name__ == '__main__':
     for old in DIST.iterdir():
         shutil.rmtree(old) if old.is_dir() else old.unlink()
     shutil.copytree(STATIC, DIST, dirs_exist_ok=True)
-    # The stylesheet's comments are for editors; readers on a phone connection get it without them.
+    # The stylesheet's comments, indentation and the spaces around { } ; , are for editors; readers on a phone connection get it without them
+    # (LF line ends on every system, so the size checked here is the size served).
     css = DIST / 'assets' / 'site.css'
-    css.write_text(re.sub(r'\n\s*\n', '\n', re.sub(r'/\*.*?\*/', '', css.read_text(encoding='utf-8'), flags=re.S)), encoding='utf-8')
+    out = re.sub(r'\s*([{};,])\s*', r'\1', re.sub(r'\n\s+', '\n', re.sub(r'/\*.*?\*/', '', css.read_text(encoding='utf-8'), flags=re.S)))
+    css.write_text(out, encoding='utf-8', newline='\n')
     home()
     for cid in ORDER:
         chapter(cid)
@@ -812,3 +844,6 @@ if __name__ == '__main__':
     print('PROBLEMS:' if problems else 'no problems')
     for p in problems:
         print(' ', p)
+    # A release must not go out with known problems: CI and deploy stop on a non-zero exit.
+    if problems:
+        raise SystemExit(1)

@@ -146,7 +146,7 @@
 
   function cloudLab(el) {
     const done = {};
-    el.innerHTML = '<h3>實驗：出事了，誰要處理？</h3><p class="small">對照上面的四欄分工圖，判斷下面的狀況該由誰處理。</p><div class="tasks">' +
+    el.innerHTML = '<h3>實驗：出事了，誰要處理？</h3><p class="small">對照上面的分工圖，判斷該由誰處理。</p><div class="tasks">' +
       TASKS.map((t, i) => '<div class="task" data-t="' + i + '"><span class="mark" aria-hidden="true">○</span><span>' + esc(t.q) + '<span class="res" aria-live="polite"></span></span><button type="button" class="linkbtn" data-a="you">自己</button><button type="button" class="linkbtn" data-a="vendor">業者</button></div>').join('') +
       '</div><p class="small muted">這是典型分工的簡化，實際依服務契約而定。</p>';
     $$('.task', el).forEach((row, i) => {

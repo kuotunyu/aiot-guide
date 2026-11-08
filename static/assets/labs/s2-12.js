@@ -149,7 +149,7 @@
 
   function drillLab(el) {
     let c = CASES[0], done = [], read = [], picked = '';
-    el.innerHTML = '<h3>實驗：排查演練，線索不等於確診</h3><p class="small">選一個故障案例，自己決定下一步做什麼檢查。每次先看結果想一想，再看解讀；覺得夠了就下結論。</p><div class="chips" role="group" aria-label="故障案例">' + CASES.map(x => '<button type="button" data-case="' + esc(x.id) + '">' + esc(x.name) + '</button>').join('') + '</div><p class="lab-say d-symptom"></p><b>嫌疑清單</b><ul class="rank d-list"></ul><p class="small muted">清單只在你看過解讀之後更新。</p><b>下一步要檢查什麼？</b><div class="chips d-checks" role="group" aria-label="可做的檢查"></div><div class="d-log" aria-live="polite"></div><b>你認為原因是？</b><div class="chips d-causes" role="group" aria-label="下結論"></div><p class="lab-say d-verdict" aria-live="polite" hidden></p><p class="small muted">這是簡化的模擬：結果是預先寫好的，每案只有一個主因。現場可能有多個原因同時存在，也可能需要重複量測。</p><button type="button" class="linkbtn d-reset">這個案例重來</button>';
+    el.innerHTML = '<h3>實驗：排查演練，線索不等於確診</h3><p class="small">選一個案例，自己決定下一步檢查什麼。先看結果想一想，再看解讀；覺得夠了就下結論。</p><div class="chips" role="group" aria-label="故障案例">' + CASES.map(x => '<button type="button" data-case="' + esc(x.id) + '">' + esc(x.name) + '</button>').join('') + '</div><p class="lab-say d-symptom"></p><b>嫌疑清單</b><ul class="rank d-list"></ul><p class="small muted">清單只在你看過解讀之後更新。</p><b>下一步要檢查什麼？</b><div class="chips d-checks" role="group" aria-label="可做的檢查"></div><div class="d-log" aria-live="polite"></div><b>你認為原因是？</b><div class="chips d-causes" role="group" aria-label="下結論"></div><p class="lab-say d-verdict" aria-live="polite" hidden></p><p class="small muted">這是簡化的模擬：結果是預先寫好的，每案只有一個主因。現場可能有多個原因同時存在，也可能需要重複量測。</p><button type="button" class="linkbtn d-reset">這個案例重來</button>';
     const q = s => el.querySelector(s);
 
     function drawList() {

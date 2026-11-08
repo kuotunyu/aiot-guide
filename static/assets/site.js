@@ -35,15 +35,37 @@ setHdr(); addEventListener('resize', setHdr);
 
 // ----- diagram zoom -----
 // Step and loop figures zoom from the picture itself, so their buttons keep working; the copy shows the current step, and a loop as its still picture.
-document.addEventListener('click', e => {
-  const f = e.target.closest('article .dg, .ref .dg, .quiz .dg'); if (!f || e.target.closest('button') || document.body.classList.contains('reading')) return;
-  if (f.matches('.stepfig, .loop') && !e.target.closest('svg')) return;
+// The copy is a modal dialog: focus moves to its 關閉 button, stays there while it is open, and goes back where it came from.
+const ZOOMABLE = 'article .dg, .ref .dg, .quiz .dg, .gloss .dg';
+let zoomFrom = null;
+const unzoom = () => { const z = $('.zoom'); if (!z) return; z.remove(); if (zoomFrom && zoomFrom.isConnected) zoomFrom.focus({preventScroll: true}); zoomFrom = null; };
+const zoom = (f, from) => {
+  unzoom();
   const z = document.createElement('div'); z.className = 'zoom';
-  z.innerHTML = '<figure class="' + esc(f.className) + '" data-cur="' + esc(f.dataset.cur || '') + '">' + f.innerHTML + '</figure>';
-  const c = z.firstChild; c.classList.remove('anim', 'run'); $$('.stepctl, .lp-tog, .tblhint', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => x.removeAttribute('aria-live'));
-  z.onclick = () => z.remove(); document.body.appendChild(z);
+  z.setAttribute('role', 'dialog'); z.setAttribute('aria-modal', 'true'); z.setAttribute('aria-label', '放大的圖');
+  z.innerHTML = '<figure class="' + esc(f.className) + '" data-cur="' + esc(f.dataset.cur || '') + '">' + f.innerHTML + '</figure><button type="button" class="btn zx">關閉</button>';
+  const c = z.firstChild; c.classList.remove('anim', 'run'); $$('.stepctl, .lp-tog, .tblhint, .zbtn', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => x.removeAttribute('aria-live'));
+  $$('[tabindex]', c).forEach(x => x.removeAttribute('tabindex'));
+  z.onclick = unzoom; document.body.appendChild(z);
+  zoomFrom = from || (document.activeElement !== document.body ? document.activeElement : null); $('.zx', z).focus();
+};
+document.addEventListener('click', e => {
+  const f = e.target.closest(ZOOMABLE); if (!f || document.body.classList.contains('reading')) return;
+  if (e.target.closest('.zbtn')) return zoom(f, e.target.closest('.zbtn'));
+  if (e.target.closest('button') || f.matches('.loop') || (f.matches('.stepfig') && !e.target.closest('svg'))) return;
+  zoom(f);
 });
-addEventListener('keydown', e => { if (e.key === 'Escape') $$('.zoom').forEach(z => z.remove()); });
+addEventListener('keydown', e => {
+  if (!$('.zoom')) return;
+  if (e.key === 'Escape') unzoom();
+  else if (e.key === 'Tab') { e.preventDefault(); $('.zoom .zx').focus(); }
+});
+// Every zoomable figure (loops excepted: they never zoom) gets a 放大 button for keyboards; the practice page calls this again for each explanation.
+const addZoom = root => $$('.dg:not(.loop)', root).forEach(f => {
+  if (!f.matches(ZOOMABLE) || $(':scope>.zbtn', f)) return;
+  f.insertAdjacentHTML('afterbegin', '<button type="button" class="say zbtn noread noprint" aria-label="放大這張圖">放大</button>');
+});
+addZoom(document);
 
 // ----- parts folded only on phones and tablets: details[data-wide] is open from 901px up and closed below -----
 // Set on load and again only when the width crosses 901px, so a reader's own opening and closing is kept in between.
@@ -64,8 +86,14 @@ addEventListener('hashchange', () => openFor(location.hash));
 { const t = openFor(location.hash); if (t) requestAnimationFrame(() => t.scrollIntoView()); }
 
 // ----- print: collapsed extras would vanish from paper, so open them for printing and close them again afterwards -----
-addEventListener('beforeprint', () => $$('details.more,details[data-wide]').forEach(d => { if (!d.open) { d.open = true; d.dataset.po = '1'; } }));
+addEventListener('beforeprint', () => $$('details.more,details[data-wide],details.pr,details.fl').forEach(d => { if (!d.open) { d.open = true; d.dataset.po = '1'; } }));
 addEventListener('afterprint', () => $$('details[data-po]').forEach(d => { d.open = false; d.removeAttribute('data-po'); }));
+
+// ----- videos: the poster image is fetched only when the reader opens the video -----
+$$('details.vid').forEach(d => d.addEventListener('toggle', () => { const v = $('video[data-poster]', d); if (d.open && v && !v.getAttribute('poster')) v.poster = v.dataset.poster; }));
+
+// ----- labs: a lab script that never arrived leaves its placeholder; say so instead of 「載入中」 -----
+addEventListener('load', () => $$('.lab .lab-wait').forEach(p => { p.textContent = '實驗沒有載入，請重新整理頁面。'; }));
 
 // ----- loop figures: a short animation that only runs while on screen, and never when motion is reduced -----
 // initLoops(root) wires the loops under root once; the practice page calls it again for the figures in each explanation it renders.
@@ -118,7 +146,7 @@ $$('.ex[data-a]').forEach(ex => {
   });
 });
 
-// ----- toc highlight; the section in view is also remembered, so the home page can offer to pick up there -----
+// ----- toc highlight; the section in view also goes into the address -----
 // On narrow screens the pinned contents bar names the section in view, and closes once a section is picked.
 const tocLinks = $$('.toc a'), menuLinks = $$('.tocmenu .in a'), menuSum = $('.tocmenu summary');
 menuLinks.forEach(a => a.addEventListener('click', () => { a.closest('details').open = false; }));
@@ -130,6 +158,20 @@ if ((tocLinks.length || menuLinks.length) && window.IntersectionObserver) {
     if (menuSum && m) menuSum.textContent = '本章目錄・〈' + m.textContent + '〉';
   }), {rootMargin:'-20% 0px -70% 0px'});
   $$('article section[id]').forEach(s => io.observe(s));
+}
+// The address follows the section being read (replaced, never added to history, never scrolled to), so a kept tab or a bookmark
+// comes back to the same place; above the first section it is the bare address again, and a deeper anchor inside that section is kept. Nothing is stored.
+{
+  const secs = $$('article section[id]'); let queued = false;
+  const sync = () => {
+    queued = false; let cur = null, t = null;
+    for (const s of secs) { if (s.getBoundingClientRect().top <= innerHeight * .25) cur = s; else break; }
+    try { t = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch(e){}
+    // Keep an anchor that is at or above the reading line and inside or after the current section (a figure, 重點整理 after the last section).
+    if (t ? t.getBoundingClientRect().top <= innerHeight * .25 && (!cur || cur.contains(t) || cur.compareDocumentPosition(t) & 4) : !cur) return;
+    try { history.replaceState(history.state, '', location.pathname + location.search + (cur ? '#' + cur.id : '')); } catch(e){}
+  };
+  if (secs.length) addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(sync); } }, {passive: true});
 }
 
 // Where someone stopped reading is not kept; earlier versions kept it, so clear it.
@@ -185,10 +227,13 @@ if (chipNav) {
   const tg = links.map(a => document.getElementById(decodeURIComponent(a.hash.slice(1)))), own = new Map();
   tg.forEach((t, i) => { if (!t) return; own.set(t, i); if (t.tagName === 'H2') for (let n = t.nextElementSibling; n && !tg.includes(n) && n.tagName !== 'H2'; n = n.nextElementSibling) own.set(n, i); });
   if (window.IntersectionObserver) {
-    const vis = new Set(); let cur = -1;
+    const vis = new Set(); let cur = -1, want = -1;
+    // Cards side by side (the review page's two columns) can share a row: the one just picked from the list wins while it is in view.
+    links.forEach((a, i) => a.addEventListener('click', () => { want = i; }));
     const io = new IntersectionObserver(es => {
       es.forEach(x => x.isIntersecting ? vis.add(x.target) : vis.delete(x.target));
       let best = -1; vis.forEach(n => { const i = own.get(n); if (n.offsetParent && (best < 0 || i < best)) best = i; });
+      if ([...vis].some(n => own.get(n) === want && n.offsetParent)) best = want; else want = -1;
       if (best < 0 || best === cur) return; cur = best;
       links.forEach((a, i) => i === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
       // Keep the marked link in sight inside the list or strip, without moving the page.
@@ -206,13 +251,18 @@ const gq = $('#gq');
 if (gq) {
   const items = $$('.gitem'), confs = $$('.conf'), subj = $('#gs'), count = $('#gcount');
   const byCh = $('#gch'), az = $('#gaz'), conf = $('#gconf'), chips = $('.gchips'), btns = $$('.gview button');
-  const home = items.map(it => it.parentNode);
+  const home = items.map(it => it.parentNode), figs = $$('.gfig');
+  const norm = v => v.normalize('NFKC').toLowerCase();
+  // Search reads the term, English name and definition only, taken before the chapter codes below are added.
+  const text = new Map(items.map(it => [it, norm(it.textContent)]));
+  // The name view takes each term out of its chapter group, so it ends with the codes of the chapters that teach it (data-s), linked.
+  const code = c => { const a = $('a[href="#g-' + c + '"] .c', chips); return a ? a.textContent : c; };
+  items.forEach(it => { const w = document.createElement('span'); w.className = 'gw'; w.innerHTML = it.dataset.s.split(' ').map(c => '<a href="' + c + '.html">' + esc(code(c)) + '</a>').join(''); it.append(w); });
   const coll = new Intl.Collator('zh-TW-u-co-zhuyin', {numeric: true, sensitivity: 'base'});
   // English and acronyms first (A–Z), then Chinese terms.
   const name = it => it.querySelector('b').textContent, latin = s => /^[A-Za-z0-9]/.test(s) ? 0 : 1;
   const sorted = items.slice().sort((a, b) => latin(name(a)) - latin(name(b)) || coll.compare(name(a), name(b)));
   let view = 'ch';
-  const norm = v => v.normalize('NFKC').toLowerCase();
   function show(v, keep){
     view = v;
     btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
@@ -226,7 +276,8 @@ if (gq) {
   function run(){
     const q = norm(gq.value.trim()), s = subj.value; let n = 0;
     const list = view === 'conf' ? confs : items;
-    list.forEach(it => { const ok = (!q || norm(it.textContent).includes(q)) && (!s || it.dataset.s.includes(s)); it.hidden = !ok; if (ok) n++; });
+    list.forEach(it => { const ok = (!q || (text.get(it) || norm(it.textContent)).includes(q)) && (!s || it.dataset.s.includes(s)); it.hidden = !ok; if (ok) n++; });
+    figs.forEach(f => { f.hidden = !!q; });
     $$('.gsec').forEach(sec => { sec.hidden = !$$('.gitem', sec).some(it => !it.hidden); });
     $$('a', chips).forEach(a => { const sec = $(a.getAttribute('href')); a.hidden = !sec || sec.hidden; });
     chips.hidden = view !== 'ch' || !$$('a', chips).some(a => !a.hidden);
@@ -234,8 +285,12 @@ if (gq) {
     empty.hidden = n > 0;
     if (!n) {
       const t = gq.value.trim();
-      empty.textContent = t ? '找不到「' + t + '」，試試英文縮寫或換科目。' : '這個科目沒有符合的項目，試試換科目。';
-      if (view === 'conf') { const b = document.createElement('button'); b.type = 'button'; b.className = 'linkbtn'; b.textContent = '改在全部關鍵字裡找'; b.onclick = () => show('ch'); empty.append(' ', b); }
+      // Nothing among the confusables, but the term is a keyword: show it there, without changing the view this reader keeps.
+      if (view === 'conf' && q && items.some(it => text.get(it).includes(q) && (!s || it.dataset.s.includes(s)))) {
+        show('ch', false); empty.textContent = '易混淆裡沒有「' + t + '」，改列出全部關鍵字的結果。'; empty.hidden = false; return;
+      }
+      // An acronym that is not here will not turn up as another acronym; suggest the Chinese name instead.
+      empty.textContent = t ? '找不到「' + t + '」，試試' + (/^[\x20-\x7e]+$/.test(t) ? '中文名稱' : '英文縮寫') + (s ? '或換科目。' : '。') : '這個科目沒有符合的項目，試試換科目。';
     }
   }
   btns.forEach(b => b.onclick = () => show(b.dataset.v));
@@ -284,16 +339,18 @@ if (glData) (function(){
     if (!cur || !to || to === cur || pop.contains(to)) return;
     if (ev.target === cur || pop.contains(ev.target)) close();
   });
-  addEventListener('resize', close);
+  let w = innerWidth;
+  addEventListener('resize', () => { if (innerWidth !== w) { w = innerWidth; close(); } });
 })();
 
 // ----- practice -----
 const qa = $('#quizApp');
+if (qa && !window.AIOT_QUESTIONS) { const su = $('#quizSetup'); if (su) su.hidden = true; qa.innerHTML = '<p class="lab-err">題庫沒有載入，請重新整理頁面。</p>'; }
 if (qa && window.AIOT_QUESTIONS) (function(){
   const ALL = window.AIOT_QUESTIONS, CH = window.AIOT_CHAPTERS, CONF = window.AIOT_CONF || {};
   const fS = $('#fSubject'), fC = $('#fChapter'), fN = $('#fCount'), fM = $('#fMode'), avail = $('#fAvail');
   let run = null, tick = null;
-  const UI = window.AIOT_UI || {keyHint:'A–D 選答、← → 換題', keyHintExam:'', redo:'重做答錯的 {n} 題', again:'換一組題目', rest:'做完沒作答的 {n} 題'};
+  const UI = window.AIOT_UI || {keyHint:'A–D 選答、← → 換題', keyHintExam:'', redo:'重做答錯的 {n} 題', again:'重新設定', rest:'做完沒作答的 {n} 題'};
   function pool(){ return ALL.filter(q => (!fS.value || q.subject === fS.value) && (!fC.value || q.lesson === fC.value)); }
   function fillChapters(){
     const cur = fC.value;
@@ -321,9 +378,12 @@ if (qa && window.AIOT_QUESTIONS) (function(){
   }
   function countdown(){ tick = setInterval(() => { const t = $('#timer'); if (!t) return; const ms = run.t0 + run.limit - Date.now(); t.textContent = fmt(ms); if (ms <= 0) finish(true); }, 1000); }
   const fmt = ms => { ms = Math.max(0, ms); return Math.floor(ms / 60000) + ':' + String(Math.floor(ms % 60000 / 1000)).padStart(2, '0'); };
-  function qBlock(q, picked, reveal, num){
+  // The chapter code in its subject colour, so 2.2 and 2-2 tell apart at a glance; a review card adds its number and the verdict.
+  const qcap = (q, num, v) => { const c = CH.find(x => x.id === q.lesson) || {};
+    return (num != null ? '<span>第 ' + (num + 1) + ' 題</span>' : '') + '<span><span class="tag ' + c.subject + '">' + esc(c.code) + '</span> ' + esc(c.title) + '</span>' + (v || ''); };
+  function qBlock(q, picked, reveal, head){
     const perm = run.perm[q.id] || [0, 1, 2, 3], live = !(reveal && picked != null);
-    let h = '<p class="small muted noread">' + (num != null ? '第 ' + (num + 1) + ' 題・' : '') + esc(chName(q.lesson)) + '</p><div class="qtext">' + esc(q.q) + '</div><div class="opts">';
+    let h = (head === false ? '' : '<p class="qcap noread">' + qcap(q) + '</p>') + '<div class="qtext">' + esc(q.q) + '</div><div class="opts">';
     perm.forEach((k, pos) => {
       let c = ''; if (reveal && picked != null){ if (k === q.a) c = 'correct'; else if (k === picked) c = 'wrong'; } else if (picked === k) c = 'picked';
       // Once revealed, each option carries its own short note (w is in the original order, so it follows data-k through the shuffle).
@@ -348,9 +408,12 @@ if (qa && window.AIOT_QUESTIONS) (function(){
   function render(why){
     if (run.done) return result();
     const q = run.qs[run.i], picked = run.ans[q.id], done = Object.keys(run.ans).length, ex = run.mode === 'exam', left = run.qs.length - done;
-    const top = '<div class="qtop"><div class="qhead"><span>第 <b>' + (run.i + 1) + '</b> / ' + run.qs.length + ' 題</span><span class="row">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + '<button type="button" class="say" data-say-card>朗讀</button></span></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div></div>';
+    // Learn mode: ending early is a quiet text button in the progress row, away from 上一題／下一題; on the last question 下一題 itself becomes 看結果.
+    const end = !ex && run.i + 1 < run.qs.length ? '<button type="button" class="linkbtn" id="qEnd">提早看結果</button>' : '';
+    // 朗讀 sits at the end of the progress row in both modes; the clock or the early finish goes between (a line of its own in the narrow right column).
+    const top = '<div class="qtop"><div class="qhead"><span>第 <b>' + (run.i + 1) + '</b> / ' + run.qs.length + ' 題</span><span class="qx">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + end + '</span><button type="button" class="say" data-say-card>朗讀</button></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div></div>';
     const prev = '<button type="button" class="btn ghost" id="qPrev" aria-keyshortcuts="ArrowLeft"' + (run.i ? '' : ' disabled') + '>上一題</button>';
-    const act = ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題未作答，再按一次交卷' : '交卷') + '</button>' : run.i + 1 < run.qs.length ? '<button type="button" class="btn ghost" id="qEnd">看結果</button>' : '';
+    const act = ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題未作答，再按一次交卷' : '交卷') + '</button>' : '';
     const next = '<button type="button" class="btn" id="qNext" aria-keyshortcuts="ArrowRight Enter">' + (run.i + 1 < run.qs.length ? '下一題' : '看結果') + '</button>';
     const grid = ex ? '<div class="grid noread">' + run.qs.map((x, k) => '<button type="button" data-j="' + k + '" class="' + (run.ans[x.id] != null ? 'ans ' : '') + (k === run.i ? 'cur' : '') + '" aria-label="第 ' + (k + 1) + ' 題' + (run.ans[x.id] != null ? '，已作答' : '') + '"' + (k === run.i ? ' aria-current="step"' : '') + '>' + (k + 1) + '</button>').join('') + '</div>' : '';
     // From 901px the question has the left column and a pinned right column holds progress, clock, number grid, the end button and the key hint;
@@ -370,7 +433,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     // A long grid scrolls inside the right column: keep the current number in its view.
     const gr = $('.qside .grid', qa), gc = gr && $('.cur', gr);
     if (gc && gr.scrollHeight > gr.clientHeight) gr.scrollTop += gc.getBoundingClientRect().top - gr.getBoundingClientRect().top - gr.clientHeight / 2;
-    initLoops(qa);
+    initLoops(qa); addZoom(qa);
     if (why === 'answered' && !ex) { const w = $('.why', qa); focusOn(w); w.scrollIntoView({block:'nearest', behavior:smooth()}); }
     else if (why === 'answered') focusOn($('.opt[data-k="' + picked + '"]', qa));
     else if (why === 'moved') { qa.scrollIntoView({block:'start'}); focusOn($('.qtext', qa)); }
@@ -384,33 +447,43 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     const wr = answered.filter(q => run.ans[q.id] !== q.a), un = run.qs.filter(q => run.ans[q.id] == null);
     // A one-chapter drill ends with a way back to that chapter's summary and on to the next chapter.
     const one = new Set(run.qs.map(q => q.lesson)).size === 1 ? CH.find(c => c.id === run.qs[0].lesson) : null, nx = one && one.next && CH.find(c => c.id === one.next);
-    const onward = one ? '<div class="row onward"><a class="btn ghost" href="' + one.id + '.html#keypoints">〈' + esc(one.code + ' ' + one.title) + '〉重點整理</a>' + (nx ? '<a class="btn" href="' + nx.id + '.html">下一章：' + esc(nx.code + ' ' + nx.title) + '</a>' : '') + '</div>' : '';
+    // One solid button on the page, chosen by the score: below 70% redoing the wrong ones (and the chapter summary comes before the next chapter);
+    // otherwise the next chapter of a one-chapter drill, or a new setup.
+    const low = total > 0 && ok / total < .7, lead = low ? (wr.length ? 'redo' : un.length ? 'rest' : 'again') : nx ? 'next' : 'again';
+    const cls = k => k === lead ? 'btn' : 'btn ghost';
+    const onward = one ? '<div class="row onward"><a class="btn ghost" href="' + one.id + '.html#keypoints">本章重點整理</a>' + (nx ? '<a class="' + cls('next') + '" href="' + nx.id + '.html">下一章：' + esc(nx.code + ' ' + nx.title) + '</a>' : '') + '</div>' : '';
     const by = {}; run.qs.forEach(q => { if (run.mode !== 'exam' && run.ans[q.id] == null) return; const b = by[q.lesson] || (by[q.lesson] = {n:0, ok:0}); b.n++; if (run.ans[q.id] === q.a) b.ok++; });
-    // The same buttons again under the review list, so nobody scrolls back up; data-act ties both rows to one handler (ids stay on the top row).
-    const acts = top => '<button type="button" class="btn" data-act="again"' + (top ? ' id="qAgain"' : '') + '>' + esc(UI.again) + '</button>'
-      + (wr.length ? '<button type="button" class="btn ghost" data-act="redo"' + (top ? ' id="qRedo"' : '') + '>' + esc(UI.redo.replace('{n}', wr.length)) + '</button>' : '')
-      + (un.length ? '<button type="button" class="btn ghost" data-act="rest"' + (top ? ' id="qRest"' : '') + '>' + esc(UI.rest.replace('{n}', un.length)) + '</button>' : '');
-    let h = '<div class="quiz res"><div class="panel">' + (run.timeUp ? '<p><b>時間到，已自動交卷。</b></p>' : '') + '<div class="score">' + ok + ' / ' + total + '</div><p>' + (total ? '答對率 ' + Math.round(ok / total * 100) + '%' : '還沒有作答') + '</p><div class="row">' + acts(true) + '</div>' + onward + '</div>';
+    // The same buttons again under the review list (all quiet there), so nobody scrolls back up; data-act ties both rows to one handler (ids stay on the top row).
+    const one1 = (k, text, top) => '<button type="button" class="' + (top ? cls(k) : 'btn ghost') + '" data-act="' + k + '"' + (top ? ' id="q' + k[0].toUpperCase() + k.slice(1) + '"' : '') + '>' + esc(text) + '</button>';
+    const acts = top => [wr.length && ['redo', UI.redo.replace('{n}', wr.length)], un.length && ['rest', UI.rest.replace('{n}', un.length)], ['again', UI.again]]
+      .filter(Boolean).sort((a, b) => (b[0] === lead) - (a[0] === lead)).map(([k, t]) => one1(k, t, top)).join('');
+    const pct = '<p>' + (total ? '答對率 ' + Math.round(ok / total * 100) + '%<span class="muted">（及格參考 70%）</span>' : '還沒有作答') + '</p>';
+    const row = '<div class="row">' + acts(true) + '</div>';
+    let h = '<div class="quiz res"><div class="panel">' + (run.timeUp ? '<p><b>時間到，已自動交卷。</b></p>' : '') + '<div class="score">' + ok + ' / ' + total + '</div>' + pct + (lead === 'next' ? onward + row : row + onward) + '</div>';
     const rows = Object.keys(by).sort((a, b) => by[a].ok / by[a].n - by[b].ok / by[b].n);
-    if (rows.length > 1) h += '<h2>各章表現</h2><div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>章節</th><th>答對</th></tr></thead><tbody>' + rows.map(k => { const c = CH.find(x => x.id === k) || {}; return '<tr><td><a href="' + k + '.html"><span class="tag ' + c.subject + '">' + esc(c.code) + '</span> ' + esc(c.title) + '</a></td><td class="mono nw">' + by[k].ok + ' / ' + by[k].n + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    // Each chapter row can start a drill of that chapter's questions straight away.
+    if (rows.length > 1) h += '<h2>各章表現</h2><div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>章節</th><th>答對</th><th><span class="sr">練習</span></th></tr></thead><tbody>' + rows.map(k => { const c = CH.find(x => x.id === k) || {}; return '<tr><td><a href="' + k + '.html"><span class="tag ' + c.subject + '">' + esc(c.code) + '</span> ' + esc(c.title) + '</a></td><td class="mono nw">' + by[k].ok + ' / ' + by[k].n + '</td><td class="nw"><button type="button" class="btn ghost" data-drill="' + k + '" aria-label="練這章：' + esc(c.code + ' ' + c.title) + '">練這章</button></td></tr>'; }).join('') + '</tbody></table></div>';
     // Review in question order: wrong (and, timed, unanswered) ones stay open in full; right ones fold to their number and stem on phones and tablets (open from 901px).
     const rev = run.qs.map((q, n) => ({q, n})).filter(x => run.mode === 'exam' || run.ans[x.q.id] != null);
     if (rev.length) h += '<h2>檢討</h2>' + rev.map(({q, n}) => {
       const p = run.ans[q.id];
-      if (p === q.a) return '<details class="ex okq" data-wide><summary><b>第 ' + (n + 1) + ' 題</b><span class="okmk">✓ 答對</span><span class="st">' + esc(q.q) + '</span></summary>' + qBlock(q, p, true) + '</details>';
-      return '<div class="ex">' + qBlock(q, p == null ? -1 : p, true, n) + '</div>';
+      if (p === q.a) return '<details class="ex okq" data-wide><summary><span class="qcap">' + qcap(q, n, '<span class="qv ok">✓ 答對</span>') + '</span><span class="st">' + esc(q.q) + '</span></summary>' + qBlock(q, p, true, false) + '</details>';
+      return '<div class="ex"><p class="qcap noread">' + qcap(q, n, '<span class="qv">' + (p == null ? '未作答' : '✕ 答錯') + '</span>') + '</p>' + qBlock(q, p == null ? -1 : p, true, false) + '</div>';
     }).join('') + '<div class="row qacts noread">' + acts(false) + '</div>';
     qa.innerHTML = h + '</div>';
     $$('.opt', qa).forEach(b => b.disabled = true);
     syncWide(qa);
-    initLoops(qa);
+    initLoops(qa); addZoom(qa);
     const act = {
       again: () => { run = null; forget(); qa.innerHTML = ''; $('#quizSetup').hidden = false; say(''); focusOn($('#qStart')); },
       redo: () => start(shuffle(wr), 'learn'),
       rest: () => start(un, run.mode)
     };
     $$('[data-act]', qa).forEach(b => b.onclick = act[b.dataset.act]);
+    $$('[data-drill]', qa).forEach(b => b.onclick = () => { pick(b.dataset.drill); start(shuffle(pool()), 'learn'); });
   }
+  // Preselect one chapter (its subject, the chapter, all of its questions) in the setup.
+  function pick(id){ const c = CH.find(x => x.id === id); if (!c) return false; fS.value = c.subject; fillChapters(); fC.value = id; fN.value = '0'; updAvail(); return true; }
   // Crossing 901px redraws the question in the other layout; focus inside it goes back to the question text.
   wideMq.addEventListener && wideMq.addEventListener('change', () => {
     if (!run || run.done || !$('.quiz', qa)) return;
@@ -430,11 +503,15 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     else if ((k === 'g' || k === 'G') && run.mode === 'exam') { const g = $('.grid button.cur', qa) || $('.grid button', qa); if (g) { e.preventDefault(); g.focus(); } }
   });
   fillChapters();
-  const hash = location.hash.slice(1);
   // Coming from a chapter's "練習這一章": preselect that subject and chapter, and all of its questions.
-  const fromCh = CH.find(c => c.id === hash);
-  if (fromCh) { fS.value = fromCh.subject; fillChapters(); fC.value = hash; fN.value = '0'; }
+  pick(location.hash.slice(1));
   updAvail();
+  // A link to practice.html#<chapter> on this page (no reload) does the same and brings the setup back; only such a link changes the hash here.
+  addEventListener('hashchange', () => {
+    if (!pick(location.hash.slice(1))) return;
+    clearInterval(tick); run = null; forget(); qa.innerHTML = ''; $('#quizSetup').hidden = false; say('');
+    $('#quizSetup').scrollIntoView({block:'start'}); focusOn($('#qStart'));
+  });
   // practice.html?q=<id>,<id> opens those questions directly (used to link a question and by the tests).
   const want = (new URLSearchParams(location.search).get('q') || '').split(',').map(id => ALL.find(q => q.id === id)).filter(Boolean);
   if (want.length) start(want, 'learn');
@@ -449,9 +526,13 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     } catch(e){}
   });
   const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-  if (nav && nav.type === 'back_forward' && !qa.children.length) (function(){
+  // Back and forward bring back the run as it was, results included; a reload brings back only a run still under way.
+  // Session storage ends with the tab, so nothing outlives it; 「重新設定」 clears it at once.
+  const back = nav && nav.type === 'back_forward';
+  if (nav && (back || nav.type === 'reload') && !qa.children.length) (function(){
     let saved = null; try { saved = JSON.parse(sessionStorage.getItem(KEY)); } catch(e){}
     if (!saved || !Array.isArray(saved.ids)) return;
+    if (saved.done && !back) return forget();
     const qs = saved.ids.map(id => ALL.find(q => q.id === id));
     if (!qs.length || qs.some(q => !q)) return forget();
     run = {qs, mode:saved.mode, i:Math.min(saved.i | 0, qs.length - 1), ans:saved.ans || {}, perm:saved.perm || {}, t0:saved.t0, limit:saved.limit, done:saved.done, timeUp:saved.timeUp};
@@ -489,6 +570,8 @@ const fitLab = svg => { if (svg.dataset.fit) return; const w = svg.viewBox && sv
 const reader = $('#reader');
 if (reader) (function(){
   const synth = window.speechSynthesis, ok = !!(synth && window.SpeechSynthesisUtterance);
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const FIX = ios ? '到 iOS 設定下載中文語音' : '改用 Edge 或 Chrome';
   const BLOCK = 'h1,h2,h3,p,li,tr,figcaption,.qtext,.opt,[data-say]';
   const SKIP = '.say,.noread,.side,.toc,.sidemenu,.pager,#reader,svg,video,.vid,.lab,.srcs,script,style';
   const now = $('#reader .now'), pos = $('#rdPos'), txt = $('#rdText'), play = $('#rdPlay'), rate = $('#rdRate'), voiceSel = $('#rdVoice');
@@ -550,7 +633,7 @@ if (reader) (function(){
     u.onstart = () => clearTimeout(watchdog);
     u.onend = () => { if (token !== gen || !playing) return; chunk++; if (chunk >= chunks.length){ chunk = 0; idx++; } say(); };
     u.onerror = e => { if (token === gen && e.error !== 'interrupted' && e.error !== 'canceled') fail('這個聲音無法播放，請換一個聲音再試。'); };
-    watchdog = setTimeout(() => { if (token === gen && playing) fail('語音沒有啟動，請換一個聲音，或改用 Edge／Chrome。'); }, 10000);
+    watchdog = setTimeout(() => { if (token === gen && playing) fail('語音沒有啟動，請換一個聲音，或' + FIX + '。'); }, 10000);
     synth.speak(u);
   }
   function fail(m){ playing = false; gen++; if (ok) synth.cancel(); play.textContent = '▶'; pos.textContent = '無法朗讀'; txt.textContent = m; now.classList.add('err'); }
@@ -563,7 +646,7 @@ if (reader) (function(){
   if (window.ResizeObserver) new ResizeObserver(pad).observe(reader);
   function start(root){
     document.body.classList.add('reading'); pad(); setHdr();
-    if (!ok) return fail('這個瀏覽器不支援朗讀，請改用 Edge 或 Chrome。');
+    if (!ok) return fail('這個瀏覽器不支援朗讀，請' + FIX + '。');
     segs = collect(root); if (!segs.length) return stop();
     segs.forEach(s => s.el.setAttribute('data-seg', '')); go(0);
   }

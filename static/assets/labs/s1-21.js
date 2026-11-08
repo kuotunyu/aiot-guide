@@ -64,7 +64,7 @@
   function layersLab(el) {
     const answers = {};
     let revealed = false;
-    el.innerHTML = '<h3>實驗：把元件分到三層</h3><p class="small">替這家公司的每個元件選一層。全部選完才會看到原因。</p><div class="lab-form">' + ITEMS.map(i => radios('l-' + i.id, i.name, LAYERS, -1)).join('') + '</div><div class="row"><button type="button" class="btn" data-check disabled>對答案</button><span class="small muted" data-left></span></div><div class="lab-out" aria-live="polite"></div><p class="small muted">這裡依每個元件的主要工作分類。實際一台設備可能同時做好幾件事，例如探頭內建無線晶片。</p>';
+    el.innerHTML = '<h3>實驗：把元件分到三層</h3><p class="small">替每個元件選一層，全部選完才看得到原因。</p><div class="lab-form">' + ITEMS.map(i => radios('l-' + i.id, i.name, LAYERS, -1)).join('') + '</div><div class="row"><button type="button" class="btn" data-check disabled>對答案</button><span class="small muted" data-left></span></div><div class="lab-out" aria-live="polite"></div><p class="small muted">這裡依每個元件的主要工作分類。實際一台設備可能同時做好幾件事，例如探頭內建無線晶片。</p>';
     const out = el.querySelector('.lab-out'), check = el.querySelector('[data-check]'), left = el.querySelector('[data-left]');
     function draw() {
       const g = gradeLayers(answers);
@@ -94,7 +94,7 @@
         : '<rect data-s="' + i + '" x="' + p.x + '" y="45" width="' + p.w + '" height="30" class="soft"/><line x1="' + (p.x + 6) + '" y1="60" x2="' + (p.x + p.w - 6) + '" y2="60" class="la" marker-end="url(#s1-21-lab-arr)"/><text x="' + (p.x + p.w / 2) + '" y="112" class="ts tc">' + esc(p.label) + '</text>').join('') +
       '<rect x="511" y="30" width="88" height="60" rx="8" class="box"/><text x="555" y="66" class="tb tc">畫面</text></svg>';
     let sel = 2;
-    el.innerHTML = '<h3>實驗：畫面不更新，斷在哪一段？</h3><p class="small">點路徑上的一段，假設它壞了，看各站還剩什麼、會出現什麼症狀。再用下面的線索反過來練習：先在上面選一段，再按「就是上面選的這段」作答。</p><div class="lab-viz">' + svg + '</div><div class="chips" role="group" aria-label="故障的位置">' + SEGMENTS.map((s, i) => '<button type="button" data-k="' + i + '">' + esc(s.name) + '</button>').join('') + '</div><ul class="topics"></ul><p class="lab-say" aria-live="polite"></p><div class="tasks"><b>反過來想：聽到這些線索，你會先懷疑哪一段？</b>' + CLUES.map(c => '<div class="task"><span class="mark" aria-hidden="true">○</span><span>' + esc(c.q) + '<span class="res"></span></span><button type="button" class="linkbtn" data-pick>就是上面選的這段</button><button type="button" class="linkbtn" data-show>看答案</button></div>').join('') + '</div><p class="small muted">簡化模型：一次只壞一處，貨車走自己的行動網路，不經過倉庫閘道器。實際系統可能多處同時出問題。</p>';
+    el.innerHTML = '<h3>實驗：畫面不更新，斷在哪一段？</h3><p class="small">點一段假設它壞了，看各站還剩什麼、出現什麼症狀。</p><div class="lab-viz">' + svg + '</div><div class="chips" role="group" aria-label="故障的位置">' + SEGMENTS.map((s, i) => '<button type="button" data-k="' + i + '">' + esc(s.name) + '</button>').join('') + '</div><ul class="topics"></ul><p class="lab-say" aria-live="polite"></p><div class="tasks"><b>反過來想：聽到這些線索，你會先懷疑哪一段？</b><p class="small">先在上面選一段，再按「就是上面選的這段」。</p>' + CLUES.map(c => '<div class="task"><span class="mark" aria-hidden="true">○</span><span>' + esc(c.q) + '<span class="res"></span></span><button type="button" class="linkbtn" data-pick>就是上面選的這段</button><button type="button" class="linkbtn" data-show>看答案</button></div>').join('') + '</div><p class="small muted">簡化模型：一次只壞一處，貨車走自己的行動網路，不經過倉庫閘道器。實際系統可能多處同時出問題。</p>';
     const list = el.querySelector('.topics'), say = el.querySelector('.lab-say'), mark = el.querySelector('[data-mark]');
     function draw() {
       $$('[data-k]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === sel)));

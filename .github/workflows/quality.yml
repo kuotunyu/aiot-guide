@@ -1,14 +1,19 @@
 name: Quality
 
+# Pull requests run it directly. Pushes to main run it through pages.yml (workflow_call),
+# so a deploy only happens after these checks pass on the same commit.
 on:
   pull_request:
-  push:
-    branches: [main]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,9 +22,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
       - run: npm ci
       - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
-      - run: npx playwright install --with-deps chromium
+      # Browser downloads are cached per Playwright version; system libraries are installed every run.
+      - id: pw
+        run: echo "version=$(npx playwright --version | tr -d ' ')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium-webkit
+      - run: npx playwright install --with-deps chromium webkit
+      # CI=true adds the WebKit smoke project (see playwright.config.js).
       - run: npm run check
       - name: Save browser traces
         if: always()

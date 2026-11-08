@@ -140,7 +140,7 @@
       {q: '收所有車輛和冷藏庫的溫度，但不含冷凍櫃與 office', want: ['coldchain/truck7/temp', 'coldchain/truck9/temp', 'coldchain/room1/temp'], a: 'coldchain/+/temp'},
       {q: '收冷鏈底下的全部資料', want: TOPICS.slice(0, 5), a: 'coldchain/#'},
     ];
-    el.innerHTML = '<h3>實驗：寫一條訂閱條件</h3><p class="small">下面是裝置發布的六個 Topic。輸入訂閱條件，看 Broker 會轉哪些給你。<code>+</code> 代表一層，<code>#</code> 代表以下全部。</p><label class="lab-input" for="t-filter">訂閱條件<input id="t-filter" type="text" spellcheck="false" autocomplete="off" value="coldchain/truck7/temp"></label><p class="lab-err" role="alert" hidden></p><ul class="topics"></ul><div class="tasks"><b>挑戰</b>' + TASKS.map((t, i) => '<div class="task" data-t="' + i + '"><span class="mark" aria-hidden="true">○</span><span>' + esc(t.q) + '</span><button type="button" class="linkbtn">看答案</button></div>').join('') + '</div>';
+    el.innerHTML = '<h3>實驗：寫一條訂閱條件</h3><p class="small">輸入訂閱條件，看 Broker 會轉哪些 Topic 給你。<code>+</code> 代表一層，<code>#</code> 代表以下全部。</p><label class="lab-input" for="t-filter">訂閱條件<input id="t-filter" type="text" spellcheck="false" autocomplete="off" value="coldchain/truck7/temp"></label><p class="lab-err" role="alert" hidden></p><ul class="topics"></ul><div class="tasks"><b>挑戰</b>' + TASKS.map((t, i) => '<div class="task" data-t="' + i + '"><span class="mark" aria-hidden="true">○</span><span>' + esc(t.q) + '</span><button type="button" class="linkbtn">看答案</button></div>').join('') + '</div>';
     const input = el.querySelector('input'), err = el.querySelector('.lab-err'), list = el.querySelector('.topics');
     function draw() {
       const f = input.value.trim(), bad = checkFilter(f);
