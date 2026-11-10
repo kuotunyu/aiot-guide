@@ -1,8 +1,8 @@
-/* Layout: a datasheet read along a signal trace. Palette "celadon and apricot": a petrol-teal family carries the page, apricot marks subject 2 and the case box. */
+/* Layout: a datasheet read along a signal trace. Palette "celadon and apricot": petrol teal carries the site and subject 1, apricot carries subject 2 (its chapter pages swap the accent), amber marks the pitfalls. */
 :root{
   --bg:#F3F5F4; --surface:#FCFDFC; --surface2:#E8EEED; --text:#1F2B2F; --muted:#3A474C; --line:#CCD6D5;
   --accent:#1F5867; --accent-ink:#FFFFFF; --accent-soft:#E0ECEE;
-  --s1:#1F5867; --s1-soft:#E0ECEE; --s2:#7E4720; --s2-soft:#F6ECDF;
+  --s1:#1F5867; --s1-soft:#E0ECEE; --s2:#7E4720; --s2-soft:#F6ECDF; --band2:#4E3424; --band2-muted:#E3D3C5;
   --ok:#1A4F30; --ok-soft:#DBEDE1; --bad:#9B3341; --bad-soft:#FBECEF; --warn:#664A0E; --warn-soft:#F7F0E0;
   --sans:system-ui,-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC","Noto Sans TC",sans-serif;
   --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
@@ -14,7 +14,7 @@
   :root:not([data-theme="light"]){
     --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50;
     --accent:#9DCCD6; --accent-ink:#0F1B1E; --accent-soft:#1D3439;
-    --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22;
+    --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22; --band2:#3A2A20; --band2-muted:#DCCDC1;
     --ok:#B2E5C0; --ok-soft:#1B2F25; --bad:#F6AEB5; --bad-soft:#36222A; --warn:#EDD39A; --warn-soft:#322D1F; --band:#1D363C; --band-ink:#EEF3F2; --band-muted:#C6D5D7; --band-accent:#EEF3F2; --band-hot:#E9A07C; color-scheme:dark;
   }
 }
@@ -22,7 +22,7 @@
 :root[data-theme="dark"]{
   --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50;
   --accent:#9DCCD6; --accent-ink:#0F1B1E; --accent-soft:#1D3439;
-  --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22;
+  --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22; --band2:#3A2A20; --band2-muted:#DCCDC1;
   --ok:#B2E5C0; --ok-soft:#1B2F25; --bad:#F6AEB5; --bad-soft:#36222A; --warn:#EDD39A; --warn-soft:#322D1F; --band:#1D363C; --band-ink:#EEF3F2; --band-muted:#C6D5D7; --band-accent:#EEF3F2; --band-hot:#E9A07C; color-scheme:dark;
 }
 }
@@ -127,7 +127,7 @@ sup{font-size:max(.75em,13px)}
 }
 .band{padding-block:24px;border-top:1px solid var(--line)}
 .subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:var(--sp6)}
-.subject h2{margin-bottom:var(--sp1)}
+.subject h2{margin-bottom:var(--sp1);border-top:4px solid var(--subj);padding-top:var(--sp2)}
 #map h2{margin:0 0 8px}
 .subject .desc{margin:0 0 12px;color:var(--muted)}
 .chlist{list-style:none;padding:0;margin:0}
@@ -206,7 +206,7 @@ article{min-width:0}
 .loc li.on a{color:var(--band-ink);font-weight:700}
 .loc li.on::after{background:var(--band-hot);border-color:var(--band-hot)}
 .acrossnote{font-size:16px;color:var(--band-muted)}
-.case{border-left:4px solid var(--s2);background:var(--s2-soft);padding:var(--sp3) var(--sp5);margin:var(--sp4) 0}
+.case{border-left:4px solid var(--subj);background:var(--subj-soft);padding:var(--sp3) var(--sp5);margin:var(--sp4) 0}
 .case p{margin:4px 0 0}
 .case>b{display:block;text-wrap:balance}
 .pr{background:var(--accent-soft);padding:var(--sp3) var(--sp4);margin:var(--sp4) 0}
@@ -292,6 +292,11 @@ article{min-width:0}
 .lane .note{display:block;font-size:16px;color:var(--muted);line-height:1.45}
 .s1{--subj:var(--s1);--subj-soft:var(--s1-soft)}
 .s2{--subj:var(--s2);--subj-soft:var(--s2-soft)}
+/* A subject-2 chapter wears apricot: links, buttons, the contents and the header band. Figures and the chapter list keep the site's teal, so a colour inside a figure means the same thing in every chapter. */
+.doc.s2{--accent:var(--s2);--accent-soft:var(--s2-soft)}
+.doc.s2 :is(.dg,.lab-viz,.side){--accent:var(--s1);--accent-soft:var(--s1-soft)}
+.doc.s2 .side a[aria-current="page"]{--accent:var(--s2);--accent-soft:var(--s2-soft)}
+.doc.s2 .chead{--band:var(--band2);--band-muted:var(--band2-muted)}
 .chead .sub{font-size:21px;color:var(--muted);margin:0}
 .chead .meta{display:flex;gap:var(--sp3);align-items:center;flex-wrap:wrap;margin-bottom:4px;font-size:17px;color:var(--muted)}
 .chead .meta [data-read-all]{margin-left:auto}
@@ -442,8 +447,9 @@ summary::marker{color:var(--muted)}
 
 /* boxes */
 .keys,.pits{padding:var(--sp3) var(--sp5);margin:var(--sp4) 0;border-left:4px solid}
-.keys{background:var(--subj-soft);border-left-color:var(--subj)}
-.pits{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn)}
+/* Teal is always "key points" and amber is always "watch out", in both subjects: apricot and amber side by side look the same. */
+.keys{background:var(--s1-soft);border-left-color:var(--s1)}
+.pits{background:var(--warn-soft);border-left-color:var(--warn)}
 .keys h2,.pits h2{font-size:21px;margin:0}
 .ex{border:1px solid var(--line);background:var(--surface);padding:var(--sp3) var(--sp4);margin:var(--sp4) 0}
 .ex .stem{font-weight:700}
