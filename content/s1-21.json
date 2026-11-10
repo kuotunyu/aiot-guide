@@ -2,17 +2,16 @@
  "id": "s1-21",
  "title": "物聯網架構與功能",
  "subtitle": "從感測、傳輸到服務的全局地圖",
- "summary": "用三層架構看懂物聯網：資料怎麼被量到、怎麼傳出去、怎麼變成服務。讀完能替情境選感測器，也能判斷技術屬於哪一層。",
+ "summary": "用三層架構看懂物聯網：資料怎麼被量到、怎麼傳出去、怎麼變成服務。",
  "learn": [
-  "說明感知層、網路層、應用層各自負責什麼，並判斷一項技術屬於哪一層",
-  "解釋閘道器、邊緣運算與 M2M，並沿資料路徑判斷畫面不更新時斷在哪段",
-  "依需求選出合適的感測器，並說出它做不到的事",
-  "計算超音波測距，並對照 OSI 七層與 TCP/IP 四層",
-  "辨認常見智慧應用背後用到的感測與通訊技術"
+  "判斷一項技術屬於感知、網路還是應用層",
+  "沿資料路徑找出畫面不更新時斷在哪一段",
+  "依需求選感測器，並說出它做不到的事",
+  "算超音波測距，對照 OSI 與 TCP/IP 分層"
  ],
  "case": {
   "title": "全站共用的場景：一家冷鏈物流公司",
-  "body": "這家公司管理冷藏庫與冷凍櫃，有冷藏貨車跑遍全台，每天還有貨箱進出倉。貨物一旦超溫就可能報廢，所以各處的溫度與位置都要送上雲端平台，異常時立刻通知到手機。本章先畫出這套系統的全局地圖，之後每一章都會回到這家公司，放大其中一段。"
+  "body": "這家公司有冷藏庫、冷凍櫃、冷藏貨車和每天進出倉的貨箱。貨物一超溫就可能報廢，所以溫度與位置都要送上雲端平台，異常立刻通知。之後每章放大其中一段。"
  },
  "prereq": "<b>協定（protocol）</b>是雙方事先講好的資料格式與規則，像寄件時都要照著填的表單。",
  "bridge": "閘道器就像轉換資料格式的 adapter，網路分層就像各司其職的軟體分層。",
@@ -66,10 +65,10 @@
   {
    "id": "three-layers",
    "h": "三層架構：量資料、傳資料、用資料",
-   "body": "<p><b>物聯網（Internet of Things, IoT）</b>是讓實體世界的東西連上網路，把現場狀況變成資料，再用資料做決定或控制設備。它再加上人工智慧，就稱為 <b>AIoT</b>（Artificial Intelligence of Things）。</p><p>通行的看法分成三層：<b>感知層（Perception Layer）</b>像五官，負責感測與識別；<b>網路層（Network Layer）</b>像神經，負責搬運資料；<b>應用層（Application Layer）</b>像大腦，負責分析並提供服務。判斷某項技術屬於哪一層，先問它是在<b>量</b>、在<b>傳</b>，還是在<b>用</b>。</p><p>探頭量到 8°C（感知層），讀值經無線網路送出（網路層），平台判斷超溫後通知管理員（應用層）。以設備為基準：資料從設備送往平台叫<b>上行</b>，平台把指令送到設備叫<b>下行</b>。平台要求加強製冷時，下行指令送到壓縮機。這類依指令動作的元件叫<b>執行器（Actuator）</b>，例如馬達、閥門，也屬於感知層，像手腳。</p>",
+   "body": "<p><b>物聯網（Internet of Things, IoT）</b>是讓實體世界的東西連上網路，把現場狀況變成資料，再用資料做決定或控制設備。它再加上人工智慧，就稱為 <b>AIoT</b>（Artificial Intelligence of Things）。</p><p>通行的看法分成三層：<b>感知層（Perception Layer）</b>像五官，負責感測與識別；<b>網路層（Network Layer）</b>像神經，負責搬運資料；<b>應用層（Application Layer）</b>像大腦，負責分析並提供服務。判斷某項技術屬於哪一層，先問它是在<b>量</b>、在<b>傳</b>，還是在<b>用</b>。</p><p>探頭量到 8°C（感知層），讀值經無線網路送出（網路層），平台判斷超溫後通知管理員（應用層）。以設備為基準：資料從設備送往平台叫<b>上行</b>，平台把指令送到設備叫<b>下行</b>。平台要求加強製冷時，下行指令送到壓縮機。這類依指令動作的元件叫<b>執行器（Actuator）</b>，例如馬達、閥門；它同樣直接接觸現場，所以也屬於感知層，像手腳。</p>",
    "lab": "s1-21-layers",
-   "svg": "<svg viewBox=\"0 0 600 372\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網三層架構：感知層、網路層、應用層，資料上行、指令下行\"><defs><marker id=\"s1-21-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs>\n<rect x=\"20\" y=\"20\" width=\"480\" height=\"86\" rx=\"8\" class=\"box\"/>\n<text x=\"36\" y=\"56\" class=\"tb\">應用層</text>\n<text x=\"36\" y=\"80\" class=\"ts\">大腦：分析決策</text>\n<text x=\"180\" y=\"56\" class=\"t\">雲端平台、AI 模型、儀表板</text>\n<text x=\"180\" y=\"80\" class=\"ts\">智慧家庭、智慧工廠等服務在這層</text>\n<rect x=\"20\" y=\"126\" width=\"480\" height=\"86\" rx=\"8\" class=\"acc\"/>\n<text x=\"36\" y=\"162\" class=\"tb\">網路層</text>\n<text x=\"36\" y=\"186\" class=\"ts\">神經：傳遞資料</text>\n<text x=\"180\" y=\"162\" class=\"t\">閘道器、Wi-Fi、BLE、LoRa、5G</text>\n<text x=\"180\" y=\"186\" class=\"ts\">也含 Zigbee、NB-IoT、V2V／V2I</text>\n<rect x=\"20\" y=\"232\" width=\"480\" height=\"86\" rx=\"8\" class=\"box\"/>\n<text x=\"36\" y=\"268\" class=\"tb\">感知層</text>\n<text x=\"36\" y=\"292\" class=\"ts\">五官：感測與識別</text>\n<text x=\"180\" y=\"268\" class=\"t\">感測器、RFID、NFC、QR Code</text>\n<text x=\"180\" y=\"292\" class=\"ts\">執行器（馬達、閥門）負責動作</text>\n<line x1=\"525\" y1=\"314\" x2=\"525\" y2=\"26\" class=\"la\" marker-end=\"url(#s1-21-2-arr)\"/>\n<line x1=\"575\" y1=\"26\" x2=\"575\" y2=\"314\" class=\"ln dash\" marker-end=\"url(#s1-21-2-arr)\"/>\n<text x=\"525\" y=\"342\" class=\"tb tc ta\">上行</text>\n<text x=\"575\" y=\"342\" class=\"tb tc\">下行</text>\n<text x=\"525\" y=\"362\" class=\"ts tc\">資料</text>\n<text x=\"575\" y=\"362\" class=\"ts tc\">指令</text>\n</svg>",
-   "svgm": "<svg viewBox=\"0 0 360 384\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網三層架構：感知層、網路層、應用層，資料上行、指令下行\"><defs><marker id=\"s1-21-2-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"76\" y=\"8\" width=\"280\" height=\"92\" rx=\"8\" class=\"box\"/><text x=\"88\" y=\"34\" class=\"tb\">應用層</text><text x=\"148\" y=\"34\" class=\"ts\">大腦：分析決策</text><text x=\"88\" y=\"60\" class=\"t\">雲端平台、AI 模型、儀表板</text><text x=\"88\" y=\"84\" class=\"ts\">智慧家庭、智慧工廠等服務在這層</text><rect x=\"76\" y=\"112\" width=\"280\" height=\"114\" rx=\"8\" class=\"acc\"/><text x=\"88\" y=\"138\" class=\"tb\">網路層</text><text x=\"148\" y=\"138\" class=\"ts\">神經：傳遞資料</text><text x=\"88\" y=\"164\" class=\"t\">閘道器、Wi-Fi、BLE、LoRa、5G</text><text x=\"88\" y=\"188\" class=\"ts\">也含 Zigbee、NB-IoT、</text><text x=\"88\" y=\"210\" class=\"ts\">V2V／V2I</text><rect x=\"76\" y=\"238\" width=\"280\" height=\"92\" rx=\"8\" class=\"box\"/><text x=\"88\" y=\"264\" class=\"tb\">感知層</text><text x=\"148\" y=\"264\" class=\"ts\">五官：感測與識別</text><text x=\"88\" y=\"290\" class=\"t\">感測器、RFID、NFC、QR Code</text><text x=\"88\" y=\"314\" class=\"ts\">執行器（馬達、閥門）負責動作</text><line x1=\"18\" y1=\"326\" x2=\"18\" y2=\"14\" class=\"la\" marker-end=\"url(#s1-21-2-m-arr)\"/><line x1=\"54\" y1=\"14\" x2=\"54\" y2=\"326\" class=\"ln dash\" marker-end=\"url(#s1-21-2-m-arr)\"/><text x=\"18\" y=\"352\" class=\"tb tc ta\">上行</text><text x=\"54\" y=\"352\" class=\"tb tc\">下行</text><text x=\"18\" y=\"374\" class=\"ts tc\">資料</text><text x=\"54\" y=\"374\" class=\"ts tc\">指令</text></svg>",
+   "svg": "<svg viewBox=\"0 0 600 372\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網三層架構：感知層、網路層、應用層，資料上行、指令下行\"><defs><marker id=\"s1-21-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs>\n<rect x=\"20\" y=\"20\" width=\"480\" height=\"86\" rx=\"8\" class=\"box\"/>\n<text x=\"36\" y=\"56\" class=\"tb\">應用層</text>\n<text x=\"36\" y=\"80\" class=\"ts\">大腦：分析決策</text>\n<text x=\"180\" y=\"56\" class=\"t\">雲端平台、AI 模型、儀表板</text>\n<text x=\"180\" y=\"80\" class=\"ts\">智慧家庭、智慧工廠等服務在這層</text>\n<rect x=\"20\" y=\"126\" width=\"480\" height=\"86\" rx=\"8\" class=\"acc\"/>\n<text x=\"36\" y=\"162\" class=\"tb\">網路層</text>\n<text x=\"36\" y=\"186\" class=\"ts\">神經：傳遞資料</text>\n<text x=\"180\" y=\"162\" class=\"t\">閘道器、Wi-Fi、BLE、LoRa、5G</text>\n<rect x=\"20\" y=\"232\" width=\"480\" height=\"86\" rx=\"8\" class=\"box\"/>\n<text x=\"36\" y=\"268\" class=\"tb\">感知層</text>\n<text x=\"36\" y=\"292\" class=\"ts\">五官：感測與識別</text>\n<text x=\"180\" y=\"268\" class=\"t\">感測器、RFID、NFC、QR Code</text>\n<text x=\"180\" y=\"292\" class=\"ts\">執行器（馬達、閥門）負責動作</text>\n<line x1=\"525\" y1=\"314\" x2=\"525\" y2=\"26\" class=\"la\" marker-end=\"url(#s1-21-2-arr)\"/>\n<line x1=\"575\" y1=\"26\" x2=\"575\" y2=\"314\" class=\"ln dash\" marker-end=\"url(#s1-21-2-arr)\"/>\n<text x=\"525\" y=\"342\" class=\"tb tc ta\">上行</text>\n<text x=\"575\" y=\"342\" class=\"tb tc\">下行</text>\n<text x=\"525\" y=\"362\" class=\"ts tc\">資料</text>\n<text x=\"575\" y=\"362\" class=\"ts tc\">指令</text>\n</svg>",
+   "svgm": "<svg viewBox=\"0 0 360 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"物聯網三層架構：感知層、網路層、應用層，資料上行、指令下行\"><defs><marker id=\"s1-21-2-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"76\" y=\"8\" width=\"280\" height=\"92\" rx=\"8\" class=\"box\"/><text x=\"88\" y=\"34\" class=\"tb\">應用層</text><text x=\"148\" y=\"34\" class=\"ts\">大腦：分析決策</text><text x=\"88\" y=\"60\" class=\"t\">雲端平台、AI 模型、儀表板</text><text x=\"88\" y=\"84\" class=\"ts\">智慧家庭、智慧工廠等服務在這層</text><rect x=\"76\" y=\"112\" width=\"280\" height=\"70\" rx=\"8\" class=\"acc\"/><text x=\"88\" y=\"138\" class=\"tb\">網路層</text><text x=\"148\" y=\"138\" class=\"ts\">神經：傳遞資料</text><text x=\"88\" y=\"164\" class=\"t\">閘道器、Wi-Fi、BLE、LoRa、5G</text><rect x=\"76\" y=\"194\" width=\"280\" height=\"92\" rx=\"8\" class=\"box\"/><text x=\"88\" y=\"220\" class=\"tb\">感知層</text><text x=\"148\" y=\"220\" class=\"ts\">五官：感測與識別</text><text x=\"88\" y=\"246\" class=\"t\">感測器、RFID、NFC、QR Code</text><text x=\"88\" y=\"270\" class=\"ts\">執行器（馬達、閥門）負責動作</text><line x1=\"18\" y1=\"282\" x2=\"18\" y2=\"14\" class=\"la\" marker-end=\"url(#s1-21-2-m-arr)\"/><line x1=\"54\" y1=\"14\" x2=\"54\" y2=\"282\" class=\"ln dash\" marker-end=\"url(#s1-21-2-m-arr)\"/><text x=\"18\" y=\"308\" class=\"tb tc ta\">上行</text><text x=\"54\" y=\"308\" class=\"tb tc\">下行</text><text x=\"18\" y=\"330\" class=\"ts tc\">資料</text><text x=\"54\" y=\"330\" class=\"ts tc\">指令</text></svg>",
    "caption": "三層由下往上：感知層量資料、網路層傳資料、應用層用資料；上行回報、下行控制。"
   },
   {
@@ -79,14 +78,14 @@
     "q": "倉庫對外網路斷了 20 分鐘後恢復。平台上那 20 分鐘的溫度曲線，一定是空白的嗎？",
     "a": "不一定。閘道器若有斷線暫存，恢復後會補傳，曲線可以補回來。"
    },
-   "body": "<p>現場設備與網際網路往往講不同的「語言」，例如庫內探頭用 Zigbee，網際網路用 TCP/IP（網際網路通用的一套通訊規則）。站在中間做翻譯的就是<b>閘道器（Gateway）</b>，它做的事叫<b>協定轉換</b>。閘道器並非必備：貨車上能自己連網的設備可以直接連平台，工廠也可能完全在內部網路運作。</p><p><b>邊緣運算（Edge Computing）</b>是在靠近資料來源的地方先處理資料，例如濾掉雜訊或先做 AI 判斷，這樣上傳量和反應時間都會減少。它就像分店：能就地處理多數日常工作，只把彙整結果或難題送回總部（雲端）。</p><p><b>M2M（Machine to Machine）</b>指機器之間不經人工、直接透過網路交換資訊，例如機台自動向控制系統回報狀態。</p><p>資料要走完這條路才會出現在畫面上；畫面不更新時，不只懷疑感測器，要逐段找出它停在哪裡。</p>",
+   "body": "<p>現場設備與網際網路往往講不同的「語言」，例如庫內探頭用 Zigbee，網際網路用 TCP/IP（網際網路通用的一套通訊規則）。站在中間做翻譯的就是<b>閘道器（Gateway）</b>，它做的事叫<b>協定轉換</b>。它也常兼做三件事：彙整多顆探頭的資料；斷線時暫存讀值與時間，恢復後補傳；就地先處理資料（即下段的邊緣運算）。閘道器並非必備：貨車上能自己連網的設備可以直接連平台，工廠也可能完全在內部網路運作。</p><p><b>邊緣運算（Edge Computing）</b>是在靠近資料來源的地方先處理資料，例如濾掉雜訊或先做 AI 判斷，這樣上傳量和反應時間都會減少。它就像分店：能就地處理多數日常工作，只把彙整結果或難題送回總部（雲端）。</p><p><b>M2M（Machine to Machine）</b>指機器之間不經人工、直接透過網路交換資訊，例如機台自動向控制系統回報狀態。</p><p>資料要走完這條路才會出現在畫面上；畫面不更新時，不只懷疑感測器，要逐段找出它停在哪裡。</p>",
    "lab": "s1-21-path",
    "svg": "<svg viewBox=\"0 0 600 318\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"感測器的 Zigbee 資料經閘道器換成 TCP/IP 外殼送上雲端，內容 8.0°C 不變；平台指令再經閘道器送回現場執行器\"><defs><marker id=\"s1-21-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"14\" width=\"120\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"70\" y=\"44\" class=\"tb tc\">感測器節點</text><text x=\"70\" y=\"67\" class=\"ts tc\">Zigbee／BLE</text><rect x=\"170\" y=\"14\" width=\"140\" height=\"70\" rx=\"8\" class=\"acc\"/><text x=\"240\" y=\"44\" class=\"tb tc\">閘道器</text><text x=\"240\" y=\"67\" class=\"ts tc\">協定轉換</text><rect x=\"345\" y=\"14\" width=\"110\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"400\" y=\"44\" class=\"tb tc\">網際網路</text><text x=\"400\" y=\"67\" class=\"ts tc\">TCP/IP 封包</text><rect x=\"490\" y=\"14\" width=\"100\" height=\"70\" rx=\"8\" class=\"box\"/><text x=\"540\" y=\"44\" class=\"tb tc\">雲端平台</text><text x=\"540\" y=\"67\" class=\"ts tc\">儲存與分析</text><line x1=\"130\" y1=\"49\" x2=\"168\" y2=\"49\" class=\"la\" marker-end=\"url(#s1-21-3-arr)\"/><line x1=\"310\" y1=\"49\" x2=\"343\" y2=\"49\" class=\"la\" marker-end=\"url(#s1-21-3-arr)\"/><line x1=\"455\" y1=\"49\" x2=\"488\" y2=\"49\" class=\"la\" marker-end=\"url(#s1-21-3-arr)\"/><text x=\"150\" y=\"37\" class=\"t tc\">上行</text><rect x=\"12\" y=\"98\" width=\"66\" height=\"30\" class=\"box\"/><text x=\"45\" y=\"119\" class=\"t tc\">Zigbee</text><rect x=\"78\" y=\"98\" width=\"52\" height=\"30\" class=\"acc\"/><text x=\"104\" y=\"119\" class=\"t tc\">8.0°C</text><rect x=\"342\" y=\"98\" width=\"28\" height=\"30\" class=\"box\"/><text x=\"356\" y=\"119\" class=\"t tc\">IP</text><rect x=\"370\" y=\"98\" width=\"40\" height=\"30\" class=\"box\"/><text x=\"390\" y=\"119\" class=\"t tc\">TCP</text><rect x=\"410\" y=\"98\" width=\"54\" height=\"30\" class=\"acc\"/><text x=\"437\" y=\"119\" class=\"t tc\">8.0°C</text><text x=\"222\" y=\"112\" class=\"tb tc\">換外殼</text><text x=\"222\" y=\"133\" class=\"t tc\">Zigbee → TCP/IP</text><polyline points=\"540,84 540,196 290,196 290,86\" class=\"ln dash\" marker-end=\"url(#s1-21-3-arr)\"/><polyline points=\"170,74 150,74 150,200 132,200\" class=\"ln dash\" marker-end=\"url(#s1-21-3-arr)\"/><text x=\"415\" y=\"186\" class=\"t tc\">下行：平台指令送回現場</text><rect x=\"10\" y=\"170\" width=\"120\" height=\"60\" rx=\"8\" class=\"box\"/><text x=\"70\" y=\"196\" class=\"tb tc\">現場執行器</text><text x=\"70\" y=\"217\" class=\"ts tc\">壓縮機、閥門</text><rect x=\"10\" y=\"244\" width=\"580\" height=\"64\" rx=\"8\" class=\"soft\"/><text x=\"26\" y=\"269\" class=\"t\">閘道器四件事：① 協定轉換　② 資料彙整</text><text x=\"26\" y=\"294\" class=\"t\">③ 斷線暫存、恢復補傳　④ 邊緣運算（過濾、推論）</text></svg>",
    "svgm": "<svg viewBox=\"0 0 360 666\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"感測器的 Zigbee 資料經閘道器換成 TCP/IP 外殼送上雲端，內容 8.0°C 不變；平台指令再經閘道器送回現場執行器\"><defs><marker id=\"s1-21-3-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"40\" y=\"8\" width=\"140\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"110\" y=\"36\" class=\"tb tc\">感測器節點</text><text x=\"110\" y=\"59\" class=\"ts tc\">Zigbee／BLE</text><rect x=\"228\" y=\"8\" width=\"124\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"290\" y=\"36\" class=\"tb tc\">現場執行器</text><text x=\"290\" y=\"59\" class=\"ts tc\">壓縮機、閥門</text><line x1=\"110\" y1=\"72\" x2=\"110\" y2=\"178\" class=\"la\" marker-end=\"url(#s1-21-3-m-arr)\"/><text x=\"120\" y=\"97\" class=\"t\">上行</text><rect x=\"51\" y=\"110\" width=\"66\" height=\"30\" class=\"box\"/><text x=\"84\" y=\"131\" class=\"t tc\">Zigbee</text><rect x=\"117\" y=\"110\" width=\"52\" height=\"30\" class=\"acc\"/><text x=\"143\" y=\"131\" class=\"t tc\">8.0°C</text><rect x=\"40\" y=\"180\" width=\"140\" height=\"76\" rx=\"8\" class=\"acc\"/><text x=\"110\" y=\"210\" class=\"tb tc\">閘道器</text><text x=\"110\" y=\"234\" class=\"ts tc\">協定轉換</text><text x=\"214\" y=\"206\" class=\"tb\">換外殼</text><text x=\"214\" y=\"228\" class=\"t\">Zigbee → TCP/IP</text><polyline points=\"180,188 204,188 204,40 226,40\" class=\"ln dash\" marker-end=\"url(#s1-21-3-m-arr)\"/><line x1=\"110\" y1=\"256\" x2=\"110\" y2=\"362\" class=\"la\" marker-end=\"url(#s1-21-3-m-arr)\"/><rect x=\"49\" y=\"294\" width=\"28\" height=\"30\" class=\"box\"/><text x=\"63\" y=\"315\" class=\"t tc\">IP</text><rect x=\"77\" y=\"294\" width=\"40\" height=\"30\" class=\"box\"/><text x=\"97\" y=\"315\" class=\"t tc\">TCP</text><rect x=\"117\" y=\"294\" width=\"54\" height=\"30\" class=\"acc\"/><text x=\"144\" y=\"315\" class=\"t tc\">8.0°C</text><rect x=\"40\" y=\"364\" width=\"140\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"110\" y=\"392\" class=\"tb tc\">網際網路</text><text x=\"110\" y=\"415\" class=\"ts tc\">TCP/IP 封包</text><text x=\"206\" y=\"388\" class=\"t\">下行：</text><text x=\"206\" y=\"412\" class=\"t\">平台指令送回現場</text><line x1=\"110\" y1=\"428\" x2=\"110\" y2=\"464\" class=\"la\" marker-end=\"url(#s1-21-3-m-arr)\"/><rect x=\"40\" y=\"466\" width=\"140\" height=\"64\" rx=\"8\" class=\"box\"/><text x=\"110\" y=\"494\" class=\"tb tc\">雲端平台</text><text x=\"110\" y=\"517\" class=\"ts tc\">儲存與分析</text><polyline points=\"180,498 348,498 348,246 182,246\" class=\"ln dash\" marker-end=\"url(#s1-21-3-m-arr)\"/><rect x=\"4\" y=\"546\" width=\"352\" height=\"112\" rx=\"8\" class=\"soft\"/><text x=\"18\" y=\"572\" class=\"t\">閘道器四件事：</text><text x=\"18\" y=\"598\" class=\"t\">① 協定轉換　② 資料彙整</text><text x=\"18\" y=\"624\" class=\"t\">③ 斷線暫存、恢復補傳</text><text x=\"18\" y=\"650\" class=\"t\">④ 邊緣運算（過濾、推論）</text></svg>",
    "caption": "圖示為經閘道器的架構：內容 8.0°C 沒變，閘道器換掉的是外面那層協定。",
    "more": {
     "label": "存取網路與核心網路、物聯網的傳輸特性、大數據",
-    "body": "<p>網路層可再分成兩段：<b>存取網路（Access Network）</b>是設備接上網路的第一段，<b>核心網路（Core Network）</b>則負責長距離骨幹傳輸。例如手機連基地台是存取網路，電信業者的骨幹線路是核心網路。</p><p>物聯網的傳輸常是<b>小封包、高頻率</b>（封包是資料切成的小包裹）或<b>事件驅動</b>（有狀況才送），因此特別在意封包遺失與<b>延遲（latency）</b>。</p><p>累積下來的資料量大、產生快、種類多，又分散在各地裝置，所以也常用<b>大數據（Big Data）</b>方法處理，也就是用專門的工具儲存與分析一般軟體應付不來的大量資料。</p>"
+    "body": "<p>網路層可再分成兩段：<b>存取網路（Access Network）</b>是設備接上網路的第一段，<b>核心網路（Core Network）</b>則負責長距離骨幹傳輸。例如手機連基地台是存取網路，電信業者的骨幹線路是核心網路。</p><p>物聯網的傳輸常是<b>小封包、高頻率</b>（封包是資料切成的小包裹）或<b>事件驅動</b>（有狀況才送），因此特別在意封包遺失與<b>延遲（latency）</b>。</p><p>累積下來的資料量大、產生快、種類多，又分散在各地裝置，所以常用<b>大數據（Big Data）</b>方法處理：用專門工具儲存與分析一般軟體應付不來的大量資料。</p>"
    }
   },
   {
@@ -96,7 +95,7 @@
     "q": "想知道有沒有人被關在冷藏庫裡，在庫內裝一顆走廊自動燈常用的人體感測器（PIR）。如果那個人坐著不動，系統會知道嗎？",
     "a": "可能不會。PIR 偵測紅外線的變化，人不動就幾乎沒有變化，所以它不能確認靜止的人是否在場。"
    },
-   "body": "<p>多數感測器輸出的是連續變化的電壓（類比訊號），要經 <b>ADC</b>（類比數位轉換器）換成數字，再由<b>微控制器（MCU，裝置上的小電腦）</b>的腳位讀進來，見 <a href=\"s1-31.html#what-and-types\">3.1〈感測技術基礎〉</a>。</p><p>感知層的另一件事是<b>識別</b>：感測回答「現在狀況如何」，識別回答「它是誰」。<b>RFID</b> 用無線電讀標籤、不必對準；<b>NFC</b> 是近距（約 10 cm）、可雙向的 RFID；<b>QR Code</b>（二維條碼）靠相機掃印刷圖案，不需電力但要看得到。細節見 <a href=\"s1-22.html#rfid-nfc\">2.2〈常見通訊協定與網路層技術〉</a>。</p><p>學感測器抓兩件事：<b>它量的物理量</b>，以及<b>它做不到的事</b>。例如 PIR 是<b>被動</b>接收紅外線的<b>變化</b>。加速度計和陀螺儀最容易混淆：加速度計量直線加速與受重力造成的傾斜，陀螺儀量「轉多快」。</p>",
+   "body": "<p>感知層做兩件事：<b>感測</b>回答「現在狀況如何」，<b>識別</b>回答「它是誰」。<b>RFID</b> 用無線電讀標籤、不必對準；<b>NFC</b> 是近距（約 10 cm）、可雙向的 RFID；<b>QR Code</b>（二維條碼）靠相機掃印刷圖案，不需電力但要看得到。細節見 <a href=\"s1-22.html#rfid-nfc\">2.2〈常見通訊協定與網路層技術〉</a>。</p><p>感測器怎麼把物理量變成數字，留到 <a href=\"s1-31.html#what-and-types\">3.1〈感測技術基礎〉</a>；這裡先抓兩件事：<b>它量的物理量</b>，以及<b>它做不到的事</b>。例如 PIR 是<b>被動</b>接收紅外線的<b>變化</b>。加速度計和陀螺儀最容易混淆：加速度計量直線加速與受重力造成的傾斜，陀螺儀量「轉多快」。</p>",
    "svg": "<svg viewBox=\"0 0 600 344\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"同一個人依序走進來、坐著不動、原地轉身、跌倒時，PIR、加速度計、陀螺儀的示意讀值：坐著不動時 PIR 沒反應，加速度計仍有 1 g 重力讀值，陀螺儀歸零；轉身時陀螺儀最大，跌倒時加速度計先失重再出現撞擊尖峰\"><text x=\"152.5\" y=\"20\" class=\"tb tc\">① 走進來</text><text x=\"277.5\" y=\"20\" class=\"tb tc\">② 坐著不動</text><text x=\"402.5\" y=\"20\" class=\"tb tc\">③ 原地轉身</text><text x=\"527.5\" y=\"20\" class=\"tb tc\">④ 跌倒</text><rect x=\"90\" y=\"28\" width=\"500\" height=\"24\" rx=\"6\" class=\"soft\"/><text x=\"340\" y=\"46\" class=\"t tc\">①–④ 人都在庫內</text><rect x=\"218\" y=\"63\" width=\"119\" height=\"74\" rx=\"6\" class=\"warn\"/><rect x=\"468\" y=\"147\" width=\"119\" height=\"74\" rx=\"6\" class=\"acc\"/><rect x=\"343\" y=\"231\" width=\"119\" height=\"74\" rx=\"6\" class=\"acc\"/><line x1=\"10\" y1=\"142\" x2=\"590\" y2=\"142\" class=\"ln\"/><line x1=\"10\" y1=\"226\" x2=\"590\" y2=\"226\" class=\"ln\"/><line x1=\"215\" y1=\"58\" x2=\"215\" y2=\"308\" class=\"ln dash\"/><line x1=\"340\" y1=\"58\" x2=\"340\" y2=\"308\" class=\"ln dash\"/><line x1=\"465\" y1=\"58\" x2=\"465\" y2=\"308\" class=\"ln dash\"/><text x=\"12\" y=\"106\" class=\"tb\">PIR</text><text x=\"12\" y=\"190\" class=\"tb\">加速度計</text><text x=\"12\" y=\"274\" class=\"tb\">陀螺儀</text><polyline points=\"90,132 100,132 100,96 122,96 122,132 138,132 138,96 166,96 166,132 182,132 182,96 204,96 204,132 352,132 352,96 378,96 378,132 396,132 396,96 420,96 420,132 436,132 436,96 456,96 456,132 474,132 474,96 540,96 540,132 590,132\" class=\"la\"/><text x=\"277.5\" y=\"84\" class=\"t tc\">人在卻沒反應</text><polyline points=\"90,191 100,205 110,191 120,205 130,191 140,205 150,191 160,205 170,191 180,205 190,191 200,205 210,191 215,198 340,198 350,194 365,202 380,194 395,202 410,194 425,202 440,194 455,202 465,198 478,198 486,218 506,218 512,177 518,210 524,190 530,202 536,198 590,198\" class=\"la\"/><text x=\"277.5\" y=\"168\" class=\"t tc\">只剩重力 1 g</text><text x=\"527.5\" y=\"168\" class=\"t tc\">失重→撞擊</text><polyline points=\"90,294 99,299 108,294 117,299 126,294 135,299 144,294 153,299 162,294 171,299 180,294 189,299 198,294 207,299 215,300 340,300 356,300 372,264 436,264 452,300 488,300 500,274 512,300 590,300\" class=\"la\"/><text x=\"277.5\" y=\"252\" class=\"t tc\">歸零</text><text x=\"402.5\" y=\"252\" class=\"t tc\">轉身最大</text><text x=\"590\" y=\"332\" class=\"ts\" text-anchor=\"end\">示意波形，非實測</text></svg>",
    "caption": "庫內的人戴著手環，依序走進來、坐著不動、原地轉身、跌倒；往下對照同一刻三種感測器的讀值。",
    "figs": [
@@ -124,7 +123,7 @@
       "溫濕度（DHT11）",
       "溫度、相對濕度",
       "室內舒適度、溫室、連動除濕機",
-      "典型範圍 0–50°C、20–90% RH；取樣慢，常約每 2 秒讀一次"
+      "0–50°C、20–90% RH，冷凍櫃用不上；約每 2 秒才讀一次"
      ],
      [
       "超音波（HC-SR04）",
@@ -133,7 +132,7 @@
       "不是量噪音分貝；典型量程約 2–400 cm"
      ],
      [
-      "三軸加速度（ADXL345）",
+      "三軸加速度（ADXL345，MEMS 晶片）",
       "X/Y/Z 加速度、傾斜、振動、自由落體",
       "計步、跌倒偵測、振動喚醒裝置",
       "單獨使用無法得知所在位置"
@@ -170,7 +169,7 @@
     "q": "從冷藏庫天花板往下量，超音波算出到貨堆頂端 85 cm。這個數字就是貨堆的高度嗎？",
     "a": "不是。85 cm 是感測器到貨堆頂端的距離，貨堆高度要用總高度減去它。"
    },
-   "body": "<p>選感測器時，先把需求歸類：要知道<b>位置、距離、動作、環境</b>，還是<b>影像</b>？再看有沒有條件限制，例如是否全黑、是否要大範圍、能不能在物體上先貼標籤。</p><p>超音波量的是聲波<b>一來一回</b>的時間（看下圖）。它不受光線與顏色影響，全黑或<b>透明</b>玻璃也能量；吸音或傾斜的表面回波會變弱。</p>",
+   "body": "<p>選感測器時，先把需求歸類：要知道<b>位置、距離、動作、環境</b>，還是<b>影像</b>？再看有沒有條件限制，例如是否全黑、是否要大範圍、能不能在物體上先貼標籤；常見配對見本節末的表。</p><p>超音波量的是聲波<b>一來一回</b>的時間（看下圖）。它不受光線與顏色影響，全黑或<b>透明</b>玻璃也能量；吸音或傾斜的表面回波會變弱。</p>",
    "svg": "<svg viewBox=\"0 0 600 362\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"超音波從天花板往下量貨堆的逐步圖：Echo 計時涵蓋去程與回程，聲波碰到貨堆頂時只過了一半時間，所以距離要除以 2；量到的是感測器到貨堆頂的距離，貨堆高度要用總高去減\">\n<defs><marker id=\"s1-21-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs>\n<line x1=\"80\" y1=\"24\" x2=\"250\" y2=\"24\" class=\"ln\"/><text x=\"250\" y=\"16\" class=\"ts\" text-anchor=\"end\">天花板</text>\n<line x1=\"80\" y1=\"250\" x2=\"250\" y2=\"250\" class=\"ln\"/><text x=\"250\" y=\"267\" class=\"ts\" text-anchor=\"end\">地板</text>\n<rect x=\"95\" y=\"24\" width=\"110\" height=\"36\" rx=\"4\" class=\"acc\"/><text x=\"150\" y=\"48\" class=\"tb tc\">超音波</text>\n<rect x=\"90\" y=\"116.0\" width=\"120\" height=\"44.7\" class=\"box\"/>\n<rect x=\"90\" y=\"160.7\" width=\"120\" height=\"44.7\" class=\"box\"/>\n<rect x=\"90\" y=\"205.3\" width=\"120\" height=\"44.7\" class=\"box\"/>\n<line x1=\"135\" y1=\"63\" x2=\"135\" y2=\"113\" class=\"la\" marker-end=\"url(#s1-21-5-arr)\" data-s=\"1 2 3 4\"/>\n<line x1=\"165\" y1=\"113\" x2=\"165\" y2=\"63\" class=\"ln dash\" marker-end=\"url(#s1-21-5-arr)\" data-s=\"3 4\"/>\n<circle cx=\"150\" cy=\"116\" r=\"5\" class=\"warn\" data-s=\"2 3 4\"/>\n<g data-s=\"4\"><polyline points=\"222,60 228,60 228,116 222,116\" class=\"ln\"/><text x=\"236\" y=\"94\" class=\"tb\">0.85 m</text>\n<polyline points=\"95,60 72,60 72,250 78,250\" class=\"ln\"/><text x=\"38\" y=\"150\" class=\"tb tc\">總高</text><text x=\"38\" y=\"171\" class=\"t tc\">4.00 m</text></g>\n<text x=\"340\" y=\"38\" class=\"t\"><tspan class=\"tb\">Echo</tspan>：計時中</text>\n<g data-s=\"1 2 3 4\"><rect x=\"370\" y=\"90\" width=\"100\" height=\"60\" class=\"acc\"/><text x=\"420\" y=\"126\" class=\"tb tc\">去程</text></g>\n<g data-s=\"3 4\"><rect x=\"470\" y=\"90\" width=\"100\" height=\"60\" class=\"soft\"/><text x=\"520\" y=\"126\" class=\"tb tc\">回程</text></g>\n<polyline points=\"345,150 370,150 370,90 470,90\" class=\"la\" data-s=\"1 2 3 4\"/>\n<polyline points=\"470,90 570,90 570,150 590,150\" class=\"la\" data-s=\"3 4\"/>\n<g data-s=\"2 3 4\"><line x1=\"470\" y1=\"74\" x2=\"470\" y2=\"172\" class=\"warn dash\"/><text x=\"470\" y=\"66\" class=\"tb tc\">碰到貨堆頂（才過一半）</text>\n<line x1=\"470\" y1=\"167\" x2=\"470\" y2=\"177\" class=\"ln\"/><text x=\"470\" y=\"192\" class=\"ts tc\">2.5 ms</text></g>\n<line x1=\"345\" y1=\"172\" x2=\"590\" y2=\"172\" class=\"ln\"/>\n<line x1=\"370\" y1=\"167\" x2=\"370\" y2=\"177\" class=\"ln\"/><text x=\"370\" y=\"192\" class=\"ts tc\">0 ms</text>\n<text x=\"370\" y=\"216\" class=\"t tc\">Trig 發射</text>\n<g data-s=\"3 4\"><line x1=\"570\" y1=\"167\" x2=\"570\" y2=\"177\" class=\"ln\"/><text x=\"570\" y=\"192\" class=\"ts tc\">5 ms</text>\n<text x=\"588\" y=\"216\" class=\"t\" text-anchor=\"end\">回波到達</text></g>\n<g data-s=\"4\"><rect x=\"10\" y=\"270\" width=\"580\" height=\"86\" rx=\"8\" class=\"soft\"/>\n<text x=\"26\" y=\"294\" class=\"tb\">距離 ＝ 聲速 340 m/s × 往返時間 ÷ 2</text>\n<text x=\"26\" y=\"320\" class=\"t\">例：往返 5 ms → 340 × 0.005 ÷ 2 ＝ 0.85 m（感測器到貨堆頂）</text>\n<text x=\"26\" y=\"346\" class=\"tb\">貨堆高 ＝ 總高 − 距離 ＝ 4.00 − 0.85 ＝ 3.15 m</text></g>\n</svg>",
    "svgm": "<svg viewBox=\"0 0 360 652\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"超音波從天花板往下量貨堆的逐步圖：Echo 計時涵蓋去程與回程，聲波碰到貨堆頂時只過了一半時間，所以距離要除以 2；量到的是感測器到貨堆頂的距離，貨堆高度要用總高去減\"><defs><marker id=\"s1-21-5-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"110\" y1=\"24\" x2=\"280\" y2=\"24\" class=\"ln\"/><text x=\"280\" y=\"16\" class=\"ts\" text-anchor=\"end\">天花板</text><line x1=\"110\" y1=\"250\" x2=\"280\" y2=\"250\" class=\"ln\"/><text x=\"280\" y=\"267\" class=\"ts\" text-anchor=\"end\">地板</text><rect x=\"125\" y=\"24\" width=\"110\" height=\"36\" rx=\"4\" class=\"acc\"/><text x=\"180\" y=\"48\" class=\"tb tc\">超音波</text><rect x=\"120\" y=\"116.0\" width=\"120\" height=\"44.7\" class=\"box\"/><rect x=\"120\" y=\"160.7\" width=\"120\" height=\"44.7\" class=\"box\"/><rect x=\"120\" y=\"205.3\" width=\"120\" height=\"44.7\" class=\"box\"/><line x1=\"165\" y1=\"63\" x2=\"165\" y2=\"113\" class=\"la\" marker-end=\"url(#s1-21-5-m-arr)\" data-s=\"1 2 3 4\"/><line x1=\"195\" y1=\"113\" x2=\"195\" y2=\"63\" class=\"ln dash\" marker-end=\"url(#s1-21-5-m-arr)\" data-s=\"3 4\"/><circle cx=\"180\" cy=\"116\" r=\"5\" class=\"warn\" data-s=\"2 3 4\"/><g data-s=\"4\"><polyline points=\"252,60 258,60 258,116 252,116\" class=\"ln\"/><text x=\"266\" y=\"94\" class=\"tb\">0.85 m</text><polyline points=\"125,60 102,60 102,250 108,250\" class=\"ln\"/><text x=\"68\" y=\"150\" class=\"tb tc\">總高</text><text x=\"68\" y=\"171\" class=\"t tc\">4.00 m</text></g><text x=\"20\" y=\"300\" class=\"t\"><tspan class=\"tb\">Echo</tspan>：計時中</text><g data-s=\"1 2 3 4\"><rect x=\"50\" y=\"352\" width=\"130\" height=\"60\" class=\"acc\"/><text x=\"115\" y=\"388\" class=\"tb tc\">去程</text></g><g data-s=\"3 4\"><rect x=\"180\" y=\"352\" width=\"130\" height=\"60\" class=\"soft\"/><text x=\"245\" y=\"388\" class=\"tb tc\">回程</text></g><polyline points=\"20,412 50,412 50,352 180,352\" class=\"la\" data-s=\"1 2 3 4\"/><polyline points=\"180,352 310,352 310,412 336,412\" class=\"la\" data-s=\"3 4\"/><g data-s=\"2 3 4\"><line x1=\"180\" y1=\"336\" x2=\"180\" y2=\"434\" class=\"warn dash\"/><text x=\"180\" y=\"328\" class=\"tb tc\">碰到貨堆頂（才過一半）</text><line x1=\"180\" y1=\"429\" x2=\"180\" y2=\"439\" class=\"ln\"/><text x=\"180\" y=\"454\" class=\"ts tc\">2.5 ms</text></g><line x1=\"20\" y1=\"434\" x2=\"336\" y2=\"434\" class=\"ln\"/><line x1=\"50\" y1=\"429\" x2=\"50\" y2=\"439\" class=\"ln\"/><text x=\"50\" y=\"454\" class=\"ts tc\">0 ms</text><text x=\"50\" y=\"478\" class=\"t tc\">Trig 發射</text><g data-s=\"3 4\"><line x1=\"310\" y1=\"429\" x2=\"310\" y2=\"439\" class=\"ln\"/><text x=\"310\" y=\"454\" class=\"ts tc\">5 ms</text><text x=\"338\" y=\"478\" class=\"t\" text-anchor=\"end\">回波到達</text></g><g data-s=\"4\"><rect x=\"4\" y=\"494\" width=\"352\" height=\"150\" rx=\"8\" class=\"soft\"/><text x=\"16\" y=\"520\" class=\"tb\">距離 ＝ 聲速 340 m/s × 往返時間 ÷ 2</text><text x=\"16\" y=\"546\" class=\"t\">例：往返 5 ms → 340 × 0.005 ÷ 2</text><text x=\"16\" y=\"570\" class=\"t\">＝ 0.85 m（感測器到貨堆頂）</text><text x=\"16\" y=\"600\" class=\"tb\">貨堆高 ＝ 總高 − 距離</text><text x=\"16\" y=\"624\" class=\"tb\">＝ 4.00 − 0.85 ＝ 3.15 m</text></g></svg>",
    "caption": "距離＝聲速×往返時間÷2；量到的是到貨堆頂的距離。",
@@ -189,34 +188,19 @@
     ],
     "rows": [
      [
-      "手環判斷配戴者是否突然摔倒",
-      "加速度計（常搭配陀螺儀）",
-      "摔倒是身體運動的急劇變化，要量運動本身，環境類感測器反映不出來"
-     ],
-     [
-      "居家瓦斯外洩",
-      "氣體感測器",
-      "溫濕度與壓力讀值無法反映氣體濃度"
-     ],
-     [
-      "水塔液位、容器滿了沒",
-      "超音波（由上往下量距離）",
-      "GPS 量位置，加速度計量運動"
-     ],
-     [
       "社區地下室每格車位有沒有車",
       "超音波或地磁感測器（車體的鐵質會改變周圍磁場）",
-      "車輛不必事先安裝任何裝置，所以不依賴要讀標籤的方案"
+      "車輛不必先裝任何裝置或標籤"
      ],
      [
       "展覽會場各攤位的參觀人潮",
       "攝影機加影像 AI",
-      "要同時掌握大範圍內多人的位置，單點感測器只看得到局部"
+      "要同時看大範圍內的多人，單點感測器只看得到局部"
      ],
      [
       "物流車隊估算整條路是否壅塞",
       "多台裝置回報的 GPS 位置與速度",
-      "要比對多台裝置隨時間的位置變化，單一裝置的運動資料看不出整條路的狀況"
+      "要比對多台車隨時間的位置變化，單一裝置看不出整條路"
      ],
      [
       "倉儲搬運車在陌生場地自己畫地圖",
@@ -241,12 +225,12 @@
    "h": "OSI 七層與 TCP/IP 四層：網路怎麼分工",
    "predict": {
     "q": "工程師確認監控平台與伺服器之間的 TCP 連線正常，但打開網頁卻顯示「404 找不到頁面」。該先往 OSI 的上層還是下層找？",
-    "a": "先往上層找。TCP 在第 4 層，它正常代表以下幾層大致沒問題；404 是應用層的 HTTP 回應，代表伺服器收到了請求，只是找不到要的頁面，問題多半在網址或伺服器設定。"
+    "a": "先往上層找。TCP 在第 4 層，它正常代表以下幾層大致沒問題；404 是第 7 層 HTTP 的回應：伺服器收到了請求，只是找不到頁面，多半是網址或設定的問題。"
    },
-   "body": "<p>網路通訊像寄包裹：寫內容、裝箱、貼地址、交給運輸，每一步由不同單位負責，改動其中一段不必影響其他段。<b>OSI（Open Systems Interconnection）</b>是七層的參考模型，用來解決不同系統互連的相容問題；<b>TCP/IP</b> 是網際網路實際廣泛使用的四層模型。後者是<b>把功能相近的層合併</b>，不是刪掉某幾層；各層資料包的名稱見 <a href=\"s1-23.html#network-layers\">2.3〈工業通訊標準與資訊模型〉</a>。</p><p>幾個關鍵位置：<b>IP</b> 在 OSI 第 3 層，負責定址與路由；<b>TCP、UDP</b> 在第 4 層（TCP 會確認重傳，UDP 不保證送達）；<b>HTTP</b> 在第 7 層；格式轉換、加解密與壓縮在第 6 層<b>表達層</b>；<b>乙太網路</b>在第 2 層。比喻與比較見 <a href=\"s1-22.html#road-and-language\">2.2〈常見通訊協定與網路層技術〉</a>。</p>",
+   "body": "<p>網路通訊像寄包裹：寫內容、裝箱、貼地址、交給運輸，每一步由不同單位負責，改動其中一段不必影響其他段。<b>OSI（Open Systems Interconnection）</b>是七層的參考模型，用來解決不同系統互連的相容問題；<b>TCP/IP</b> 是網際網路實際廣泛使用的四層模型。後者是<b>把功能相近的層合併</b>，不是刪掉某幾層；各層資料包的名稱見 <a href=\"s1-23.html#network-layers\">2.3〈工業通訊標準與資訊模型〉</a>。</p><p>各層做什麼看下圖；先記四個代表，由上往下正好對回寄包裹：</p><ul><li><b>HTTP</b>（網頁用的協定）在第 7 層應用層：寫內容。</li><li><b>TCP、UDP</b> 在第 4 層傳輸層：裝箱、決定怎麼送；TCP 會確認重傳，UDP 不保證送達。</li><li><b>IP</b> 在第 3 層網路層：貼地址、選路線（定址與路由）。</li><li><b>乙太網路</b>在第 2 層資料連結層：交給同一段線路運送。</li></ul><p>其餘三層：第 6 層<b>表達層</b>管格式轉換、加解密與壓縮，第 5 層會話層建立對話，第 1 層實體層把位元變成訊號。TCP 與 UDP 的比較見 <a href=\"s1-22.html#road-and-language\">2.2〈常見通訊協定與網路層技術〉</a>。</p>",
    "svg": "<svg viewBox=\"0 0 600 410\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OSI 七層與 TCP/IP 四層對照，附各層白話職責與代表協定，並標出與物聯網網路層同名的第 3 層\">\n<text x=\"135\" y=\"26\" class=\"th tc\">OSI 七層</text>\n<text x=\"332\" y=\"26\" class=\"th tc\">TCP/IP 四層</text>\n<text x=\"502\" y=\"26\" class=\"th tc\">代表協定</text>\n<rect x=\"20\" y=\"40\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"68\" class=\"tb\">7 應用層</text><text x=\"128\" y=\"68\" class=\"ts\">網路服務</text>\n<rect x=\"20\" y=\"84\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"112\" class=\"tb\">6 表達層</text><text x=\"128\" y=\"112\" class=\"ts\">格式・加密・壓縮</text>\n<rect x=\"20\" y=\"128\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"156\" class=\"tb\">5 會話層</text><text x=\"128\" y=\"156\" class=\"ts\">建立對話</text>\n<rect x=\"20\" y=\"172\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"200\" class=\"tb\">4 傳輸層</text><text x=\"128\" y=\"200\" class=\"ts\">兩端傳送</text>\n<rect x=\"20\" y=\"216\" width=\"230\" height=\"44\" class=\"warn\"/><text x=\"30\" y=\"244\" class=\"tb\">3 網路層 ★</text><text x=\"128\" y=\"244\" class=\"ts\">定址路由</text>\n<rect x=\"20\" y=\"260\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"288\" class=\"tb\">2 資料連結層</text><text x=\"128\" y=\"288\" class=\"ts\">訊框・偵錯</text>\n<rect x=\"20\" y=\"304\" width=\"230\" height=\"44\" class=\"box\"/><text x=\"30\" y=\"332\" class=\"tb\">1 實體層</text><text x=\"128\" y=\"332\" class=\"ts\">位元→訊號</text>\n<rect x=\"265\" y=\"40\" width=\"135\" height=\"132\" rx=\"6\" class=\"acc\"/>\n<text x=\"332\" y=\"104\" class=\"tb tc\">應用層</text>\n<text x=\"332\" y=\"126\" class=\"ts tc\">合併 5～7 層</text>\n<rect x=\"265\" y=\"172\" width=\"135\" height=\"44\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"200\" class=\"tb tc\">傳輸層</text>\n<rect x=\"265\" y=\"216\" width=\"135\" height=\"44\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"235\" class=\"tb tc\">網際網路層</text><text x=\"332\" y=\"255\" class=\"ts tc\">又稱網路層</text>\n<rect x=\"265\" y=\"260\" width=\"135\" height=\"88\" rx=\"6\" class=\"box\"/>\n<text x=\"332\" y=\"298\" class=\"tb tc\">鏈結層</text>\n<text x=\"332\" y=\"320\" class=\"ts tc\">又稱網路介面層</text>\n<rect x=\"415\" y=\"40\" width=\"175\" height=\"132\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"100\" class=\"t\">HTTP、MQTT、FTP</text>\n<text x=\"428\" y=\"124\" class=\"t\">SMTP、DNS</text>\n<rect x=\"415\" y=\"172\" width=\"175\" height=\"44\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"200\" class=\"t\">TCP、UDP</text>\n<rect x=\"415\" y=\"216\" width=\"175\" height=\"44\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"244\" class=\"t\">IP、ICMP</text>\n<rect x=\"415\" y=\"260\" width=\"175\" height=\"88\" rx=\"6\" class=\"soft\"/>\n<text x=\"428\" y=\"298\" class=\"t\">乙太網路、Wi-Fi</text>\n<text x=\"428\" y=\"320\" class=\"ts\">網路線、光纖、電波</text>\n<text x=\"20\" y=\"374\" class=\"ts\">TCP/IP 不是刪掉 OSI 的層，而是把功能相近的層合併</text>\n<text x=\"20\" y=\"398\" class=\"t\">★ 與物聯網網路層同名：這裡只管定址與路由，不是整段傳輸</text>\n</svg>",
    "svgm": "<svg viewBox=\"0 0 360 532\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"OSI 七層與 TCP/IP 四層對照，附各層白話職責與代表協定，並標出與物聯網網路層同名的第 3 層\"><text x=\"84\" y=\"24\" class=\"th tc\">OSI 七層</text><text x=\"264\" y=\"24\" class=\"th tc\">TCP/IP 四層</text><text x=\"264\" y=\"46\" class=\"ts tc\">代表協定</text><rect x=\"4\" y=\"56\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"79\" class=\"tb\">7 應用層</text><text x=\"14\" y=\"100\" class=\"ts\">網路服務</text><rect x=\"4\" y=\"108\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"131\" class=\"tb\">6 表達層</text><text x=\"14\" y=\"152\" class=\"ts\">格式・加密・壓縮</text><rect x=\"4\" y=\"160\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"183\" class=\"tb\">5 會話層</text><text x=\"14\" y=\"204\" class=\"ts\">建立對話</text><rect x=\"4\" y=\"212\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"235\" class=\"tb\">4 傳輸層</text><text x=\"14\" y=\"256\" class=\"ts\">兩端傳送</text><rect x=\"4\" y=\"264\" width=\"160\" height=\"52\" class=\"warn\"/><text x=\"14\" y=\"287\" class=\"tb\">3 網路層 ★</text><text x=\"14\" y=\"308\" class=\"ts\">定址路由</text><rect x=\"4\" y=\"316\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"339\" class=\"tb\">2 資料連結層</text><text x=\"14\" y=\"360\" class=\"ts\">訊框・偵錯</text><rect x=\"4\" y=\"368\" width=\"160\" height=\"52\" class=\"box\"/><text x=\"14\" y=\"391\" class=\"tb\">1 實體層</text><text x=\"14\" y=\"412\" class=\"ts\">位元→訊號</text><rect x=\"172\" y=\"56\" width=\"184\" height=\"156\" rx=\"6\" class=\"acc\"/><text x=\"182\" y=\"84\" class=\"tb\">應用層</text><text x=\"182\" y=\"108\" class=\"ts\">合併 5～7 層</text><text x=\"182\" y=\"156\" class=\"t\">HTTP、MQTT、FTP</text><text x=\"182\" y=\"180\" class=\"t\">SMTP、DNS</text><rect x=\"172\" y=\"212\" width=\"184\" height=\"52\" rx=\"6\" class=\"box\"/><text x=\"182\" y=\"234\" class=\"tb\">傳輸層</text><text x=\"182\" y=\"256\" class=\"t\">TCP、UDP</text><rect x=\"172\" y=\"264\" width=\"184\" height=\"52\" rx=\"6\" class=\"box\"/><text x=\"182\" y=\"286\" class=\"tb\">網際網路層</text><text x=\"270\" y=\"286\" class=\"ts\">又稱網路層</text><text x=\"182\" y=\"308\" class=\"t\">IP、ICMP</text><rect x=\"172\" y=\"316\" width=\"184\" height=\"104\" rx=\"6\" class=\"box\"/><text x=\"182\" y=\"340\" class=\"tb\">鏈結層</text><text x=\"182\" y=\"362\" class=\"ts\">又稱網路介面層</text><text x=\"182\" y=\"386\" class=\"t\">乙太網路、Wi-Fi</text><text x=\"182\" y=\"408\" class=\"ts\">網路線、光纖、電波</text><text x=\"4\" y=\"448\" class=\"ts\">TCP/IP 不是刪掉 OSI 的層，</text><text x=\"4\" y=\"470\" class=\"ts\">而是把功能相近的層合併</text><text x=\"4\" y=\"500\" class=\"t\">★ 與物聯網網路層同名：</text><text x=\"4\" y=\"522\" class=\"t\">這裡只管定址與路由，不是整段傳輸</text></svg>",
-   "caption": "OSI 上三層合併成 TCP/IP 的應用層，下兩層合併成鏈結層。"
+   "caption": "OSI 七層的上三層合併成 TCP/IP 的應用層，下兩層合併成鏈結層（又稱網路介面層）；網際網路層又稱網路層。"
   },
   {
    "id": "smart-applications",
@@ -255,7 +239,7 @@
     "q": "把這家公司的系統改裝到一座溫室。三層架構要整個換掉嗎？",
     "a": "不用。分層不變，改的是感測什麼、資料要傳多遠，以及要做什麼決定。"
    },
-   "body": "<p>應用層把資料變成決策，並提供設備管理、資料儲存與 <b>API</b>（讓其他程式取用功能的介面）。各領域的架構相同，差別在感測什麼、資料多遠要傳多久。距離遠、電力少的場域常用 <b>LPWAN（低功耗廣域網路）</b>，要求低延遲的則用 5G。</p><p>分析壓縮機的振動、溫度等資料，在零件損壞前安排更換，就是<b>預測性維護</b>。</p>",
+   "body": "<p>應用層把資料變成決策，並提供設備管理、資料儲存與 <b>API</b>（讓其他程式取用功能的介面）。各領域的架構相同，差別在量什麼、要傳多遠多快、拿來做什麼決定（見下表）。距離遠、電力少的場域常用 <b>LPWAN（低功耗廣域網路）</b>，要求低延遲的則用 5G。</p><p>分析壓縮機的振動、溫度等資料，在零件損壞前安排更換，就是<b>預測性維護</b>；<b>數位孿生（Digital Twin）</b>則是在電腦裡建一座與實體同步的模型，先模擬、預測，再套用到現場。</p>",
    "table": {
     "head": [
      "場景",
@@ -306,26 +290,24 @@
     ]
    },
    "more": {
-    "label": "工廠的兩個常見名詞：數位孿生與 IIoT",
-    "body": "<p><b>數位孿生（Digital Twin）</b>是在電腦裡建一座對應實體的模型，先模擬再套用到產線。工廠裡的物聯網又稱 <b>IIoT（工業物聯網）</b>，重點是整合營運技術（OT，直接控制機台與產線的系統）與資訊技術（IT，處理資料的電腦與網路）。</p>"
+    "label": "工廠裡的物聯網：IIoT、OT 與 IT",
+    "body": "<p>工廠裡的物聯網又稱 <b>IIoT（工業物聯網）</b>，重點是整合營運技術（OT，直接控制機台與產線的系統）與資訊技術（IT，處理資料的電腦與網路）。</p>"
    }
   }
  ],
  "keypoints": [
-  "三層口訣：感知「量」、網路「傳」、應用「用」；看工作，不看裝在哪裡。",
-  "上行回報資料，下行下達指令。",
-  "閘道器的核心工作是協定轉換，也常兼做彙整、暫存與邊緣運算。",
+  "三層看工作：感知「量」、網路「傳」、應用「用」；資料上行、指令下行。",
+  "閘道器的核心工作是協定轉換，也常兼做彙整、斷線暫存補傳與邊緣運算。",
   "PIR 看移動、超音波量距離、加速度計看直線運動與傾斜、陀螺儀看旋轉。",
   "超音波距離＝聲速×往返時間÷2；一來一回要除以 2。",
-  "OSI 由下到上：實體、資料連結、網路、傳輸、會話、表達、應用；IP 在第 3 層，TCP／UDP 在第 4 層，HTTP 在第 7 層；加解密、壓縮、格式轉換在第 6 層表達層。",
-  "TCP/IP 四層是把 OSI 七層中功能相近的層合併，不是刪層。"
+  "OSI 由下到上：實體、資料連結、網路、傳輸、會話、表達、應用。",
+  "四個代表：乙太網路第 2 層、IP 第 3 層、TCP／UDP 第 4 層、HTTP 第 7 層；加解密與壓縮在第 6 層表達層。"
  ],
  "pitfalls": [
   "三層不是唯一分法：ITU-T Y.2060 原文再分出服務支援層，共四層（指引 p.34 寫成 ITU 分為感知、網路、應用三層）。題目沒指明時，以三層作答。",
-  "「網路層」同名不同義：物聯網的網路層泛指整段資料傳輸，OSI 第 3 層專指定址與路由。實體層、會話層等名稱屬於 OSI，不是物聯網三層。",
+  "「網路層」同名不同義：物聯網的泛指整段傳輸，OSI 第 3 層專指定址與路由。譯名不同也不代表不同層：會話層又譯會議層、表達層又譯展示層，TCP/IP 的傳輸層又稱主機對主機層。",
   "邊緣運算是「處理位置」的概念，不專屬某一層；有教材歸在網路層與應用層之間，各家說法不一（指引 p.35 寫成感知層設備的功能）。",
-  "傳輸層不等於一定可靠：TCP 才有確認重傳，UDP 不保證送達（指引 p.44 寫成傳輸層提供可靠、無錯誤的傳輸）。",
-  "同一層常有好幾個譯名，名稱不同不代表不同層：OSI 第 5 層會話層又譯會議層、第 6 層表達層又譯展示層；TCP/IP 的網際網路層又稱網路層，鏈結層又稱網路介面層，傳輸層又稱主機對主機層。"
+  "傳輸層不等於一定可靠：TCP 才有確認重傳，UDP 不保證送達（指引 p.44 寫成傳輸層提供可靠、無錯誤的傳輸）。"
  ],
  "examples": [
   {
@@ -353,12 +335,8 @@
  ],
  "check": [
   {
-   "q": "物聯網系統一定要有閘道器嗎？",
-   "a": "不一定；能自己連網的設備（例如貨車上的 4G 裝置）可以直接連平台，現場協定和網際網路不同時，才需要閘道器轉換。"
-  },
-  {
-   "q": "設備有量到溫度，但畫面沒更新，應該只懷疑感測器嗎？",
-   "a": "不應該；要沿感測器、閘道器、網路、平台、畫面逐段確認資料在哪裡中斷。"
+   "q": "貨車閘道器把每秒讀值先算成每分鐘平均，超溫才立刻上傳原始值。這種做法叫什麼？好處是什麼？",
+   "a": "邊緣運算：在靠近資料來源的地方先處理，上傳量與反應時間都減少。"
   },
   {
    "q": "手環平放在桌上不動時，加速度計和陀螺儀的讀值各是什麼樣子？",
@@ -369,8 +347,8 @@
    "a": "能。它靠聲波一來一回計時，不受光線、顏色與透明度影響；吸音或傾斜的表面回波會變弱，容易量不準。"
   },
   {
-   "q": "資料加解密與壓縮屬於 OSI 第幾層？換成 TCP/IP 四層又歸在哪一層？",
-   "a": "OSI 第 6 層表達層；TCP/IP 把第 5–7 層合併成應用層，所以歸在應用層。"
+   "q": "一疊貨箱堆在棧板上，有些標籤被擋在裡面。貼 QR Code 和貼 RFID 標籤，哪一種還讀得到？",
+   "a": "RFID。它用無線電讀標籤，不必對準也不必看得到；QR Code 要相機拍得到圖案。"
   }
  ],
  "terms": [
@@ -415,21 +393,6 @@
    "def": "依指令產生動作的元件，例如馬達、閥門。又稱致動器。"
   },
   {
-   "term": "ADC",
-   "en": "Analog-to-Digital Converter",
-   "def": "把連續的類比訊號轉成數字的電路。"
-  },
-  {
-   "term": "GPIO",
-   "en": "General-Purpose Input/Output",
-   "def": "微控制器上可讀取或輸出高低電位的通用腳位。"
-  },
-  {
-   "term": "RFID",
-   "en": "Radio Frequency Identification",
-   "def": "用無線電讀取標籤來識別物體。"
-  },
-  {
    "term": "PIR",
    "en": "Passive Infrared",
    "def": "被動接收紅外線變化來偵測人體移動的感測器。"
@@ -460,19 +423,9 @@
    "def": "車輛與外界的通訊統稱，包含車對車（V2V）、車對路側設施（V2I）、車對行人。"
   },
   {
-   "term": "LPWAN",
-   "en": "Low-Power Wide-Area Network",
-   "def": "低功耗、傳輸距離遠的無線網路統稱，如 LoRaWAN、NB-IoT。"
-  },
-  {
    "term": "數位孿生",
    "en": "Digital Twin",
    "def": "在電腦中建立對應實體設備或工廠的模型，用來模擬與驗證。"
-  },
-  {
-   "term": "加速度計",
-   "en": "Accelerometer",
-   "def": "量直線加速度與傾斜的感測器。又稱加速規。"
   }
  ],
  "sources": [

@@ -2,20 +2,20 @@
  "id": "s1-24",
  "title": "中介軟體與平台",
  "subtitle": "資料離開閘道器之後，怎麼收、怎麼存、怎麼用",
- "summary": "資料離開閘道器後，要有人收、存、算，再交給使用者。讀完能替資料選訊息機制、雲端模式、儲存方式與驗證方式。",
+ "summary": "資料離開閘道器後，由誰收、放在哪、怎麼存、何時算，又怎麼確認對方的身分。",
  "learn": [
-  "說出中介軟體與 IoT 平台各負責哪些工作",
-  "解釋 Publisher、Subscriber、Broker 的關係與三種 QoS",
-  "判斷服務屬於 IaaS、PaaS 或 SaaS，並比較虛擬機與容器",
-  "依資料特性與設備算力，選擇儲存方式與身分驗證機制"
+  "分辨平台各項功能的分工",
+  "說明訊息中介軟體怎麼解耦與削平尖峰",
+  "判斷 IaaS、PaaS、SaaS，比較虛擬機與容器",
+  "依資料特性選儲存，依設備算力選驗證"
  ],
- "prereq": "<b>閘道器（Gateway）</b>是現場和網路之間的轉接站，一邊收感測器資料，一邊上傳到後端。",
- "bridge": "Broker 像 Kafka 這類資料管線的中樞；租 GPU 主機自己裝環境近似 IaaS，託管訓練平台（如 Vertex AI）近似 PaaS，直接使用現成 AI 服務近似 SaaS；PaaS 能減輕持續整合與交付（CI/CD）及開發維運（DevOps）的負擔；圖片與文件經向量計算得到的向量，則放進向量資料庫。",
+ "prereq": "閘道器見 <a href=\"s1-21.html#gateway-edge-m2m\">2.1〈物聯網架構與功能〉</a>；MQTT 的發布、訂閱與 QoS 見 <a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉</a>。",
+ "bridge": "Broker 像 Kafka 這類資料管線的中樞；租 GPU 主機像 IaaS，託管訓練平台像 PaaS，現成 AI 服務像 SaaS。",
  "sections": [
   {
    "id": "big-picture",
    "h": "全景：什麼是中介軟體與平台",
-   "body": "<p>探頭的資料經閘道器送出後，還不能直接變成服務，中間要有人接收、暫存、保存、計算。<b>中介軟體（Middleware）</b>泛指這一段所需的軟體元件與通訊協定，像系統之間的翻譯員與交通管理員。在 IoT 常見的三層架構（負責感測的感知層、負責傳送的網路層、負責提供服務的應用層）中，它橫跨<b>網路層</b>與<b>應用層</b>。</p><p><b>IoT 平台（IoT Platform）</b>則把這些常用功能打包好，不必每次從頭重做。判斷平台時要把功能分開看。</p>",
+   "body": "<p>探頭的資料經閘道器送出後，還不能直接變成服務，中間要有人接收、暫存、保存、計算。<b>中介軟體（Middleware）</b>泛指這一段所需的軟體元件與通訊協定，像系統之間的翻譯員與交通管理員。在 <a href=\"s1-21.html#three-layers\">2.1〈物聯網架構與功能〉</a>的三層架構中，它橫跨負責傳送的<b>網路層</b>與提供服務的<b>應用層</b>。</p><p><b>IoT 平台（IoT Platform）</b>則把這些常用功能打包好，不必每次從頭重做。判斷平台時要把功能分開看。</p>",
    "svg": "<svg viewBox=\"0 0 600 310\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"從閘道器到應用服務的資料路徑：閘道器、訊息中介軟體、儲存與分析、應用服務，小型系統可由閘道器直接送進儲存，並由身分驗證與裝置管理貫穿全程\"><defs><marker id=\"s1-24-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"26\" class=\"th tc\">閘道器之後、服務之前，都是這一章的範圍</text><text x=\"142\" y=\"54\" class=\"tb tc\">網路層：把資料送到</text><line x1=\"8\" y1=\"64\" x2=\"277\" y2=\"64\" class=\"ln\"/><text x=\"446\" y=\"54\" class=\"tb tc\">應用層：把資料變成服務</text><line x1=\"302\" y1=\"64\" x2=\"591\" y2=\"64\" class=\"ln\"/><rect x=\"8\" y=\"76\" width=\"116\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"66\" y=\"105\" class=\"tb tc\">閘道器</text><text x=\"66\" y=\"128\" class=\"ts tc\">現場資料轉接站</text><rect x=\"149\" y=\"76\" width=\"128\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"213\" y=\"105\" class=\"tb tc\">訊息中介軟體</text><text x=\"213\" y=\"128\" class=\"ts tc\">暫存、依主題分派</text><rect x=\"302\" y=\"76\" width=\"128\" height=\"70\" rx=\"6\" class=\"acc\"/><text x=\"366\" y=\"105\" class=\"tb tc\">儲存與分析</text><text x=\"366\" y=\"128\" class=\"ts tc\">資料庫・規則引擎</text><rect x=\"455\" y=\"76\" width=\"136\" height=\"70\" rx=\"6\" class=\"box\"/><text x=\"523\" y=\"105\" class=\"tb tc\">應用服務</text><text x=\"523\" y=\"128\" class=\"ts tc\">儀表板・App・API</text><line x1=\"125\" y1=\"111\" x2=\"148\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"278\" y1=\"111\" x2=\"301\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><line x1=\"431\" y1=\"111\" x2=\"454\" y2=\"111\" class=\"la\" marker-end=\"url(#s1-24-1-arr)\"/><rect x=\"8\" y=\"214\" width=\"583\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"238\" class=\"t tc\">身分驗證與傳輸加密：每一段連線都要做</text><rect x=\"8\" y=\"258\" width=\"583\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"300\" y=\"282\" class=\"t tc\">裝置管理：登錄、設定、狀態監控、更新</text><path d=\"M66,147 V172 H366 V151\" class=\"ln dash\" marker-end=\"url(#s1-24-1-arr)\"/><text x=\"213\" y=\"196\" class=\"t tc\">小型系統可略過</text></svg>",
    "svgm": "<svg viewBox=\"0 0 360 600\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"從閘道器到應用服務的資料路徑：閘道器、訊息中介軟體、儲存與分析、應用服務，小型系統可由閘道器直接送進儲存，並由身分驗證與裝置管理貫穿全程\"><defs><marker id=\"s1-24-1-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"180\" y=\"24\" class=\"th tc\">閘道器之後、服務之前，</text><text x=\"180\" y=\"48\" class=\"th tc\">都是這一章的範圍</text><path d=\"M24,68 H12 V256 H24\" class=\"ln\"/><text x=\"64\" y=\"84\" class=\"tb\">網路層：把資料送到</text><rect x=\"24\" y=\"94\" width=\"228\" height=\"68\" rx=\"6\" class=\"box\"/><text x=\"138\" y=\"122\" class=\"tb tc\">閘道器</text><text x=\"138\" y=\"146\" class=\"ts tc\">現場資料轉接站</text><line x1=\"48\" y1=\"163\" x2=\"48\" y2=\"187\" class=\"la\" marker-end=\"url(#s1-24-1-m-arr)\"/><rect x=\"24\" y=\"188\" width=\"228\" height=\"68\" rx=\"6\" class=\"acc\"/><text x=\"138\" y=\"216\" class=\"tb tc\">訊息中介軟體</text><text x=\"138\" y=\"240\" class=\"ts tc\">暫存、依主題分派</text><path d=\"M24,274 H12 V472 H24\" class=\"ln\"/><text x=\"64\" y=\"292\" class=\"tb\">應用層：把資料變成服務</text><line x1=\"48\" y1=\"257\" x2=\"48\" y2=\"309\" class=\"la\" marker-end=\"url(#s1-24-1-m-arr)\"/><rect x=\"24\" y=\"310\" width=\"228\" height=\"68\" rx=\"6\" class=\"acc\"/><text x=\"138\" y=\"338\" class=\"tb tc\">儲存與分析</text><text x=\"138\" y=\"362\" class=\"ts tc\">資料庫・規則引擎</text><line x1=\"48\" y1=\"379\" x2=\"48\" y2=\"403\" class=\"la\" marker-end=\"url(#s1-24-1-m-arr)\"/><rect x=\"24\" y=\"404\" width=\"228\" height=\"68\" rx=\"6\" class=\"box\"/><text x=\"138\" y=\"432\" class=\"tb tc\">應用服務</text><text x=\"138\" y=\"456\" class=\"ts tc\">儀表板・App・API</text><path d=\"M253,128 H276 V344 H256\" class=\"ln dash\" marker-end=\"url(#s1-24-1-m-arr)\"/><text x=\"286\" y=\"228\" class=\"t\">小型系統</text><text x=\"286\" y=\"252\" class=\"t\">可略過</text><rect x=\"8\" y=\"500\" width=\"344\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"180\" y=\"526\" class=\"t tc\">身分驗證與傳輸加密：每一段連線都要做</text><rect x=\"8\" y=\"548\" width=\"344\" height=\"40\" rx=\"6\" class=\"soft\"/><text x=\"180\" y=\"574\" class=\"t tc\">裝置管理：登錄、設定、狀態監控、更新</text></svg>",
    "caption": "平台功能表的六項都能在圖上找到位置；驗證與裝置管理不是其中一站，而是貫穿全程。",
@@ -66,19 +66,19 @@
   {
    "id": "protocol-layers",
    "h": "通訊協定：硬體管怎麼接，軟體管說什麼",
-   "body": "<p><b>實體層協定</b>定義電壓、接腳與連線方式；<b>上層協定</b>定義資料怎麼找路、怎麼送、內容長什麼樣。</p><p>各層由誰負責、有哪些代表協定，見 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a> 的分層圖。下圖中，現場側與雲端側各用一套分層組合，閘道器在中間讀值再重新包裝。除了圖中的工業組合，常見的還有：智慧城市用 Ethernet（IEEE 802.3）＋TCP/IP；產線即時控制用 Ethernet＋EtherCAT（跑在乙太網路上的工業即時控制匯流排）。</p>",
+   "body": "<p><b>實體層協定</b>定義電壓、接腳與連線方式，<b>上層協定</b>定義資料怎麼送、內容長什麼樣（各層分工見 <a href=\"s1-21.html#osi-tcpip\">2.1〈物聯網架構與功能〉</a>）。兩種要搭配成一組，常見三組：</p><ul><li>智慧城市：Ethernet＋TCP/IP。</li><li>工業現場：RS-232 或 RS-485＋Modbus RTU。</li><li>工廠已有乙太網路：Ethernet＋Modbus TCP。</li></ul><p>下圖的閘道器兩側各用一組。</p>",
    "svg": "<svg viewBox=\"0 0 600 296\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"閘道器兩側的雙協定堆疊，左側由上到下是應用層、傳輸層、網路層（IP）、鏈結／實體：現場側是 RS-485 上跑 Modbus RTU，不經 IP；雲端側是 Ethernet 或 4G 上跑 IP、TCP 與 MQTT；閘道器讀值後重新包裝\"><defs><marker id=\"s1-24-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"300\" y=\"26\" class=\"th tc\">分層讓閘道器兩側各用各的</text><text x=\"180\" y=\"62\" class=\"tb tc\">現場側</text><text x=\"480\" y=\"62\" class=\"tb tc\">雲端側</text><text x=\"10\" y=\"103\" class=\"t\">應用層</text><text x=\"10\" y=\"153\" class=\"t\">傳輸層</text><text x=\"10\" y=\"203\" class=\"t\">網路層<tspan class=\"ts\">（IP）</tspan></text><text x=\"10\" y=\"253\" class=\"t\">鏈結／實體</text><rect x=\"110\" y=\"76\" width=\"140\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"103\" class=\"t tc\">Modbus RTU</text><rect x=\"110\" y=\"126\" width=\"140\" height=\"92\" rx=\"6\" class=\"ln dash\"/><text x=\"180\" y=\"177\" class=\"t tc\">不經 IP</text><rect x=\"110\" y=\"226\" width=\"140\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"180\" y=\"253\" class=\"t tc\">RS-485</text><rect x=\"272\" y=\"76\" width=\"86\" height=\"192\" rx=\"8\" class=\"soft\"/><text x=\"315\" y=\"104\" class=\"tb tc\">閘道器</text><text x=\"315\" y=\"160\" class=\"t tc\">讀值</text><line x1=\"315\" y1=\"168\" x2=\"315\" y2=\"196\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/><text x=\"315\" y=\"218\" class=\"t tc\">重新包裝</text><rect x=\"380\" y=\"76\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"103\" class=\"t tc\">MQTT 或 Modbus TCP</text><rect x=\"380\" y=\"126\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"153\" class=\"t tc\">TCP</text><rect x=\"380\" y=\"176\" width=\"200\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"480\" y=\"203\" class=\"t tc\">IP</text><rect x=\"380\" y=\"226\" width=\"200\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"480\" y=\"253\" class=\"t tc\">Ethernet／4G</text><line x1=\"251\" y1=\"97\" x2=\"270\" y2=\"97\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/><line x1=\"359\" y1=\"97\" x2=\"378\" y2=\"97\" class=\"la\" marker-end=\"url(#s1-24-2-arr)\"/></svg>",
    "svgm": "<svg viewBox=\"0 0 360 384\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"閘道器兩側的雙協定堆疊，左側由上到下是應用層、傳輸層、網路層（IP）、鏈結／實體：現場側是 RS-485 上跑 Modbus RTU，不經 IP；雲端側是 Ethernet 或 4G 上跑 IP、TCP 與 MQTT；閘道器讀值後重新包裝\"><defs><marker id=\"s1-24-2-m-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"180\" y=\"24\" class=\"th tc\">分層讓閘道器兩側各用各的</text><text x=\"62\" y=\"60\" class=\"tb tc\">現場側</text><text x=\"296\" y=\"60\" class=\"tb tc\">雲端側</text><text x=\"236\" y=\"86\" class=\"ts\">應用層</text><text x=\"236\" y=\"174\" class=\"ts\">傳輸層</text><text x=\"236\" y=\"248\" class=\"ts\">網路層（IP）</text><text x=\"236\" y=\"322\" class=\"ts\">鏈結／實體</text><rect x=\"4\" y=\"94\" width=\"116\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"62\" y=\"127\" class=\"t tc\">Modbus RTU</text><rect x=\"4\" y=\"182\" width=\"116\" height=\"116\" rx=\"6\" class=\"ln dash\"/><text x=\"62\" y=\"245\" class=\"t tc\">不經 IP</text><rect x=\"4\" y=\"330\" width=\"116\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"62\" y=\"357\" class=\"t tc\">RS-485</text><rect x=\"136\" y=\"94\" width=\"84\" height=\"278\" rx=\"8\" class=\"soft\"/><text x=\"178\" y=\"122\" class=\"tb tc\">閘道器</text><text x=\"178\" y=\"216\" class=\"t tc\">讀值</text><line x1=\"178\" y1=\"226\" x2=\"178\" y2=\"262\" class=\"la\" marker-end=\"url(#s1-24-2-m-arr)\"/><text x=\"178\" y=\"286\" class=\"t tc\">重新包裝</text><rect x=\"236\" y=\"94\" width=\"120\" height=\"56\" rx=\"6\" class=\"box\"/><text x=\"296\" y=\"117\" class=\"t tc\">MQTT 或</text><text x=\"296\" y=\"139\" class=\"t tc\">Modbus TCP</text><rect x=\"236\" y=\"182\" width=\"120\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"296\" y=\"209\" class=\"t tc\">TCP</text><rect x=\"236\" y=\"256\" width=\"120\" height=\"42\" rx=\"6\" class=\"box\"/><text x=\"296\" y=\"283\" class=\"t tc\">IP</text><rect x=\"236\" y=\"330\" width=\"120\" height=\"42\" rx=\"6\" class=\"acc\"/><text x=\"296\" y=\"357\" class=\"t tc\">Ethernet／4G</text><line x1=\"121\" y1=\"122\" x2=\"134\" y2=\"122\" class=\"la\" marker-end=\"url(#s1-24-2-m-arr)\"/><line x1=\"221\" y1=\"122\" x2=\"234\" y2=\"122\" class=\"la\" marker-end=\"url(#s1-24-2-m-arr)\"/></svg>",
-   "caption": "Modbus RTU 不在 IP 網路上，通常直接跑在串列線路上；Modbus TCP 功能相同，只是下層改走 TCP/IP，工廠已有乙太網路時常用。",
-   "predict": {
-    "q": "冷藏庫的舊壓縮機控制器只有 RS-485 接頭，用 Modbus RTU。要把資料送上雲端，一定得換掉控制器嗎？",
-    "a": "不一定。閘道器可以一邊用 RS-485 與 Modbus RTU 讀值，另一邊走網路送上後端。分層讓兩段各用各的。"
+   "caption": "現場側的 Modbus RTU 直接跑在串列線路上，不經 IP；雲端側改走 TCP/IP。分層讓兩側各用各的。",
+   "more": {
+    "label": "補充：乙太網路的標準編號與產線即時控制",
+    "body": "<p>Ethernet（乙太網路）是最普及的有線區域網路，標準編號是 IEEE 802.3。</p><p>產線即時控制常用 Ethernet＋EtherCAT，它是跑在乙太網路上的工業即時控制匯流排。</p>"
    }
   },
   {
    "id": "message-middleware",
    "h": "訊息中介軟體：先收下來，再慢慢分派",
-   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p><a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉介紹過的三個角色</a>在這裡一樣：發布者送出帶主題的訊息（例如 <code>coldchain/r1/temp</code>），代理（Broker）依訂閱者的登記分派。</p><p>選用時先問兩件事。一是 Broker 重開機後，未送出的訊息還在嗎？要確認訊息會先寫進硬碟，稱為<b>永久儲存（Persistent Storage）</b>。二是送達保證，也就是服務品質 <b>QoS（Quality of Service）</b>：最多一次 At-most-once（可能丟）、至少一次 At-least-once（可能重複）、恰好一次 Exactly-once，對應 MQTT 的 QoS 0／1／2（見 <a href=\"s1-22.html#qos-and-protocols\">2.2〈常見通訊協定與網路層技術〉</a>），等級越高越耗資源；QoS 2 只保證協定層恰好一次，計費等業務仍要用交易 ID 去重。</p>",
+   "body": "<p>感測器一多，資料可能瞬間湧入（高併發）。<b>訊息中介軟體（Message Middleware）</b>像郵局：寄件人把信交給郵局就能離開，郵局先暫存再分送。收資料與處理資料因此互不綁死，稱為<b>解耦（Decoupling）</b>。</p><p>這個郵局就是 <a href=\"s1-22.html#mqtt\">2.2〈常見通訊協定與網路層技術〉</a>的代理（Broker）：發布者送來訊息，它依主題分派給訂閱者。</p><p>選用時先問兩件事：</p><ul><li>Broker 重開機後，沒送出的訊息還在嗎？要確認訊息會先寫進硬碟，稱為<b>永久儲存（Persistent Storage）</b>。</li><li>要保證送到什麼程度？用 <a href=\"s1-22.html#qos-and-protocols\">2.2〈常見通訊協定與網路層技術〉</a>的服務品質 <b>QoS</b> 0／1／2 來選，等級越高越耗資源。</li></ul><p>QoS 2 也只保證協定這一段；計費這類業務仍要用交易 ID 去重，見 <a href=\"s2-11.html#dedupe-and-order\">1-1〈系統元件與架構〉</a>。</p>",
    "figs": [
     {
      "pos": "after-body",
@@ -99,7 +99,7 @@
   {
    "id": "cloud-models",
    "h": "地端與雲端：放哪裡、誰來管",
-   "body": "<p>第一個問題是系統放哪裡。<b>地端（On-Premise）</b>由企業自己營運管理，重點在「自己管」，不在機器種類，用實體機或虛擬機都算。<b>純雲（Pure-cloud）</b>的元件全在雲端業者環境。<b>混合雲（Hybrid-cloud）</b>則部分在地端、部分在雲端，常見考量是資料安全、內部網路與上雲耗時。</p><p>第二個問題是業者幫忙管到哪一層，用租屋來想：</p><ul><li><b>IaaS（Infrastructure as a Service，基礎設施即服務）</b>像租毛胚屋：租虛擬機、網路、儲存與頻寬。例如租 EC2 自己裝 SQL Server，作業系統與資料庫的更新、備份都要自己做。</li><li><b>PaaS（Platform as a Service，平台即服務）</b>像租附家具的房子：環境和資料庫都已備好，更新與備份由業者代管，例如 AWS RDS、GCP Cloud SQL、AWS IoT Core。</li><li><b>SaaS（Software as a Service，軟體即服務）</b>像住飯店：直接使用做好的軟體，例如 Google Drive、Gmail、手環 App。</li></ul>",
+   "body": "<p>第一個問題是系統放哪裡。<b>地端（On-Premise）</b>由企業自己營運管理，重點在「自己管」，不在機器種類，用實體機或虛擬機都算。<b>純雲（Pure-cloud）</b>的元件全在雲端業者環境。<b>混合雲（Hybrid-cloud）</b>則部分在地端、部分在雲端，常見考量是資料安全、內部網路與上雲耗時。</p><p>放上雲端，感測器與閘道器就不必有強運算力；代價是資料要跑一段遠路，<b>網路延遲</b>是即時處理的主要挑戰。</p><p>第二個問題是業者幫忙管到哪一層，用租屋來想：</p><ul><li><b>IaaS（Infrastructure as a Service，基礎設施即服務）</b>像租毛胚屋：租虛擬機、網路、儲存與頻寬。例如租 EC2 自己裝 SQL Server，更新與備份都要自己做。</li><li><b>PaaS（Platform as a Service，平台即服務）</b>像租附家具的房子：環境和資料庫都已備好，更新與備份由業者代管，例如 AWS RDS、GCP Cloud SQL。</li><li><b>SaaS（Software as a Service，軟體即服務）</b>像住飯店：直接使用做好的軟體，例如 Google Drive、Gmail、手環 App。</li></ul>",
    "figs": [
     {
      "pos": "after-body",
@@ -126,12 +126,6 @@
       "單一組織專用；可架在自家機房（那同時也是地端），也可由業者專屬代管",
       "掌控度高，較易符合法規",
       "自付維運成本，仍有資安風險"
-     ],
-     [
-      "混合雲",
-      "地端與雲端搭配",
-      "敏感資料留地端，尖峰借用雲端",
-      "整合與管理較複雜"
      ]
     ]
    },
@@ -141,14 +135,15 @@
    },
    "lab": "s1-24-cloud",
    "more": {
-    "label": "雲端的共同特性、挑戰與產品對照",
-    "body": "<p>雲端的共同特性是：需要時自己在網頁上開通（隨需自助）、透過網路使用、許多客戶共用業者的大批機器（<b>資源池共享，Resource Pooling</b>）、可快速加大或縮小規模，並依用量計費。能這樣共用，基礎是<b>虛擬化（Virtualization）</b>：用軟體把實體硬體切成多台邏輯上獨立的機器，再集中成資源池。它讓感測器與閘道器不必具備強運算力，也能提供大量運算與儲存；但資料要跑一段遠路，<b>網路延遲</b>是即時處理的主要挑戰。</p><p>純雲的常見組合：儲存用 AWS S3、資料庫用 AWS RDS 或 GCP Cloud SQL、運算用 EC2 或 Compute Engine。</p><p>同樣的邏輯可以套到訊息服務：自己安裝 Apache ActiveMQ 是 IaaS 的做法，使用 AWS IoT Core 或 GCP Pub/Sub 則接近 PaaS。開發團隊用 PaaS 能省下架設環境與日常維運的時間。</p>"
-   }
+    "label": "雲端的共同特性與產品對照",
+    "body": "<p>雲端的共同特性是：需要時自己在網頁上開通（隨需自助）、透過網路使用、許多客戶共用業者的大批機器（<b>資源池共享，Resource Pooling</b>）、可快速加大或縮小規模，並依用量計費。</p><p>純雲的常見組合：儲存用 AWS S3、資料庫用 AWS RDS 或 GCP Cloud SQL、運算用 EC2 或 Compute Engine。</p><p>同樣的邏輯可以套到訊息服務：自己安裝 Apache ActiveMQ 是 IaaS 的做法，使用 AWS IoT Core 或 GCP Pub/Sub 則接近 PaaS。PaaS 替開發團隊省下架設環境與日常維運，也減輕持續整合與交付（CI/CD）及開發維運（DevOps）的負擔。</p>"
+   },
+   "after": "<p>雲端本身還依誰能用，分公有雲與私有雲：</p>"
   },
   {
    "id": "vm-container",
    "h": "虛擬機與容器：一整台電腦，或一包程式",
-   "body": "<p><b>虛擬機（Virtual Machine, VM）</b>靠 <b>Hypervisor</b>（如 VMware、Proxmox）把一台實體機切成多台，每台都有完整作業系統。像在同一塊地上蓋多棟獨立透天厝：隔離強，但占資源、啟動較慢。</p><p><b>容器（Container）</b>的代表是 Docker，屬於作業系統層級虛擬化。多個容器共用主機的核心（Kernel，作業系統最底層），只打包程式與它需要的函式庫。像同一棟大樓的不同套房，共用水電管線，所以輕量、啟動快，搬到別台機器也能照樣執行。容器數量多時，交給 <b>Kubernetes</b> 統一編排與管理。</p>",
+   "body": "<p>雲端能讓許多客戶共用機器，靠的是<b>虛擬化（Virtualization）</b>：用軟體把一台實體機切成多台邏輯上獨立的機器。</p><p><b>虛擬機（Virtual Machine, VM）</b>由 <b>Hypervisor</b> 這種管理軟體切出來，每台都有完整作業系統。像在同一塊地上蓋多棟獨立透天厝：隔離強，但占資源、啟動較慢。</p><p><b>容器（Container）</b>的代表是 Docker，屬於作業系統層級虛擬化。多個容器共用主機的核心（Kernel，作業系統最底層），只打包程式與它需要的函式庫。像同一棟大樓的不同套房，共用水電管線，所以輕量、啟動快，搬到別台機器也能照樣執行。</p>",
    "svg": "<svg viewBox=\"0 0 600 280\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"虛擬機與容器的架構比較：虛擬機各帶完整作業系統，容器共用主機核心\"><line x1=\"300\" y1=\"10\" x2=\"300\" y2=\"270\" class=\"ln dash\"/><text x=\"152\" y=\"28\" class=\"th tc\">虛擬機 VM</text><text x=\"152\" y=\"52\" class=\"ts tc\">各自有 OS：通常開銷較大</text><text x=\"447\" y=\"28\" class=\"th tc\">容器 Container</text><text x=\"447\" y=\"52\" class=\"ts tc\">共用核心：通常較輕、啟動較快</text><rect x=\"20\" y=\"228\" width=\"265\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"152.5\" y=\"252.0\" class=\"t tc\">實體硬體</text><rect x=\"20\" y=\"186\" width=\"265\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"152.5\" y=\"210.0\" class=\"t tc\">Hypervisor（VMware 等）</text><rect x=\"20\" y=\"144\" width=\"83\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"61.5\" y=\"168.0\" class=\"t tc\">自己的 OS</text><rect x=\"20\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"61.5\" y=\"124.0\" class=\"tb tc\">App</text><rect x=\"111\" y=\"144\" width=\"83\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"152.5\" y=\"168.0\" class=\"t tc\">自己的 OS</text><rect x=\"111\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"152.5\" y=\"124.0\" class=\"tb tc\">App</text><rect x=\"202\" y=\"144\" width=\"83\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"243.5\" y=\"168.0\" class=\"t tc\">自己的 OS</text><rect x=\"202\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"243.5\" y=\"124.0\" class=\"tb tc\">App</text><rect x=\"315\" y=\"228\" width=\"265\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"447.5\" y=\"252.0\" class=\"t tc\">實體硬體</text><rect x=\"315\" y=\"186\" width=\"265\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"447.5\" y=\"210.0\" class=\"t tc\">主機 OS（共用核心）</text><rect x=\"315\" y=\"144\" width=\"265\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"447.5\" y=\"168.0\" class=\"t tc\">容器引擎 Docker</text><rect x=\"315\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"356.5\" y=\"115.0\" class=\"tb tc\">App</text><text x=\"356.5\" y=\"133.0\" class=\"ts tc\">＋函式庫</text><rect x=\"406\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"447.5\" y=\"115.0\" class=\"tb tc\">App</text><text x=\"447.5\" y=\"133.0\" class=\"ts tc\">＋函式庫</text><rect x=\"497\" y=\"96\" width=\"83\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"538.5\" y=\"115.0\" class=\"tb tc\">App</text><text x=\"538.5\" y=\"133.0\" class=\"ts tc\">＋函式庫</text></svg>",
    "svgm": "<svg viewBox=\"0 0 360 512\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"虛擬機與容器的架構比較：虛擬機各帶完整作業系統，容器共用主機核心\"><text x=\"180\" y=\"24\" class=\"th tc\">虛擬機 VM</text><text x=\"180\" y=\"48\" class=\"ts tc\">各自有 OS：通常開銷較大</text><rect x=\"10\" y=\"62\" width=\"108\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"64\" y=\"90\" class=\"tb tc\">App</text><rect x=\"10\" y=\"112\" width=\"108\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"64\" y=\"136\" class=\"t tc\">自己的 OS</text><rect x=\"126\" y=\"62\" width=\"108\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"90\" class=\"tb tc\">App</text><rect x=\"126\" y=\"112\" width=\"108\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"180\" y=\"136\" class=\"t tc\">自己的 OS</text><rect x=\"242\" y=\"62\" width=\"108\" height=\"44\" rx=\"6\" class=\"box\"/><text x=\"296\" y=\"90\" class=\"tb tc\">App</text><rect x=\"242\" y=\"112\" width=\"108\" height=\"36\" rx=\"6\" class=\"warn\"/><text x=\"296\" y=\"136\" class=\"t tc\">自己的 OS</text><rect x=\"10\" y=\"154\" width=\"340\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"178\" class=\"t tc\">Hypervisor（VMware 等）</text><rect x=\"10\" y=\"196\" width=\"340\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"180\" y=\"220\" class=\"t tc\">實體硬體</text><line x1=\"10\" y1=\"254\" x2=\"350\" y2=\"254\" class=\"ln dash\"/><text x=\"180\" y=\"288\" class=\"th tc\">容器 Container</text><text x=\"180\" y=\"312\" class=\"ts tc\">共用核心：通常較輕、啟動較快</text><rect x=\"10\" y=\"326\" width=\"108\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"64\" y=\"345\" class=\"tb tc\">App</text><text x=\"64\" y=\"363\" class=\"ts tc\">＋函式庫</text><rect x=\"126\" y=\"326\" width=\"108\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"180\" y=\"345\" class=\"tb tc\">App</text><text x=\"180\" y=\"363\" class=\"ts tc\">＋函式庫</text><rect x=\"242\" y=\"326\" width=\"108\" height=\"44\" rx=\"6\" class=\"acc\"/><text x=\"296\" y=\"345\" class=\"tb tc\">App</text><text x=\"296\" y=\"363\" class=\"ts tc\">＋函式庫</text><rect x=\"10\" y=\"376\" width=\"340\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"400\" class=\"t tc\">容器引擎 Docker</text><rect x=\"10\" y=\"418\" width=\"340\" height=\"36\" rx=\"6\" class=\"box\"/><text x=\"180\" y=\"442\" class=\"t tc\">主機 OS（共用核心）</text><rect x=\"10\" y=\"460\" width=\"340\" height=\"36\" rx=\"6\" class=\"soft\"/><text x=\"180\" y=\"484\" class=\"t tc\">實體硬體</text></svg>",
    "caption": "差別在是否各帶一份作業系統。Windows 與 macOS 執行 Linux 容器時，通常透過一台 Linux 虛擬機。",
@@ -160,42 +155,36 @@
   {
    "id": "data-storage-analysis",
    "h": "資料存哪裡：依結構、數量、存取速度來選",
-   "body": "<ul><li><b>關聯式資料庫（Relational Database）</b>像一張張欄位固定的表格，靠共同的編號（鍵，Key）把表連起來。它提供 <b>ACID</b>：原子性、一致性、隔離性、持久性，也就是交易要嘛全做、要嘛全不做，完成後也不會遺失。</li><li><b>NoSQL（Not Only SQL，非關聯式資料庫）</b>不用欄位固定的表格，常存 JSON 這類半結構化資料；強項是橫向擴充，加機器就能撐更多資料。</li><li><b>時序資料庫</b>專為依時間持續寫入、依時間範圍查詢的資料設計。</li><li><b>物件儲存（Object Storage）</b>像超大的雲端檔案櫃，放照片、影片這類整個檔案。</li></ul>",
+   "body": "<p>放資料的地方常見五種：</p><ul><li><b>關聯式資料庫（Relational Database）</b>像一張張欄位固定的表格，用 SQL 語言查詢，靠共同的編號（鍵，Key）把表連起來。它提供 <b>ACID</b>：原子性、一致性、隔離性、持久性，也就是交易要嘛全做、要嘛全不做，完成後也不會遺失。</li><li><b>NoSQL（Not Only SQL，非關聯式資料庫）</b>不用欄位固定的表格，常存 JSON 這類半結構化資料（每筆自帶欄位名稱，欄位不必相同）；強項是橫向擴充，加機器就能撐更多資料。</li><li><b>時序資料庫</b>專為依時間持續寫入、依時間範圍查詢的資料設計。</li><li><b>物件儲存（Object Storage）</b>像超大的雲端檔案櫃，放照片、影片這類整個檔案。</li><li><b>記憶體快取（Memory Cache）</b>把最常查的資料放在記憶體，典型低於 5 ms；它搭配資料庫，不取代資料庫。</li></ul>",
    "table": {
     "head": [
      "類型",
-     "擅長",
      "代表",
      "IoT 用途"
     ],
     "rows": [
      [
       "關聯式 RDB",
-      "欄位固定、表格互相對應、ACID",
       "MySQL、SQL Server、Oracle、SQLite",
       "設備清冊、工單、帳務"
      ],
      [
       "文件型 NoSQL",
-      "結構彈性、橫向擴充",
       "MongoDB（存類 JSON 文件）",
       "JSON 感測資料、海量資料"
      ],
      [
       "時序資料庫 TSDB",
-      "依時間寫入與查詢、壓縮",
       "InfluxDB、TimescaleDB",
       "感測讀值曲線、儀表板"
      ],
      [
       "物件儲存",
-      "大量檔案",
       "AWS S3、GCP Cloud Storage",
       "影像、影片、備份"
      ],
      [
       "記憶體快取",
-      "低於 5 ms；搭配資料庫，不取代",
       "Redis、Memcached",
       "最新狀態、熱門查詢"
      ]
@@ -208,8 +197,9 @@
    "lab": "s1-24-storage",
    "more": {
     "label": "非結構化與半結構化資料",
-    "body": "<p>照片、掃描文件沒有固定欄位，稱為非結構化資料，原檔通常放在物件儲存。若用文字辨識（OCR）把簽收單內容讀出來，就能存成帶欄位名稱的 JSON 這類半結構化資料（有標籤但欄位不必固定），放進 NoSQL。圖片與文件也可能經向量計算後，存進向量資料庫供相似度搜尋。</p>"
-   }
+    "body": "<p>照片、掃描文件沒有固定欄位，稱為非結構化資料，原檔通常放在物件儲存。若用文字辨識（OCR）把簽收單內容讀出來，就能存成 JSON 這類半結構化資料，放進 NoSQL。圖片與文件也可能經向量計算後，存進向量資料庫供相似度搜尋。</p>"
+   },
+   "after": "<p>各類的代表產品與 IoT 用途：</p>"
   },
   {
    "id": "data-analysis",
@@ -230,7 +220,7 @@
   {
    "id": "communication-auth",
    "h": "元件怎麼溝通、怎麼確認身分",
-   "body": "<p>元件之間常見三種溝通模式：<b>請求－回應（Request-Response）</b>如 HTTP，送出後要停下來等回覆；<b>非同步訊息驅動</b>如 MQTT，交給 Broker 就繼續做事；<b>遠端程序呼叫（Remote Procedure Call, RPC）</b>如 gRPC，寫起來像呼叫本機函式。</p>",
+   "body": "<p>元件之間常見三種溝通模式：</p><ul><li><b>請求－回應（Request-Response）</b>：如 HTTP，送出後要停下來等回覆。</li><li><b>非同步訊息驅動</b>：如 MQTT、AMQP，交給 Broker 就繼續做事。</li><li><b>遠端程序呼叫（Remote Procedure Call, RPC）</b>：如 gRPC，寫起來像呼叫本機函式；底下仍是一問一答，所以 gRPC 也算請求－回應。</li></ul>",
    "figs": [
     {
      "pos": "after-body",
@@ -240,7 +230,7 @@
      "caption": "下方長條是閘道器程式的時間：實心是在做自己的事，虛線框是送出後停下來等回覆的空檔。"
     }
    ],
-   "after": "<p>元件通訊前要先確認對方身分。選驗證機制要在安全性與設備算力之間取得平衡。雲端平台的資安還包含三項：身分驗證與存取管理、傳輸加密（TLS/SSL）、災害復原計畫，基本概念見 <a href=\"s1-25.html#availability-metrics\">2.5〈資安與隱私基本概念〉</a>。</p>",
+   "after": "<p>雲端平台的資安包含三項：身分驗證與存取管理（權限只給到夠用，稱為最小權限）、傳輸加密（TLS/SSL）、災難復原，基本概念見 <a href=\"s1-25.html\">2.5〈資安與隱私基本概念〉</a>。</p><p>元件通訊前要先確認對方身分。選驗證機制要在安全性與設備算力之間取得平衡，常見五種：</p>",
    "table": {
     "head": [
      "驗證機制",
@@ -286,34 +276,30 @@
   }
  ],
  "keypoints": [
-  "中介軟體涵蓋閘道器之後到應用服務之前的軟體與協定，橫跨網路層與應用層。",
-  "訊息中介軟體的價值是解耦與緩衝：先收下、再分派，保護後端不被尖峰衝垮。",
-  "三個角色記「發布、代理、訂閱」；三種 QoS 記「可能丟、可能重複、恰好一次」。",
-  "雲端服務看自己管多少：IaaS 管最多，PaaS 只管程式與資料，SaaS 直接用，但資料權限仍要自己管。",
-  "雲端的基礎是虛擬化；虛擬機各帶作業系統，容器共用核心，所以容器較輕、啟動較快。",
-  "選儲存看資料：訂單用 RDB，JSON 事件用文件型 NoSQL，時間序列用 TSDB，影片用物件儲存，要極快再加記憶體快取（Memory Cache，如 Redis）。",
-  "批次累積後算、有延遲（如 Hadoop MapReduce、Spark 批次作業）；串流一到就算，用於即時告警。",
+  "中介軟體橫跨網路層與應用層；訊息中介軟體先收下、再分派，靠解耦與緩衝削平尖峰。",
+  "IaaS 自己管最多，PaaS 只管程式與資料，SaaS 直接用；資料權限都要自己管。",
+  "雲端靠虛擬化共用機器：虛擬機各帶作業系統；容器共用核心，所以較輕、啟動較快。",
+  "訂單放關聯式、JSON 放 NoSQL、讀值放時序資料庫、影片放物件儲存，要極快再加快取。",
+  "批次累積後一次算、有延遲；串流一到就算，用於即時告警。",
   "驗證看算力與風險：高安全用 X.509，軟體服務用 Token，算力極低用 PSK。"
  ],
  "pitfalls": [
-  "Broker 負責分送訊息，不等於長期資料庫；持久化與保存期限要另外確認，產品名稱本身也不保證不丟資料。訊息路由（Message Router）也不是 MQTT 的組件：MQTT 只有用戶端與 Broker，依主題轉送由 Broker 完成。",
-  "雲端的好處是讓感測器不必有強運算力，不是讓感測器也能跑虛擬機。不過資源足夠的邊緣設備確實可以跑容器。",
-  "私有雲與地端都不等於自動安全，權限、修補與備份仍要有人負責。雲端權限應採最小權限，不是最大權限。",
-  "同一個名字可能出現在不同分類，例如 gRPC 同時屬於請求－回應與 RPC：寫起來像呼叫本機函式，底下仍是一問一答。",
-  "嚴格分層下，網路層只負責定址與路由，定義資料格式與內容的屬於上層協定（指引 p.106 寫成「網路層（軟體）通訊協定」）。Basic Auth 實際上是傳送編碼後的帳號密碼，不算 Token，須搭配 TLS（指引 p.111 把它列在 Token 類）。",
-  "影片雖然帶時間，也不代表該放時序資料庫：時序資料庫適合連續數值，整段影片放物件儲存。"
+  "Broker 只分送訊息，不是長期資料庫，保存期限要另外確認。MQTT 也沒有「訊息路由（Message Router）」這個組件：依主題轉送就是 Broker 的工作。",
+  "雲端的好處是讓感測器不必有強運算力，不是讓感測器也能跑虛擬機；資源足夠的邊緣設備才跑得動容器。",
+  "嚴格分層下，網路層只負責定址與路由，定義資料格式與內容的屬於上層協定（指引 p.106 寫成「網路層（軟體）通訊協定」）。",
+  "Basic Auth 實際上是傳送編碼後的帳號密碼，不算 Token，須搭配 TLS（指引 p.111 把它列在 Token 類）。"
  ],
  "examples": [
   {
-   "q": "一家冷鏈公司有八千支溫度探頭，清晨開工時讀值同時湧入，後端資料庫多次當機。團隊不想把資料庫升到最高規格，最適合的做法是？",
+   "q": "冷鏈儀表板要顯示每座冷藏庫的最新溫度，上千位客戶反覆查詢，資料庫回應變慢。不換資料庫的前提下，最合適的做法是？",
    "o": [
-    "把探頭的回報時間全部改到深夜",
-    "在閘道器與資料庫之間加入訊息中介軟體",
-    "把資料庫驗證改為 X.509 憑證",
-    "把 MQTT 的 QoS 全部調到 2"
+    "把所有歷史讀值移進記憶體快取，停用資料庫",
+    "改成批次處理，儀表板每個月更新一次",
+    "加一層記憶體快取，放各庫的最新讀值",
+    "把讀值轉成檔案，改放物件儲存"
    ],
-   "a": 1,
-   "think": "關鍵是瞬間湧入與不想升級後端，對應訊息中介軟體的緩衝與解耦，能削平尖峰。改回報時間會失去即時監控；憑證解決的是身分問題；提高 QoS 反而增加負擔。"
+   "a": 2,
+   "think": "關鍵是同一份「最新狀態」被反覆查，而且要快，對應記憶體快取。快取搭配資料庫、不取代它，完整歷史仍留在資料庫；批次會讓儀表板不即時；物件儲存是整個檔案存取，查不了單筆讀值。"
   },
   {
    "q": "冷鏈公司要保存訂單資料。團隊不想處理資料庫的修補與備份，只想專注資料表設計和查詢，最符合哪種做法？",
@@ -333,20 +319,16 @@
    "a": "地端。判斷看由誰營運管理，不看用的是實體機還是虛擬機。"
   },
   {
-   "q": "Modbus RTU 和 Modbus TCP 差在哪裡？",
-   "a": "功能相同；RTU 直接跑在 RS-485 這類串列線路上，TCP 改走乙太網路的 TCP/IP。"
-  },
-  {
-   "q": "計費訊息已經用 MQTT QoS 2 傳送，後端還需要自己去重嗎？",
-   "a": "需要。QoS 2 只保證協定交換範圍內恰好一次，業務上仍要用交易 ID 去重。"
-  },
-  {
    "q": "閘道器把讀值交給 Broker 後不等回覆就去做別的事，這屬於哪種溝通模式？",
    "a": "非同步訊息驅動；問了要等對方回答的 HTTP 屬於請求－回應。"
   },
   {
    "q": "從全台冷藏庫的溫度紀錄中，找出行為和其他庫明顯不同的幾座，屬於三級分析的哪一級？",
    "a": "資料探勘。只算平均與最大值是描述性統計，訓練模型做預測才是 AI 與機器學習。"
+  },
+  {
+   "q": "公司租用業者專屬代管、只給自己用的機房，這算公有雲還是私有雲？",
+   "a": "私有雲。分法看誰能用：單一組織專用就是私有雲，不看機房在誰那裡。"
   }
  ],
  "terms": [
@@ -361,19 +343,9 @@
    "def": "讓兩部分不必直接綁在一起，一邊變動不會拖垮另一邊。"
   },
   {
-   "term": "QoS",
-   "en": "Quality of Service",
-   "def": "服務品質。訊息送達的保證等級：0 最多一次、1 至少一次、2 恰好一次。"
-  },
-  {
    "term": "AMQP",
    "en": "Advanced Message Queuing Protocol",
    "def": "企業級訊息佇列協定，路由規則豐富。"
-  },
-  {
-   "term": "規則引擎",
-   "en": "Rule Engine",
-   "def": "條件成立時自動觸發告警或動作的平台功能。"
   },
   {
    "term": "API",
@@ -412,7 +384,7 @@
   },
   {
    "term": "Hypervisor",
-   "def": "把一台實體機切成多台虛擬機的管理軟體。"
+   "def": "把一台實體機切成多台虛擬機的管理軟體，如 VMware、Proxmox。"
   },
   {
    "term": "ACID",
@@ -456,7 +428,7 @@
  ],
  "case": {
   "title": "資料上得了雲，然後呢",
-  "body": "冷鏈公司的探頭與貨車已經連上網，資料卻還只是一串訊息。要決定誰先收下、放在誰的機器上、每種資料存到哪裡，以及怎麼確認連上來的真的是自家設備。"
+  "body": "探頭與貨車都連上網了，資料卻還只是一串訊息。誰先收下？放在誰的機器上？各種資料存到哪裡？怎麼確認連上來的是自家設備？"
  },
  "sources": [
   [

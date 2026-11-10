@@ -2,20 +2,19 @@
  "id": "s2-21",
  "title": "物聯網硬體設計基礎",
  "subtitle": "元件、控制板、接腳與電源，IoT 裝置的身體",
- "summary": "認識 IoT 裝置的硬體組成，學會選開發板、接感測器與負載、估算電池續航，並了解開源硬體的授權。",
+ "summary": "從元件、控制板、腳位到電源與授權，看一顆 IoT 裝置的硬體怎麼組成。",
  "case": {
   "title": "本章替冷凍櫃設計一顆溫度探頭",
-  "body": "冷凍櫃裡要放一顆靠電池的溫度探頭，還要接門開關、推動循環風扇。選哪塊板子、腳位怎麼接、電池撐多久，都是硬體設計的決定。低溫還會吃掉電池容量，所以估算要留餘裕。"
+  "body": "冷凍櫃裡要放一顆靠電池的溫度探頭，還要接門開關、推動循環風扇。該選哪塊板子、腳位怎麼接、電池在低溫下能撐多久？"
  },
  "learn": [
-  "區分被動與主動元件，算出 LED 的限流電阻",
-  "依需求在 MCU 開發板、單板電腦與 PLC 之間做選擇，並說明位址線與定址空間的關係",
-  "接好上拉或下拉電阻，並用電晶體或繼電器驅動大負載",
-  "用平均電流估算電池續航",
-  "分辨設計檔、韌體與文件的授權，說出使用開源硬體的基本義務"
+  "算出 LED 的限流電阻與電池的理想續航",
+  "替一項任務選 MCU 板或單板電腦",
+  "接對輸入腳，並用 MOSFET 或繼電器推動負載",
+  "說出使用開源硬體設計要盡的義務"
  ],
- "prereq": "電路可以用水管來想：<b>電壓 V</b>（伏特）像水壓，<b>電流 I</b>（安培，常用 mA＝千分之一安培）像水流量，<b>電阻 R</b>（歐姆 Ω）像變窄的水管。三者的關係是<b>歐姆定律 V＝I×R</b>：電壓固定時，電阻越大、電流越小。<b>功率 P＝V×I</b>（瓦特）代表每秒用掉多少能量。IoT 板子用方向固定的<b>直流電 DC</b>（電池、USB，常見 5V、3.3V），不是插座的交流電 AC。<b>GND</b>（接地）是 0V 的共同參考點，電流要從電源出發、經過元件、回到 GND 形成迴路才會流動，所以不同模組相連時要把 GND 接在一起（共地）。",
- "bridge": "MCU 可想成只跑單一程式的嵌入式環境，單板電腦可想成一台小型 Linux 伺服器，GPIO 則是程式碰觸實體世界的介面。",
+ "prereq": "電路可以用水管來想：<b>電壓 V</b>（伏特）像水壓，<b>電流 I</b>（安培，1mA 是千分之一安培）像水流量，<b>電阻 R</b>（歐姆 Ω）像變窄的水管。<b>歐姆定律 V＝I×R</b>：電壓固定時，電阻越大、電流越小；<b>功率 P＝V×I</b>（瓦特）。電流要從電源流經元件、回到 <b>GND</b>（接地，0V）才會流動，所以相連的模組要把 GND 接在一起（共地）。",
+ "bridge": "MCU 像只跑單一程式的嵌入式環境，單板電腦像小型 Linux 伺服器，GPIO 是程式碰觸實體世界的介面。",
  "sections": [
   {
    "id": "components",
@@ -24,7 +23,7 @@
     "q": "冷凍櫃面板要加一顆超溫指示 LED，由 5V 供電。LED 壓降約 2V，想讓它流 20mA。如果不串任何元件直接接上去，會怎樣？",
     "a": "電流沒有東西限制，可能燒毀 LED。要串一顆約 150Ω 的限流電阻：(5－2)÷0.02＝150。"
    },
-   "body": "<p><b>被動元件</b>（passive component）不能把訊號放大，只會消耗、儲存或釋放能量：<b>電阻 R</b> 限制電流，<b>電容 C</b> 像小水塔，能暫存電荷、穩定電壓；<b>電感 L</b> 以磁場儲能，抗拒電流突然改變。<b>主動元件</b>（active component）能靠外部供電放大或切換訊號，代表是<b>電晶體</b>（transistor）與由大量電晶體組成的積體電路 <b>IC</b>。</p><p><b>LED</b>（發光二極體）只能單向導通，而且必須限流。簡單電路常串一顆電阻：I≈（電源電壓－LED 壓降）÷R。亮度偏暗時調小電阻，電流變大就會變亮，但不可超過額定值。</p>",
+   "body": "<p><b>被動元件</b>（passive component）不能放大訊號，只會消耗、儲存或釋放能量：<b>電阻 R</b> 限制電流；<b>電容 C</b> 像小水塔，暫存電荷、穩定電壓；<b>電感 L</b> 以磁場儲能，抗拒電流突然改變。<b>主動元件</b>（active component）靠外部供電放大或切換訊號，代表是<b>電晶體</b>（transistor）與由大量電晶體組成的積體電路 <b>IC</b>。</p><p><b>LED</b>（發光二極體）只能單向導通，而且必須限流，通常串一顆電阻：I≈（電源電壓－LED 壓降）÷R。電阻調小，電流變大就更亮，但不可超過額定值。</p><p>常見元件的類別與用途見本節的表。</p>",
    "svg": "<svg viewBox=\"0 0 600 246\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"電源經限流電阻與 LED，再回到 GND 形成迴路的電路與電阻計算\"><defs><marker id=\"s2-21-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect class=\"box\" x=\"20\" y=\"50\" width=\"110\" height=\"56\" rx=\"8\"/><text class=\"tb tc\" x=\"75\" y=\"74\">電源</text><text class=\"ts tc\" x=\"75\" y=\"94\">+5V／GND</text><line class=\"la\" x1=\"130\" y1=\"78\" x2=\"198\" y2=\"78\" marker-end=\"url(#s2-21-1-arr)\"/><text class=\"tb ta tc\" x=\"165\" y=\"68\">I</text><text class=\"ts tc\" x=\"250\" y=\"46\">R 變小 → I 變大 → 更亮</text><rect class=\"warn\" x=\"200\" y=\"58\" width=\"100\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"250\" y=\"84\">電阻 R</text><line class=\"ln\" x1=\"300\" y1=\"78\" x2=\"380\" y2=\"78\"/><text class=\"ts tc\" x=\"400\" y=\"46\">壓降約 2V</text><polygon class=\"acc\" points=\"380,56 380,100 420,78\"/><line class=\"la\" x1=\"422\" y1=\"56\" x2=\"422\" y2=\"100\"/><text class=\"tb tc\" x=\"400\" y=\"124\">LED</text><line class=\"ln\" x1=\"422\" y1=\"78\" x2=\"560\" y2=\"78\"/><line class=\"ln\" x1=\"560\" y1=\"78\" x2=\"560\" y2=\"166\"/><polyline class=\"ln\" points=\"560,166 75,166 75,108\" marker-end=\"url(#s2-21-1-arr)\"/><text class=\"ts tc\" x=\"250\" y=\"156\">電流流回 GND（0V），迴路接通才會亮</text><text class=\"tb tc\" x=\"300\" y=\"202\">R = (5V − 2V) ÷ 0.02A = 150Ω</text><text class=\"ts tc\" x=\"300\" y=\"228\">假設 LED 壓降 2V、電流 20mA；實作時要核對元件規格</text></svg>",
    "caption": "電阻承受的是電源扣掉 LED 壓降的電壓；由 GPIO 直接驅動時，還要核對腳位額定電流。",
    "table": {
@@ -39,7 +38,7 @@
       "電阻 R",
       "被動",
       "限流、分壓",
-      "LED 限流、上拉／下拉"
+      "LED 限流、上拉／下拉電阻"
      ],
      [
       "可變電阻",
@@ -97,14 +96,7 @@
     "q": "冷凍櫃裡的探頭靠電池、只讀溫度再無線回報；倉庫另一台現場主機要同時跑本地資料庫、處理攝影機畫面。這兩個位置該用同一種板子嗎？",
     "a": "不該。探頭要便宜省電，選 MCU 板；現場主機要多工與影像處理，選能跑 Linux 的單板電腦。"
    },
-   "body": "<p><b>MCU 微控制器</b>（Microcontroller Unit）把 CPU（負責運算的核心）、Flash（斷電不消失，存程式）、RAM（執行時的暫存空間）、GPIO、ADC（這兩項後文說明）做在<b>一顆晶片</b>，便宜省電，適合讀感測器、控制執行器。<b>Arduino</b> 是以 MCU 為核心的開放原始碼開發板。</p><p><b>SBC 單板電腦</b>（Single-Board Computer）是一塊板上的完整電腦，能跑 Linux。<b>Raspberry Pi</b> 是代表，能同時執行多個程式（<b>多工</b>）、接 USB 攝影機，常放在現場當<b>邊緣運算</b>（edge computing，在資料產生的現場就近處理，不必全部傳上雲端）節點，代價是價格與耗電都比 MCU 板高。</p><p><b>PLC 可程式邏輯控制器</b>（Programmable Logic Controller）是工廠用的工業級控制器，主打高可靠、抗干擾與即時反應；MCU 的強項則是便宜與可自由開發。</p><p>選板子依序看三件事：要控制還是要運算、<b>邏輯電壓</b>、要不要內建無線。邏輯電壓是腳位用來代表 HIGH 的電壓，5V 訊號直接接進 3.3V 腳可能燒壞，要用分壓電阻或準位轉換器（level shifter）降壓。</p><p>CPU 用<b>位址匯流排</b>（address bus，匯流排是多個元件共用的一組傳輸線路）指定要存取 RAM 的哪個位置，就像門牌，位址線的數量決定處理器最多能用多少記憶體。n 條位址線可組出 <b>2<sup>n</sup> 個位址</b>。</p>",
-   "figs": [
-    {
-     "pos": "after-body",
-     "svg": "<svg viewBox=\"0 0 600 262\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CPU 用 A2、A1、A0 三條位址線送出 1、0、1，從 000 到 111 共 8 個門牌中選中 101，每格 1 byte；每多 1 條位址線，位址數乘 2：2¹⁰＝1024＝1KB，之後每多 10 條再 ×1024，10 條＝1KB、20 條＝1MB、32 條＝4GB\"><defs><marker id=\"s2-21-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect class=\"box\" x=\"30\" y=\"22\" width=\"90\" height=\"128\" rx=\"10\"/><text class=\"tb tc\" x=\"75\" y=\"92\">CPU</text><line class=\"la\" x1=\"120\" y1=\"44\" x2=\"250\" y2=\"44\"/><text class=\"t\" x=\"138\" y=\"35\">A2</text><rect class=\"acc\" x=\"250\" y=\"27\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"50\">1</text><line class=\"ln\" x1=\"120\" y1=\"86\" x2=\"250\" y2=\"86\"/><text class=\"t\" x=\"138\" y=\"77\">A1</text><rect class=\"soft\" x=\"250\" y=\"69\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"92\">0</text><line class=\"la\" x1=\"120\" y1=\"128\" x2=\"250\" y2=\"128\"/><text class=\"t\" x=\"138\" y=\"119\">A0</text><rect class=\"acc\" x=\"250\" y=\"111\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"134\">1</text><line class=\"ln\" x1=\"296\" y1=\"86\" x2=\"338\" y2=\"86\" marker-end=\"url(#s2-21-2-arr)\"/><rect class=\"box\" x=\"346\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"373\" y=\"64\">000</text><rect class=\"box\" x=\"405\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"432\" y=\"64\">001</text><rect class=\"box\" x=\"464\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"491\" y=\"64\">010</text><rect class=\"box\" x=\"523\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"550\" y=\"64\">011</text><rect class=\"box\" x=\"346\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"373\" y=\"120\">100</text><rect class=\"acc\" x=\"405\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"tb tc\" x=\"432\" y=\"120\">101</text><rect class=\"box\" x=\"464\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"491\" y=\"120\">110</text><rect class=\"box\" x=\"523\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"550\" y=\"120\">111</text><text class=\"t tc\" x=\"463\" y=\"168\">8 個門牌，每格 1 byte</text><rect class=\"soft\" x=\"20\" y=\"184\" width=\"560\" height=\"70\" rx=\"8\"/><text class=\"t tc\" x=\"300\" y=\"210\">2¹⁰＝1024＝1KB，之後每多 10 條再 ×1024</text><text class=\"t tc\" x=\"300\" y=\"238\">→ 10 條＝1KB・<tspan class=\"tb ta\">20 條＝1MB</tspan>・32 條＝4GB</text></svg>",
-     "caption": "3 條線的 0／1 組合剛好 8 種，所以 n 條線有 2ⁿ 個門牌（位址）；換算容量前先假設每格 1 byte。"
-    }
-   ],
+   "body": "<p><b>MCU 微控制器</b>（Microcontroller Unit）把運算用的 CPU、存程式的 Flash、暫存用的 RAM 和接感測器的腳位做在<b>一顆晶片</b>裡，便宜省電，適合讀感測器、控制執行器。<b>Arduino</b> 是以 MCU 為核心的開發板。</p><p><b>SBC 單板電腦</b>（Single-Board Computer）是一塊板上的完整電腦，能跑 Linux。<b>Raspberry Pi</b> 是代表：能同時跑多個程式（<b>多工</b>）、處理影像，常放在現場當邊緣運算節點（見<a href=\"s2-11.html#edge-fog-cloud\">1-1〈系統元件與架構〉</a>），但比 MCU 板貴、也更耗電。</p><p>選板子依序看三件事（三塊常見板子見本節的表）：要控制還是要運算、<b>邏輯電壓</b>、要不要內建無線。邏輯電壓是腳位代表 HIGH 的電壓；5V 訊號直接接進 3.3V 腳可能燒壞，要用分壓電阻或準位轉換器（level shifter）降壓。</p>",
    "svg": "<svg viewBox=\"0 0 600 222\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MCU 一顆晶片包辦 CPU 記憶體與 IO；單板電腦是 SoC 加外部記憶體與 Linux\"><text class=\"th tc\" x=\"155\" y=\"26\">MCU 微控制器</text><text class=\"th tc\" x=\"445\" y=\"26\">單板電腦 SBC</text><rect class=\"box\" x=\"30\" y=\"40\" width=\"250\" height=\"145\" rx=\"10\"/><text class=\"tb tc\" x=\"155\" y=\"64\">一顆晶片包辦</text><rect class=\"acc\" x=\"45\" y=\"78\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"97\" y=\"103\">CPU</text><rect class=\"acc\" x=\"160\" y=\"78\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"212\" y=\"103\">Flash</text><rect class=\"acc\" x=\"45\" y=\"128\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"97\" y=\"153\">RAM</text><rect class=\"acc\" x=\"160\" y=\"128\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"212\" y=\"153\">GPIO/ADC</text><text class=\"ts tc\" x=\"155\" y=\"208\">可裸機或 RTOS，依需求設計</text><rect class=\"box\" x=\"320\" y=\"40\" width=\"250\" height=\"145\" rx=\"10\"/><rect class=\"acc\" x=\"335\" y=\"50\" width=\"220\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"445\" y=\"73\">Linux 作業系統</text><rect class=\"box\" x=\"335\" y=\"94\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"387\" y=\"119\">ARM SoC</text><rect class=\"box\" x=\"450\" y=\"94\" width=\"105\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"502\" y=\"119\">外部 RAM</text><rect class=\"box\" x=\"335\" y=\"140\" width=\"105\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"387\" y=\"164\">microSD</text><rect class=\"box\" x=\"450\" y=\"140\" width=\"105\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"502\" y=\"164\">USB/HDMI</text><text class=\"ts tc\" x=\"445\" y=\"208\">多工、影像處理；較耗電、較貴</text></svg>",
    "svgm": "<svg viewBox=\"0 0 360 440\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"MCU 一顆晶片包辦 CPU 記憶體與 IO；單板電腦是 SoC 加外部記憶體與 Linux\"><text class=\"th tc\" x=\"180\" y=\"26\">MCU 微控制器</text><rect class=\"box\" x=\"20\" y=\"40\" width=\"320\" height=\"145\" rx=\"10\"/><text class=\"tb tc\" x=\"180\" y=\"64\">一顆晶片包辦</text><rect class=\"acc\" x=\"35\" y=\"78\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"105\" y=\"103\">CPU</text><rect class=\"acc\" x=\"185\" y=\"78\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"255\" y=\"103\">Flash</text><rect class=\"acc\" x=\"35\" y=\"128\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"105\" y=\"153\">RAM</text><rect class=\"acc\" x=\"185\" y=\"128\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"255\" y=\"153\">GPIO/ADC</text><text class=\"ts tc\" x=\"180\" y=\"208\">可裸機或 RTOS，依需求設計</text><text class=\"th tc\" x=\"180\" y=\"250\">單板電腦 SBC</text><rect class=\"box\" x=\"20\" y=\"264\" width=\"320\" height=\"145\" rx=\"10\"/><rect class=\"acc\" x=\"35\" y=\"274\" width=\"290\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"180\" y=\"297\">Linux 作業系統</text><rect class=\"box\" x=\"35\" y=\"318\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"105\" y=\"343\">ARM SoC</text><rect class=\"box\" x=\"185\" y=\"318\" width=\"140\" height=\"40\" rx=\"6\"/><text class=\"tb tc\" x=\"255\" y=\"343\">外部 RAM</text><rect class=\"box\" x=\"35\" y=\"364\" width=\"140\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"105\" y=\"388\">microSD</text><rect class=\"box\" x=\"185\" y=\"364\" width=\"140\" height=\"38\" rx=\"6\"/><text class=\"tb tc\" x=\"255\" y=\"388\">USB/HDMI</text><text class=\"ts tc\" x=\"180\" y=\"432\">多工、影像處理；較耗電、較貴</text></svg>",
    "caption": "MCU 是一顆晶片包辦的控制器；單板電腦是能跑 Linux 的整台小電腦。",
@@ -133,7 +125,7 @@
      ],
      [
       "Raspberry Pi",
-      "單板電腦（跑 Linux）",
+      "單板電腦（ARM 處理器，跑 Linux）；同品牌的 Pico 是 MCU 板",
       "3.3V，無內建 ADC",
       "多數型號有 Wi-Fi＋藍牙",
       "邊緣運算、影像、多工"
@@ -141,9 +133,16 @@
     ]
    },
    "more": {
-    "label": "MPU 與 SoC",
-    "body": "<p><b>MPU 微處理器</b>（Microprocessor Unit）以運算核心為主，記憶體等要外接。<b>SoC 系統單晶片</b>（System on Chip）把 CPU、GPU（圖形處理器）等整合成一顆；單板電腦就是把 SoC、記憶體與 I/O 做在一塊板上。MCU 可以不裝作業系統直接執行（裸機），或使用精簡的即時作業系統 RTOS（Real-Time Operating System）。Arduino 用類 C/C++ 撰寫程式。</p>"
+    "label": "MPU、SoC 與 PLC",
+    "body": "<p><b>MPU 微處理器</b>（Microprocessor Unit）以運算核心為主，記憶體等要外接。<b>SoC 系統單晶片</b>（System on Chip）把 CPU、GPU（圖形處理器）等整合成一顆；單板電腦就是把 SoC、記憶體與 I/O 做在一塊板上。MCU 可以不裝作業系統直接執行（裸機），或使用精簡的即時作業系統 RTOS（Real-Time Operating System）。Arduino 用類 C/C++ 撰寫程式。</p><p><b>PLC</b>（可程式邏輯控制器）是工廠用的工業級控制器，主打高可靠、抗干擾與即時反應（見 <a href=\"s2-23.html#plc\">2-3〈智慧製造流程優化與成本控制〉</a>）；MCU 的強項則是便宜與可自由開發。</p>"
    }
+  },
+  {
+   "id": "address-bus",
+   "h": "位址線：幾條線，決定能用多少記憶體",
+   "body": "<p>CPU 用<b>位址匯流排</b>（address bus，一組共用的傳輸線路）指定要存取記憶體的哪個位置，就像報門牌。n 條位址線可組出 <b>2<sup>n</sup> 個位址</b>：每個位址存 1 byte 時，10 條是 1KB，20 條是 1MB，32 條是 4GB。</p>",
+   "svg": "<svg viewBox=\"0 0 600 262\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"CPU 用 A2、A1、A0 三條位址線送出 1、0、1，從 000 到 111 共 8 個門牌中選中 101，每格 1 byte；每多 1 條位址線，位址數乘 2：2¹⁰＝1024＝1KB，之後每多 10 條再 ×1024，10 條＝1KB、20 條＝1MB、32 條＝4GB\"><defs><marker id=\"s2-21-2-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect class=\"box\" x=\"30\" y=\"22\" width=\"90\" height=\"128\" rx=\"10\"/><text class=\"tb tc\" x=\"75\" y=\"92\">CPU</text><line class=\"la\" x1=\"120\" y1=\"44\" x2=\"250\" y2=\"44\"/><text class=\"t\" x=\"138\" y=\"35\">A2</text><rect class=\"acc\" x=\"250\" y=\"27\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"50\">1</text><line class=\"ln\" x1=\"120\" y1=\"86\" x2=\"250\" y2=\"86\"/><text class=\"t\" x=\"138\" y=\"77\">A1</text><rect class=\"soft\" x=\"250\" y=\"69\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"92\">0</text><line class=\"la\" x1=\"120\" y1=\"128\" x2=\"250\" y2=\"128\"/><text class=\"t\" x=\"138\" y=\"119\">A0</text><rect class=\"acc\" x=\"250\" y=\"111\" width=\"38\" height=\"34\" rx=\"6\"/><text class=\"tb tc\" x=\"269\" y=\"134\">1</text><line class=\"ln\" x1=\"296\" y1=\"86\" x2=\"338\" y2=\"86\" marker-end=\"url(#s2-21-2-arr)\"/><rect class=\"box\" x=\"346\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"373\" y=\"64\">000</text><rect class=\"box\" x=\"405\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"432\" y=\"64\">001</text><rect class=\"box\" x=\"464\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"491\" y=\"64\">010</text><rect class=\"box\" x=\"523\" y=\"34\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"550\" y=\"64\">011</text><rect class=\"box\" x=\"346\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"373\" y=\"120\">100</text><rect class=\"acc\" x=\"405\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"tb tc\" x=\"432\" y=\"120\">101</text><rect class=\"box\" x=\"464\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"491\" y=\"120\">110</text><rect class=\"box\" x=\"523\" y=\"90\" width=\"54\" height=\"48\" rx=\"6\"/><text class=\"t tc\" x=\"550\" y=\"120\">111</text><text class=\"t tc\" x=\"463\" y=\"168\">8 個門牌，每格 1 byte</text><rect class=\"soft\" x=\"20\" y=\"184\" width=\"560\" height=\"70\" rx=\"8\"/><text class=\"t tc\" x=\"300\" y=\"210\">2¹⁰＝1024＝1KB，之後每多 10 條再 ×1024</text><text class=\"t tc\" x=\"300\" y=\"238\">→ 10 條＝1KB・<tspan class=\"tb ta\">20 條＝1MB</tspan>・32 條＝4GB</text></svg>",
+   "caption": "3 條線的 0／1 組合剛好 8 種，所以 n 條線有 2ⁿ 個門牌（位址）；換算容量前先假設每格 1 byte。"
   },
   {
    "id": "gpio",
@@ -152,14 +151,14 @@
     "q": "冷藏庫門開關一端接 GND、一端接 MCU 輸入腳，沒有其他元件。門關上時開關接通，讀值穩定；門打開時開關斷開，App 上的門狀態卻一直亂跳。問題出在哪？",
     "a": "開關斷開時，腳位沒接到任何固定電位，處於浮接狀態。加上拉電阻或啟用內建上拉就能解決。"
    },
-   "body": "<p><b>GPIO</b>（General-Purpose Input/Output，通用輸入輸出腳）可用程式設成<b>輸出</b>（送 HIGH／LOW 去點燈）或<b>輸入</b>（讀取按鈕狀態）。設成輸入時，腳位沒接東西的狀態叫<b>浮接</b>（floating），讀值會受雜訊影響而亂跳，所以要用電阻把它拉到固定電位。</p><ul><li><b>下拉電阻</b>（pull-down）接 GND，按鈕接電源：按下 HIGH、放開 LOW，稱<b>正向邏輯</b>。</li><li><b>上拉電阻</b>（pull-up）接電源，按鈕接 GND：按下 LOW、放開 HIGH，稱<b>負向邏輯</b>。</li></ul><p>電阻決定放開時的準位，按鈕接法決定按下時的準位。Arduino 的 <code>pinMode(腳位, INPUT_PULLUP)</code> 是啟用晶片內建的上拉電阻，不必外接。</p>",
+   "body": "<p><b>GPIO</b>（General-Purpose Input/Output，通用輸入輸出腳）可用程式設成<b>輸出</b>（送 HIGH／LOW 去點燈）或<b>輸入</b>（讀按鈕狀態）。輸入腳沒接東西的狀態叫<b>浮接</b>（floating），讀值會受雜訊影響而亂跳，所以要用電阻把它拉到固定電位。</p><ul><li><b>下拉電阻</b>（pull-down）接 GND，按鈕接電源：按下 HIGH、放開 LOW，稱<b>正向邏輯</b>。</li><li><b>上拉電阻</b>（pull-up）接電源，按鈕接 GND：按下 LOW、放開 HIGH，稱<b>負向邏輯</b>。</li></ul><p>Arduino 的 <code>pinMode(腳位, INPUT_PULLUP)</code> 是啟用晶片內建的上拉電阻，不必外接。Raspberry Pi 的 Python 程式則用 <code>GPIO.input</code> 讀腳位、<code>GPIO.output</code> 設輸出。</p>",
    "lab": "s2-21-pin",
-   "after": "<p><b>輪詢</b>（polling）是 CPU 定時主動去檢查；<b>中斷</b>（interrupt）是<b>周邊裝置</b>（CPU 以外負責輸入輸出或特定工作的部分，如按鈕、感測器、MCU 內的計時器）在事件發生時送訊號，請 CPU 暫停手邊工作先處理。就像等包裹：輪詢是一直跑去看信箱，中斷是郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，中斷可省下空等的時間並搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率仍要看負載。</p><p>GPIO 只傳 HIGH 或 LOW；要和模組交換一串資料用串列介面（原理見<a href=\"s1-32.html#interfaces\">科一 3.2〈感測訊號與通訊基礎〉</a>）。這些介面占用固定腳位，以 Uno R3 為例，UART 在 D0／D1、I²C 在 A4／A5、SPI 在 D10–D13；接了串列裝置就別再拿那幾支腳接按鈕或 LED（沒接時仍可當一般 GPIO）。</p>",
+   "after": "<p><b>輪詢</b>（polling）是 CPU 定時主動去檢查，像一直跑去看信箱。<b>中斷</b>（interrupt）是事件發生時，由按鈕、感測器、計時器這類<b>周邊裝置</b>送訊號，請 CPU 暫停手邊工作先處理，像郵差按門鈴。</p><p>中斷是正常機制，不代表發生異常。事件不常發生時，它省下空等的時間，還能搭配休眠；事件極度頻繁時，每次進出中斷也有開銷，效率要看負載。</p>",
    "svg": "<svg viewBox=\"0 0 600 204\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"輪詢由 CPU 定時去問，事件要等下次檢查；中斷由周邊主動通知，CPU 立刻處理\"><defs><marker id=\"s2-21-3-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"24\">輪詢是一直問，中斷是有事才通知</text><text class=\"tb\" x=\"20\" y=\"72\">輪詢</text><text class=\"ts\" x=\"20\" y=\"92\">CPU 定時去問</text><line class=\"ln\" x1=\"125\" y1=\"80\" x2=\"585\" y2=\"80\" marker-end=\"url(#s2-21-3-arr)\"/><rect class=\"acc\" x=\"143\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"203\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"263\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"323\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"383\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"443\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"503\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><rect class=\"acc\" x=\"563\" y=\"68\" width=\"14\" height=\"12\" rx=\"2\"/><circle class=\"warn\" cx=\"290\" cy=\"80\" r=\"6\"/><text class=\"ts tc\" x=\"290\" y=\"58\">事件發生</text><text class=\"ts tc\" x=\"350\" y=\"102\">下次問到才處理</text><text class=\"tb\" x=\"20\" y=\"162\">中斷</text><text class=\"ts\" x=\"20\" y=\"182\">周邊主動通知</text><line class=\"ln\" x1=\"125\" y1=\"170\" x2=\"585\" y2=\"170\" marker-end=\"url(#s2-21-3-arr)\"/><circle class=\"warn\" cx=\"290\" cy=\"170\" r=\"6\"/><rect class=\"acc\" x=\"298\" y=\"158\" width=\"70\" height=\"12\" rx=\"2\"/><text class=\"ts tc\" x=\"290\" y=\"148\">事件發生</text><text class=\"ts tc\" x=\"189\" y=\"160\">平時做別的事或休眠</text><text class=\"ts tc\" x=\"333\" y=\"194\">CPU 暫停手邊工作，立刻處理</text></svg>",
    "caption": "輪詢要等下次檢查才發現事件；中斷由事件觸發，平時 CPU 可以做別的事或休眠。",
    "more": {
-    "label": "Arduino 與 Raspberry Pi 的程式寫法",
-    "body": "<p>Arduino 程式中，<code>setup()</code> 開機跑一次、<code>loop()</code> 不斷重複；<code>pinMode</code> 設定輸入或輸出，<code>digitalWrite</code> 輸出 HIGH／LOW，<code>digitalRead</code> 讀取輸入腳。</p><p>Raspberry Pi 常用 Python 模組 <code>RPi.GPIO</code>，做法相同：<code>setup</code> 設輸入或輸出、<code>output</code> 設定輸出高低、<code>input</code> <b>讀取</b>輸入腳的狀態。使用前要先用 <code>setmode</code> 選腳位編號方式：BCM 是晶片的 GPIO 編號，BOARD 是板上排針的實體腳位順序。</p><p>典型上拉或下拉電阻用 10kΩ。</p>"
+    "label": "Arduino 與 Raspberry Pi 的程式寫法、串列介面占用的腳位",
+    "body": "<p>Arduino 程式中，<code>setup()</code> 開機跑一次、<code>loop()</code> 不斷重複；<code>pinMode</code> 設定輸入或輸出，<code>digitalWrite</code> 輸出 HIGH／LOW，<code>digitalRead</code> 讀取輸入腳。</p><p>Raspberry Pi 常用 Python 模組 <code>RPi.GPIO</code>：先用 <code>setmode</code> 選腳位編號方式（BCM 是晶片的 GPIO 編號，BOARD 是板上排針的實體腳位順序），再用 <code>setup</code> 設輸入或輸出。</p><p>GPIO 一次只傳 HIGH 或 LOW；要和模組交換一串資料，改用 UART、I²C、SPI 這些串列介面（原理見<a href=\"s1-32.html#interfaces\">科一 3.2〈感測訊號與通訊基礎〉</a>）。它們占用固定腳位，接了串列裝置就別再拿那幾支腳接按鈕或 LED。以 Uno R3 為例，UART 在 D0／D1、I²C 在 A4／A5、SPI 在 D10–D13。</p><p>典型上拉或下拉電阻用 10kΩ。</p>"
    }
   },
   {
@@ -169,7 +168,7 @@
     "q": "一顆溫度探頭輸出連續變化的類比電壓。把它直接接到 Raspberry Pi 的 GPIO，程式能讀到溫度嗎？",
     "a": "不能。Raspberry Pi 沒有內建 ADC，GPIO 只分高低，要外接 ADC 晶片才能把電壓變成數字。"
    },
-   "body": "<p>感測器輸出常是連續電壓，要經 <b>ADC</b>（Analog-to-Digital Converter，類比數位轉換器）轉成數字：n 位元分 2<sup>n</sup> 階，Uno 是 10 位元，讀值 0–1023（原理見<a href=\"s1-32.html#adc\">科一 3.2〈感測訊號與通訊基礎〉</a>）。</p><p>反過來想輸出中間值時，常用做法是 <b>PWM</b>（Pulse Width Modulation，脈波寬度調變）：快速開關腳位，改變<b>占空比</b>（duty cycle，高電位時間 ÷ 週期）。平均電壓≈電源電壓×占空比，開關夠快時，LED 與馬達表現出來的就是平均效果，可用來調亮度與轉速。Uno 的 <code>analogWrite</code> 只能用在標 ~ 的腳。</p><p>分清楚兩個參數：<b>占空比</b>決定亮度與速度，<b>頻率</b>決定無源蜂鳴器的音高。</p>",
+   "body": "<p>感測器輸出常是連續電壓，要經 <b>ADC</b>（類比數位轉換器）轉成數字：Uno 是 10 位元，分 1,024 階，讀值 0–1023（原理見<a href=\"s1-32.html#adc\">科一 3.2〈感測訊號與通訊基礎〉</a>）。</p><p>反過來要輸出中間值時，常用 <b>PWM</b>（Pulse Width Modulation，脈波寬度調變）：快速開關腳位，改變<b>占空比</b>（duty cycle，高電位時間 ÷ 週期）。平均電壓≈電源電壓×占空比；開關夠快時，LED 亮度與馬達轉速就跟著平均值變。Uno 輸出 PWM 的函式 <code>analogWrite</code> 只能用在標 ~ 的腳。</p><p><b>占空比</b>決定亮度與速度，<b>頻率</b>決定無源蜂鳴器（要 MCU 送高低切換的訊號才會響）的音高。</p>",
    "svg": "<svg viewBox=\"0 0 600 296\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"PWM 占空比 25%、50%、75% 的方波與平均電壓\"><defs><marker id=\"s2-21-4-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text class=\"th tc\" x=\"300\" y=\"22\">PWM：高電位占一個週期的比例＝占空比</text><text class=\"ts tc\" x=\"205\" y=\"41\">一個週期</text><line class=\"ln\" x1=\"150\" y1=\"47\" x2=\"260\" y2=\"47\" marker-start=\"url(#s2-21-4-arr)\" marker-end=\"url(#s2-21-4-arr)\"/><polyline class=\"la\" points=\"150,90 150,54 177.5,54 177.5,90 260,90 260,54 287.5,54 287.5,90 370,90 370,54 397.5,54 397.5,90 480,90 480,54 507.5,54 507.5,90 590,90\"/><line class=\"ln dash\" x1=\"150\" y1=\"81\" x2=\"590\" y2=\"81\"/><text class=\"tb\" x=\"20\" y=\"68\">25%</text><text class=\"ts\" x=\"20\" y=\"88\">平均≈1.25V</text><polyline class=\"la\" points=\"150,168 150,132 205,132 205,168 260,168 260,132 315,132 315,168 370,168 370,132 425,132 425,168 480,168 480,132 535,132 535,168 590,168\"/><line class=\"ln dash\" x1=\"150\" y1=\"150\" x2=\"590\" y2=\"150\"/><text class=\"tb\" x=\"20\" y=\"146\">50%</text><text class=\"ts\" x=\"20\" y=\"166\">平均≈2.5V</text><polyline class=\"la\" points=\"150,246 150,210 232.5,210 232.5,246 260,246 260,210 342.5,210 342.5,246 370,246 370,210 452.5,210 452.5,246 480,246 480,210 562.5,210 562.5,246 590,246\"/><line class=\"ln dash\" x1=\"150\" y1=\"219\" x2=\"590\" y2=\"219\"/><text class=\"tb\" x=\"20\" y=\"224\">75%</text><text class=\"ts\" x=\"20\" y=\"244\">平均≈3.75V</text><text class=\"ts tc\" x=\"370\" y=\"266\">虛線是 5V 電源下的時間平均電壓</text><text class=\"ts tc\" x=\"300\" y=\"287\">Uno：analogWrite(腳位, 0–255)；64≈25%、128≈50%、191≈75%</text></svg>",
    "caption": "PWM 的時間平均值隨占空比變化；波形仍在高低準位間切換，不是每一瞬間都輸出中間電壓。"
   },
@@ -180,7 +179,7 @@
     "q": "冷藏庫的 12V、0.5A 循環風扇接在 3.3V GPIO 上，程式輸出 HIGH 卻不會轉。改程式能解決嗎？",
     "a": "不能。GPIO 的電壓與電流都不夠，而且可能損壞腳位。要讓 GPIO 控制 MOSFET，由 12V 外部電源供電。"
    },
-   "body": "<p>GPIO 只適合送控制訊號，可輸出的電流很小，推不動馬達、繼電器線圈或燈泡。做法是讓 GPIO 控制<b>電晶體</b>或 <b>MOSFET</b>（金屬氧化物半導體場效電晶體），由它接通外部電源，也就是<b>小電流控制大電流</b>。</p><p><b>繼電器</b>（relay）是用線圈電磁鐵吸動的機械開關，能切換 AC 或 DC 負載，而且控制側與負載側電氣隔離（兩側沒有導線相連，高壓不會直接竄到控制側）。機械觸點只適合開與關；要用 PWM 調速或調光，通常選 MOSFET。</p><p>線圈與馬達屬電感性負載，斷電瞬間會產生反向高壓，要<b>反向並聯飛輪二極體</b>（flyback diode，和線圈並排接，陰極也就是標線那端接 +12V，平常承受反向電壓不導通，斷電瞬間才導通）保護電晶體。</p>",
+   "body": "<p>GPIO 只適合送控制訊號，輸出的電流很小，推不動馬達、繼電器線圈或燈泡。做法是讓 GPIO 控制<b>電晶體</b>（常用的一種叫 <b>MOSFET</b>），由它接通外部電源，也就是<b>小電流控制大電流</b>。</p><p><b>繼電器</b>（relay）是用線圈電磁鐵吸動的機械開關，能切換交流（AC）或直流（DC）負載，而且控制側與負載側電氣隔離（兩側沒有導線相連）。它有三個接點：共同端 <b>COM</b>、線圈沒通電時斷開的 <b>NO</b>（常開）、沒通電時接通的 <b>NC</b>（常閉）。機械觸點只適合開與關；要用 PWM 調速或調光，通常選 MOSFET。</p><p>線圈與馬達屬電感性負載，斷電瞬間會產生反向高壓，要<b>反向並聯飛輪二極體</b>（flyback diode，見圖第 3、4 步）保護電晶體。</p>",
    "svg": "<svg viewBox=\"0 0 600 446\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"繼電器逐步圖：GPIO 經 MOSFET 讓 12V 推動線圈，觸點由 COM–NC 切到 COM–NO；斷電瞬間沒有飛輪二極體會出現遠高於 12V 的尖峰，有二極體則被夾在約 12V\"><defs><marker id=\"s2-21-5-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><text x=\"280\" y=\"24\" class=\"tb tc\">+12V</text><line x1=\"280\" y1=\"34\" x2=\"430\" y2=\"34\" class=\"ln\"/><line x1=\"280\" y1=\"30\" x2=\"280\" y2=\"48\" class=\"ln\"/><line x1=\"280\" y1=\"88\" x2=\"280\" y2=\"120\" class=\"ln\"/><polyline points=\"430,78 430,106 280,106\" class=\"ln\" data-s=\"1 2 4\"/><polyline points=\"430,34 430,55\" class=\"ln\" data-s=\"1 2 4\"/><line x1=\"280\" y1=\"164\" x2=\"280\" y2=\"192\" class=\"ln\"/><polyline points=\"80,168 80,192 280,192\" class=\"ln\"/><text x=\"165\" y=\"184\" class=\"t tc\">共地</text><g data-s=\"2\"><line x1=\"280\" y1=\"30\" x2=\"280\" y2=\"48\" class=\"la\"/><line x1=\"280\" y1=\"88\" x2=\"280\" y2=\"118\" class=\"la\" marker-end=\"url(#s2-21-5-arr)\"/><line x1=\"280\" y1=\"164\" x2=\"280\" y2=\"190\" class=\"la\" marker-end=\"url(#s2-21-5-arr)\"/></g><g data-s=\"4\"><polyline points=\"280,48 280,34 430,34 430,106 280,106 280,88\" class=\"la\"/><line x1=\"300\" y1=\"106\" x2=\"372\" y2=\"106\" class=\"la\" marker-end=\"url(#s2-21-5-arr)\"/><line x1=\"410\" y1=\"34\" x2=\"340\" y2=\"34\" class=\"la\" marker-end=\"url(#s2-21-5-arr)\"/></g><rect x=\"225\" y=\"48\" width=\"110\" height=\"40\" rx=\"6\" class=\"box\"/><rect x=\"225\" y=\"48\" width=\"110\" height=\"40\" rx=\"6\" class=\"acc\" data-s=\"2 4\"/><text x=\"280\" y=\"74\" class=\"tb tc\">繼電器線圈</text><circle cx=\"280\" cy=\"106\" r=\"4\" class=\"mk\" data-s=\"1 2 4\"/><circle cx=\"280\" cy=\"34\" r=\"4\" class=\"mk\"/><g data-s=\"1 2\"><polygon points=\"418,78 442,78 430,58\" class=\"box\"/><line x1=\"416\" y1=\"57\" x2=\"444\" y2=\"57\" class=\"ln\"/></g><g data-s=\"4\"><polygon points=\"418,78 442,78 430,58\" class=\"acc\"/><line x1=\"416\" y1=\"57\" x2=\"444\" y2=\"57\" class=\"la\"/></g><g data-s=\"3\"><polyline points=\"430,34 430,55\" class=\"ln dash\"/><polygon points=\"418,78 442,78 430,58\" class=\"ln dash\"/><line x1=\"416\" y1=\"57\" x2=\"444\" y2=\"57\" class=\"ln dash\"/><polyline points=\"430,78 430,106 280,106\" class=\"ln dash\"/></g><text x=\"456\" y=\"62\" class=\"tb\">飛輪二極體</text><text x=\"456\" y=\"86\" class=\"t\">陰極→+12V</text><text x=\"456\" y=\"112\" class=\"tb\" data-s=\"2\">不導通</text><text x=\"456\" y=\"112\" class=\"tb\" data-s=\"3\">拿掉</text><text x=\"456\" y=\"112\" class=\"tb\" data-s=\"4\">導通：讓電流繞圈</text><g data-s=\"3\"><polygon points=\"258,90 242,108 253,108 245,124 266,102 255,102 264,90\" class=\"warn\"/><text x=\"192\" y=\"106\" class=\"tb tc\">高壓尖峰</text></g><rect x=\"225\" y=\"120\" width=\"110\" height=\"44\" rx=\"6\" class=\"box\"/><rect x=\"225\" y=\"120\" width=\"110\" height=\"44\" rx=\"6\" class=\"acc\" data-s=\"2\"/><text x=\"280\" y=\"148\" class=\"tb tc\">MOSFET</text><rect x=\"20\" y=\"112\" width=\"120\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"80\" y=\"134\" class=\"tb tc\">MCU</text><text x=\"80\" y=\"157\" class=\"t tc\" data-s=\"1 3 4\">GPIO＝LOW</text><text x=\"80\" y=\"157\" class=\"tb tc ta\" data-s=\"2\">GPIO＝HIGH</text><line x1=\"140\" y1=\"142\" x2=\"223\" y2=\"142\" class=\"ln dash\" marker-end=\"url(#s2-21-5-arr)\"/><text x=\"182\" y=\"134\" class=\"t tc\">控制訊號</text><line x1=\"20\" y1=\"214\" x2=\"140\" y2=\"214\" class=\"ln dash\"/><line x1=\"460\" y1=\"214\" x2=\"580\" y2=\"214\" class=\"ln dash\"/><text x=\"300\" y=\"220\" class=\"t tc\">電氣隔離：靠磁力吸動，兩側沒有導線相連</text><rect x=\"20\" y=\"246\" width=\"120\" height=\"54\" rx=\"8\" class=\"box\"/><text x=\"80\" y=\"279\" class=\"tb tc\">外部電源</text><line x1=\"140\" y1=\"275\" x2=\"230\" y2=\"275\" class=\"ln\"/><line x1=\"334\" y1=\"300\" x2=\"440\" y2=\"300\" class=\"ln\"/><polyline points=\"505,326 505,338 80,338 80,300\" class=\"ln\"/><g data-s=\"2\"><line x1=\"140\" y1=\"275\" x2=\"230\" y2=\"275\" class=\"la\"/><line x1=\"334\" y1=\"300\" x2=\"438\" y2=\"300\" class=\"la\" marker-end=\"url(#s2-21-5-arr)\"/><polyline points=\"505,326 505,338 80,338 80,300\" class=\"la\"/></g><line x1=\"230\" y1=\"275\" x2=\"326\" y2=\"252\" class=\"ln\" data-s=\"1 3 4\"/><line x1=\"230\" y1=\"275\" x2=\"326\" y2=\"298\" class=\"la\" data-s=\"2\"/><circle cx=\"230\" cy=\"275\" r=\"5\" class=\"box\"/><circle cx=\"330\" cy=\"251\" r=\"5\" class=\"box\"/><circle cx=\"330\" cy=\"300\" r=\"5\" class=\"box\"/><text x=\"230\" y=\"302\" class=\"tb tc\">COM</text><text x=\"346\" y=\"256\" class=\"t\">NC 常閉</text><text x=\"346\" y=\"326\" class=\"t\">NO 常開</text><rect x=\"440\" y=\"274\" width=\"130\" height=\"52\" rx=\"8\" class=\"box\"/><rect x=\"440\" y=\"274\" width=\"130\" height=\"52\" rx=\"8\" class=\"acc\" data-s=\"2\"/><text x=\"505\" y=\"306\" class=\"tb tc\">負載（風扇）</text><text x=\"20\" y=\"372\" class=\"tb\">MOSFET 汲極電壓</text><line x1=\"180\" y1=\"395\" x2=\"580\" y2=\"395\" class=\"ln dash\"/><text x=\"146\" y=\"399\" class=\"ts\">12V</text><text x=\"154\" y=\"424\" class=\"ts\">0V</text><line x1=\"180\" y1=\"420\" x2=\"580\" y2=\"420\" class=\"ln\"/><polyline points=\"180,395 580,395\" class=\"la\" data-s=\"1\"/><polyline points=\"180,395 260,395 264,418 580,418\" class=\"la\" data-s=\"2\"/><g data-s=\"3 4\"><line x1=\"360\" y1=\"352\" x2=\"360\" y2=\"420\" class=\"ln dash\"/><text x=\"360\" y=\"437\" class=\"t tc\">斷電瞬間</text></g><g data-s=\"3\"><polyline points=\"180,418 360,418 364,395 580,395\" class=\"la\"/><polygon points=\"358,418 366,350 374,395\" class=\"warn\"/></g><polyline points=\"180,418 360,418 364,395 580,395\" class=\"la\" data-s=\"4\"/><text x=\"384\" y=\"382\" class=\"tb\" data-s=\"1\">關閉：約 12V</text><text x=\"384\" y=\"382\" class=\"tb\" data-s=\"2\">導通：接近 0V</text><text x=\"384\" y=\"370\" class=\"tb\" data-s=\"3\">遠高於電源電壓</text><text x=\"384\" y=\"382\" class=\"tb\" data-s=\"4\">被二極體夾在約 12V</text></svg>",
    "caption": "上半是控制側，下半是負載側，兩側只靠線圈的磁力連動；最下面的小圖追蹤 MOSFET 汲極（線圈下端）的電壓。",
    "more": {
@@ -202,7 +201,7 @@
     "q": "探頭每 5 分鐘醒來工作 5 秒。把回報間隔拉長到 1 小時，間隔變成 12 倍，電池續航也會變成 12 倍嗎？",
     "a": "不會。工作耗電確實少了，但休眠那段的電流還在，間隔越長它占的比例越高。"
    },
-   "body": "<p><b>無線感測網路</b>（Wireless Sensor Network，WSN）的節點常用電池裝在難以維護的地方，因此設計時<b>首要考量低功耗</b>，而不是運算快或距離遠。</p><p>單位要分清楚：<b>mAh</b> 是電荷容量；<b>Wh＝V×Ah</b> 才是能量，例如 3.7V、2000mAh≈7.4Wh。電壓不同的電池要比較能量，就要換算成 Wh。</p><p>理想續航（小時）≈<b>容量 mAh ÷ 平均電流 mA</b>。平均電流要依時間<b>加權</b>：（工作電流×工作時間＋休眠電流×休眠時間）÷總時間，只拿其中一種電流來算都會失準，也不能把兩個電流直接相加除以 2。</p>",
+   "body": "<p><b>無線感測網路</b>（Wireless Sensor Network，WSN）的節點常用電池、裝在難以維護的地方，設計時<b>首要考量低功耗</b>。</p><p>單位要分清楚：<b>mAh</b> 是電荷容量；<b>Wh＝V×Ah</b> 才是能量，例如 3.7V、2000mAh≈7.4Wh。電壓不同的電池要比能量，先換算成 Wh。</p><p>理想續航（小時）≈<b>容量 mAh ÷ 平均電流 mA</b>。平均電流要依時間<b>加權</b>：（工作電流×工作時間＋休眠電流×休眠時間）÷總時間；不能只拿其中一種電流算，也不能兩個相加除以 2。</p>",
    "figs": [
     {
      "pos": "after-body",
@@ -211,7 +210,7 @@
     }
    ],
    "lab": "s2-21-battery",
-   "after": "<p>省電的方法有三個：讓 MCU <b>深度休眠</b>、<b>降低發送頻率</b>、選低功耗無線（BLE 低功耗藍牙、LoRa 低速遠距的低功耗無線技術，通常比 Wi-Fi 省電）。</p><p>實際續航還受溫度、電池老化與穩壓轉換損失影響，所以算出來的是理想值。冷鏈要特別注意：低溫會增加電池內阻、降低可用容量，-18°C 時可能只剩約一半，實際幅度依電池種類而定，選型時要看規格書的低溫放電資料。</p>"
+   "after": "<p>省電的方法有三個：讓 MCU <b>深度休眠</b>、<b>降低發送頻率</b>、選低功耗無線（如 BLE、LoRa，通常比 Wi-Fi 省電）。</p><p>算出來的是理想值。冷鏈更要留意低溫：電池內阻增加、可用容量下降，-18°C 時可能只剩約一半（依電池種類而定，要查規格書的低溫放電資料）。</p>"
   },
   {
    "id": "open-hardware",
@@ -220,9 +219,9 @@
     "q": "公司想公開自家探頭板，只放上腳位圖與使用手冊。這樣算開源硬體嗎？",
     "a": "不算。別人無法據此修改和製造，要公開電路圖、PCB 佈局、Gerber、BOM 這類設計檔。"
    },
-   "body": "<p><b>開源硬體</b>（open source hardware，OSHW）是把做出一塊板子所需的設計資料公開，讓任何人都能研究、修改、製造與販售。這些<b>設計檔</b>包括電路圖、PCB 佈局（電路板上零件與走線的配置）、Gerber（交給板廠製造的檔案）與 BOM（Bill of Materials，物料清單）。最知名的例子是 Arduino，它公開參考設計，所以市面上有許多相容板。</p><p>專案常分層處理：硬體、韌體、文件各選合適的授權，名稱另外管理。規劃自己的專案時，先決定公開哪些檔案，再替每一層選授權，關鍵問題是要不要求別人的衍生設計也開放；要求的叫<b>互惠</b>（copyleft，改作後散布必須用相同授權開放），不要求的叫寬鬆授權。最後在檔案中附上作者與授權聲明。使用別人的設計時則反過來：先查授權，保留原有聲明、標示自己改了什麼，散布衍生設計時依條款開放。</p>",
+   "body": "<p><b>開源硬體</b>（open source hardware，OSHW）是把做出一塊板子所需的設計資料公開，讓任何人都能研究、修改、製造與販售。這些<b>設計檔</b>包括電路圖、PCB 佈局（電路板上零件與走線的配置）、Gerber（交給板廠製造的檔案）與 BOM（Bill of Materials，物料清單）。</p><p>規劃自己的專案分三步：</p><ol><li>決定公開哪些檔案。</li><li>替硬體、韌體、文件各選授權，名稱另外管理。關鍵是要不要求別人的衍生設計也開放：要求的叫<b>互惠</b>（copyleft，改作後散布必須用相同授權開放），不要求的叫寬鬆授權。</li><li>在檔案中附上作者與授權聲明。</li></ol><p>各授權的基本義務見本節的表。</p>",
    "svg": "<svg viewBox=\"0 0 600 378\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"一個開源硬體專案分成四層：硬體設計檔常用 CERN-OHL、CC BY-SA，韌體與函式庫常用 GPL、LGPL、MIT，文件用 CC BY-SA，名稱與標誌另依商標規則；可做相容板但不能用原品牌名；CC 的 NC、ND 版本不符合開源硬體定義\"><text class=\"th tc\" x=\"300\" y=\"24\">同一個專案，各部分可用不同授權</text><text class=\"ts tc\" x=\"95\" y=\"52\">部分</text><text class=\"ts tc\" x=\"270\" y=\"52\">包含</text><text class=\"ts tc\" x=\"480\" y=\"52\">常見授權或規則</text><rect class=\"acc\" x=\"20\" y=\"62\" width=\"560\" height=\"60\" rx=\"8\"/><text class=\"tb tc\" x=\"95\" y=\"98\">硬體設計檔</text><text class=\"t tc\" x=\"270\" y=\"98\">電路圖、PCB、Gerber、BOM</text><text class=\"t tc\" x=\"480\" y=\"88\">CERN-OHL</text><text class=\"t tc\" x=\"480\" y=\"109\">CC BY-SA</text><rect class=\"box\" x=\"20\" y=\"130\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"95\" y=\"158\">韌體與函式庫</text><text class=\"t tc\" x=\"270\" y=\"158\">燒進板子執行的程式</text><text class=\"t tc\" x=\"480\" y=\"158\">GPL、LGPL、MIT</text><rect class=\"box\" x=\"20\" y=\"182\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"95\" y=\"210\">文件與教學</text><text class=\"t tc\" x=\"270\" y=\"210\">手冊、接線圖、範例說明</text><text class=\"t tc\" x=\"480\" y=\"210\">CC BY-SA</text><rect class=\"soft\" x=\"20\" y=\"234\" width=\"560\" height=\"70\" rx=\"8\"/><text class=\"tb tc\" x=\"95\" y=\"275\">名稱與標誌</text><text class=\"t tc\" x=\"270\" y=\"262\">品牌名稱、商標</text><text class=\"t tc\" x=\"480\" y=\"262\">另依商標規則</text><text class=\"t tc\" x=\"385\" y=\"290\">可做相容板，但不能用原品牌名</text><rect class=\"warn\" x=\"20\" y=\"320\" width=\"560\" height=\"44\" rx=\"8\"/><text class=\"tb tc\" x=\"300\" y=\"348\">CC 的 NC（禁止商用）、ND（禁止改作）版本不符合開源硬體定義</text></svg>",
-   "caption": "以 Arduino 為例：板子的參考設計採 CC BY-SA，IDE 採 GPL，核心函式庫多採 LGPL，名稱則受商標保護。",
+   "caption": "以 Arduino 為例：板子的參考設計採 CC BY-SA，IDE 2.x 採 AGPL（GPL 家族；1.x 為 GPL），核心函式庫多採 LGPL，名稱則受商標保護。GPL、LGPL、MIT 這類軟體授權見下一章 2-2。",
    "table": {
     "head": [
      "授權",
@@ -233,7 +232,7 @@
      [
       "CC BY-SA",
       "硬體設計檔、文件",
-      "標示作者與授權、註明修改；散布改作時用相同授權。可商用"
+      "標示作者與授權、註明修改；散布改作時用相同授權（SA）。可商用"
      ],
      [
       "CC BY／CC0",
@@ -241,46 +240,48 @@
       "標示作者即可，改作不必同授權；CC0 連標示都不要求，等於放棄權利。皆可商用"
      ],
      [
+      "CC 的 NC、ND 版本",
+      "不算開源硬體",
+      "NC 禁止商用、ND 禁止改作"
+     ],
+     [
       "CERN-OHL",
-      "專為硬體設計，分 S 強互惠／W 弱互惠／P 寬鬆",
-      "保留聲明；S、W 散布衍生設計時要用相同授權並提供設計來源，P 不要求"
+      "專為硬體設計",
+      "保留聲明；互惠版散布衍生設計時要一併開放，寬鬆版不要求"
      ]
     ]
    },
    "more": {
     "label": "為什麼硬體授權和軟體不同，Raspberry Pi 算不算開源硬體",
-    "body": "<p>硬體授權和軟體授權（軟體授權見下一章 2-2〈雲端環境數據收集與平台設計〉）有個關鍵差別：軟體複製一份就是成品，硬體公開的卻只是設計檔，實體板子還要另外製造。著作權主要保護設計檔與文件本身，不一定涵蓋依設計做出的電路功能，功能可能另涉專利。</p><p>一般的 Raspberry Pi 雖提供規格與部分電路圖，完整設計檔並未公開，通常不算開源硬體。</p>"
+    "body": "<p>硬體授權和軟體授權有個關鍵差別：軟體複製一份就是成品，硬體公開的卻只是設計檔，實體板子還要另外製造。著作權主要保護設計檔與文件本身，不一定涵蓋依設計做出的電路功能，功能可能另涉專利。</p><p>一般的 Raspberry Pi 雖提供規格與部分電路圖，完整設計檔並未公開，通常不算開源硬體。</p>"
    }
   }
  ],
  "keypoints": [
-  "被動三元件是電阻、電容、電感；電晶體是主動元件，能放大與切換。LED 要限流：R＝（電源電壓－LED 壓降）÷電流。",
-  "MCU 一顆晶片做控制，單板電腦跑 Linux 做運算；一般 Raspberry Pi 屬單板電腦。n 條位址線有 2ⁿ 個位址。",
-  "輸入腳不可浮接；下拉按下為 HIGH，上拉按下為 LOW。事件不常發生時，中斷比輪詢更能搭配休眠。",
-  "ADC 把電壓變數字（Uno 0–1023）；PWM 用占空比調平均電壓。",
-  "GPIO 推不動就加電晶體；小電流控制大電流，電感性負載要反向並聯飛輪二極體。",
-  "續航≈mAh÷平均 mA，平均要按時間加權，算出來是理想值，低溫會讓可用容量下降。",
-  "開源硬體公開的是設計檔；硬體、韌體、文件可分層授權，名稱另受商標規則約束。"
+  "LED 要串限流電阻：R＝（電源電壓－LED 壓降）÷電流。",
+  "MCU 是一顆晶片，做控制、省電；單板電腦跑 Linux 做運算，一般 Raspberry Pi 屬於這類。",
+  "輸入腳不可浮接：下拉按下為 HIGH，上拉按下為 LOW。",
+  "ADC 把電壓讀成數字（Uno 0–1023）；PWM 用占空比調平均電壓。",
+  "GPIO 推不動的負載交給 MOSFET 或繼電器；線圈要反向並聯飛輪二極體。",
+  "續航≈mAh÷平均 mA，平均要按時間加權；算出來是理想值，低溫還會再降。"
  ],
  "pitfalls": [
-  "Arduino 是 MCU 開發板，Raspberry Pi 是單板電腦，兩者不要說反；Raspberry Pi 使用 ARM 架構而非 x86，低成本也不是它相對 Arduino 的優勢。同品牌的 Pico 則是 MCU 板。",
-  "<code>GPIO.input</code> 是讀取腳位狀態，設定輸出高低的是 <code>GPIO.output</code>。PWM 的平均值不等於每瞬間的輸出；<code>analogWrite</code> 名稱有 analog，在 Uno R3 上輸出的仍是脈波。",
-  "繼電器的負載接 COM 與 NO 或 NC，不是接 NO 與 NC 之間；光敏電阻是感測光線的元件，不是調光用的控制元件。",
-  "MCU 調光多用 PWM 搭配 MOSFET，串聯可變電阻調光會讓電阻發熱、浪費電力；部分教材仍以可變電阻當檯燈調光的代表做法（它能連續改變電流），考題可能採教材說法。",
-  "mAh 是電荷、Wh 才是能量；n 條位址線換算成 bytes 時，要先假設每個位址存 1 byte，4GB 不是所有 32 位元系統的實體記憶體上限。",
-  "開源硬體授權允許製造、販售相容板，但不代表能用原品牌名稱（如 Arduino）；CC 授權中含 NC（禁止商用）或 ND（禁止改作）的版本不算開源硬體，CC BY、CC BY-SA 與 CC0 才適合。"
+  "MCU 調光多用 PWM 搭配 MOSFET；串聯可變電阻會發熱、浪費電力。部分教材仍以可變電阻當檯燈調光的代表做法（它能連續改變電流），考題可能採教材說法。",
+  "Raspberry Pi 使用 ARM 架構而非 x86，低成本也不是它相對 Arduino 的優勢；同品牌的 Pico 是 MCU 板，不是單板電腦。",
+  "<code>analogWrite</code> 名稱有 analog，在 Uno R3 上輸出的仍是 PWM 脈波；<code>GPIO.input</code> 是讀取腳位，設定輸出的是 <code>GPIO.output</code>。",
+  "開源硬體授權允許製造、販售相容板，但不含原品牌名稱（如 Arduino）；CC 授權含 NC 或 ND 的版本不算開源硬體。"
  ],
  "examples": [
   {
-   "q": "冷藏庫的除霜系統由 3.3V 的 MCU 開關 12V、300mA 的電磁閥。電磁閥內部是線圈，需要依程式頻繁開關。下列接法何者最合適？",
+   "q": "冷藏庫的警示燈由繼電器控制。希望控制板當機、線圈沒電時，警示燈反而要亮。燈該接在繼電器的哪兩個接點之間？",
    "o": [
-    "把 GPIO 直接接電磁閥，程式持續輸出 HIGH",
-    "在 GPIO 與電磁閥之間串接一顆較大的電容",
-    "GPIO 控制 MOSFET，由 12V 外部電源供電，電磁閥反向並聯飛輪二極體",
-    "把電磁閥接到 ADC 腳，由 ADC 提供電流"
+    "COM 與 NO",
+    "COM 與 NC",
+    "NO 與 NC",
+    "線圈的兩端"
    ],
-   "a": 2,
-   "think": "關鍵條件是 12V、300mA 與線圈：電壓與電流都超過 GPIO 能力，而且屬於電感性負載。小電流控制大電流要靠 MOSFET，反向並聯二極體吸收斷電反壓。直接接 GPIO 會損壞腳位；電容不能放大驅動能力；ADC 是讀取電壓用的輸入，不會供電。"
+   "a": 1,
+   "think": "關鍵條件是「線圈沒電時要接通」。NC（常閉）在線圈沒通電時和共同端 COM 相通，所以接 COM 與 NC。接 COM 與 NO 要線圈通電才亮，正好相反；NO 與 NC 只會輪流接到 COM，彼此不相通；線圈兩端屬於控制側，不接負載。"
   },
   {
    "q": "一顆冷藏庫探頭每 200 秒循環一次：工作 2 秒，電流 40mA；其餘 198 秒休眠，電流 0.1mA。使用 1200mAh 電池並忽略損失，理想續航約為多久？",
@@ -296,8 +297,8 @@
  ],
  "check": [
   {
-   "q": "中斷被觸發，代表系統出錯了嗎？事件極度頻繁時，中斷一定比輪詢有效率嗎？",
-   "a": "都不是。中斷是周邊裝置通知 CPU 的正常機制；事件不常發生時它省下空等、能搭配休眠，但事件極頻繁時每次進出中斷都有開銷，效率要看負載。"
+   "q": "電阻、電容、光敏電阻、電晶體之中，哪一個是主動元件？依據是什麼？",
+   "a": "電晶體。主動元件能靠外部供電放大或切換訊號；其餘三個只會消耗、儲存能量或改變阻值，都是被動元件。"
   },
   {
    "q": "同一支 PWM 腳，想讓 LED 更亮要調什麼？想讓無源蜂鳴器的音調變高要調什麼？",
@@ -319,29 +320,14 @@
    "def": "不能放大訊號，只會消耗、儲存或釋放能量的元件，如電阻、電容、電感。"
   },
   {
-   "term": "電晶體",
-   "en": "Transistor",
-   "def": "用小訊號控制較大電流的主動元件，可放大或當電子開關。"
-  },
-  {
-   "term": "MOSFET",
-   "en": "Metal-Oxide-Semiconductor Field-Effect Transistor",
-   "def": "常用來當電子開關的電晶體，適合 PWM 調速與調光。"
+   "term": "電晶體／MOSFET",
+   "en": "Transistor / MOSFET",
+   "def": "用小訊號控制較大電流的主動元件，可放大或當電子開關；MOSFET 是常用的一種，適合 PWM 調速與調光。"
   },
   {
    "term": "MCU",
    "en": "Microcontroller Unit",
-   "def": "微控制器。把 CPU、記憶體與 I/O 整合在一顆晶片的小型電腦。"
-  },
-  {
-   "term": "MPU",
-   "en": "Microprocessor Unit",
-   "def": "以運算核心為主、記憶體等要外接的微處理器。"
-  },
-  {
-   "term": "SoC",
-   "en": "System on Chip",
-   "def": "把 CPU、GPU 等系統功能整合成一顆的晶片。"
+   "def": "微控制器。把 CPU、記憶體與 I/O 整合在一顆晶片的小型電腦，便宜省電，負責讀感測器與簡單控制。"
   },
   {
    "term": "SBC",
@@ -349,14 +335,9 @@
    "def": "做在一塊板子上、能跑作業系統的完整電腦。"
   },
   {
-   "term": "PLC",
-   "en": "Programmable Logic Controller",
-   "def": "工廠用的工業級控制器，主打可靠、抗干擾與即時。"
-  },
-  {
    "term": "GPIO",
    "en": "General-Purpose Input/Output",
-   "def": "可用程式設定成輸入或輸出的通用接腳。"
+   "def": "微控制器上可用程式設成輸入或輸出的通用腳位，用來讀取或送出高低電位。"
   },
   {
    "term": "浮接",
@@ -367,11 +348,6 @@
    "term": "上拉／下拉電阻",
    "en": "Pull-up / Pull-down resistor",
    "def": "把輸入腳固定在高電位或低電位的電阻。"
-  },
-  {
-   "term": "ADC",
-   "en": "Analog-to-Digital Converter",
-   "def": "把連續電壓轉成數字的電路。"
   },
   {
    "term": "PWM",
@@ -411,16 +387,6 @@
    "term": "位址匯流排",
    "en": "Address bus",
    "def": "CPU 用來指定記憶體位置的線路，n 條可表示 2ⁿ 個位址。"
-  },
-  {
-   "term": "CPU",
-   "en": "Central Processing Unit",
-   "def": "中央處理器。負責執行程式指令與運算的核心。"
-  },
-  {
-   "term": "多工",
-   "en": "Multitasking",
-   "def": "作業系統讓多個程式輪流使用處理器，看起來同時執行。"
   },
   {
    "term": "開源硬體",
@@ -473,6 +439,10 @@
   [
    "Arduino：商標與授權",
    "https://www.arduino.cc/en/trademark"
+  ],
+  [
+   "Arduino IDE 2.x：授權條款（AGPL-3.0）",
+   "https://github.com/arduino/arduino-ide/blob/main/LICENSE.txt"
   ]
  ]
 }

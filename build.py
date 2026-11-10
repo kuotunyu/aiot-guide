@@ -4,7 +4,7 @@ Reads content/<id>.json (chapters), content/questions-base.json + questions-<id>
 content/site.json (home, exam facts, formulas) and copies static/ as is. No runtime dependencies.
 """
 from pathlib import Path
-from html import escape as e
+from html import escape as e, unescape
 import hashlib, json, re, shutil
 
 HERE = Path(__file__).resolve().parent
@@ -588,6 +588,35 @@ def build_terms():
 TERMS = build_terms()
 
 
+def visible_text(c):
+    # What a reader can read in the chapter itself; the words inside an SVG and the end-of-chapter boxes do not count.
+    parts = [c.get('case', {}).get('title', ''), c.get('case', {}).get('body', ''), c.get('prereq', '')] + c['learn']
+    for s in c['sections']:
+        parts += [s['h'], s.get('body', ''), s.get('after', ''), s.get('predict', {}).get('q', ''), s.get('predict', {}).get('a', ''), s.get('more', {}).get('label', ''), s.get('more', {}).get('body', '')]
+        if s.get('table'):
+            parts += s['table']['head'] + [x for r in s['table']['rows'] for x in r]
+        for f in [s] + s.get('figs', []):
+            parts += [f.get('caption') or ''] + list(f.get('steps') or [])
+    return re.sub(r'\s', '', unescape(re.sub(r'<[^>]+>', '', ' '.join(parts)))).lower()
+
+
+def check_terms():
+    # A keyword has one home chapter, and that chapter must actually use the word where readers can see it.
+    for t in TERMS.values():
+        if len(t['where']) > 1:
+            problems.append(f"keyword {t['term']!r} is listed in {'、'.join(t['where'])}; keep it in one chapter's terms")
+    for cid in SITE['reading']:
+        text = visible_text(CH[cid])
+        for t in CH[cid]['terms']:
+            # 「DoS／DDoS」「訊號量化（ADC）」「誤報與漏報」: any one part is enough.
+            names = [t['term']] + re.split(r'[／/、與（）()]', t['term'])
+            if not any(n and n in text for n in (re.sub(r'\s', '', x).lower() for x in names)):
+                problems.append(f"keyword {t['term']!r} in {cid} terms does not appear in that chapter's visible text")
+
+
+check_terms()
+
+
 def term_regex(name):
     if re.search(r'[／（(]', name) or name in NO_LINK:
         return None
@@ -605,6 +634,9 @@ def linker(cid):
     if not names:
         return (lambda html: html), {}
     rx = re.compile('|'.join(term_regex(n) for n in sorted(names, key=len, reverse=True)))
+    # The chapter's own keywords, split at ／ so each spelling counts: a match inside one of them is part of that word, not a term to explain.
+    own = sorted({x.strip() for t in TERMS.values() if cid in t['where'] for x in re.split(r'[／（）()]', t['term']) if len(x.strip()) >= 2}, key=len, reverse=True)
+    own_rx = re.compile('|'.join(re.escape(x) for x in own), re.I) if own else None
     used = {}
 
     def run(html):
@@ -620,9 +652,11 @@ def linker(cid):
                 out.append(part)
                 continue
 
+            spans = [x.span() for x in own_rx.finditer(part)] if own_rx else []
+
             def wrap(m):
                 key = names[m[0]]
-                if key in used:
+                if key in used or any(s <= m.start() and m.end() <= e2 and (s, e2) != m.span() for s, e2 in spans):
                     return m[0]
                 used[key] = TERMS[key]
                 return f'<button type="button" class="gl" data-k="{e(key)}" aria-expanded="false" aria-controls="glpop">{m[0]}</button>'
