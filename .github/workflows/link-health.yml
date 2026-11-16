@@ -5,6 +5,8 @@ on:
     - cron: '0 2 * * 1'
   workflow_dispatch:
 
+# A site that is down for a moment (or a runner that briefly cannot reach it) should not send a failure mail:
+# the first pass only records problems, and the run fails only if a second pass ten minutes later still finds them.
 jobs:
   links:
     runs-on: ubuntu-latest
@@ -14,7 +16,23 @@ jobs:
         with:
           python-version: '3.12'
       - run: python build.py
-      - uses: lycheeverse/lychee-action@v2
+      - id: first
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress --max-retries 3 --timeout 30
+            --accept 200,202,403,429
+            --exclude "kuotunyu.github.io/aiot-guide"
+            --exclude "github.com/kuotunyu/aiot-guide"
+            "dist/*.html"
+          fail: false
+          jobSummary: false
+      - name: Wait before checking again
+        if: steps.first.outputs.exit_code != '0'
+        run: sleep 600
+      - name: Check again
+        if: steps.first.outputs.exit_code != '0'
+        uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --no-progress --max-retries 3 --timeout 30
