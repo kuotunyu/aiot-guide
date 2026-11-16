@@ -1,4 +1,4 @@
-// Regenerates README screenshots from a built dist/. Needs: node scripts/serve.mjs 8799 running
+// Regenerates the README screenshot from a built dist/. Needs: node scripts/serve.mjs 8799 running
 // (or SHOT_BASE pointing at any server for dist/). Rerun after changing titles or layout.
 const {chromium} = require('@playwright/test');
 const {mkdirSync} = require('fs');
@@ -15,10 +15,6 @@ mkdirSync('docs/assets', {recursive: true});
     await p.close();
   };
   await shot({width: 1280, height: 760}, 'index.html', 'home.png');
-  await shot({width: 900, height: 900}, 's1-22.html', 'lab-wireless.png', '[data-lab=wireless]');
-  await shot({width: 900, height: 900}, 's1-32.html', 'lab-adc.png', '[data-lab=s1-32-adc]');
-  await shot({width: 390, height: 780}, 's1-22.html', 'mobile-chapter.png');
-  await shot({width: 390, height: 780}, 's2-21.html', 'mobile-lab.png', '[data-lab=s2-21-pin]');
   await b.close();
   console.log('screenshots written');
 })();
