@@ -150,12 +150,12 @@
       slider('b-sec', '每次工作時間', 0.5, 30, 0.5, v.sec, UNIT.sec) +
       slider('b-min', '回報間隔', 1, 60, 1, v.min, UNIT.min) +
       slider('b-cap', '電池容量', 200, 6000, 100, v.cap, UNIT.cap) +
-      '</div><div class="lab-out" aria-live="polite"></div><div class="lab-viz"></div><p class="small muted">這是忽略老化、溫度與穩壓損失的理想估算。低溫環境電池的可用容量會下降，冷凍櫃裡的探頭要留餘裕，實際續航要實測。</p>';
-    const out = el.querySelector('.lab-out'), viz = el.querySelector('.lab-viz');
+      '</div><p class="lab-say" aria-live="polite"></p><div class="lab-viz"></div><p class="small muted lab-note">這是忽略老化、溫度與穩壓損失的理想估算。低溫環境電池的可用容量會下降，冷凍櫃裡的探頭要留餘裕，實際續航要實測。</p>';
+    const out = el.querySelector('.lab-say'), viz = el.querySelector('.lab-viz');
     function draw() {
       $$('[data-p]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === active)));
       const e = labEstimate(v), x = vsExample(v);
-      out.innerHTML = '<p class="lab-say"><b>平均電流約 ' + e.avgMa.toFixed(3) + ' mA，理想續航約 ' + esc(formatDays(e.days)) + '</b>（' + Math.round(e.hours).toLocaleString('en-US') + ' 小時）。' + (x === null ? '' : '和本節的例子相比：約 ' + x.toFixed(1) + ' 倍。') + esc(batteryAdvice(e)) + '</p>';
+      out.innerHTML = '<b>平均電流約 ' + e.avgMa.toFixed(3) + ' mA，理想續航約 ' + esc(formatDays(e.days)) + '</b>（' + Math.round(e.hours).toLocaleString('en-US') + ' 小時）。' + (x === null ? '' : '和本節的例子相比：約 ' + x.toFixed(1) + ' 倍。') + esc(batteryAdvice(e));
       viz.innerHTML = batteryBar(e) + ('<p class="small">間隔拉得再長，續航也不會超過「容量÷休眠電流」：約 ' + esc(formatDays(e.maxDays)) + '。若低溫下可用容量只剩一半（示意）：約 ' + esc(formatDays(e.halfCapacityDays)) + '。</p>');
     }
     $$('input[type=range]', el).forEach(i => i.oninput = () => {

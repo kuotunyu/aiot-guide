@@ -1,6 +1,6 @@
 /* Layout: a datasheet read along a signal trace. Palette "celadon and apricot": petrol teal carries the site and subject 1, apricot carries subject 2 (its chapter pages swap the accent), amber marks the pitfalls. */
 :root{
-  --bg:#F3F5F4; --surface:#FCFDFC; --surface2:#E8EEED; --text:#1F2B2F; --muted:#3A474C; --line:#CCD6D5;
+  --bg:#F3F5F4; --surface:#FCFDFC; --surface2:#E8EEED; --text:#1F2B2F; --muted:#3A474C; --line:#CCD6D5; --ctl-line:#76878A; --fig-acc:#C4E0E6;
   --accent:#1F5867; --accent-ink:#FFFFFF; --accent-soft:#E0ECEE;
   --s1:#1F5867; --s1-soft:#E0ECEE; --s2:#7E4720; --s2-soft:#F6ECDF; --band2:#4E3424; --band2-muted:#E3D3C5;
   --ok:#1A4F30; --ok-soft:#DBEDE1; --bad:#9B3341; --bad-soft:#FBECEF; --warn:#664A0E; --warn-soft:#F7F0E0;
@@ -12,7 +12,7 @@
 /* Dark tokens apply on screen only: paper always gets the light ones (dark text on white). */
 @media screen and (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50;
+    --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50; --ctl-line:#66777C; --fig-acc:#24515A;
     --accent:#9DCCD6; --accent-ink:#0F1B1E; --accent-soft:#1D3439;
     --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22; --band2:#3A2A20; --band2-muted:#DCCDC1;
     --ok:#B2E5C0; --ok-soft:#1B2F25; --bad:#F6AEB5; --bad-soft:#36222A; --warn:#EDD39A; --warn-soft:#322D1F; --band:#1D363C; --band-ink:#EEF3F2; --band-muted:#C6D5D7; --band-accent:#EEF3F2; --band-hot:#E9A07C; color-scheme:dark;
@@ -20,7 +20,7 @@
 }
 @media screen{
 :root[data-theme="dark"]{
-  --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50;
+  --bg:#141A1C; --surface:#1B2326; --surface2:#232D31; --text:#EDF2F1; --muted:#CDD6D7; --line:#3D4B50; --ctl-line:#66777C; --fig-acc:#24515A;
   --accent:#9DCCD6; --accent-ink:#0F1B1E; --accent-soft:#1D3439;
   --s1:#9DCCD6; --s1-soft:#1D3439; --s2:#F3C2A8; --s2-soft:#3A2D22; --band2:#3A2A20; --band2-muted:#DCCDC1;
   --ok:#B2E5C0; --ok-soft:#1B2F25; --bad:#F6AEB5; --bad-soft:#36222A; --warn:#EDD39A; --warn-soft:#322D1F; --band:#1D363C; --band-ink:#EEF3F2; --band-muted:#C6D5D7; --band-accent:#EEF3F2; --band-hot:#E9A07C; color-scheme:dark;
@@ -49,8 +49,8 @@ li{margin:var(--sp2) 0}
 /* Boxes keep their own padding: a paragraph or list at the edge adds no extra margin inside. */
 :is(.case,.pr,.more,.lab,.keys,.pits,.ex,.panel,.prereq,.guess)>:is(p,ul,ol):first-child{margin-top:0}
 :is(.case,.pr,.more,.lab,.keys,.pits,.ex,.panel,.prereq,.guess)>:is(p,ul,ol):last-child{margin-bottom:0}
-code{font-family:var(--mono);font-size:max(15px,.88em);background:var(--surface2);padding:1px 6px;overflow-wrap:anywhere}
-sup{font-size:max(.75em,13px)}
+code{font-family:var(--mono);font-size:max(16px,.88em);background:var(--surface2);padding:1px 6px;overflow-wrap:anywhere}
+sup{font-size:max(.75em,16px);line-height:0}
 .mono{font-family:var(--mono)}
 .muted{color:var(--muted)}
 .small{font-size:16px}
@@ -72,7 +72,7 @@ sup{font-size:max(.75em,13px)}
 .nav a[aria-current="page"]{color:var(--accent);font-weight:700;background:var(--accent-soft)}
 .skip{position:absolute;left:8px;top:-80px;z-index:60;background:var(--surface);color:var(--accent);padding:8px 14px;border-radius:var(--r);border:1px solid var(--accent)}
 .skip:focus{top:8px}
-.theme{border:1px solid var(--line);background:none;border-radius:var(--r);padding:3px 14px;min-height:44px;font-size:16px;color:var(--muted);white-space:nowrap}
+.theme{border:1px solid var(--ctl-line);background:none;border-radius:var(--r);padding:3px 14px;min-height:44px;font-size:16px;color:var(--muted);white-space:nowrap}
 /* Tablets keep one header row with a little less room; phones give the navigation its own row, spread across the full width. */
 @media (max-width:900px){.top .wrap{gap:var(--sp1) var(--sp5)}.brand{font-size:21px}.nav{gap:var(--sp1)}.nav a{padding:0 12px;font-size:19px}}
 @media (max-width:760px){.top .wrap{min-height:58px}.brand{font-size:20px}.brand svg{width:26px;height:26px}.nav{order:3;flex-basis:100%;gap:0}.nav a{flex:auto;min-height:44px;padding:0 4px;font-size:18px}.theme{margin-left:auto}
@@ -104,7 +104,7 @@ sup{font-size:max(.75em,13px)}
 .stop{position:relative;padding:34px 12px 0 0;min-width:0}
 .stop::before{content:"";position:absolute;left:0;right:0;top:11px;height:3px;background:var(--s2)}
 .stop:last-child::before{right:40%}
-.stop::after{content:"";position:absolute;left:0;top:3px;width:19px;height:19px;border-radius:50%;background:var(--surface);border:4px solid var(--s1)}
+.stop::after{content:"";position:absolute;left:0;top:3px;width:19px;height:19px;box-sizing:border-box;border-radius:50%;background:var(--surface);border:4px solid var(--s1)}
 .stop b{display:block;font-size:22px;line-height:1.35}
 .stop .what{display:block;font-size:17px;line-height:1.5;color:var(--muted);margin:var(--sp1) 0 var(--sp2)}
 /* Chapter codes on the map: big enough to read across the room; each stop's codes start on one line with the other stops'. */
@@ -190,7 +190,8 @@ sup{font-size:max(.75em,13px)}
 @media (max-width:900px) and (min-height:521px){
   .sidemenu.tocmenu{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;margin-inline:calc(-1 * var(--gut));background:var(--surface);padding:0 var(--gut)}
   .sidemenu.tocmenu summary{padding-block:7px}
-  .tocmenu .in{max-height:60vh;overflow:auto}
+  .tocmenu .in{max-height:calc(100dvh - 60px);overflow:auto}
+  .sidemenu.tocmenu[open]{box-shadow:0 10px 12px -10px rgba(0,0,0,.35)}
 }
 @media (max-height:520px){.top{position:static}}
 article{min-width:0}
@@ -200,7 +201,7 @@ article{min-width:0}
 .loc{list-style:none;display:flex;flex-wrap:wrap;gap:0;margin:0 0 8px;padding:0;font-size:16px}
 .loc li{position:relative;padding:12px 16px 0 0;margin:0}
 .loc li::before{content:"";position:absolute;left:0;right:0;top:4px;height:2px;background:rgba(255,255,255,.35)}
-.loc li::after{content:"";position:absolute;left:0;top:0;width:10px;height:10px;border-radius:50%;background:var(--band);border:2px solid rgba(255,255,255,.6)}
+.loc li::after{content:"";position:absolute;left:0;top:-2px;width:10px;height:10px;border-radius:50%;background:var(--band);border:2px solid rgba(255,255,255,.6)}
 .loc li:last-child::before{display:none}
 .loc a{color:var(--band-muted);text-decoration:none}
 .loc li.on a{color:var(--band-ink);font-weight:700}
@@ -222,11 +223,11 @@ article{min-width:0}
 .lab-viz{margin:var(--sp3) 0}
 .lab-viz svg{display:block;width:100%;max-width:100%;height:auto;margin:0 auto;font-family:var(--sans)}
 .lab-slider{display:block;font-size:16px;margin:8px 0}
-.lab-slider span{display:block}
+.lab-slider span{display:block;text-wrap:pretty}
 .lab-slider output{font-weight:700;color:var(--accent);font-family:var(--mono)}
 .lab-slider input{width:100%;max-width:460px;height:40px;margin:0;accent-color:var(--accent)}
 .chips{display:flex;flex-wrap:wrap;gap:var(--sp2);margin:var(--sp3) 0}
-.chips button{border:1px solid var(--line);background:transparent;border-radius:var(--r);padding:4px 12px;font-size:16px;line-height:1.5;min-height:40px}
+.chips button{border:1px solid var(--ctl-line);background:transparent;border-radius:var(--r);padding:4px 12px;font-size:16px;line-height:1.5;min-height:40px}
 .chips button:hover{border-color:var(--accent)}
 .chips button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
 .lab-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:var(--sp3) var(--sp5);margin:12px 0}
@@ -235,7 +236,7 @@ article{min-width:0}
 .seg{display:flex;flex-wrap:wrap;gap:4px}
 .seg label{cursor:pointer}
 .seg input{position:absolute;opacity:0;width:1px;height:1px}
-.seg span{display:inline-flex;align-items:center;min-height:40px;border:1px solid var(--line);border-radius:var(--r);padding:6px 12px;font-size:16px;line-height:1.5}
+.seg span{display:inline-flex;align-items:center;min-height:40px;border:1px solid var(--ctl-line);border-radius:var(--r);padding:6px 12px;font-size:16px;line-height:1.5}
 .seg input:checked+span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
 .seg input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
 .lab-say{background:var(--surface2);border-left:3px solid var(--accent);padding:var(--sp3) var(--sp4);margin:var(--sp3) 0}
@@ -249,7 +250,7 @@ article{min-width:0}
   .lab:has(>.lab-viz):not(:has(>.lab-say~:is(.lab-form,.chips,.lab-slider))){display:flex;flex-direction:column;
     &>*{order:4}
     &>:is(h3,h3+p){order:0}
-    &>:is(.tblhint,.lab-viz,.lab-viz+p.muted){order:1}
+    &>:is(.tblhint,.lab-viz,.lab-viz+p.muted:not(.lab-note)){order:1}
     &>:is(.lab-slider,.chips,.lab-form,.lab-task,.lab-err){order:2}
     &>:is(.lab-say,.rank,.topics){order:3}}
 }
@@ -329,7 +330,7 @@ article section{padding-block:24px 0;border-top:1px solid var(--line);margin-top
 article section.first{border-top:0;margin-top:0}
 article section>h2{display:flex;gap:12px;align-items:baseline}
 article section>h2 .txt{flex:1;min-width:0}
-.say{flex:none;border:1px solid var(--line);background:none;border-radius:var(--r);padding:3px 12px;font-size:17px;font-weight:500;color:var(--muted);line-height:1.8}
+.say{flex:none;border:1px solid var(--ctl-line);background:none;border-radius:var(--r);padding:3px 12px;font-size:17px;font-weight:500;color:var(--muted);line-height:1.8}
 .say:hover{border-color:var(--accent);color:var(--accent)}
 .tblwrap{overflow-x:auto;margin:var(--sp4) 0}
 table{border-collapse:collapse;width:100%;font-size:17px;background:var(--surface)}
@@ -388,7 +389,7 @@ summary::marker{color:var(--muted)}
 .stepfig.js .stepcap li:not(.on){display:none}
 .stepfig figcaption{margin-top:12px;padding-top:8px;border-top:1px solid var(--line)}
 :is(.dg,.lab-viz) .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
-:is(.dg,.lab-viz) .acc{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+:is(.dg,.lab-viz) .acc{fill:var(--fig-acc);stroke:var(--accent);stroke-width:2}
 :is(.dg,.lab-viz) .ok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
 :is(.dg,.lab-viz) .bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.5}
 :is(.dg,.lab-viz) .warn{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.5}
@@ -403,6 +404,15 @@ summary::marker{color:var(--muted)}
 :is(.dg,.lab-viz) .th{font-size:18px;font-weight:700}
 :is(.dg,.lab-viz) .tc{text-anchor:middle}
 :is(.dg,.lab-viz) .ta{fill:var(--accent)}
+/* A second hue in a figure, only to tell two things apart (amber), mark a fault (red) or tint an area: fw/fr/fm text and arrowheads, sw/sr lines, fa/fah area, w25 a thick line. */
+:is(.dg,.lab-viz) .fw{fill:var(--warn)}
+:is(.dg,.lab-viz) .fr{fill:var(--bad)}
+:is(.dg,.lab-viz) .fm{fill:var(--muted)}
+:is(.dg,.lab-viz) .sw{stroke:var(--warn)}
+:is(.dg,.lab-viz) .sr{stroke:var(--bad)}
+:is(.dg,.lab-viz) .w25{stroke-width:2.5}
+:is(.dg,.lab-viz) .fa{fill:var(--fig-acc)}
+:is(.dg,.lab-viz) .fah{fill:var(--fig-acc);opacity:.5}
 .zoom{position:fixed;inset:0;z-index:50;background:rgba(5,12,18,.8);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .zoom .dg{width:min(1180px,100%);max-height:100%;overflow:auto;margin:0;cursor:zoom-out}
 .zoom .dg svg{max-width:none}
@@ -411,7 +421,7 @@ summary::marker{color:var(--muted)}
 /* A 放大 button per figure for keyboards: shown on focus, and with a mouse while over the figure. */
 .dg{position:relative}
 .zbtn{position:absolute;top:var(--sp1);right:var(--sp1);z-index:1;min-height:36px;padding:2px 12px;font-size:16px;opacity:0}
-.zbtn:focus-visible,.dg:hover>.zbtn{opacity:1}
+.zbtn:focus-visible{opacity:1}
 @media (max-width:600px){
   /* The picture runs almost edge to edge; caption, step buttons, step text and hints keep the body text's left edge. */
   :is(article,.gloss) .dg{margin-inline:calc(-1 * var(--gut));border-inline:0;padding:8px var(--gut)}
@@ -454,7 +464,7 @@ summary::marker{color:var(--muted)}
 .ex{border:1px solid var(--line);background:var(--surface);padding:var(--sp3) var(--sp4);margin:var(--sp4) 0}
 .ex .stem{font-weight:700}
 .opts{display:grid;gap:8px;margin:var(--sp3) 0}
-.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:9px 13px;line-height:1.6}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1.5px solid var(--ctl-line);border-radius:var(--r);padding:9px 13px;line-height:1.6}
 .opt:hover:not([disabled]){border-color:var(--accent)}
 .opt .k{flex:none;font:700 19px/1.6 var(--mono);min-width:1.2em;color:var(--accent)}
 .opt.correct{border-color:var(--ok);background:var(--ok-soft)}
@@ -492,7 +502,7 @@ summary::marker{color:var(--muted)}
 .termgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--sp1) var(--sp5);font-size:17px}
 .termgrid p{margin:4px 0;line-height:1.6}
 .pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
-.pager a:not(.px){padding:12px 16px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:var(--text);min-width:0;font-weight:700}
+.pager a:not(.px){padding:12px 16px;border:1px solid var(--ctl-line);background:var(--surface);text-decoration:none;color:var(--text);min-width:0;font-weight:700}
 .pager a:not(.px):hover{border-color:var(--accent)}
 .pager a.nx{text-align:right;grid-column:2}
 .pager a.px{grid-column:1/-1;justify-self:center}
@@ -510,7 +520,7 @@ summary::marker{color:var(--muted)}
 .panel{background:var(--surface);border:1px solid var(--line);padding:var(--sp4) var(--sp5);margin:var(--sp4) 0}
 .formgrid{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
 .formgrid label{display:flex;flex-direction:column;font-size:16px;color:var(--muted);gap:var(--sp1);min-width:0}
-.formgrid select,.formgrid input{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;font-size:17px;color:var(--text);max-width:100%;height:44px}
+.formgrid select,.formgrid input{background:var(--surface);border:1px solid var(--ctl-line);border-radius:var(--r);padding:8px 10px;font-size:17px;color:var(--text);max-width:100%;height:44px}
 #fAvail{margin:8px 0 0}
 @media (max-width:600px){
   .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;grid-auto-flow:row dense}
@@ -550,8 +560,7 @@ summary::marker{color:var(--muted)}
   /* A long timed run scrolls its number grid inside the column, so the end button stays on screen; the padding keeps focus rings visible. */
   .quiz.two .grid{margin:0 calc(-1 * var(--sp2));padding:var(--sp2);overflow:auto;min-height:0;flex:0 1 auto}
   /* Long explanations push the buttons below the fold; keep 上一題／下一題 in reach. */
-  .quiz.two .qnav{margin-top:var(--sp5);position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);padding-block:var(--sp2)}
-  body.reading .quiz.two .qnav{position:static}
+  .quiz.two .qnav{margin-top:var(--sp5);border-top:1px solid var(--line);padding-block:var(--sp2)}
   .quiz.res{max-width:760px}
 }
 @media screen and (min-width:901px) and (hover:hover) and (pointer:fine){.keyhint{display:block;font-size:16px;color:var(--muted);margin:0}}
@@ -591,10 +600,11 @@ summary::marker{color:var(--muted)}
   .quiz .qnav{position:sticky;bottom:0;z-index:5;flex-wrap:nowrap;gap:var(--sp2);background:var(--bg);border-top:1px solid var(--line);margin-inline:calc(-1 * var(--gut));padding:var(--sp2) var(--gut) calc(var(--sp2) + env(safe-area-inset-bottom,0px))}
   .quiz .qnav .btn{flex:1;min-width:0;min-height:48px;justify-content:center;text-align:center;padding-inline:var(--sp2)}
   html:has(.quiz .qnav){scroll-padding-bottom:88px}
+  .quiz .qnav{box-shadow:0 -8px 10px -8px rgba(0,0,0,.3)}
   body.reading .quiz .qnav{position:static}
 }
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:var(--sp1);margin:var(--sp4) 0}
-.grid button{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);height:38px;font:500 16px var(--mono)}
+.grid button{border:1px solid var(--ctl-line);background:var(--surface);border-radius:var(--r);height:38px;font:500 16px var(--mono)}
 .grid button.ans{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .grid button.cur{box-shadow:inset 0 -4px 0 var(--accent)}
 .grid button.ans.cur{box-shadow:inset 0 -4px 0 var(--accent-ink)}
@@ -614,7 +624,7 @@ summary::marker{color:var(--muted)}
 .refgrid ul{font-size:17px;margin:var(--sp2) 0;line-height:1.65}
 /* Review page: three parts behind one switch (site.js); without JS and in print they follow one another. */
 .rtabs{display:flex;gap:var(--sp1);margin:0 0 var(--sp5)}
-.rtabs a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;min-width:7em;padding:6px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:16px;text-decoration:none}
+.rtabs a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;min-width:7em;padding:6px 16px;border:1px solid var(--ctl-line);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:16px;text-decoration:none}
 .rtabs a:hover{border-color:var(--accent);color:var(--accent)}
 .rtabs a[aria-current]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
 .rpart>h2:first-child,.rpart>h3:first-child{margin-top:0}
@@ -658,7 +668,7 @@ summary::marker{color:var(--muted)}
 .gitem b{font-size:20px}
 .gitem .en,.glpop .en{font-size:16px;color:var(--muted);overflow-wrap:anywhere}
 .gview{align-self:end}
-.gview button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:var(--r);padding:4px 12px;min-height:40px;font:inherit;font-size:16px;cursor:pointer}
+.gview button{border:1px solid var(--ctl-line);background:var(--surface);color:var(--text);border-radius:var(--r);padding:4px 12px;min-height:40px;font:inherit;font-size:16px;cursor:pointer}
 /* In the search row the view switch matches the 44px inputs beside it. */
 .formgrid .gview button{min-height:44px}
 .gview button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
@@ -672,7 +682,7 @@ summary::marker{color:var(--muted)}
 /* Up to 1240px the jump chips stay pinned under the header as one scrolling row; group headings pin below (site.js measures --chiph). */
 @media screen and (max-width:1240px){
   .gside{display:contents}
-  .gchips{position:sticky;top:var(--hdr);z-index:6;background:var(--bg);padding-block:var(--sp2);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+  .gchips{position:sticky;top:var(--hdr);z-index:6;background:var(--bg);padding-block:var(--sp2);flex-wrap:wrap}
   .gloss .gsec h2{top:calc(var(--hdr) + var(--chiph,0px))}
 }
 /* From 1241px: a pinned left column holds search, view and a chapter list styled like the chapter sidebar. */
@@ -735,19 +745,25 @@ body.reading .sidemenu.tocmenu{position:static}
 body.reading #reader{display:block}
 #reader .in{max-width:1320px;margin:0 auto;padding:8px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
 #reader .ctl{display:flex;gap:var(--sp1)}
-#reader .ctl button{width:42px;height:42px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface2);font-size:17px;line-height:1;color:var(--text)}
+#reader .ctl button{width:44px;height:44px;border-radius:var(--r);border:1px solid var(--ctl-line);background:var(--surface2);font-size:17px;line-height:1;color:var(--text)}
 #reader .ctl .main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 #reader .now{flex:1 1 160px;min-width:0;font-size:16px;line-height:1.4}
 #reader .now b{color:var(--accent)}
 #reader .now span{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #reader label{font-size:16px;color:var(--muted)}
-#reader select{font-size:16px;min-height:40px;padding:4px 6px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface2);color:var(--text);max-width:180px}
+#reader select{font-size:16px;min-height:44px;padding:4px 6px;border-radius:var(--r);border:1px solid var(--ctl-line);background:var(--surface2);color:var(--text);max-width:180px}
 /* Phones: buttons and position on one row, speed and voice on the next. The sentence being read is hidden unless it is an error to act on. */
 @media (max-width:600px){#reader .now{flex-basis:90px}#reader .now span{display:none}#reader .now.err span{display:block;white-space:normal}#reader select{max-width:120px}}
 
 /* Touch screens: small controls get a finger-sized hit area; the whole menu box opens the menu. */
 @media (pointer:coarse){
-  .say{min-height:36px;padding:4px 12px}
+  .say{min-height:44px;padding:4px 12px}
+  .linkbtn{min-height:44px;padding-block:8px}
+  .zbtn{min-height:44px}
+  .lab-slider input{height:44px}
+  .gsec h2 .gtop{display:inline-flex;align-items:center;min-height:44px;padding-inline:8px;margin-block:-10px}
+  .gdiff .tag::after,.loc a::after{content:"";position:absolute;inset:-10px -6px}
+  .loc a{position:relative}
   .sidemenu{padding:0}
   .sidemenu summary{padding:12px 0}
   .sidemenu[open]{padding-bottom:10px}
@@ -796,3 +812,31 @@ body.reading #reader{display:block}
   .quiz.exam .qtop,.gsec h2{position:static;background:none}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.loop .lp-move{display:none!important}.loop .lp-still{display:inline!important}}
+
+@media (max-width:600px){
+  /* The contents list is one column on phones (two columns under a height limit would push items into a sideways column). */
+  .tocmenu .in{columns:auto}
+  .gchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .gchips::-webkit-scrollbar{display:none}
+  /* Sliders sit closer, so the picture stays near while dragging the last ones. */
+  .lab-form{gap:0 var(--sp5)}
+  .lab-slider{margin:2px 0}
+  /* A figure with its own phone drawing is already full width: no zoom (the zoom shows the wide original). */
+  .dg.has-m{cursor:default}
+  .dg.has-m>.zbtn{display:none}
+  /* The close button sits above the picture, not on it. */
+  .zoom{padding-top:60px}
+}
+/* Practice results from 901px: score, buttons and the chapter table stay pinned on the right; the review runs down the left. */
+@media screen and (min-width:901px){
+  .quiz.res{max-width:1120px;display:grid;grid-template-columns:minmax(0,1fr) 340px;column-gap:var(--sp6);align-items:start}
+  .quiz.res>*{grid-column:1}
+  .res td{vertical-align:middle}
+  .quiz.res>.rside{grid-column:2;grid-row:1/span 999;position:sticky;top:calc(var(--hdr) + var(--sp4));max-height:calc(100vh - var(--hdr) - var(--sp6));overflow:auto}
+  .quiz.res>.rside .row{flex-direction:column;align-items:stretch}
+}
+/* Phones, OEE lab: its bar chart is short, so the chart (not the verdict) stays pinned under the contents bar while the sliders are dragged. */
+@media screen and (max-width:600px){
+  body:not(.reading) .lab[data-lab="s2-23-oee"]>.lab-viz{position:sticky;top:46px;z-index:2;background:var(--surface)}
+  body:not(.reading) .lab[data-lab="s2-23-oee"] .lab-say:not(.lab-say ~ .lab-say){position:static;max-height:none;border-top:0}
+}

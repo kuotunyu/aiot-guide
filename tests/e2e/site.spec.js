@@ -114,7 +114,11 @@ test('practice: timed mode hides answers until submitted', async ({page}) => {
   await expect(page.locator('.why')).toHaveCount(0);
   await expect(page.locator('.qhead span').first()).toContainText('第 1 /');
   await page.click('#qSubmit');
-  await expect(page.locator('#qSubmit')).toContainText('還有 24 題未作答');
+  await expect(page.locator('#qSubmit')).toContainText('還有 24 題沒答');
+  // Esc takes the question back; a second press of 交卷 then asks again.
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#qSubmit')).toHaveText('交卷');
+  await page.click('#qSubmit');
   await page.click('#qSubmit');
   await expect(page.locator('.score')).toContainText('/ 25');
 });
@@ -253,15 +257,23 @@ test('loop figure: a pause button shows the still picture; reduced motion hides 
   await expect(b).toBeHidden();
 });
 
-test('step figure: zooming keeps the current step and leaves the buttons out', async ({page}) => {
+test('step figure: zooming keeps the current step and leaves the buttons out', async ({page, isMobile}) => {
   await page.goto('/s2-23.html');
   const f = page.locator('.stepfig').first();
+  await f.scrollIntoViewIfNeeded();
+  if (isMobile) {
+    // Phones show the upright drawing full width and do not zoom it.
+    await f.locator('svg:visible').click();
+    await expect(page.locator('.zoom')).toHaveCount(0);
+    return;
+  }
+  const s0 = +(await f.getAttribute('data-cur'));
   await f.locator('[data-d="1"]').click();
   await f.locator('[data-d="1"]').click();
   await expect(page.locator('.zoom')).toHaveCount(0);
   await f.locator('svg:visible').click();
   const z = page.locator('.zoom figure');
-  await expect(z).toHaveAttribute('data-cur', '3');
+  await expect(z).toHaveAttribute('data-cur', String(s0 + 2));
   await expect(z.locator('.stepctl')).toHaveCount(0);
   await expect(z.locator('.stepcap li:visible')).toHaveText(await f.locator('.stepcap li:visible').innerText());
 });
@@ -277,9 +289,15 @@ test('phone drawing: v-m on phones, v-d on desktops; zoom and print show the ori
   expect(await f.locator('.dgs').evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
   await expect(f.locator('.tblhint')).toHaveCount(0);
   await f.locator('svg:visible').click();
-  await expect(page.locator('.zoom svg.v-d')).toBeVisible();
-  await expect(page.locator('.zoom svg.v-m')).toBeHidden();
-  await page.keyboard.press('Escape');
+  if (phone) {
+    // On a phone the upright drawing is already full width; a zoom would only show the wide original, so there is none.
+    await expect(page.locator('.zoom')).toHaveCount(0);
+    await expect(f.locator('.zbtn')).toBeHidden();
+  } else {
+    await expect(page.locator('.zoom svg.v-d')).toBeVisible();
+    await expect(page.locator('.zoom svg.v-m')).toBeHidden();
+    await page.keyboard.press('Escape');
+  }
   await page.emulateMedia({media: 'print'});
   await expect(f.locator('svg.v-d')).toBeVisible();
   await expect(f.locator('svg.v-m')).toBeHidden();
@@ -1009,3 +1027,28 @@ test('video: the poster loads only once the video is opened', async ({page}) => 
   await page.locator('details.vid summary').first().click();
   await expect(page.locator('details.vid video').first()).toHaveAttribute('poster', /-poster\.jpg$/);
 });
+
+// Review 2026-11-21: figures drawn only for desktop shrank to ~12px text on phones and had to be scrolled sideways.
+// At 390px every chapter figure shows full width, and no text in it renders below 14px (font size x on-screen scale). Labs draw their own pictures and are not checked here.
+for (const id of CHAPTERS) {
+  test(`${id}: chapter figures at 390px fit the width with text of 14px or more`, async ({page, isMobile}) => {
+    test.skip(!isMobile, 'phone layout only');
+    await page.setViewportSize({width: 390, height: 844});
+    await page.goto(`/${id}.html`);
+    const bad = await page.evaluate(() => [...document.querySelectorAll('article figure.dg')].filter(f => !f.closest('.lab')).flatMap(f => {
+      const sec = f.closest('section')?.id;
+      const svg = [...f.querySelectorAll('svg')].find(s => s.getBoundingClientRect().width > 0);
+      if (!svg) return [`${sec}: no visible picture`];
+      const out = [];
+      const dgs = f.querySelector('.dgs');
+      if (dgs && dgs.scrollWidth - dgs.clientWidth > 1) out.push(`${sec}: scrolls sideways`);
+      const k = svg.getScreenCTM().a;
+      for (const t of svg.querySelectorAll('text')) {
+        const px = parseFloat(getComputedStyle(t).fontSize) * k;
+        if (t.textContent.trim() && px < 14) out.push(`${sec}: ${px.toFixed(1)}px "${t.textContent.trim().slice(0, 20)}"`);
+      }
+      return out;
+    }));
+    expect(bad).toEqual([]);
+  });
+}

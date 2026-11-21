@@ -561,7 +561,7 @@ def practice():
 <label for="fChapter">章節<select id="fChapter"></select></label>
 <label for="fMode">方式<select id="fMode"><option value="learn">逐題看解析</option><option value="exam">限時（每題 90 秒，本站估算）</option></select></label>
 </div><div class="qside">
-<label for="fCount">題數<select id="fCount"><option value="10">10 題</option><option value="25">25 題</option><option value="50">50 題</option><option value="0">全部</option></select></label>
+<label for="fCount">題數<select id="fCount"><option value="5">5 題</option><option value="10" selected>10 題</option><option value="25">25 題</option><option value="50">50 題</option><option value="0">全部</option></select></label>
 <button type="button" class="btn" id="qStart">開始</button><p class="small muted" id="fAvail" role="status"></p></div></div></div>
 <div id="quizApp"></div><p class="sr" role="status" id="qStatus"></p></main>'''
     page('practice.html', '練習', main, f'{len(out)} 題 AIoT 情境練習題，涵蓋兩個科目 15 個主題，每題附解析。', '<script src="assets/questions.js"></script>\n')

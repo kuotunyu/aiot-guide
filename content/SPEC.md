@@ -86,7 +86,7 @@ build.py 會擋下兩件事：同一個關鍵字列在兩章；關鍵字沒出�
 
 ## SVG 規格
 - 開頭 `<svg viewBox="0 0 600 H" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="一句描述">`，H 120–440，根元素不設 width/height。
-- 不寫任何顏色值、`style=`、`fill="`、`stroke="`。只用 class：形狀 `box acc ok bad warn soft`；線 `ln la dash`；文字 `t tb ts th tc ta`；箭頭 `mk`。（`t` 16px、`tb` 粗體、`ts` 小字 15px、`th` 18px 標題、`tc` 置中、`ta` 主色）
+- 不寫任何顏色值、`style=`、`fill="`、`stroke="`。只用 class：形狀 `box acc ok bad warn soft`；線 `ln la dash`；文字 `t tb ts th tc ta`；箭頭 `mk`。第二個顏色只用來區分兩樣東西或標出故障：`fw`（琥珀填色，文字與箭頭）、`fr`（紅）、`fm`（灰）、`sw`／`sr`（琥珀／紅線）、`fa`／`fah`（主色淡底／半透明）、`w25`（粗線）。一張圖只有一個重點用 `acc`，紅色只給故障與損失。（`t` 16px、`tb` 粗體、`ts` 小字 15px、`th` 18px 標題、`tc` 置中、`ta` 主色）
 - 箭頭 marker id 必須全站唯一：`<id>-<節序>-arr`，`viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"`，內含 `<path d="M0,0 L10,5 L0,10 z" class="mk"/>`。
 - 只用 rect、circle、ellipse、line、polyline、polygon、path、text、tspan、g、defs、marker。
 - 文字不可出界、重疊或超出方框（中文字寬約等於字級）。
@@ -102,7 +102,7 @@ build.py 會擋下兩件事：同一個關鍵字列在兩章；關鍵字沒出�
 - **第二張圖**：一節需要多一張圖時，用 `"figs": [{"pos": "...", "svg": "...", "caption": "...", "steps": [...], "start": n}]`。`pos` 決定位置：`after-predict`（先想一想之後、正文之前）、`after-body`（正文之後、實驗之前）、`after-after`（after 之後、主圖之前）、`end`（主圖之後，預設）。圖不可以排在 predict 前面洩漏答案。
 - **手機可讀**：手機上章節圖最小寬 480px（約 0.8 倍），比畫面寬時在 `.dgs` 內框裡左右捲動。主要文字用 `t`、`tb`（16px），`ts`（15px）只用在單位、刻度等次要資訊，不再用 13。每張圖約 15 個標籤以內，長說明放 caption 或 steps。
 - **配色語意**：`ok／bad／warn` 只表示對錯與警示；中性分類用 `box／soft／acc`；`la` 實線是主要路徑，`ln dash` 是控制或回程。
-- **手機直式圖**：左右滑動會切斷理解的圖（流程、時序、分層、對照）可以在 `svg` 旁加 `svgm`，把同一批節點與文字重新排成直向；座標圖、波形等不適合重畫的維持左右滑動。figs 的項目也可以加 `svgm`。
+- **手機直式圖**：每張章節圖（節的 `svg` 與 figs 的項目）都要在旁邊加 `svgm`，把同一批節點與文字重新排成直向；座標圖、波形也一樣，改成窄而高（面板上下疊、時間軸縮短但標的數值不變）。沒有直式版的圖在手機上字只剩約 12px 又要左右滑（2026-11-21 檢查）。實驗圖由 `static/assets/labs/*.js` 自己畫，不在此列。
   - 開頭 `<svg viewBox="0 0 360 H" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="...">`，H 200–760（375 寬時約 766px 高，一屏放得下）。其餘規則同桌機版：只用 class 上色、允許的標籤，字只用 text 16、.ts 15、.th 18。
   - 節點與文字和原圖相同，不新增內容；caption、steps、start、loop 兩張圖共用。每行最多約 20 個全形字，標籤約 15 個以內；長標籤換兩行放在箭頭上方。
   - 逐步圖：兩張圖的 data-s 用到的步數集合必須相同。loop：兩張都要有 lp-move／lp-still，svgm 的 keyframes 與 class 用 `lp-m-` 開頭，不可和桌機版同名（svg 裡的 `<style>` 全頁共用）。
@@ -110,6 +110,8 @@ build.py 會擋下兩件事：同一個關鍵字列在兩章；關鍵字沒出�
   - 每張 svgm 不大於桌機版的 1.1 倍；一頁因手機圖增加不超過 60KB（build 結尾印出各頁增量）。速查頁重用章節圖時自動帶 svgm。
   - 範本：`content/s1-22.json` mqtt 節 figs[1]（MQTT 生命週期，6 步時序圖：三條生命線 x≈50／180／310，訊息標籤換兩行放在箭頭上方，下方兩格改上下排）。
   - 檢查：verify.js 在 375 寬（縮放 ≥0.95）、320 寬（≥0.8）逐步檢查可見的 .v-m，1280 寬檢查 .v-d。
+  - 字：新畫的 svgm 不用 `.ts`，只用 text 16、.tb、.th 18。e2e 在 390 寬檢查每章的章節圖：不可左右滑，圖裡的字換算後不小於 14px。
+  - 頁面大小：static-check 的每頁 120KB 不含 `svg.v-m`，手機圖另由 build 的每頁 60KB 上限管。
 - **檢查**：`node scripts/figure-shots.js <頁>.html <節 id> <輸出資料夾>` 會截下每一步在桌機、手機、淺色、深色的樣子，交付前要逐張看過。
 
 ## 循環小動畫

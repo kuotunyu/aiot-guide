@@ -51,6 +51,7 @@ const zoom = (f, from) => {
 };
 document.addEventListener('click', e => {
   const f = e.target.closest(ZOOMABLE); if (!f || document.body.classList.contains('reading')) return;
+  if (f.classList.contains('has-m') && matchMedia('(max-width:600px)').matches) return;
   if (e.target.closest('.zbtn')) return zoom(f, e.target.closest('.zbtn'));
   if (e.target.closest('button') || f.matches('.loop') || (f.matches('.stepfig') && !e.target.closest('svg'))) return;
   zoom(f);
@@ -166,6 +167,7 @@ if ((tocLinks.length || menuLinks.length) && window.IntersectionObserver) {
   const sync = () => {
     queued = false; let cur = null, t = null;
     for (const s of secs) { if (s.getBoundingClientRect().top <= innerHeight * .25) cur = s; else break; }
+    if (!cur) { tocLinks.concat(menuLinks).forEach(a => a.classList.remove('on')); if (menuSum) menuSum.textContent = '本章目錄'; }
     try { t = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch(e){}
     // Keep an anchor that is at or above the reading line and inside or after the current section (a figure, 重點整理 after the last section).
     if (t ? t.getBoundingClientRect().top <= innerHeight * .25 && (!cur || cur.contains(t) || cur.compareDocumentPosition(t) & 4) : !cur) return;
@@ -326,6 +328,11 @@ if (glData) (function(){
     const r = b.getBoundingClientRect(), w = pop.offsetWidth;
     pop.style.left = Math.max(8, Math.min(scrollX + r.left, scrollX + document.documentElement.clientWidth - w - 8)) + 'px';
     pop.style.top = (scrollY + r.bottom + 6) + 'px';
+    const ph = pop.offsetHeight, bar = cssPx('--hdr') + cssPx('--toch');
+    if (r.bottom + 6 + ph > innerHeight - 8) {
+      if (r.top - 6 - ph >= bar) pop.style.top = (scrollY + r.top - 6 - ph) + 'px';
+      else pop.scrollIntoView({block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    }
   }
   document.addEventListener('click', ev => {
     const b = ev.target.closest('.gl');
@@ -357,7 +364,11 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     fC.innerHTML = '<option value="">全部章節</option>' + CH.filter(c => !fS.value || c.subject === fS.value).map(c => '<option value="' + c.id + '">' + esc(c.code + ' ' + c.title) + '</option>').join('');
     if ([...fC.options].some(o => o.value === cur)) fC.value = cur;
   }
-  function updAvail(){ avail.textContent = '共 ' + pool().length + ' 題'; }
+  function updAvail(){
+    const n = pool().length; avail.textContent = '共 ' + n + ' 題';
+    [...fN.options].forEach(o => { o.disabled = +o.value > 0 && +o.value >= n; });
+    if (fN.selectedOptions[0] && fN.selectedOptions[0].disabled) fN.value = '0';
+  }
   // Nothing about the reader's answers is kept between visits; earlier versions kept a wrong-answer list, so clear it.
   try { localStorage.removeItem('aiot-guide-wrong'); } catch(e){}
   fS.onchange = () => { fillChapters(); updAvail(); }; fC.onchange = updAvail;
@@ -413,7 +424,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     // 朗讀 sits at the end of the progress row in both modes; the clock or the early finish goes between (a line of its own in the narrow right column).
     const top = '<div class="qtop"><div class="qhead"><span>第 <b>' + (run.i + 1) + '</b> / ' + run.qs.length + ' 題</span><span class="qx">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + end + '</span><button type="button" class="say" data-say-card>朗讀</button></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div></div>';
     const prev = '<button type="button" class="btn ghost" id="qPrev" aria-keyshortcuts="ArrowLeft"' + (run.i ? '' : ' disabled') + '>上一題</button>';
-    const act = ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題未作答，再按一次交卷' : '交卷') + '</button>' : '';
+    const act = ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題沒答，確定交卷' : '交卷') + '</button>' : '';
     const next = '<button type="button" class="btn" id="qNext" aria-keyshortcuts="ArrowRight Enter">' + (run.i + 1 < run.qs.length ? '下一題' : '看結果') + '</button>';
     const grid = ex ? '<div class="grid noread">' + run.qs.map((x, k) => '<button type="button" data-j="' + k + '" class="' + (run.ans[x.id] != null ? 'ans ' : '') + (k === run.i ? 'cur' : '') + '" aria-label="第 ' + (k + 1) + ' 題' + (run.ans[x.id] != null ? '，已作答' : '') + '"' + (k === run.i ? ' aria-current="step"' : '') + '>' + (k + 1) + '</button>').join('') + '</div>' : '';
     // From 901px the question has the left column and a pinned right column holds progress, clock, number grid, the end button and the key hint;
@@ -434,7 +445,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     const gr = $('.qside .grid', qa), gc = gr && $('.cur', gr);
     if (gc && gr.scrollHeight > gr.clientHeight) gr.scrollTop += gc.getBoundingClientRect().top - gr.getBoundingClientRect().top - gr.clientHeight / 2;
     initLoops(qa); addZoom(qa);
-    if (why === 'answered' && !ex) { const w = $('.why', qa); focusOn(w); w.scrollIntoView({block:'nearest', behavior:smooth()}); }
+    if (why === 'answered' && !ex) { const w = $('.why', qa); focusOn(w); w.scrollIntoView({block: w.offsetHeight > innerHeight * .55 ? 'start' : 'nearest', behavior:smooth()}); }
     else if (why === 'answered') focusOn($('.opt[data-k="' + picked + '"]', qa));
     else if (why === 'moved') { qa.scrollIntoView({block:'start'}); focusOn($('.qtext', qa)); }
     else if (why === 'confirm') focusOn($('#qSubmit'));
@@ -459,10 +470,11 @@ if (qa && window.AIOT_QUESTIONS) (function(){
       .filter(Boolean).sort((a, b) => (b[0] === lead) - (a[0] === lead)).map(([k, t]) => one1(k, t, top)).join('');
     const pct = '<p>' + (total ? '答對率 ' + Math.round(ok / total * 100) + '%<span class="muted">（及格參考 70%）</span>' : '還沒有作答') + '</p>';
     const row = '<div class="row">' + acts(true) + '</div>';
-    let h = '<div class="quiz res"><div class="panel">' + (run.timeUp ? '<p><b>時間到，已自動交卷。</b></p>' : '') + '<div class="score">' + ok + ' / ' + total + '</div>' + pct + (lead === 'next' ? onward + row : row + onward) + '</div>';
+    let h = '<div class="quiz res"><div class="rside"><div class="panel">' + (run.timeUp ? '<p><b>時間到，已自動交卷。</b></p>' : '') + '<div class="score">' + ok + ' / ' + total + '</div>' + pct + (lead === 'next' ? onward + row : row + onward) + '</div>';
     const rows = Object.keys(by).sort((a, b) => by[a].ok / by[a].n - by[b].ok / by[b].n);
     // Each chapter row can start a drill of that chapter's questions straight away.
-    if (rows.length > 1) h += '<h2>各章表現</h2><div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>章節</th><th>答對</th><th><span class="sr">練習</span></th></tr></thead><tbody>' + rows.map(k => { const c = CH.find(x => x.id === k) || {}; return '<tr><td><a href="' + k + '.html"><span class="tag ' + c.subject + '">' + esc(c.code) + '</span> ' + esc(c.title) + '</a></td><td class="mono nw">' + by[k].ok + ' / ' + by[k].n + '</td><td class="nw"><button type="button" class="btn ghost" data-drill="' + k + '" aria-label="練這章：' + esc(c.code + ' ' + c.title) + '">練這章</button></td></tr>'; }).join('') + '</tbody></table></div>';
+    if (rows.length <= 1) h += '</div>';
+    if (rows.length > 1) h += '<h2>各章表現</h2><div class="tblwrap facts" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>章節</th><th>答對</th><th><span class="sr">練習</span></th></tr></thead><tbody>' + rows.map(k => { const c = CH.find(x => x.id === k) || {}; return '<tr><td><a href="' + k + '.html"><span class="tag ' + c.subject + '">' + esc(c.code) + '</span> ' + esc(c.title) + '</a></td><td class="mono nw">' + by[k].ok + ' / ' + by[k].n + '</td><td class="nw"><button type="button" class="btn ghost" data-drill="' + k + '" aria-label="練這章：' + esc(c.code + ' ' + c.title) + '">練這章</button></td></tr>'; }).join('') + '</tbody></table></div></div>';
     // Review in question order: wrong (and, timed, unanswered) ones stay open in full; right ones fold to their number and stem on phones and tablets (open from 901px).
     const rev = run.qs.map((q, n) => ({q, n})).filter(x => run.mode === 'exam' || run.ans[x.q.id] != null);
     if (rev.length) h += '<h2>檢討</h2>' + rev.map(({q, n}) => {
@@ -495,6 +507,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     if (!run || run.done || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || !$('.quiz', qa) || $('.zoom')) return;
     const t = e.target instanceof Element ? e.target : document.body, k = e.key;
     if (t.closest('input,select,textarea,[contenteditable="true"],#reader')) return;
+    if (k === 'Escape' && run.confirm) { e.preventDefault(); run.confirm = false; render('confirm'); return; }
     const n = k.length === 1 ? ('1234'.indexOf(k) + 1 || 'abcd'.indexOf(k.toLowerCase()) + 1) - 1 : -1;
     const hit = b => { if (b && !b.disabled) { e.preventDefault(); b.click(); } };
     if (n >= 0) hit($$('.opt', qa)[n]);
@@ -548,6 +561,7 @@ const fitLab = svg => { if (svg.dataset.fit) return; const w = svg.viewBox && sv
   svg.dataset.fit = '1'; svg.style.maxWidth = Math.round(w * 1.15) + 'px'; if (svg.querySelector('text')) svg.style.setProperty('--minw', Math.round(w * .8) + 'px'); };
 (function(){
   const check = () => $$('.tblwrap, article .dgs, .ref .dgs, .lab-viz').forEach(w => {
+    if (w.classList.contains('tblwrap')) { if (w.scrollWidth > w.clientWidth + 1) w.tabIndex = 0; else w.removeAttribute('tabindex'); }
     let h = w.previousElementSibling; if (h && !h.classList.contains('tblhint')) h = null;
     const over = w.scrollWidth > w.clientWidth + 1;
     if (over && !h) { h = document.createElement('p'); h.className = 'tblhint small muted noread noprint'; h.textContent = w.classList.contains('tblwrap') ? '表格可左右滑動 →' : '圖可左右滑動 →'; w.before(h); }
@@ -646,6 +660,7 @@ if (reader) (function(){
   if (window.ResizeObserver) new ResizeObserver(pad).observe(reader);
   function start(root){
     document.body.classList.add('reading'); pad(); setHdr();
+    $$('[data-read-all]').forEach(b => { b.textContent = '停止朗讀'; b.setAttribute('aria-pressed', 'true'); });
     if (!ok) return fail('這個瀏覽器不支援朗讀，請' + FIX + '。');
     segs = collect(root); if (!segs.length) return stop();
     segs.forEach(s => s.el.setAttribute('data-seg', '')); go(0);
@@ -654,6 +669,7 @@ if (reader) (function(){
     gen++; clearTimeout(watchdog); playing = false; if (ok) synth.cancel();
     $$('.reading-on').forEach(x => x.classList.remove('reading-on')); $$('[data-seg]').forEach(x => x.removeAttribute('data-seg'));
     segs = []; document.body.classList.remove('reading'); now.classList.remove('err'); pad(); setHdr();
+    $$('[data-read-all]').forEach(b => { b.textContent = '朗讀整章'; b.setAttribute('aria-pressed', 'false'); });
   }
   // "Microsoft HsiaoChen Online (Natural) - Chinese (Taiwan)" -> "HsiaoChen"; voices outside Taiwan keep a short language tag.
   const voiceName = v => v.name.replace(/\s*-\s*Chinese.*$/, '').replace(/Microsoft |Online |\(Natural\)/g, '').replace(/\s+/g, ' ').trim() + (/zh[-_]TW/i.test(v.lang) ? '' : '（' + v.lang + '）');
@@ -676,7 +692,7 @@ if (reader) (function(){
   rate.onchange = () => { store.set('rate', rate.value); if (playing) go(idx); };
   voiceSel.onchange = () => { store.set('voice', voiceSel.value); if (playing) go(idx); };
   document.addEventListener('click', e => {
-    if (e.target.closest('[data-read-all]')) { e.preventDefault(); return start($('article') || $('main')); }
+    if (e.target.closest('[data-read-all]')) { e.preventDefault(); return document.body.classList.contains('reading') ? stop() : start($('article') || $('main')); }
     const c = e.target.closest('[data-say-card]');
     if (c) { e.preventDefault(); return start(c.closest('[data-read]') || $('main')); }
     if (!document.body.classList.contains('reading') || e.target.closest('a,button,summary,select,input,label,#reader,.glpop')) return;
