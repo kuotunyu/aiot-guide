@@ -9,7 +9,7 @@
   "讀懂 HTTP 方法與狀態碼，選對即時更新方式",
   "判斷常見開源授權在散布與上雲時的義務"
  ],
- "prereq": "這章接在<a href=\"s1-24.html#big-picture\">科一 2.4〈中介軟體與平台〉</a>之後：那裡介紹平台有哪些零件，這裡動手選格式、資料庫與 API。<b>HTTP</b> 是網頁與伺服器溝通的規則：一方送出「請求」，另一方回傳「回應」，就像到櫃台填單、再拿回結果。",
+ "prereq": "這章接在<a href=\"s1-24.html#big-picture\">科一 2.4〈中介軟體與平台〉</a>之後，動手選格式、資料庫與 API。<b>HTTP</b> 是網頁那種一問一答：一方送出「請求」，另一方回傳「回應」（見<a href=\"s1-22.html#qos-and-protocols\">科一 2.2〈常見通訊協定與網路層技術〉</a>）。",
  "bridge": "呼叫 LLM 的 REST API、把資料收進 ML pipeline，對應本章的 Web API 與資料收集管線。",
  "sections": [
   {
@@ -25,8 +25,8 @@
     "a": "缺裝置 ID 與時間戳記：不知道是哪台車、什麼時候量的，就畫不成曲線，也無從告警。"
    },
    "more": {
-    "label": "規劃平台要估什麼，以及哪些服務才算 IoT 資料中樞",
-    "body": "<p>平台要同時承接大量裝置，所以規劃時會先估算每秒進來多少訊息，確認傳輸與處理速度跟得上，再一併考量穩定度、安全、成本與資料所在地法規。</p><p>教學常用的 ThingSpeak（MathWorks）可直接畫圖分析；挑選時要分清楚品牌與服務：IBM Cloud 是整個雲端平台的品牌；Kubernetes 負責調度容器（容器見本章後段），不管裝置註冊與驗證。雲端平台不是每項服務都等於 IoT 資料中樞。</p>"
+    "label": "哪些雲端服務才算 IoT 資料中樞",
+    "body": "<p>教學常用的 ThingSpeak（MathWorks）可直接畫圖分析；挑選時要分清楚品牌與服務：IBM Cloud 是整個雲端平台的品牌；Kubernetes 負責調度容器（容器見本章後段），不管裝置註冊與驗證。雲端平台不是每項服務都等於 IoT 資料中樞。</p>"
    },
    "figs": [
     {
@@ -50,7 +50,7 @@
   {
    "id": "data-formats",
    "h": "資料格式：同一筆讀值的不同寫法",
-   "body": "<p>感測值要在裝置、雲端與網頁之間流通，最常見的寫法是 <b>JSON（JavaScript Object Notation）</b>：純文字、體積小，幾乎所有程式語言都能解析。它由物件、陣列與基本值組成，鍵名與字串都要用雙引號，最後一項後不可加逗號，例如 <code>{\"id\":\"t01\",\"temp\":25.3}</code>。</p><p>CSV 只是一張平面表；資料有上下層級（例如冷藏庫→探頭→各項數值）時，要用 JSON 或 XML 的巢狀寫法。政府資料開放平臺提供的也是這類程式能直接解析的檔案（如 JSON、CSV），原則上可免費取用。四種格式的比較見本節的表。</p>",
+   "body": "<p>感測值要在裝置、雲端與網頁之間流通，最常見的寫法是 <b>JSON（JavaScript Object Notation）</b>：純文字、體積小，幾乎所有程式語言都能解析。它由物件、陣列與基本值組成，鍵名與字串都要用雙引號，最後一項後不可加逗號，例如 <code>{\"id\":\"t01\",\"temp\":25.3}</code>。</p><p>CSV 只是一張平面表；資料有上下層級（例如冷藏庫→探頭→各項數值）時，要用 JSON 或 XML 的巢狀寫法。政府資料開放平臺提供 JSON、CSV 這類程式能直接解析的<b>機器可讀</b>檔案（一般 HTML 網頁是排版給人看的，程式不易取值），原則上可免費取用與再利用；只公開不涉及個人的資料（如空氣品質、人口分布），個人報稅資料、病歷不會公開。</p>",
    "table": {
     "head": [
      "格式",
@@ -63,7 +63,7 @@
       "JSON",
       "{\"temp\":25.3}",
       "輕量、好讀、有層級、工具多",
-      "圖片等二進位資料要轉成 Base64 文字，體積約多三分之一，大檔宜改放物件儲存；本身不加密"
+      "圖片等二進位資料要轉成 Base64 文字（每 3 個位元組寫成 4 個字元），體積約多三分之一，大檔宜改放物件儲存；本身不加密"
      ],
      [
       "XML",
@@ -89,11 +89,7 @@
     "q": "同一批貨車讀值分別寫成 JSON、CSV（用逗號分隔欄位的表格文字）、XML。誰最長？從一次送 1 筆改成一次送 100 筆，XML 和 CSV 的倍數差距會變大還是變小？",
     "a": "XML 最長、CSV 最短。差距會變大，因為 XML 和 JSON 每筆都重複欄位名，CSV 的標題列只寫一次。"
    },
-   "lab": "s2-22-formats",
-   "more": {
-    "label": "機器可讀的公開資料",
-    "body": "<p>程式能直接解析的檔案稱為<b>機器可讀</b>；一般網頁（HTML）是排版給人看的，程式不容易從中取出數值。開放資料原則上可免費取用與再利用，只公開不涉及個人的資料（如空氣品質、人口統計），個人報稅資料、病歷不會公開。</p>"
-   }
+   "lab": "s2-22-formats"
   },
   {
    "id": "storage",
@@ -169,8 +165,8 @@
     "a": "身分已確認，但這個帳號沒有查該資料的權限。401 是還沒通過驗證，403 才是不准。"
    },
    "more": {
-    "label": "RESTful 為什麼好擴展，以及安全靠什麼",
-    "body": "<p>RESTful 的優點是簡單、跨平台、容易擴展：它<b>無狀態（Stateless）</b>，每次請求自帶所需資訊，任何一台伺服器都能處理。</p><p>它本身不保證安全，安全要靠 HTTPS 加上驗證與授權機制，例如 OAuth（讓使用者授權某程式存取資料，又不必交出密碼）與 JWT（伺服器核發、之後可用來證明身分的一段憑證文字，類似通行證）。</p>"
+    "label": "RESTful 為什麼好擴展",
+    "body": "<p>RESTful 的優點是簡單、跨平台、容易擴展：它<b>無狀態（Stateless）</b>，每次請求自帶所需資訊，任何一台伺服器都能處理。</p>"
    },
    "steps": [
     "一次往返：信封外寫方法和網址；這次用 GET 讀最新溫度，伺服器回 200 OK 和 JSON。",
@@ -202,7 +198,7 @@
   {
    "id": "tools-licenses",
    "h": "開發工具與開源授權",
-   "body": "<p><b>Node-RED</b> 是<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，像標準貨櫃，到哪裡都能照樣執行。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。<b>免費軟體</b>（Freeware）只是不收費，<b>共享軟體</b>（Shareware）偏先試用，兩者都不一定開放原始碼。</p><p>開源授權和上一章的硬體授權一樣分兩類。<b>Copyleft</b>（互惠，如 GPL、AGPL）要求散布衍生作品時也開放原始碼：GPL 的義務在散布時才發生，內部自用不必；AGPL 連改過後放上雲端給人使用也算。<b>寬鬆授權</b>（MIT、BSD、Apache 2.0）只要求保留聲明，Apache 2.0 另含專利授權。逐項對照見本節最後一張圖。</p>",
+   "body": "<p><b>Node-RED</b> 是<b>流程式低程式碼工具</b>（只需少量或不必寫程式）：在瀏覽器裡拖拉節點、連上線就是程式，常用來串接 MQTT、資料庫與儀表板。</p><p><b>Docker</b> 把程式與所需環境打包成<b>容器（Container）</b>，到哪裡都能照樣執行（見<a href=\"s1-24.html#vm-container\">科一 2.4〈中介軟體與平台〉</a>）。</p><p>軟體能不能用，要看授權。<b>自由軟體（Free Software）</b>的「自由」指可使用、研究、修改與再散布，並能取得原始碼，不等於免費。<b>免費軟體</b>（Freeware）只是不收費，<b>共享軟體</b>（Shareware）偏先試用，兩者都不一定開放原始碼。</p><p>開源授權和上一章的硬體授權一樣分兩類。<b>Copyleft</b>（互惠，如 GPL、AGPL）要求散布衍生作品時也開放原始碼：GPL 的義務在散布時才發生，內部自用不必；AGPL 連改過後放上雲端給人使用也算。<b>寬鬆授權</b>（MIT、BSD、Apache 2.0）主要只要求保留版權與授權聲明；Apache 2.0 另含專利授權，改過的檔案也要註明。逐項對照見本節最後一張圖。</p>",
    "svg": "<svg viewBox=\"0 0 600 160\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Node-RED 流程範例：收 MQTT、轉換、判斷門檻、畫圖或告警\"><defs><marker id=\"s2-22-7-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><rect x=\"10\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"acc\"/><text x=\"70\" y=\"69\" class=\"tb tc\">mqtt in</text><text x=\"70\" y=\"87\" class=\"ts tc\">收感測值</text><rect x=\"150\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"box\"/><text x=\"210\" y=\"69\" class=\"tb tc\">function</text><text x=\"210\" y=\"87\" class=\"ts tc\">轉換格式</text><rect x=\"290\" y=\"48\" width=\"120\" height=\"48\" rx=\"10\" class=\"warn\"/><text x=\"350\" y=\"69\" class=\"tb tc\">switch</text><text x=\"350\" y=\"87\" class=\"ts tc\">溫度＞30？</text><rect x=\"460\" y=\"6\" width=\"120\" height=\"48\" rx=\"10\" class=\"ok\"/><text x=\"520\" y=\"27\" class=\"tb tc\">chart</text><text x=\"520\" y=\"45\" class=\"ts tc\">儀表板畫圖</text><rect x=\"460\" y=\"98\" width=\"120\" height=\"48\" rx=\"10\" class=\"bad\"/><text x=\"520\" y=\"119\" class=\"tb tc\">e-mail</text><text x=\"520\" y=\"137\" class=\"ts tc\">發出告警</text><line x1=\"132\" y1=\"72\" x2=\"146\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><line x1=\"272\" y1=\"72\" x2=\"286\" y2=\"72\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,64 C435,64 435,30 456,30\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><path d=\"M412,80 C435,80 435,122 456,122\" class=\"la\" marker-end=\"url(#s2-22-7-arr)\"/><text x=\"424\" y=\"36\" class=\"ts tc\">否</text><text x=\"424\" y=\"118\" class=\"ts tc\">是</text></svg>",
    "caption": "Node-RED 流程：一個節點是一個步驟，連線決定資料往哪走。",
    "predict": {
@@ -216,8 +212,8 @@
    "figs": [
     {
      "pos": "end",
-     "svg": "<svg viewBox=\"0 0 600 384\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"開源授權在三種用法下的義務：自己內部用、散布出去交給客戶、放雲端給人連線用。MIT、BSD：內部用免、散布時保留聲明、放雲端免；Apache 2.0：同 MIT，散布時保留聲明並標示修改，另含專利授權；LGPL 弱 Copyleft：內部用免、散布時改過函式庫要開放、放雲端免；GPL 強 Copyleft：內部用免、散布要給原始碼、放雲端免；AGPL 強 Copyleft：內部用免、散布要給原始碼、改過後放雲端給人連線也要給原始碼\"><rect x=\"14\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"ok\"/><text x=\"26\" y=\"26\" class=\"tb tc\">✓</text><text x=\"46\" y=\"26\" class=\"t\">不必給原始碼</text><rect x=\"196\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"warn\"/><text x=\"208\" y=\"26\" class=\"tb tc\">！</text><text x=\"228\" y=\"26\" class=\"t\">只開函式庫的修改</text><rect x=\"414\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"bad\"/><text x=\"426\" y=\"26\" class=\"tb tc\">✕</text><text x=\"446\" y=\"26\" class=\"t\">要給原始碼</text><polygon points=\"204,66 226,46 248,66\" class=\"box\"/><rect x=\"210\" y=\"64\" width=\"32\" height=\"22\" class=\"box\"/><rect x=\"221\" y=\"73\" width=\"10\" height=\"13\" class=\"ln\"/><polygon points=\"318,60 326,50 362,50 354,60\" class=\"box\"/><polygon points=\"354,60 362,50 362,76 354,86\" class=\"box\"/><rect x=\"318\" y=\"60\" width=\"36\" height=\"26\" class=\"box\"/><polyline points=\"330,60 338,50 344,50 336,60 336,70 330,70 330,60\" class=\"soft\"/><path d=\"M434,86 A11,11 0 0 1 432,64 A15,15 0 0 1 460,58 A12,12 0 0 1 468,86 Z\" class=\"box\"/><text x=\"226\" y=\"108\" class=\"tb tc\">自己內部用</text><text x=\"226\" y=\"128\" class=\"t tc\">（自家貨車）</text><text x=\"338\" y=\"108\" class=\"tb tc\">散布出去</text><text x=\"338\" y=\"128\" class=\"t tc\">（交給客戶）</text><text x=\"450\" y=\"108\" class=\"tb tc\">放雲端</text><text x=\"450\" y=\"128\" class=\"t tc\">給人連線用</text><text x=\"450\" y=\"146\" class=\"ts tc\">程式沒交出去</text><text x=\"60\" y=\"182\" class=\"tb\">MIT／BSD</text><rect x=\"172\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"183\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"183\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"183\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"226\" class=\"tb\">Apache 2.0</text><rect x=\"172\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"227\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"227\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"227\" class=\"th tc\">✓ 免</text><text x=\"510\" y=\"226\" class=\"t\">＋專利授權</text><text x=\"60\" y=\"270\" class=\"tb\">LGPL</text><rect x=\"172\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"271\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"warn\"/><text x=\"338\" y=\"271\" class=\"th tc\">！改庫要開</text><rect x=\"396\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"271\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"314\" class=\"tb\">GPL</text><rect x=\"172\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"315\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"315\" class=\"th tc\">✕ 給原始碼</text><rect x=\"396\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"315\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"358\" class=\"tb\">AGPL</text><rect x=\"172\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"359\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"359\" class=\"th tc\">✕ 給原始碼</text><rect x=\"396\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"450\" y=\"359\" class=\"th tc\">✕ 給原始碼</text><polyline points=\"54,158 48,158 48,238 54,238\" class=\"ln\"/><text x=\"24\" y=\"204\" class=\"tb tc\">寬鬆</text><polyline points=\"54,246 48,246 48,282 54,282\" class=\"ln\"/><text x=\"24\" y=\"270\" class=\"tb tc\">弱</text><polyline points=\"54,290 48,290 48,370 54,370\" class=\"ln\"/><text x=\"24\" y=\"336\" class=\"tb tc\">強</text></svg>",
-     "caption": "紅色從哪一欄開始，就是哪種用法才要給原始碼；GPL 和 AGPL 只差在雲端那一欄（AGPL 指改過後放上雲端）。LGPL 是較弱的 Copyleft，只要求公開函式庫本身的修改。"
+     "svg": "<svg viewBox=\"0 0 600 384\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"開源授權在三種用法下的義務：自己內部用、散布出去交給客戶、放雲端給人連線用。MIT、BSD：內部用免、散布時保留聲明、放雲端免；Apache 2.0：同 MIT，散布時保留聲明並標示修改，另含專利授權；LGPL 弱 Copyleft：內部用免、散布時改過函式庫要開放、放雲端免；GPL 強 Copyleft：內部用免、散布要給原始碼、放雲端免；AGPL 強 Copyleft：內部用免、散布要給原始碼、改過後放雲端給人連線也要給原始碼\"><rect x=\"14\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"ok\"/><text x=\"26\" y=\"26\" class=\"tb tc\">✓</text><text x=\"46\" y=\"26\" class=\"t\">不必給原始碼</text><rect x=\"196\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"warn\"/><text x=\"208\" y=\"26\" class=\"tb tc\">！</text><text x=\"228\" y=\"26\" class=\"t\">只開函式庫原始碼</text><rect x=\"414\" y=\"8\" width=\"24\" height=\"24\" rx=\"5\" class=\"bad\"/><text x=\"426\" y=\"26\" class=\"tb tc\">✕</text><text x=\"446\" y=\"26\" class=\"t\">要給原始碼</text><polygon points=\"204,66 226,46 248,66\" class=\"box\"/><rect x=\"210\" y=\"64\" width=\"32\" height=\"22\" class=\"box\"/><rect x=\"221\" y=\"73\" width=\"10\" height=\"13\" class=\"ln\"/><polygon points=\"318,60 326,50 362,50 354,60\" class=\"box\"/><polygon points=\"354,60 362,50 362,76 354,86\" class=\"box\"/><rect x=\"318\" y=\"60\" width=\"36\" height=\"26\" class=\"box\"/><polyline points=\"330,60 338,50 344,50 336,60 336,70 330,70 330,60\" class=\"soft\"/><path d=\"M434,86 A11,11 0 0 1 432,64 A15,15 0 0 1 460,58 A12,12 0 0 1 468,86 Z\" class=\"box\"/><text x=\"226\" y=\"108\" class=\"tb tc\">自己內部用</text><text x=\"226\" y=\"128\" class=\"t tc\">（自家貨車）</text><text x=\"338\" y=\"108\" class=\"tb tc\">散布出去</text><text x=\"338\" y=\"128\" class=\"t tc\">（交給客戶）</text><text x=\"450\" y=\"108\" class=\"tb tc\">放雲端</text><text x=\"450\" y=\"128\" class=\"t tc\">給人連線用</text><text x=\"450\" y=\"146\" class=\"ts tc\">程式沒交出去</text><text x=\"60\" y=\"182\" class=\"tb\">MIT／BSD</text><rect x=\"172\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"183\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"183\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"156\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"183\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"226\" class=\"tb\">Apache 2.0</text><rect x=\"172\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"227\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"338\" y=\"227\" class=\"th tc\">✓ 留聲明</text><rect x=\"396\" y=\"200\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"227\" class=\"th tc\">✓ 免</text><text x=\"510\" y=\"226\" class=\"t\">＋專利授權</text><text x=\"60\" y=\"270\" class=\"tb\">LGPL</text><rect x=\"172\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"271\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"warn\"/><text x=\"338\" y=\"271\" class=\"th tc\">！開庫原始碼</text><rect x=\"396\" y=\"244\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"271\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"314\" class=\"tb\">GPL</text><rect x=\"172\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"315\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"315\" class=\"th tc\">✕ 給原始碼</text><rect x=\"396\" y=\"288\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"450\" y=\"315\" class=\"th tc\">✓ 免</text><text x=\"60\" y=\"358\" class=\"tb\">AGPL</text><rect x=\"172\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"ok\"/><text x=\"226\" y=\"359\" class=\"th tc\">✓ 免</text><rect x=\"284\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"338\" y=\"359\" class=\"th tc\">✕ 給原始碼</text><rect x=\"396\" y=\"332\" width=\"108\" height=\"40\" rx=\"6\" class=\"bad\"/><text x=\"450\" y=\"359\" class=\"th tc\">✕ 給原始碼</text><polyline points=\"54,158 48,158 48,238 54,238\" class=\"ln\"/><text x=\"24\" y=\"204\" class=\"tb tc\">寬鬆</text><polyline points=\"54,246 48,246 48,282 54,282\" class=\"ln\"/><text x=\"24\" y=\"270\" class=\"tb tc\">弱</text><polyline points=\"54,290 48,290 48,370 54,370\" class=\"ln\"/><text x=\"24\" y=\"336\" class=\"tb tc\">強</text></svg>",
+     "caption": "紅色從哪一欄開始，就是哪種用法才要給原始碼；GPL 和 AGPL 只差在雲端那一欄（AGPL 指改過後放上雲端）。LGPL 是較弱的 Copyleft：散布時要提供函式庫的原始碼（含修改），自己的程式不必公開；靜態連結進韌體時，還要讓使用者能換掉函式庫重新連結。"
     }
    ]
   }
@@ -371,8 +367,8 @@
    "https://nodered.org/about/"
   ],
   [
-   "Docker：平台總覽",
-   "https://docs.docker.com/get-started/docker-overview/"
+   "Docker：什麼是容器",
+   "https://docs.docker.com/learn/content/what-is-a-container/"
   ],
   [
    "Open Source Initiative：開源授權清單",

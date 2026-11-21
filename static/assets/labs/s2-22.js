@@ -6,6 +6,8 @@
   // Simplified: data changes on a fixed period, out of phase with the browser; network one-way time is fixed;
   // server processing and reconnects are ignored. Counts are for one hour.
   const HOUR = 3600, ONE_WAY = 0.05, LP_TIMEOUT = 30;
+  // A share shown as a whole percent: never round 99.9% up to 100% or 0.4% down to 0%.
+  const sharePct = s => (s > 0.99 && s < 1 ? '超過 99%' : s > 0 && s < 0.01 ? '不到 1%' : Math.round(s * 100) + '%');
   // Up to this many viewers, the request count is small enough that simple polling is fine.
   const FEW_USERS = 10;
 
@@ -44,7 +46,7 @@
   function insight(pollSec, changeSec, users) {
     const r = compareUpdates(pollSec, changeSec, users), parts = [];
     if (r.polling.missedShare > 0) parts.push('輪詢比資料變化慢，只看得到當下最新一筆，約 ' + Math.round(r.polling.missedShare * 100) + '% 的變化沒被看見。');
-    else if (r.polling.emptyShare > 0) parts.push('有 ' + Math.round(r.polling.emptyShare * 100) + '% 的輪詢拿不到新資料。');
+    else if (r.polling.emptyShare > 0) parts.push('有' + sharePct(r.polling.emptyShare).replace(/^\d/, ' $&') + ' 的輪詢拿不到新資料。');
     else parts.push('輪詢間隔剛好等於資料變化週期，每次都拿到新資料，但平均仍要等半個間隔。');
     if (r.longPolling.requests > r.polling.requests) {
       parts.push(changeSec < pollSec
@@ -141,7 +143,7 @@
       el.querySelector('.lab-say').textContent = insight(P, C, U);
       el.querySelector('.rank').innerHTML =
         '<li><span class="st">輪詢</span><b>Polling</b><span class="why">平均每秒 ' + perSecond(r.polling.requests / HOUR) + ' 個請求，不必一直掛著連線。</span></li>' +
-        '<li><span class="st">長輪詢</span><b>Long Polling</b><span class="why">掛著 ' + num(r.longPolling.connections) + ' 個請求等資料；' + (r.longPolling.emptyShare > 0 ? Math.round(r.longPolling.emptyShare * 100) + '% 的請求因逾時而沒有資料。' : '每個請求都等到資料。') + '</span></li>' +
+        '<li><span class="st">長輪詢</span><b>Long Polling</b><span class="why">掛著 ' + num(r.longPolling.connections) + ' 個請求等資料；' + (r.longPolling.emptyShare > 0 ? sharePct(r.longPolling.emptyShare) + ' 的請求因逾時而沒有資料。' : '每個請求都等到資料。') + '</span></li>' +
         '<li><span class="st">推送</span><b>WebSocket</b><span class="why">只有握手算 HTTP 請求；之後推送 ' + num(r.webSocket.pushes) + ' 則訊息，維持 ' + num(r.webSocket.connections) + ' 條連線。</span></li>';
     }
     Object.keys(inputs).forEach(k => { inputs[k].oninput = () => { idx[k] = +inputs[k].value; draw(); }; });

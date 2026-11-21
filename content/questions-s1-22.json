@@ -55,8 +55,9 @@
     },
     "legacy-s1-15": {
       "sec": "road-and-language",
+      "o": ["TCP 為連線導向，先建立連線再傳", "UDP 不保證封包送達與順序", "MQTT 建立在 TCP 之上", "UDP 比 TCP 更可靠、更適合金融交易"],
       "w": [
-        "正確：TCP 先三方交握建立連線",
+        "正確：TCP 像掛號信，先建立連線",
         "正確：UDP 像平信，不保證送達與順序",
         "正確：MQTT 走 TCP，預設埠 1883",
         "說反了：可靠的是 TCP，交易要用 TCP"
@@ -140,6 +141,7 @@
     },
     "new-s1-22-1": {
       "sec": "mqtt",
+      "o": ["發送資料的 publisher 直接維護全部訂閱者名單", "MQTT broker", "每個 subscriber 自行向其他 subscriber 索取資料", "DNS（網址查詢）伺服器依主題名稱轉送每則資料"],
       "w": [
         "Publisher 只送給 Broker，不管訂閱者",
         "Broker 依主題與訂閱關係分送訊息",
@@ -252,8 +254,8 @@
       ],
       "tip": "去重題：TLS、資料格式、主題名稱都不管重複，找穩定 ID",
       "conf": "s1-22-qos-and-protocols",
-      "fig": "<svg viewBox=\"0 0 400 290\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"時序圖：販賣機送出交易 #A，伺服器已寫入，回程的 PUBACK 遺失，連線中斷後重連，販賣機重送 #A，伺服器查到已有 #A 而略過\"><defs><marker id=\"q-reserved-s1-22-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"60\" y1=\"42\" x2=\"60\" y2=\"282\" class=\"ln dash\"/><line x1=\"320\" y1=\"42\" x2=\"320\" y2=\"282\" class=\"ln dash\"/><rect x=\"10\" y=\"8\" width=\"100\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"60\" y=\"31\" class=\"t tb tc\">販賣機</text><rect x=\"270\" y=\"8\" width=\"100\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"320\" y=\"31\" class=\"t tb tc\">伺服器</text><text x=\"180\" y=\"72\" class=\"t tc\">PUBLISH #A</text><line x1=\"60\" y1=\"82\" x2=\"274\" y2=\"98\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><rect x=\"276\" y=\"88\" width=\"88\" height=\"34\" rx=\"6\" class=\"acc\"/><text x=\"320\" y=\"111\" class=\"t tb tc\">寫入 #A</text><line x1=\"276\" y1=\"130\" x2=\"190\" y2=\"143\" class=\"ln dash\"/><circle cx=\"180\" cy=\"145\" r=\"10\" class=\"bad\"/><line x1=\"174\" y1=\"139\" x2=\"186\" y2=\"151\" class=\"ln\"/><line x1=\"186\" y1=\"139\" x2=\"174\" y2=\"151\" class=\"ln\"/><text x=\"180\" y=\"178\" class=\"t tb tc\">PUBACK 遺失 → 斷線重連</text><text x=\"160\" y=\"214\" class=\"t tc\">PUBLISH #A</text><line x1=\"60\" y1=\"224\" x2=\"238\" y2=\"240\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><rect x=\"240\" y=\"230\" width=\"156\" height=\"36\" rx=\"6\" class=\"ok\"/><text x=\"318\" y=\"254\" class=\"t tb tc\">已有 #A → 略過</text></svg>",
-      "figcap": "伺服器其實已寫入，只是確認沒回到販賣機，重連後同一筆又送來一次"
+      "fig": "<svg viewBox=\"0 0 400 290\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"時序圖：販賣機把交易 #A 送給 Broker，Broker 轉給帳務伺服器寫入；Broker 回給販賣機的 PUBACK 遺失，販賣機重連後重送 #A，帳務伺服器查到已有 #A 而略過\"><defs><marker id=\"q-reserved-s1-22-1-arr\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,0 L10,5 L0,10 z\" class=\"mk\"/></marker></defs><line x1=\"50\" y1=\"42\" x2=\"50\" y2=\"282\" class=\"ln dash\"/><line x1=\"200\" y1=\"42\" x2=\"200\" y2=\"282\" class=\"ln dash\"/><line x1=\"340\" y1=\"42\" x2=\"340\" y2=\"282\" class=\"ln dash\"/><rect x=\"5\" y=\"8\" width=\"90\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"50\" y=\"31\" class=\"t tb tc\">販賣機</text><rect x=\"155\" y=\"8\" width=\"90\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"200\" y=\"31\" class=\"t tb tc\">Broker</text><rect x=\"285\" y=\"8\" width=\"110\" height=\"34\" rx=\"6\" class=\"box\"/><text x=\"340\" y=\"31\" class=\"t tb tc\">帳務伺服器</text><text x=\"125\" y=\"68\" class=\"t tc\">PUBLISH #A</text><line x1=\"50\" y1=\"76\" x2=\"196\" y2=\"82\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><line x1=\"200\" y1=\"92\" x2=\"334\" y2=\"104\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><circle cx=\"340\" cy=\"106\" r=\"6\" class=\"acc\"/><line x1=\"196\" y1=\"132\" x2=\"112\" y2=\"142\" class=\"ln dash\"/><circle cx=\"100\" cy=\"144\" r=\"10\" class=\"bad\"/><line x1=\"94\" y1=\"138\" x2=\"106\" y2=\"150\" class=\"ln\"/><line x1=\"106\" y1=\"138\" x2=\"94\" y2=\"150\" class=\"ln\"/><text x=\"150\" y=\"178\" class=\"t tb tc\">PUBACK 遺失 → 斷線重連</text><text x=\"125\" y=\"206\" class=\"t tc\">PUBLISH #A</text><line x1=\"50\" y1=\"214\" x2=\"196\" y2=\"220\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><line x1=\"200\" y1=\"230\" x2=\"262\" y2=\"238\" class=\"la\" marker-end=\"url(#q-reserved-s1-22-1-arr)\"/><rect x=\"266\" y=\"226\" width=\"132\" height=\"34\" rx=\"6\" class=\"ok\"/><text x=\"332\" y=\"249\" class=\"t tb tc\">已入帳 #A → 略過</text></svg>",
+      "figcap": "PUBACK 由 Broker 回；它遺失就重送，伺服器靠交易 ID 略過"
     },
     "reserved-s1-22-2": {
       "q": "冷藏庫用 Zigbee 組網，門邊的開關感測器靠電池運作、多半時間在休眠，只收發自己的資料。它最適合擔任哪個角色？",

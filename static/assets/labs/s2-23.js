@@ -114,7 +114,7 @@
     const net = '每月淨節省＝' + money(v.saving) + '－' + money(v.fee) + '＝' + money(r.net) + ' 元';
     let payback;
     if (!r.recovers) {
-      payback = r.net === 0 ? '回不了本。節省剛好被費用抵銷，一次投入永遠收不回來。' : '回不了本。每月節省小於費用，用越久虧越多。';
+      payback = r.net === 0 ? (v.saving === 0 ? '回不了本。每月沒有節省，一次投入永遠收不回來。' : '回不了本。節省剛好被費用抵銷，一次投入永遠收不回來。') : '回不了本。每月節省小於費用，用越久虧越多。';
     } else {
       payback = '回收期＝' + money(v.invest) + '÷' + money(r.net) + eq(r.months, +fmt(r.months)) + fmt(r.months) + ' 個月';
       if (v.fee > 0 && r.naiveMonths !== null) {
@@ -216,7 +216,7 @@
       viz.innerHTML = oeeBars(r, v);
       let text = '<b>OEE ' + pct(r.oee) + '</b>（良品時間 ' + fmt(r.goodMin) + ' ÷ 計畫時間 ' + fmt(v.planned) + '）。';
       if (r.average !== null) text += '三率平均是 ' + pct(r.average) + '，但 OEE 要相乘，不是平均。';
-      if (v.total === 0) text += '這班沒有產量，良率無從算起，OEE 為 0。';
+      if (v.total === 0) text += r.perf === null ? '整班都在停機，效能率與良率都無從算起，OEE 為 0。' : '這班沒有產量，良率無從算起，OEE 為 0。';
       else if (r.noLoss) text += '三率都是 100%，沒有損失；現實中很難維持。';
       else {
         text += '最低的一率是' + RATE[r.lowest] + '，先從這裡找原因。';

@@ -149,7 +149,7 @@
       rank.innerHTML =
         row('ok', '保留', r.kept + ' 筆', '第 ' + fmt(r.keptStartMin) + '–' + fmt(r.keptEndMin) + ' 分鐘量到的資料') +
         row(r.lost ? 'maybe' : 'ok', '遺失', r.lost + ' 筆', r.lost ? '共產生 ' + r.total + ' 筆，放不下的補不回來' : '共產生 ' + r.total + ' 筆，全部放得下') +
-        row(input.dedupe ? 'ok' : 'maybe', '重複', r.dups + ' 筆', input.dedupe ? '重送的筆數已全部去除' : '重送的筆數全部留在資料庫') +
+        row(input.dedupe ? 'ok' : 'maybe', '重送', r.dups + ' 筆', input.dedupe ? '依編號全部略過，資料庫沒有重複' : '全部重複存進資料庫') +
         row(r.excess ? 'maybe' : 'ok', '資料庫', r.dbRows + ' 筆', r.excess ? '比實際保留的多 ' + r.excess + ' 筆' : '每筆資料只有一列');
       say.textContent = lesson(r, input);
     }
