@@ -97,8 +97,8 @@
       const say = d.querySelector('.lab-say');
       $$('input', d).forEach(input => input.onchange = () => {
         const r = judgeEvent(i, +input.value);
-        say.innerHTML = '<b>' + (r.ok ? '對，是' : '主要破壞的是') + esc(r.answer) + '。</b>' + esc(r.say);
-        say.hidden = false;
+        say.innerHTML = '<b>' + (r.ok ? '✓ 對，是' : '✕ 主要破壞的是') + esc(r.answer) + '。</b>' + esc(r.say);
+        say.hidden = false; d.classList.toggle('ok', r.ok); d.classList.toggle('bad', !r.ok);
       });
     });
   }

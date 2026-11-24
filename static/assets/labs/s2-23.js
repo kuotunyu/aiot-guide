@@ -271,9 +271,9 @@
     let active = 0;
     el.innerHTML = '<h3>實驗：這項投資多久回本？</h3><p class="small">把每月持續費用調到比節省還高，看看會發生什麼。</p>' + chips(PRESETS, '投資情境') +
       '<div class="lab-form">' + FIELDS.map(f => slider(f.id, f.label, f.min, f.max, f.step, PRESETS[0].v[f.key], f.unit)).join('') + '</div>' +
-      '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="small muted lab-note" hidden></p>' +
+      '<div class="lab-viz"></div><p class="lab-say" aria-live="polite"></p><p class="lab-say lab-calc"></p><p class="small muted lab-note" hidden></p>' +
       '<p class="small muted">簡化模型：每月節省與費用固定，不計利息、折舊與稅，也不考慮「今天的錢比明年值錢」；要考慮時改用 NPV（淨現值）。</p>';
-    const viz = el.querySelector('.lab-viz'), say = el.querySelector('.lab-say'), note = el.querySelector('.lab-note');
+    const viz = el.querySelector('.lab-viz'), say = el.querySelector('.lab-say'), calc = el.querySelector('.lab-calc'), note = el.querySelector('.lab-note');
     function draw() {
       $$('[data-p]', el).forEach((b, i) => b.setAttribute('aria-pressed', String(i === active)));
       const v = readSliders(el, FIELDS), r = computePayback(v), out = paybackLines(r, v);
@@ -281,15 +281,11 @@
       // Bold the payback result, not the "forgot the fee" aside. One block per formula with a hanging indent,
       // so on a phone, where each formula wraps onto two or three rows, the three formulas still read apart.
       const LINE = '<span style="display:block;padding-left:1em;text-indent:-1em">', GAP = '<span style="display:block;padding-left:1em;text-indent:-1em;margin-top:.35em">';
-      say.innerHTML = out.lines.map((t, i) => {
-        let h;
-        if (i !== 1) h = esc(keepTogether(t));
-        else {
-          const k = t.indexOf('（');
-          h = k < 0 ? '<b>' + esc(keepTogether(t)) + '</b>' : '<b>' + esc(keepTogether(t.slice(0, k))) + '</b>' + esc(keepTogether(t.slice(k)));
-        }
-        return (i ? GAP : LINE) + h + '</span>';
-      }).join('');
+      // The payback line comes first on its own: on a phone that block stays pinned while the sliders move, so it is kept short;
+      // the net saving and first-year ROI follow in a second block that scrolls with the page.
+      const k = out.lines[1].indexOf('（'), p = out.lines[1];
+      say.innerHTML = LINE + (k < 0 ? '<b>' + esc(keepTogether(p)) + '</b>' : '<b>' + esc(keepTogether(p.slice(0, k))) + '</b>' + esc(keepTogether(p.slice(k)))) + '</span>';
+      calc.innerHTML = [out.lines[0], out.lines[2]].map((t, i) => (i ? GAP : LINE) + esc(keepTogether(t)) + '</span>').join('');
       note.textContent = out.note || '';
       note.hidden = !out.note;
     }

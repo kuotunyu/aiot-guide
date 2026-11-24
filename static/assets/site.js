@@ -44,9 +44,18 @@ const zoom = (f, from) => {
   const z = document.createElement('div'); z.className = 'zoom';
   z.setAttribute('role', 'dialog'); z.setAttribute('aria-modal', 'true'); z.setAttribute('aria-label', '放大的圖');
   z.innerHTML = '<figure class="' + esc(f.className) + '" data-cur="' + esc(f.dataset.cur || '') + '">' + f.innerHTML + '</figure><button type="button" class="btn zx">關閉</button>';
-  const c = z.firstChild; c.classList.remove('anim', 'run'); $$('.stepctl, .lp-tog, .tblhint, .zbtn', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => x.removeAttribute('aria-live'));
+  const c = z.firstChild, step = f.matches('.stepfig');
+  c.classList.remove('anim', 'run'); $$((step ? '' : '.stepctl, ') + '.lp-tog, .tblhint, .zbtn', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => x.removeAttribute('aria-live'));
   $$('[tabindex]', c).forEach(x => x.removeAttribute('tabindex'));
-  z.onclick = unzoom; document.body.appendChild(z);
+  z.onclick = unzoom;
+  // A step figure keeps its previous/next in the copy: they step the figure on the page, and the copy follows it.
+  if (step) {
+    const own = $$('.stepctl button', f), mine = $$('.stepctl button', c);
+    const follow = () => { c.dataset.cur = f.dataset.cur; $$('.stepcap li', c).forEach((li, i) => li.classList.toggle('on', i === f.dataset.cur - 1)); $('.stepn', c).textContent = $('.stepn', f).textContent; mine.forEach((b, i) => { b.disabled = own[i].disabled; }); };
+    mine.forEach((b, i) => b.onclick = e => { e.stopPropagation(); own[i].click(); follow(); if (b.disabled) mine[1 - i].focus(); });
+    $('.stepctl', c).onclick = e => e.stopPropagation();
+  }
+  document.body.appendChild(z);
   zoomFrom = from || (document.activeElement !== document.body ? document.activeElement : null); $('.zx', z).focus();
 };
 document.addEventListener('click', e => {
@@ -57,9 +66,12 @@ document.addEventListener('click', e => {
   zoom(f);
 });
 addEventListener('keydown', e => {
-  if (!$('.zoom')) return;
+  const z = $('.zoom'); if (!z) return;
+  // Focus stays inside: 關閉, and a step figure's previous/next.
+  const bs = $$('button:not([disabled])', z), k = bs.indexOf(document.activeElement), sc = $$('.stepctl button', z);
   if (e.key === 'Escape') unzoom();
-  else if (e.key === 'Tab') { e.preventDefault(); $('.zoom .zx').focus(); }
+  else if (e.key === 'Tab') { e.preventDefault(); bs[(k + (e.shiftKey ? bs.length - 1 : 1)) % bs.length].focus(); }
+  else if (sc.length && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); const b = sc[e.key === 'ArrowRight' ? 1 : 0]; if (!b.disabled) b.click(); }
 });
 // Every zoomable figure (loops excepted: they never zoom) gets a 放大 button for keyboards; the practice page calls this again for each explanation.
 const addZoom = root => $$('.dg:not(.loop)', root).forEach(f => {
@@ -151,29 +163,37 @@ $$('.ex[data-a]').forEach(ex => {
 // On narrow screens the pinned contents bar names the section in view, and closes once a section is picked.
 const tocLinks = $$('.toc a'), menuLinks = $$('.tocmenu .in a'), menuSum = $('.tocmenu summary');
 menuLinks.forEach(a => a.addEventListener('click', () => { a.closest('details').open = false; }));
-if ((tocLinks.length || menuLinks.length) && window.IntersectionObserver) {
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const h = '#' + e.target.id, m = menuLinks.find(a => a.getAttribute('href') === h);
-    tocLinks.concat(menuLinks).forEach(a => a.classList.toggle('on', a.getAttribute('href') === h));
-    if (menuSum && m) menuSum.textContent = '本章目錄・〈' + m.textContent + '〉';
-  }), {rootMargin:'-20% 0px -70% 0px'});
-  $$('article section[id]').forEach(s => io.observe(s));
-}
+// The section crossing a line a quarter down the screen is marked; at the very bottom of the page the last section that has come into view is,
+// since the closing sections (關鍵字, 來源) can never scroll up to that line. Above the first section nothing is marked.
+const markToc = s => {
+  const h = s ? '#' + s.id : '', all = tocLinks.concat(menuLinks);
+  if (s && !all.some(a => a.getAttribute('href') === h)) return;
+  all.forEach(a => a.classList.toggle('on', a.getAttribute('href') === h));
+  const m = s && menuLinks.find(a => a.getAttribute('href') === h);
+  if (menuSum) menuSum.textContent = m ? '本章目錄・〈' + m.textContent + '〉' : '本章目錄';
+};
 // The address follows the section being read (replaced, never added to history, never scrolled to), so a kept tab or a bookmark
 // comes back to the same place; above the first section it is the bare address again, and a deeper anchor inside that section is kept. Nothing is stored.
 {
   const secs = $$('article section[id]'); let queued = false;
-  const sync = () => {
-    queued = false; let cur = null, t = null;
+  const reading = () => {
+    let cur = null;
     for (const s of secs) { if (s.getBoundingClientRect().top <= innerHeight * .25) cur = s; else break; }
-    if (!cur) { tocLinks.concat(menuLinks).forEach(a => a.classList.remove('on')); if (menuSum) menuSum.textContent = '本章目錄'; }
+    let shown = cur;
+    if (cur && innerHeight + scrollY >= document.documentElement.scrollHeight - 4) for (const s of secs) if (s.getBoundingClientRect().top < innerHeight * .8) shown = s;
+    markToc(shown); return cur;
+  };
+  const sync = () => {
+    queued = false; let t = null; const cur = reading();
     try { t = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch(e){}
     // Keep an anchor that is at or above the reading line and inside or after the current section (a figure, 重點整理 after the last section).
     if (t ? t.getBoundingClientRect().top <= innerHeight * .25 && (!cur || cur.contains(t) || cur.compareDocumentPosition(t) & 4) : !cur) return;
     try { history.replaceState(history.state, '', location.pathname + location.search + (cur ? '#' + cur.id : '')); } catch(e){}
   };
-  if (secs.length) addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(sync); } }, {passive: true});
+  if (secs.length) {
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(sync); } }, {passive: true});
+    addEventListener('load', () => requestAnimationFrame(reading), {once: true});
+  }
 }
 
 // Where someone stopped reading is not kept; earlier versions kept it, so clear it.
@@ -230,14 +250,17 @@ if (chipNav) {
   tg.forEach((t, i) => { if (!t) return; own.set(t, i); if (t.tagName === 'H2') for (let n = t.nextElementSibling; n && !tg.includes(n) && n.tagName !== 'H2'; n = n.nextElementSibling) own.set(n, i); });
   if (window.IntersectionObserver) {
     const vis = new Set(); let cur = -1, want = -1;
+    const mark = k => { cur = k; links.forEach((a, i) => i === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')); };
+    // Back above the first group (a 「搜尋」 link, or scrolling up): the first link is marked again and the list returns to its start.
+    const first = tg.find(Boolean);
+    if (first) addEventListener('scroll', () => { if (cur > 0 && first.getBoundingClientRect().top > innerHeight * .45) { want = -1; mark(0); chipNav.scrollLeft = 0; chipNav.scrollTop = 0; } }, {passive: true});
     // Cards side by side (the review page's two columns) can share a row: the one just picked from the list wins while it is in view.
     links.forEach((a, i) => a.addEventListener('click', () => { want = i; }));
     const io = new IntersectionObserver(es => {
       es.forEach(x => x.isIntersecting ? vis.add(x.target) : vis.delete(x.target));
       let best = -1; vis.forEach(n => { const i = own.get(n); if (n.offsetParent && (best < 0 || i < best)) best = i; });
       if ([...vis].some(n => own.get(n) === want && n.offsetParent)) best = want; else want = -1;
-      if (best < 0 || best === cur) return; cur = best;
-      links.forEach((a, i) => i === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
+      if (best < 0 || best === cur) return; mark(best);
       // Keep the marked link in sight inside the list or strip, without moving the page.
       const nr = chipNav.getBoundingClientRect(), ar = links[cur].getBoundingClientRect();
       if (ar.top < nr.top || ar.bottom > nr.bottom) chipNav.scrollTop += ar.top - nr.top - nr.height / 2;
@@ -325,8 +348,10 @@ if (glData) (function(){
     pop.setAttribute('aria-label', d.t + '：說明');
     pop.innerHTML = '<b>' + esc(d.t) + '</b>' + (d.en ? ' <span class="en">' + esc(d.en) + '</span>' : '') + '<span class="d">' + esc(d.d) + '</span><a href="' + d.u + '">在 ' + esc(d.h) + ' 細講</a>';
     b.after(pop); pop.hidden = false;
-    const r = b.getBoundingClientRect(), w = pop.offsetWidth;
-    pop.style.left = Math.max(8, Math.min(scrollX + r.left, scrollX + document.documentElement.clientWidth - w - 8)) + 'px';
+    // Kept inside the reading column, so on a wide screen it does not spill over the contents list beside it.
+    const r = b.getBoundingClientRect(), w = pop.offsetWidth, col = b.closest('article');
+    const right = Math.min(document.documentElement.clientWidth - 8, col ? col.getBoundingClientRect().right : Infinity);
+    pop.style.left = Math.max(8, Math.min(scrollX + r.left, scrollX + right - w)) + 'px';
     pop.style.top = (scrollY + r.bottom + 6) + 'px';
     const ph = pop.offsetHeight, bar = cssPx('--hdr') + cssPx('--toch');
     if (r.bottom + 6 + ph > innerHeight - 8) {
@@ -379,11 +404,11 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     return h ? '<a href="' + q.lesson + '.html#' + q.sec + '">回到〈' + esc(h) + '〉</a>' : '<a href="' + q.lesson + '.html">讀〈' + esc(chName(q.lesson)) + '〉</a>'; };
 
   $('#qStart').onclick = () => start(shuffle(pool()).slice(0, +fN.value || 9999), fM.value);
-  function start(qs, mode){
+  function start(qs, mode, redo){
     if (!qs.length) { avail.textContent = '這個範圍沒有題目。'; return; }
     clearInterval(tick); say('');
     // Options are shown in a fresh order each run; answers are still stored as the original index.
-    run = {qs, mode, i:0, ans:{}, perm:Object.fromEntries(qs.map(q => [q.id, shuffle([0, 1, 2, 3])])), t0:Date.now(), limit: qs.length * 90000};
+    run = {qs, mode, i:0, ans:{}, perm:Object.fromEntries(qs.map(q => [q.id, shuffle([0, 1, 2, 3])])), t0:Date.now(), limit: qs.length * 90000, redo:!!redo};
     $('#quizSetup').hidden = true; render('moved');
     if (mode === 'exam') countdown();
   }
@@ -422,7 +447,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     // Learn mode: ending early is a quiet text button in the progress row, away from 上一題／下一題; on the last question 下一題 itself becomes 看結果.
     const end = !ex && run.i + 1 < run.qs.length ? '<button type="button" class="linkbtn" id="qEnd">提早看結果</button>' : '';
     // 朗讀 sits at the end of the progress row in both modes; the clock or the early finish goes between (a line of its own in the narrow right column).
-    const top = '<div class="qtop"><div class="qhead"><span>第 <b>' + (run.i + 1) + '</b> / ' + run.qs.length + ' 題</span><span class="qx">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + end + '</span><button type="button" class="say" data-say-card>朗讀</button></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div></div>';
+    const top = '<div class="qtop"><div class="qhead"><span>' + (run.redo ? '重做答錯・' : '') + '第 <b>' + (run.i + 1) + '</b> / ' + run.qs.length + ' 題</span><span class="qx">' + (ex ? '<span>剩餘 <b class="mono" id="timer">' + fmt(run.t0 + run.limit - Date.now()) + '</b></span>' : '') + end + '</span><button type="button" class="say" data-say-card>朗讀</button></div><div class="bar"><i style="width:' + (done / run.qs.length * 100) + '%"></i></div></div>';
     const prev = '<button type="button" class="btn ghost" id="qPrev" aria-keyshortcuts="ArrowLeft"' + (run.i ? '' : ' disabled') + '>上一題</button>';
     const act = ex ? '<button type="button" class="btn ghost" id="qSubmit">' + (run.confirm ? '還有 ' + left + ' 題沒答，確定交卷' : '交卷') + '</button>' : '';
     const next = '<button type="button" class="btn" id="qNext" aria-keyshortcuts="ArrowRight Enter">' + (run.i + 1 < run.qs.length ? '下一題' : '看結果') + '</button>';
@@ -488,7 +513,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     initLoops(qa); addZoom(qa);
     const act = {
       again: () => { run = null; forget(); qa.innerHTML = ''; $('#quizSetup').hidden = false; say(''); focusOn($('#qStart')); },
-      redo: () => start(shuffle(wr), 'learn'),
+      redo: () => start(shuffle(wr), 'learn', true),
       rest: () => start(un, run.mode)
     };
     $$('[data-act]', qa).forEach(b => b.onclick = act[b.dataset.act]);
@@ -535,7 +560,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
   addEventListener('pagehide', () => {
     try {
       if (!run) return sessionStorage.removeItem(KEY);
-      sessionStorage.setItem(KEY, JSON.stringify({ids:run.qs.map(q => q.id), i:run.i, ans:run.ans, perm:run.perm, mode:run.mode, t0:run.t0, limit:run.limit, done:!!run.done, timeUp:!!run.timeUp}));
+      sessionStorage.setItem(KEY, JSON.stringify({ids:run.qs.map(q => q.id), i:run.i, ans:run.ans, perm:run.perm, mode:run.mode, t0:run.t0, limit:run.limit, done:!!run.done, timeUp:!!run.timeUp, redo:!!run.redo}));
     } catch(e){}
   });
   const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
@@ -548,7 +573,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
     if (saved.done && !back) return forget();
     const qs = saved.ids.map(id => ALL.find(q => q.id === id));
     if (!qs.length || qs.some(q => !q)) return forget();
-    run = {qs, mode:saved.mode, i:Math.min(saved.i | 0, qs.length - 1), ans:saved.ans || {}, perm:saved.perm || {}, t0:saved.t0, limit:saved.limit, done:saved.done, timeUp:saved.timeUp};
+    run = {qs, mode:saved.mode, i:Math.min(saved.i | 0, qs.length - 1), ans:saved.ans || {}, perm:saved.perm || {}, t0:saved.t0, limit:saved.limit, done:saved.done, timeUp:saved.timeUp, redo:!!saved.redo};
     $('#quizSetup').hidden = true; render();
     if (run.mode === 'exam' && !run.done) countdown();
   })();
@@ -556,9 +581,9 @@ if (qa && window.AIOT_QUESTIONS) (function(){
 
 // ----- wide tables and figures: say so when one is wider than the screen -----
 // Lab pictures are drawn by the lab scripts, so each new one is fitted as it appears: at most 1.15 of its viewBox width (its text never outgrows the body text),
-// and on a phone, when it has text, at least 0.8 of it (--minw in site.css), scrolling sideways inside .lab-viz rather than shrinking the text.
+// and on a phone, when it has text, at least 0.74 of it (--minw in site.css; a 440-wide lab picture then fits a 360px phone), scrolling sideways inside .lab-viz rather than shrinking the text.
 const fitLab = svg => { if (svg.dataset.fit) return; const w = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width; if (!w) return;
-  svg.dataset.fit = '1'; svg.style.maxWidth = Math.round(w * 1.15) + 'px'; if (svg.querySelector('text')) svg.style.setProperty('--minw', Math.round(w * .8) + 'px'); };
+  svg.dataset.fit = '1'; svg.style.maxWidth = Math.round(w * 1.15) + 'px'; if (svg.querySelector('text')) svg.style.setProperty('--minw', Math.round(w * .74) + 'px'); };
 (function(){
   const check = () => $$('.tblwrap, article .dgs, .ref .dgs, .lab-viz').forEach(w => {
     if (w.classList.contains('tblwrap')) { if (w.scrollWidth > w.clientWidth + 1) w.tabIndex = 0; else w.removeAttribute('tabindex'); }

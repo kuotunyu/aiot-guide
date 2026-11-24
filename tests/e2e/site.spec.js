@@ -257,7 +257,7 @@ test('loop figure: a pause button shows the still picture; reduced motion hides 
   await expect(b).toBeHidden();
 });
 
-test('step figure: zooming keeps the current step and leaves the buttons out', async ({page, isMobile}) => {
+test('step figure: zooming keeps the current step, and its previous/next step the figure from the zoom', async ({page, isMobile}) => {
   await page.goto('/s2-23.html');
   const f = page.locator('.stepfig').first();
   await f.scrollIntoViewIfNeeded();
@@ -274,8 +274,17 @@ test('step figure: zooming keeps the current step and leaves the buttons out', a
   await f.locator('svg:visible').click();
   const z = page.locator('.zoom figure');
   await expect(z).toHaveAttribute('data-cur', String(s0 + 2));
-  await expect(z.locator('.stepctl')).toHaveCount(0);
   await expect(z.locator('.stepcap li:visible')).toHaveText(await f.locator('.stepcap li:visible').innerText());
+  // Previous/next work inside the zoom (it stays open), arrows too, and the figure on the page follows.
+  await z.locator('[data-d="-1"]').click();
+  await expect(page.locator('.zoom')).toHaveCount(1);
+  await expect(z).toHaveAttribute('data-cur', String(s0 + 1));
+  await page.keyboard.press('ArrowRight');
+  await expect(z).toHaveAttribute('data-cur', String(s0 + 2));
+  await expect(f).toHaveAttribute('data-cur', String(s0 + 2));
+  await expect(z.locator('.stepcap li:visible')).toHaveText(await f.locator('.stepcap li:visible').innerText());
+  // The whole picture fits the screen: no scrolling inside the zoom.
+  expect(await z.evaluate(d => d.scrollHeight <= d.clientHeight + 1)).toBe(true);
 });
 
 // A figure with an upright phone drawing (svgm): phones show v-m at full width with no sideways scroll; desktops, zoom and print show the original v-d.
@@ -806,7 +815,9 @@ test('glossary and review: chapter jump list pinned on both layouts and marks th
       }
     } else {
       await expect(nav.locator(chip + ' .n')).toBeVisible();
-      expect(box.x + box.width).toBeLessThanOrEqual(box.x + 200.5);
+      // Wide enough that every chapter name stays on one line.
+      expect(box.width).toBeLessThanOrEqual(280.5);
+      for (const h of await nav.locator('a').evaluateAll(as => as.map(a => a.offsetHeight))) expect(h).toBeLessThan(40);
     }
   }
   // The glossary's search and view switch stay at hand on the left from 1241px.
@@ -1052,3 +1063,33 @@ for (const id of CHAPTERS) {
     expect(bad).toEqual([]);
   });
 }
+
+// UI/UX round 2026-11-24 (Gemini reviews): the fixes stay fixed.
+test('contents list marks the last section at the very bottom, and nothing above the first', async ({page, isMobile}) => {
+  test.skip(isMobile, 'side contents list is desktop only');
+  await page.goto('/s1-22.html');
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await expect(page.locator('.toc a.on')).toHaveAttribute('href', '#sources');
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect(page.locator('.toc a.on')).toHaveCount(0);
+});
+
+test('lab pictures fit a 360px phone without sideways scrolling; pinned results stay short', async ({page, isMobile}) => {
+  test.skip(!isMobile, 'phone layout only');
+  await page.setViewportSize({width: 360, height: 780});
+  await page.goto('/s2-23.html');
+  await page.locator('.lab[data-lab="s2-23-payback"] .lab-viz svg').waitFor();
+  const over = await page.evaluate(() => [...document.querySelectorAll('.lab-viz')].filter(v => v.scrollWidth > v.clientWidth + 1).map(v => v.closest('.lab').dataset.lab));
+  expect(over).toEqual([]);
+  const say = page.locator('.lab[data-lab="s2-23-payback"] .lab-say').first();
+  expect((await say.boundingBox()).height).toBeLessThan(160);
+});
+
+test('judging lab: a right pick turns green, a wrong one red', async ({page}) => {
+  await page.goto('/s1-25.html#cia-aaa');
+  const t = page.locator('.lab', {hasText: '這起事件打中 CIA'}).locator('.tasks');
+  await t.nth(0).locator('label').first().click();
+  await t.nth(1).locator('label').first().click();
+  await expect(t.nth(0)).toHaveClass(/\bok\b/);
+  await expect(t.nth(1)).toHaveClass(/\bbad\b/);
+});

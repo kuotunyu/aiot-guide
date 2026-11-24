@@ -129,7 +129,11 @@
       const r = rankWireless(need), label = {ok: '符合', maybe: '要留意', no: '排除'};
       out.innerHTML = '<ul class="rank">' + r.map(t => '<li class="' + t.status + '"><span class="st">' + label[t.status] + '</span><b>' + esc(t.name) + '</b><span class="why">' + esc(t.problems.concat(t.cautions).join('、') || t.note) + '</span></li>').join('') + '</ul>';
     }
-    $$('[data-p]', el).forEach(b => b.onclick = () => { const p = PRESETS[+b.dataset.p]; need = Object.assign({}, p.need); say = p.say; active = +b.dataset.p; drawForm(); draw(); });
+    $$('[data-p]', el).forEach(b => b.onclick = () => { const p = PRESETS[+b.dataset.p]; need = Object.assign({}, p.need); say = p.say; active = +b.dataset.p; drawForm(); draw();
+      // On a phone the four groups of conditions push the verdict below the screen: bring it up so the press visibly does something.
+      const y = sayEl.getBoundingClientRect().top;
+      if (matchMedia('(max-width:600px)').matches && y > innerHeight * .85) scrollBy({top: y - innerHeight * .35, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    });
     drawForm(); draw();
   }
 
@@ -176,7 +180,9 @@
       else lesson = '順利時只多一個確認封包。';
       out.innerHTML = '<div class="lanes"><div class="lane-h"><span>裝置</span><span>Broker</span></div>' + r.rows.map(x => '<div class="lane ' + x.dir + (x.lost ? ' lost' : '') + '"><span class="pkt">' + esc(x.pkt) + (x.lost ? ' ✕' : '') + '</span><span class="note">' + esc(x.note) + '</span></div>').join('') + '</div><p class="lab-say"><b>' + verdict + '訂閱者收到 ' + r.delivered + ' 次，來回 ' + r.packets + ' 個封包。</b>' + esc(lesson) + '</p><button type="button" class="linkbtn" data-again>換一組再猜</button>';
       const again = out.querySelector('[data-again]');
-      if (again) again.onclick = () => { revealed = false; draw(); };
+      if (again) again.onclick = () => { revealed = false; draw(); el.querySelector('[data-g]').focus(); };
+      // The guess buttons are gone now, so a keyboard reader lands on the result instead of the page.
+      if (g != null) { const say = out.querySelector('.lab-say'); say.tabIndex = -1; say.focus({preventScroll: true}); }
     }
     $$('input', el).forEach(i => i.onchange = () => {
       if (i.name === 'q-level') qos = +i.value; else fault = FAULTS[+i.value][0];
