@@ -114,9 +114,9 @@
     "事前：CA 用自己的私鑰替伺服器憑證簽名，憑證裡放著伺服器的公鑰，配對的私鑰只留在伺服器；裝置出廠時已內建 CA 的根憑證。",
     "連線開始，伺服器先出示憑證，等於說「這把公鑰是我的，有 CA 背書」。",
     "裝置自己檢查：用根憑證驗 CA 的簽名，再看主機名稱是否相符、有沒有過期，三項都通過才往下走。",
-    "雙方用非對稱方式交換金鑰參數，各自算出同一把對稱金鑰，這把金鑰本身沒有在網路上傳送。",
+    "伺服器再用自己的私鑰替這次握手簽名，證明憑證真的屬於它；雙方也交換金鑰參數，各自算出同一把對稱金鑰，這把金鑰本身沒有在網路上傳送。",
     "之後的溫度讀值與指令都用這把金鑰做對稱加密並附檢查碼，速度快，也能發現竄改。",
-    "換成中間人：他攔下真憑證，改出示自己做的假憑證。主機名稱和期限可以照抄，CA 的簽名卻偽造不了，裝置驗不過就中止連線。"
+    "換成中間人：照轉真憑證沒用，他沒有伺服器的私鑰，簽不出握手簽名；改出示自己做的假憑證，主機名稱和期限可以照抄，CA 的簽名卻偽造不了。兩條路都過不了，裝置中止連線。"
    ],
    "start": 5
   },
@@ -201,10 +201,10 @@
    "h": "分層防護：從裝置到軟體",
    "predict": {
     "q": "貨車閘道器被入侵後，攻擊者想進一步連到冷藏庫的控制系統。哪一種網路設計能讓問題不擴散？",
-    "a": "網路切割：把車輛、冷藏庫控制與辦公設備分在互不相通的區域，一區出事不會直接波及另一區。"
+    "a": "網段隔離：把車輛、冷藏庫控制與辦公設備分在互不相通的區域，一區出事不會直接波及另一區。"
    },
-   "body": "<p>安全不能只靠一組密碼。就像大樓有門禁、樓層卡與保險箱，每一層都要有防線，一層被突破還有下一層。下圖是五層的代表措施，下表是軟體開發生命週期（SDLC）各階段的檢查。</p><p>圖上五個名詞先認識：</p><ul><li><b>除錯接腳（JTAG／UART）</b>：電路板上給工程師燒錄、除錯的接腳，出貨前要關閉或鎖住。</li><li><b>安全開機（Secure boot）</b>：開機時先驗韌體的簽章，只執行原廠簽過的版本。</li><li><b>OTA（Over-the-Air）</b>：透過網路遠端更新韌體。</li><li><b>網路切割（Network isolation）</b>：把設備分進互不相通的區域。常用 VLAN（同一台交換器上劃出的虛擬網路）搭配防火牆白名單（只放行指定的來源 IP 與 port）。另開的 SSID 要綁到不同 VLAN 才算隔離；中繼器只放大訊號，不能隔離。細節見 <a href=\"s2-13.html#network-defense\">1-3〈物聯網資訊安全〉</a>。</li><li><b>WAF（網頁應用程式防火牆）</b>：擋藏在連線內容裡、白名單看不出的攻擊。</li></ul>",
-   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護與代表措施：裝置實體有改預設密碼、關閉 JTAG／UART、安全開機、韌體簽章、OTA 更新；通訊有 TLS／mTLS、X.509 憑證、依能力選 PSK、API key、Token，以及網路切割；平台雲端有防火牆白名單與 WAF（擋 SQL Injection、XSS）；資料有存取控制、加密、遮罩、備份、監控與災難復原；軟體在 SDLC 各階段掃描\"><rect x=\"20\" y=\"10\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"44\" class=\"tb tc\">裝置實體</text><rect x=\"170\" y=\"10\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"34\" class=\"t\">改預設密碼、關閉 JTAG／UART</text><text x=\"184\" y=\"55\" class=\"ts\">安全開機、韌體簽章、OTA 更新</text><rect x=\"20\" y=\"76\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"110\" class=\"tb tc\">通訊</text><rect x=\"170\" y=\"76\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"100\" class=\"t\">TLS／mTLS、X.509 憑證</text><text x=\"184\" y=\"121\" class=\"ts\">依能力選 PSK、API key、Token；網路切割</text><rect x=\"20\" y=\"142\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"176\" class=\"tb tc\">平台／雲端</text><rect x=\"170\" y=\"142\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"166\" class=\"t\">防火牆白名單（限來源 IP、port）</text><text x=\"184\" y=\"187\" class=\"ts\">WAF 擋 SQL Injection、XSS（應用層）</text><rect x=\"20\" y=\"208\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"242\" class=\"tb tc\">資料</text><rect x=\"170\" y=\"208\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"232\" class=\"t\">存取控制、加密、遮罩、備份</text><text x=\"184\" y=\"253\" class=\"ts\">監控、災難復原（RPO／RTO 見下一節）</text><rect x=\"20\" y=\"274\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"308\" class=\"tb tc\">軟體</text><rect x=\"170\" y=\"274\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"308\" class=\"t\">SDLC 各階段掃描，上線前與定期都要做</text></svg>",
+   "body": "<p>安全不能只靠一組密碼。就像大樓有門禁、樓層卡與保險箱，每一層都要有防線，一層被突破還有下一層。下圖是五層的代表措施，下表是軟體開發生命週期（SDLC）各階段的檢查。</p><p>圖上五個名詞先認識：</p><ul><li><b>除錯接腳（JTAG／UART）</b>：電路板上給工程師燒錄、除錯的接腳，出貨前要關閉或鎖住。</li><li><b>安全開機（Secure boot）</b>：開機時先驗韌體的簽章，只執行原廠簽過的版本。</li><li><b>OTA（Over-the-Air）</b>：透過網路遠端更新韌體。</li><li><b>網段隔離（Network isolation，又稱網路切割、網路分段）</b>：把設備分進互不相通的區域。常用 VLAN（同一台交換器上劃出的虛擬網路）搭配防火牆白名單（只放行指定的來源 IP 與 port）。另開的 SSID 要綁到不同 VLAN 才算隔離；中繼器只放大訊號，不能隔離。細節見 <a href=\"s2-13.html#network-defense\">1-3〈物聯網資訊安全〉</a>。</li><li><b>WAF（網頁應用程式防火牆）</b>：擋藏在連線內容裡、白名單看不出的攻擊。</li></ul>",
+   "svg": "<svg viewBox=\"0 0 600 340\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護與代表措施：裝置實體有改預設密碼、關閉 JTAG／UART、安全開機、韌體簽章、OTA 更新；通訊有 TLS／mTLS、X.509 憑證、依能力選 PSK、API key、Token，以及網段隔離；平台雲端有防火牆白名單與 WAF（擋 SQL Injection、XSS）；資料有存取控制、加密、遮罩、備份、監控與災難復原；軟體在 SDLC 各階段掃描\"><rect x=\"20\" y=\"10\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"44\" class=\"tb tc\">裝置實體</text><rect x=\"170\" y=\"10\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"34\" class=\"t\">改預設密碼、關閉 JTAG／UART</text><text x=\"184\" y=\"55\" class=\"ts\">安全開機、韌體簽章、OTA 更新</text><rect x=\"20\" y=\"76\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"110\" class=\"tb tc\">通訊</text><rect x=\"170\" y=\"76\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"100\" class=\"t\">TLS／mTLS、X.509 憑證</text><text x=\"184\" y=\"121\" class=\"ts\">依能力選 PSK、API key、Token；網段隔離</text><rect x=\"20\" y=\"142\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"176\" class=\"tb tc\">平台／雲端</text><rect x=\"170\" y=\"142\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"166\" class=\"t\">防火牆白名單（限來源 IP、port）</text><text x=\"184\" y=\"187\" class=\"ts\">WAF 擋 SQL Injection、XSS（應用層）</text><rect x=\"20\" y=\"208\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"242\" class=\"tb tc\">資料</text><rect x=\"170\" y=\"208\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"232\" class=\"t\">存取控制、加密、遮罩、備份</text><text x=\"184\" y=\"253\" class=\"ts\">監控、災難復原（RPO／RTO 見下一節）</text><rect x=\"20\" y=\"274\" width=\"140\" height=\"56\" rx=\"8\" class=\"acc\"/><text x=\"90\" y=\"308\" class=\"tb tc\">軟體</text><rect x=\"170\" y=\"274\" width=\"410\" height=\"56\" rx=\"8\" class=\"box\"/><text x=\"184\" y=\"308\" class=\"t\">SDLC 各階段掃描，上線前與定期都要做</text></svg>",
    "caption": "五層各記一兩個代表措施，用來判斷措施屬於哪一層。",
    "table": {
     "head": [
@@ -239,7 +239,7 @@
     "label": "WAF 擋哪些攻擊",
     "body": "<p>WAF 擋的典型攻擊有 SQL Injection（在輸入欄夾帶資料庫指令）、XSS（在網頁夾帶惡意腳本）和 Bot（自動化程式的惡意請求）。</p><p>資源有限時，閘道器比感測節點更值得優先保護。</p>"
    },
-   "svgm": "<svg viewBox=\"0 0 360 570\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護與代表措施：裝置實體有改預設密碼、關閉 JTAG／UART、安全開機、韌體簽章、OTA 更新；通訊有 TLS／mTLS、X.509 憑證、依能力選 PSK、API key、Token，以及網路切割；平台雲端有防火牆白名單與 WAF（擋 SQL Injection、XSS）；資料有存取控制、加密、遮罩、備份、監控與災難復原；軟體在 SDLC 各階段掃描\"><g class=\"box\"><rect x=\"6\" y=\"8\" width=\"348\" height=\"90\" rx=\"8\"/><rect x=\"6\" y=\"108\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"230\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"352\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"474\" width=\"348\" height=\"90\" rx=\"8\"/></g><g class=\"acc\"><rect x=\"6\" y=\"8\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"108\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"230\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"352\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"474\" width=\"348\" height=\"32\" rx=\"8\"/></g><g class=\"tb\"><text x=\"18\" y=\"30\">裝置實體</text><text x=\"18\" y=\"130\">通訊</text><text x=\"18\" y=\"252\">平台／雲端</text><text x=\"18\" y=\"374\">資料</text><text x=\"18\" y=\"496\">軟體</text></g><text x=\"18\" y=\"64\">改預設密碼、關閉 JTAG／UART</text><text x=\"18\" y=\"86\">安全開機、韌體簽章、OTA 更新</text><text x=\"18\" y=\"164\">TLS／mTLS、X.509 憑證</text><text x=\"18\" y=\"186\">依能力選 PSK、API key、Token；</text><text x=\"18\" y=\"208\">網路切割</text><text x=\"18\" y=\"286\">防火牆白名單（限來源 IP、port）</text><text x=\"18\" y=\"308\">WAF 擋 SQL Injection、XSS</text><text x=\"18\" y=\"330\">（應用層）</text><text x=\"18\" y=\"408\">存取控制、加密、遮罩、備份</text><text x=\"18\" y=\"430\">監控、災難復原</text><text x=\"18\" y=\"452\">（RPO／RTO 見下一節）</text><text x=\"18\" y=\"530\">SDLC 各階段掃描，</text><text x=\"18\" y=\"552\">上線前與定期都要做</text></svg>"
+   "svgm": "<svg viewBox=\"0 0 360 570\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"五層防護與代表措施：裝置實體有改預設密碼、關閉 JTAG／UART、安全開機、韌體簽章、OTA 更新；通訊有 TLS／mTLS、X.509 憑證、依能力選 PSK、API key、Token，以及網段隔離；平台雲端有防火牆白名單與 WAF（擋 SQL Injection、XSS）；資料有存取控制、加密、遮罩、備份、監控與災難復原；軟體在 SDLC 各階段掃描\"><g class=\"box\"><rect x=\"6\" y=\"8\" width=\"348\" height=\"90\" rx=\"8\"/><rect x=\"6\" y=\"108\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"230\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"352\" width=\"348\" height=\"112\" rx=\"8\"/><rect x=\"6\" y=\"474\" width=\"348\" height=\"90\" rx=\"8\"/></g><g class=\"acc\"><rect x=\"6\" y=\"8\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"108\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"230\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"352\" width=\"348\" height=\"32\" rx=\"8\"/><rect x=\"6\" y=\"474\" width=\"348\" height=\"32\" rx=\"8\"/></g><g class=\"tb\"><text x=\"18\" y=\"30\">裝置實體</text><text x=\"18\" y=\"130\">通訊</text><text x=\"18\" y=\"252\">平台／雲端</text><text x=\"18\" y=\"374\">資料</text><text x=\"18\" y=\"496\">軟體</text></g><text x=\"18\" y=\"64\">改預設密碼、關閉 JTAG／UART</text><text x=\"18\" y=\"86\">安全開機、韌體簽章、OTA 更新</text><text x=\"18\" y=\"164\">TLS／mTLS、X.509 憑證</text><text x=\"18\" y=\"186\">依能力選 PSK、API key、Token；</text><text x=\"18\" y=\"208\">網段隔離</text><text x=\"18\" y=\"286\">防火牆白名單（限來源 IP、port）</text><text x=\"18\" y=\"308\">WAF 擋 SQL Injection、XSS</text><text x=\"18\" y=\"330\">（應用層）</text><text x=\"18\" y=\"408\">存取控制、加密、遮罩、備份</text><text x=\"18\" y=\"430\">監控、災難復原</text><text x=\"18\" y=\"452\">（RPO／RTO 見下一節）</text><text x=\"18\" y=\"530\">SDLC 各階段掃描，</text><text x=\"18\" y=\"552\">上線前與定期都要做</text></svg>"
   },
   {
    "id": "availability-metrics",
@@ -301,7 +301,7 @@
      ],
      [
       "Safe Harbor、Privacy Shield",
-      "歐美之間傳輸個資的協議，皆已失效；和 GDPR 不是同一類"
+      "歐美之間傳輸個資的舊協議，皆已失效，2023 年起由歐美資料隱私框架（DPF）接替；和 GDPR 不是同一類"
      ],
      [
       "個人資料保護法",
@@ -327,7 +327,8 @@
   "用寄件人私鑰加密、寄件人公鑰解開是簽章的配對，只證來源、不保密；要保密須用收件人的公鑰（指引 p.124 把「A 用自己的金鑰加密、B 用 A 的公鑰解開」當成非對稱加密傳輸）。",
   "雜湊不是可解密的加密；MAC 要把共用金鑰一起算進去，沒有金鑰算不出來，單純雜湊不是 MAC（指引 p.119 把雜湊直接稱為 MAC）。",
   "AAA 的第三個 A 通行說法是 Accounting，也就是記錄（指引 p.119 寫成 Auditing 稽核）。",
-  "依 IP、port 過濾的防火牆白名單屬 Layer 3／4，因為 port 屬 Layer 4（指引 p.120 寫成 Layer 2／3）。"
+  "依 IP、port 過濾的防火牆白名單屬 Layer 3／4，因為 port 屬 Layer 4（指引 p.120 寫成 Layer 2／3）。",
+  "另開 SSID 只是換 Wi-Fi 名稱，要綁到不同 VLAN 並配存取規則才算隔離；題目把 SSID、VLAN、防火牆、中繼器並列問「哪個做不到」時，選中繼器（指引 p.124、127 把使用不同 SSID 列為可隔離）。"
  ],
  "examples": [
   {

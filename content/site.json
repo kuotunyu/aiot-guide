@@ -1,9 +1,6 @@
 {
   "name": "AIoT 導讀",
   "footer": "非官方學習網站，與 iPAS、經濟部及主辦、承辦、執行單位無關；考試資訊以官方公告為準。",
-  "links": {
-    "resources": "https://ipd.nat.gov.tw/ipas/certification/AIOT/learning-resources"
-  },
   "subjects": {
     "s1": {
       "name": "科一 AIoT 基礎概論",
@@ -375,7 +372,7 @@
     {
       "name": "誤差百分比",
       "expr": "誤差 % = (測量值 − 實際值) ÷ 實際值 × 100%",
-      "eg": "實際 50.0°C、量到 51.0°C → 2%",
+      "eg": "實際 200.0 kg、量到 204.0 kg → 2%（只用在有真正零點的量；溫度直接標 ±°C）",
       "chapter": "s1-31"
     },
     {
@@ -405,6 +402,12 @@
       "eg": "−60 − (−90) = 30 dB",
       "chapter": "s2-12",
       "note": "dBm 相減得到 dB；越高越清楚"
+    },
+    {
+      "name": "分壓",
+      "expr": "Vout = Vin × R2 ÷ (R1 + R2)（R2 接 GND）",
+      "eg": "5 V、R1 1 kΩ、R2 2 kΩ → 約 3.3 V",
+      "chapter": "s2-21"
     },
     {
       "name": "歐姆定律與功率",
@@ -547,7 +550,7 @@
   "url": "https://kuotunyu.github.io/aiot-guide/",
   "repo": "https://github.com/kuotunyu/aiot-guide",
   "author": "kuotunyu",
-  "updated": "2026-11-10",
+  "updated": "2026-11-26",
   "ui": {
     "bridge": "有 AI 或軟體背景的話",
     "terms": "本章關鍵字（{n} 個）",

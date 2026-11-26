@@ -123,7 +123,7 @@
       "HF 高頻",
       "13.56 MHz",
       "1 公尺內",
-      "圖書館、電子護照、智慧卡；NFC 也在此頻率"
+      "圖書館、電子護照、智慧卡（ISO 14443／15693）；NFC 也在此頻率"
      ],
      [
       "UHF 超高頻",
@@ -164,7 +164,7 @@
    },
    "more": {
     "label": "BLE 的運作、Wi-Fi 世代、Zigbee 干擾與 Thread",
-    "body": "<p><b>BLE 怎麼運作：</b><b>GAP</b> 管廣播與連線，周邊裝置（Peripheral，如手環）廣播，中央裝置（Central，如手機）掃描後連線。連上後由 <b>GATT</b> 管資料：一個服務（Service，如心率服務）底下有多個特徵（Characteristic，如心率數值）。架構有點對點、廣播（Beacon，信標）、網狀（Mesh）三種。</p><ul><li>藍牙 5.0 速率達 2 Mbps，並有長距離模式（Coded PHY），理想環境可達數百公尺。5.1 加入 AoA／AoD（測量訊號到達或離開的角度），強化室內定位。</li><li>2.4 GHz 會與 Wi-Fi、微波爐互相干擾，藍牙靠跳頻（FHSS，快速在多個頻道間切換）緩解。</li></ul><p><b>Wi-Fi 世代：</b>大範圍場域可用多台 AP 共用同一 SSID，讓移動中的裝置切換（漫遊）。</p><ul><li><b>Wi-Fi 4（802.11n）</b>：便宜 IoT 模組的主流</li><li><b>Wi-Fi 5（802.11ac）</b>：標稱上限約 6.9 Gbps</li><li><b>Wi-Fi 6（802.11ax）</b>：TWT（約好時間才醒來收發）省電、OFDMA（把頻道切成小份，同時服務多台）改善多裝置擁塞</li><li><b>Wi-Fi 7（802.11be）</b>：標稱上限約 46 Gbps</li><li><b>Wi-Fi HaLow（802.11ah）</b>：1 GHz 以下頻段，可達約 1 公里</li></ul><p><b>Zigbee 補充：</b>常見版本同樣使用 2.4 GHz，穿牆能力與 Wi-Fi 相近，也容易受 Wi-Fi 干擾，規劃時把閘道器和 Wi-Fi 路由器分開擺，或錯開頻道。Zigbee 3.0 統一了應用層，改善跨品牌互通。</p><p><b>Thread</b> 和 Zigbee 一樣基於 802.15.4，也是低功耗網狀網路。</p>"
+    "body": "<p><b>BLE 怎麼運作：</b><b>GAP</b> 管廣播與連線，周邊裝置（Peripheral，如手環）廣播，中央裝置（Central，如手機）掃描後連線。連上後由 <b>GATT</b> 管資料：一個服務（Service，如心率服務）底下有多個特徵（Characteristic，如心率數值）。架構有點對點、廣播（Beacon，信標）、網狀（Mesh）三種。</p><ul><li>藍牙 5.0 速率達 2 Mbps，並有長距離模式（Coded PHY），理想環境可達數百公尺。5.1 加入 AoA／AoD（測量訊號到達或離開的角度），強化室內定位。</li><li>2.4 GHz 會與 Wi-Fi、微波爐互相干擾，藍牙靠跳頻（FHSS，快速在多個頻道間切換）緩解。</li></ul><p><b>Wi-Fi 世代：</b>大範圍場域可用多台 AP 共用同一 SSID，讓移動中的裝置切換（漫遊）。</p><ul><li><b>Wi-Fi 4（802.11n）</b>：標稱上限約 600 Mbps，便宜 IoT 模組的主流</li><li><b>Wi-Fi 5（802.11ac）</b>：標稱上限約 6.9 Gbps</li><li><b>Wi-Fi 6／6E（802.11ax）</b>：標稱上限約 9.6 Gbps，6E 再加上較不擁擠的 6 GHz 頻段；TWT（約好時間才醒來收發）省電、OFDMA（把頻道切成小份，同時服務多台）改善多裝置擁塞</li><li><b>Wi-Fi 7（802.11be）</b>：標稱上限約 46 Gbps；MLO（多重連結）同時用多個頻段收發，降低延遲</li><li><b>Wi-Fi HaLow（802.11ah）</b>：1 GHz 以下頻段，可達約 1 公里</li></ul><p><b>Zigbee 補充：</b>常見版本同樣使用 2.4 GHz，穿牆能力與 Wi-Fi 相近，也容易受 Wi-Fi 干擾，規劃時把閘道器和 Wi-Fi 路由器分開擺，或錯開頻道。Zigbee 3.0 統一了應用層，改善跨品牌互通。一個網路理論上可容納約 65,000 個節點。</p><p><b>Thread</b> 和 Zigbee 一樣基於 802.15.4，也是低功耗網狀網路。</p>"
    }
   },
   {
@@ -214,7 +214,11 @@
      "caption": "5G 三大場景各自推向一種極端：eMBB 要快、mMTC 要多、URLLC 要準。數字是 ITU 訂的目標值，不是實際網路的保證。",
      "svgm": "<svg viewBox=\"0 0 360 504\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"5G 三大場景三角圖：eMBB 快（峰值約 10–20 Gbps）、mMTC 多（每平方公里 100 萬裝置）、URLLC 準（約 1 毫秒延遲、99.999% 可靠），各占一角；mMTC 的海量低功耗連線實務多由 NB-IoT／LTE-M 承接\"><polygon points=\"180,92 30,270 330,270\" class=\"soft\"/><polygon points=\"180,92 30,270 330,270\" class=\"ln\"/><g class=\"acc\"><rect x=\"62\" y=\"8\" width=\"236\" height=\"84\" rx=\"10\"/><rect x=\"6\" y=\"270\" width=\"170\" height=\"128\" rx=\"10\"/><rect x=\"184\" y=\"270\" width=\"170\" height=\"128\" rx=\"10\"/></g><rect x=\"6\" y=\"408\" width=\"170\" height=\"56\" rx=\"8\" class=\"ln dash\"/><g class=\"tc\"><text x=\"180\" y=\"210\">每種應用看重的角不同</text><text x=\"180\" y=\"234\">同一個 5G 網路</text><text x=\"180\" y=\"256\">可同時服務三種場景</text><text x=\"180\" y=\"60\">峰值約 10–20 Gbps</text><text x=\"180\" y=\"82\">例：車廂即時影像</text><text x=\"91\" y=\"320\">每平方公里</text><text x=\"91\" y=\"342\">100 萬裝置</text><text x=\"91\" y=\"366\">例：整區水電表、</text><text x=\"91\" y=\"388\">溫度探頭</text><text x=\"269\" y=\"320\">約 1 毫秒延遲、</text><text x=\"269\" y=\"342\">99.999% 可靠</text><text x=\"269\" y=\"366\">例：遠端操控</text><text x=\"269\" y=\"388\">機械手臂</text><text x=\"91\" y=\"430\">實務多由</text><text x=\"91\" y=\"452\">NB-IoT／LTE-M 承接</text></g><g class=\"tb tc\"><text x=\"180\" y=\"34\">快｜eMBB</text><text x=\"91\" y=\"296\">多｜mMTC</text><text x=\"269\" y=\"296\">準｜URLLC</text><text x=\"180\" y=\"492\" class=\"ta\">eMBB、URLLC 都不以低功耗為目標</text></g></svg>"
     }
-   ]
+   ],
+   "more": {
+    "label": "SIM 卡的三種型態",
+    "body": "<p>行動網路裝置要靠 SIM 卡向電信業者證明身分。冷藏貨車長年振動、溫差大，常見三種型態：</p><ul><li><b>工業級 SIM</b>：加固的實體卡，耐高溫、耐腐蝕。</li><li><b>eSIM（嵌入式 SIM）</b>：晶片直接焊在電路板上，不怕振動鬆脫，可透過 OTA 遠端切換電信業者。</li><li><b>iSIM（整合式 SIM）</b>：SIM 功能做進通訊模組的 SoC，體積更小、成本與功耗更低。</li></ul>"
+   }
   },
   {
    "id": "mqtt",
@@ -249,7 +253,11 @@
      ],
      "start": 5
     }
-   ]
+   ],
+   "more": {
+    "label": "離線期間的訊息：持久訂閱",
+    "body": "<p>訂閱端離線期間的訊息要在上線後補收，連線時得保留工作階段（MQTT 3.1.1 的 Clean Session＝0；MQTT 5 的 Clean Start＝0 並設 Session Expiry），訂閱也要 QoS 1 以上，Broker 才會替它留；保留訊息只留最新一則，不能代替。這種做法常稱為持久訂閱。</p>"
+   }
   },
   {
    "id": "qos-and-protocols",
@@ -324,7 +332,7 @@
   "QoS 口訣：0 可能掉、1 可能重複、2 恰好一次。CoAP 像走 UDP 的輕量 HTTP；WebSocket 管網頁即時雙向。"
  ],
  "pitfalls": [
-  "MQTT 不是無線技術，也不會自動加密，加密要另外靠 TLS。QoS 主要管遺失與重複，同主題、同 QoS 的訊息也照原順序送達（指引 p.105、116 把「確保順序」也列為 QoS 的作用，選這項可視為正確）。",
+  "MQTT 不是無線技術，也不會自動加密，加密要另外靠 TLS。QoS 主要管遺失與重複；同主題、同 QoS 的訊息一般照原順序送達，但 QoS 1 重送的副本可能晚到（指引 p.105、116 把「確保順序」也列為 QoS 的作用，選這項可視為正確）。",
   "BLE 不屬於 LPWAN；NB-IoT 不適合傳影音；5G 的 eMBB 與 URLLC 不以低功耗為目標，海量低功耗連線屬於 mMTC，實務上多由 NB-IoT／LTE-M 承接。",
   "保留訊息只存每個 Topic 最新一則，不是歷史資料庫，由發布者要求 Broker 保留；遺囑訊息只在非正常斷線時發出。",
   "HTTP 是請求－回應：HTTP/1.0 預設回應完就關閉連線，HTTP/1.1 起預設持久連線，回應後不一定斷線（指引 p.79 寫成伺服器回應後就斷線）。和 WebSocket、FTP 這類維持連線的協定並列時，HTTP 算短連線。"

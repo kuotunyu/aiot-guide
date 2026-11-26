@@ -45,7 +45,7 @@ const zoom = (f, from) => {
   z.setAttribute('role', 'dialog'); z.setAttribute('aria-modal', 'true'); z.setAttribute('aria-label', '放大的圖');
   z.innerHTML = '<figure class="' + esc(f.className) + '" data-cur="' + esc(f.dataset.cur || '') + '">' + f.innerHTML + '</figure><button type="button" class="btn zx">關閉</button>';
   const c = z.firstChild, step = f.matches('.stepfig');
-  c.classList.remove('anim', 'run'); $$((step ? '' : '.stepctl, ') + '.lp-tog, .tblhint, .zbtn', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => x.removeAttribute('aria-live'));
+  c.classList.remove('anim', 'run'); $$((step ? '' : '.stepctl, ') + '.lp-tog, .tblhint, .zbtn', c).forEach(x => x.remove()); $$('[aria-live]', c).forEach(x => { if (!(step && x.matches('.stepcap'))) x.removeAttribute('aria-live'); });
   $$('[tabindex]', c).forEach(x => x.removeAttribute('tabindex'));
   z.onclick = unzoom;
   // A step figure keeps its previous/next in the copy: they step the figure on the page, and the copy follows it.
@@ -243,7 +243,9 @@ const chipNav = $('.gchips');
 if (chipNav) {
   const links = $$('a', chipNav), wideL = matchMedia('(min-width:1241px)');
   // --chiph: the pinned strip's height, so group headings and anchor jumps sit below it. 0 when hidden or in the side column.
-  const setChip = () => document.documentElement.style.setProperty('--chiph', (wideL.matches || chipNav.hidden ? 0 : chipNav.offsetHeight) + 'px');
+  // The marking band depends on that height, so it is set up again whenever the height changes (the review page shows the strip only on 各章重點).
+  let rewatch = () => {};
+  const setChip = () => { document.documentElement.style.setProperty('--chiph', (wideL.matches || chipNav.hidden ? 0 : chipNav.offsetHeight) + 'px'); rewatch(); };
   setChip(); addEventListener('resize', setChip); window.ResizeObserver && new ResizeObserver(setChip).observe(chipNav);
   // Each link owns its target; a heading target also owns the blocks after it, up to the next target or h2.
   const tg = links.map(a => document.getElementById(decodeURIComponent(a.hash.slice(1)))), own = new Map();
@@ -256,7 +258,7 @@ if (chipNav) {
     if (first) addEventListener('scroll', () => { if (cur > 0 && first.getBoundingClientRect().top > innerHeight * .45) { want = -1; mark(0); chipNav.scrollLeft = 0; chipNav.scrollTop = 0; } }, {passive: true});
     // Cards side by side (the review page's two columns) can share a row: the one just picked from the list wins while it is in view.
     links.forEach((a, i) => a.addEventListener('click', () => { want = i; }));
-    const io = new IntersectionObserver(es => {
+    const seen = es => {
       es.forEach(x => x.isIntersecting ? vis.add(x.target) : vis.delete(x.target));
       let best = -1; vis.forEach(n => { const i = own.get(n); if (n.offsetParent && (best < 0 || i < best)) best = i; });
       if ([...vis].some(n => own.get(n) === want && n.offsetParent)) best = want; else want = -1;
@@ -265,9 +267,15 @@ if (chipNav) {
       const nr = chipNav.getBoundingClientRect(), ar = links[cur].getBoundingClientRect();
       if (ar.top < nr.top || ar.bottom > nr.bottom) chipNav.scrollTop += ar.top - nr.top - nr.height / 2;
       if (ar.left < nr.left || ar.right > nr.right) chipNav.scrollLeft += ar.left - nr.left - nr.width / 2;
+    };
     // The band starts below the header and the pinned strip, so the block above a jump target, ending just over it, is not marked.
-    }, {rootMargin: -(cssPx('--hdr') + Math.max(60, cssPx('--chiph') + 24)) + 'px 0px -55% 0px'});
-    own.forEach((i, n) => io.observe(n));
+    let io = null, band = '';
+    rewatch = () => {
+      const m = -(cssPx('--hdr') + Math.max(60, cssPx('--chiph') + 24)) + 'px 0px -55% 0px';
+      if (m === band) return; band = m; if (io) io.disconnect(); vis.clear();
+      io = new IntersectionObserver(seen, {rootMargin: m}); own.forEach((i, n) => io.observe(n));
+    };
+    rewatch();
   }
 }
 
@@ -348,6 +356,8 @@ if (glData) (function(){
     pop.setAttribute('aria-label', d.t + '：說明');
     pop.innerHTML = '<b>' + esc(d.t) + '</b>' + (d.en ? ' <span class="en">' + esc(d.en) + '</span>' : '') + '<span class="d">' + esc(d.d) + '</span><a href="' + d.u + '">在 ' + esc(d.h) + ' 細講</a>';
     b.after(pop); pop.hidden = false;
+    // No wider than the page itself (100vw in the stylesheet counts the scrollbar on some screens).
+    pop.style.maxWidth = (document.documentElement.clientWidth - 16) + 'px';
     // Kept inside the reading column, so on a wide screen it does not spill over the contents list beside it.
     const r = b.getBoundingClientRect(), w = pop.offsetWidth, col = b.closest('article');
     const right = Math.min(document.documentElement.clientWidth - 8, col ? col.getBoundingClientRect().right : Infinity);
@@ -424,7 +434,7 @@ if (qa && window.AIOT_QUESTIONS) (function(){
       let c = ''; if (reveal && picked != null){ if (k === q.a) c = 'correct'; else if (k === picked) c = 'wrong'; } else if (picked === k) c = 'picked';
       // Once revealed, each option carries its own short note (w is in the original order, so it follows data-k through the shuffle).
       const note = reveal && picked != null && q.w ? '<span class="wn">' + esc(q.w[k]) + '</span>' : '';
-      h += '<button type="button" class="opt ' + c + (note ? ' hasw' : '') + '" data-k="' + k + '"' + (live ? ' aria-keyshortcuts="' + LET[pos] + ' ' + (pos + 1) + '"' : ' disabled') + '><span class="k">' + LET[pos] + '</span><span class="ot">' + esc(q.o[k]) + '</span>' + (MK[c] || '') + note + '</button>';
+      h += '<button type="button" class="opt ' + c + (note ? ' hasw' : '') + '" data-k="' + k + '"' + (live ? ' aria-keyshortcuts="' + LET[pos] + ' ' + (pos + 1) + '"' + (reveal ? '' : ' aria-pressed="' + (picked === k) + '"') : ' disabled') + '><span class="k">' + LET[pos] + '</span><span class="ot">' + esc(q.o[k]) + '</span>' + (MK[c] || '') + note + '</button>';
     });
     h += '</div>';
     // A timed run reviews unanswered questions too (picked -1): say so, on a neutral background.
@@ -600,8 +610,8 @@ const fitLab = svg => { if (svg.dataset.fit) return; const w = svg.viewBox && sv
   let queued = false;
   const later = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; check(); }); };
   $$('.lab-viz svg').forEach(fitLab); check(); addEventListener('resize', later);
-  // Watch for lab pictures drawn (or whole labs redrawn) after load: fit them before they are painted, then update the hints.
-  if ('MutationObserver' in window) new MutationObserver(ms => { if (ms.some(m => [...m.addedNodes].some(n => n.nodeType === 1 && (n.matches('svg, .lab-viz') || n.querySelector('.lab-viz'))))) { $$('.lab-viz svg').forEach(fitLab); later(); } })
+  // Watch for lab pictures and tables drawn (or whole labs redrawn) after load: fit them before they are painted, then update the hints.
+  if ('MutationObserver' in window) new MutationObserver(ms => { if (ms.some(m => [...m.addedNodes].some(n => n.nodeType === 1 && (n.matches('svg, .lab-viz, .tblwrap') || n.querySelector('.lab-viz, .tblwrap'))))) { $$('.lab-viz svg').forEach(fitLab); later(); } })
     .observe(document.querySelector('main') || document.body, {childList:true, subtree:true});
 })();
 
@@ -715,7 +725,7 @@ if (reader) (function(){
   play.onclick = () => { if (playing){ playing = false; gen++; synth.cancel(); play.textContent = '▶'; pos.textContent = '已暫停 ' + (idx + 1) + ' / ' + segs.length; } else if (segs.length) go(idx); };
   $('#rdStop').onclick = stop; $('#rdPrev').onclick = () => go(idx - 1); $('#rdNext').onclick = () => go(idx + 1);
   rate.onchange = () => { store.set('rate', rate.value); if (playing) go(idx); };
-  voiceSel.onchange = () => { store.set('voice', voiceSel.value); if (playing) go(idx); };
+  voiceSel.onchange = () => { store.set('voice', voiceSel.value); if (playing || now.classList.contains('err')) go(idx); };
   document.addEventListener('click', e => {
     if (e.target.closest('[data-read-all]')) { e.preventDefault(); return document.body.classList.contains('reading') ? stop() : start($('article') || $('main')); }
     const c = e.target.closest('[data-say-card]');
@@ -724,6 +734,9 @@ if (reader) (function(){
     const seg = e.target.closest('[data-seg]'); if (seg) { const j = segs.findIndex(s => s.el === seg); if (j >= 0) go(j); }
   });
   addEventListener('pagehide', stop);
+  // The practice page redraws its question in place: once the part being read is gone, reading stops instead of finishing a stale sentence.
+  const qa = $('#quizApp');
+  if (qa && window.MutationObserver) new MutationObserver(() => { if (segs[idx] && !segs[idx].el.isConnected) stop(); }).observe(qa, {childList: true, subtree: true});
 })();
 })();
 
@@ -731,7 +744,9 @@ if (reader) (function(){
 // Labs draw their result boxes after this script runs, so look them up again on load and when the screen width changes.
 (function(){
   const mq = matchMedia('(max-width:900px)');
+  // Only a box that is actually pinned (and so may scroll) gets a tab stop; a lab that redraws its box is looked up again.
   const set = () => [...document.querySelectorAll('.lab')].filter(l => l.querySelector('.lab-slider')).map(l => l.querySelector('.lab-say')).filter(Boolean)
-    .forEach(b => { if (mq.matches) { b.tabIndex = 0; b.setAttribute('aria-label', '實驗結果'); } else { b.removeAttribute('tabindex'); b.removeAttribute('aria-label'); } });
+    .forEach(b => { if (mq.matches && getComputedStyle(b).position === 'sticky') { if (b.tabIndex !== 0) { b.tabIndex = 0; b.setAttribute('aria-label', '實驗結果'); } } else if (b.hasAttribute('tabindex')) { b.removeAttribute('tabindex'); b.removeAttribute('aria-label'); } });
   set(); addEventListener('load', set); mq.addEventListener && mq.addEventListener('change', set);
+  if (window.MutationObserver) document.querySelectorAll('.lab').forEach(l => new MutationObserver(set).observe(l, {childList: true, subtree: true}));
 })();

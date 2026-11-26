@@ -85,7 +85,7 @@
     const TASKS = [
       {q: '廠牌 A，用 Modbus 讀出冷凍櫃庫內溫度 −18.5 °C', done: s => s.brand === 'A' && isFreezer(s), a: {brand: 'A', ref: 40002, scale: 0.1, type: 'INT16', table: true}},
       {q: '換成廠牌 B，用 Modbus 讀出同一個溫度', done: s => s.brand === 'B' && isFreezer(s), a: {brand: 'B', ref: 40004, scale: 0.01, type: 'INT16', table: true}},
-      {q: '用 OPC UA 點開同一個溫度，再切換廠牌，看哪些欄位沒變', done: s => trackFreezer(seen, s), a: s => ({node: 'freezer', brand: s.brand === 'A' ? 'B' : 'A'})},
+      {q: '用 OPC UA 點開同一個溫度，再切換廠牌，看哪些欄位沒變', done: s => trackFreezer(seen, s), a: s => { trackFreezer(seen, {node: 'freezer', brand: s.brand}); return {node: 'freezer', brand: s.brand === 'A' ? 'B' : 'A'}; }},
     ];
     const seen = new Set();
     const isFreezer = s => {
@@ -140,10 +140,10 @@
           msg = '<b>算出 ' + shown + '，實際是 ' + num(r.truth.value) + ' ' + esc(r.truth.unit) + '。</b>' + esc(why.join('；')) + '。協定不會替你發現這種錯。';
         }
         mOut.innerHTML = msg;
-        mTable.innerHTML = '<table><thead><tr><th>位址</th><th>名稱</th><th>比例</th><th>型別</th></tr></thead><tbody>' + ADDRESSES.map(a => {
+        mTable.innerHTML = '<div class="tblwrap wide" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>位址</th><th>名稱</th><th>比例</th><th>型別</th></tr></thead><tbody>' + ADDRESSES.map(a => {
           const x = BRANDS[s.brand].map[a], p = POINTS[x.point];
           return '<tr><td>' + (a === s.ref ? '<b>' + a + '</b>' : a) + '</td><td>' + esc(p.name) + '（' + esc(p.unit) + '）</td><td>×' + x.scale + '</td><td>' + x.type + '</td></tr>';
-        }).join('') + '</tbody></table>';
+        }).join('') + '</tbody></table></div>';
       }
       const n = nodeOf(s.brand, s.node);
       oOut.innerHTML = '<ul class="rank">' +

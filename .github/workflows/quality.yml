@@ -24,15 +24,24 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
-      # Browser downloads are cached per Playwright version; system libraries are installed every run.
+      # Browser downloads are cached per Playwright version; system libraries (and the CJK font) are installed every run.
       - id: pw
         run: echo "version=$(npx playwright --version | tr -d ' ')" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ms-playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium-webkit
-      - run: npx playwright install --with-deps chromium webkit
+      # A package mirror sometimes stalls (2026-11-24: 20 minutes, then the whole job was cancelled).
+      # Each attempt gets 6 minutes; a stalled one is stopped and tried once more, so a stall costs minutes, not the deploy.
+      - name: Install browsers and fonts
+        timeout-minutes: 14
+        run: |
+          echo 'Acquire::Retries "3"; Acquire::http::Timeout "30";' | sudo tee /etc/apt/apt.conf.d/80-retries > /dev/null
+          for i in 1 2; do
+            timeout 360 bash -c 'sudo apt-get update && sudo apt-get install -y fonts-noto-cjk && npx playwright install --with-deps chromium webkit' && exit 0
+            echo "attempt $i stalled or failed; trying again"
+          done
+          exit 1
       # CI=true adds the WebKit smoke project (see playwright.config.js).
       - run: npm run check
       - name: Save browser traces

@@ -1,6 +1,7 @@
 // Checks that need no browser. Run after build: node scripts/static-check.mjs
 import {readFileSync, readdirSync, statSync, existsSync} from 'node:fs';
 import {join, extname} from 'node:path';
+import {gzipSync} from 'node:zlib';
 
 const DIST = 'dist', problems = [];
 const walk = d => readdirSync(d).flatMap(n => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p) : [p]; });
@@ -40,6 +41,10 @@ const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const light = tokens(css.match(/:root\{[^}]*\}/)[0]);
 const dark = {...light, ...tokens(css.match(/:root\[data-theme="dark"\]\{[^}]*\}/)[0])};
+// The dark palette is written twice (following the system, and chosen with the switch): the two copies must match.
+const sysDark = css.match(/prefers-color-scheme: ?dark\)\{:root:not\(\[data-theme="light"\]\)\{[^}]*\}/);
+if (!sysDark) problems.push('dark palette for the system setting not found');
+else if (JSON.stringify(tokens(sysDark[0])) !== JSON.stringify(tokens(css.match(/:root\[data-theme="dark"\]\{[^}]*\}/)[0]))) problems.push('the two dark palettes differ');
 for (const [name, T] of [['light', light], ['dark', dark]]) {
   for (const [fg, min] of [['text', 7], ['muted', 5.5], ['accent', 4.5], ['s1', 4.5], ['s2', 4.5], ['ok', 4.5], ['bad', 4.5], ['warn', 4.5]]) {
     for (const bg of ['bg', 'surface']) {
@@ -53,12 +58,13 @@ for (const [name, T] of [['light', light], ['dark', dark]]) {
   }
 }
 
-// Asset budget: a learning site on a phone connection.
-const KB = 1024, size = f => statSync(f).size;
+// Asset budget: a learning site on a phone connection. Scripts and the stylesheet count what is sent (gzip, as GitHub Pages serves them), so comments cost nothing.
+const KB = 1024, size = f => statSync(f).size, zipped = f => gzipSync(readFileSync(f)).length;
 // Upright phone drawings (svg.v-m) have their own cap in build.py (60 KB a page), so a page's budget counts the rest.
 const pageSize = f => size(f) - [...readFileSync(f, 'utf8').matchAll(/<svg class="v-m"[\s\S]*?<\/svg>/g)].reduce((a, m) => a + Buffer.byteLength(m[0]), 0);
-const budget = [[f => extname(f) === '.mp4', 2.0 * KB * KB, 'video'], [f => extname(f) === '.jpg', 200 * KB, 'poster'], [f => extname(f) === '.png', 300 * KB, 'image'], [f => extname(f) === '.html', 120 * KB, 'page'], [f => extname(f) === '.js' && !f.endsWith('questions.js'), 60 * KB, 'script'], [f => f.endsWith('questions.js'), 250 * KB, 'question bank'], [f => extname(f) === '.css', 52 * KB, 'stylesheet']];
-for (const f of files) for (const [test, max, label] of budget) if (test(f) && (label === 'page' ? pageSize(f) : size(f)) > max) problems.push(`${label} over budget: ${f} ${((label === 'page' ? pageSize(f) : size(f)) / KB).toFixed(0)} KB > ${(max / KB).toFixed(0)} KB`);
+const budget = [[f => extname(f) === '.mp4', 2.0 * KB * KB, 'video'], [f => extname(f) === '.jpg', 200 * KB, 'poster'], [f => extname(f) === '.png', 300 * KB, 'image'], [f => extname(f) === '.html', 120 * KB, 'page'], [f => extname(f) === '.js' && !f.endsWith('questions.js'), 26 * KB, 'script'], [f => f.endsWith('questions.js'), 250 * KB, 'question bank'], [f => extname(f) === '.css', 15 * KB, 'stylesheet']];
+const measure = (f, label) => label === 'page' ? pageSize(f) : label === 'script' || label === 'stylesheet' ? zipped(f) : size(f);
+for (const f of files) for (const [test, max, label] of budget) if (test(f) && measure(f, label) > max) problems.push(`${label} over budget: ${f} ${(measure(f, label) / KB).toFixed(1)} KB${label === 'script' || label === 'stylesheet' ? ' gzip' : ''} > ${(max / KB).toFixed(0)} KB`);
 const total = files.reduce((a, f) => a + size(f), 0);
 if (total > 20 * KB * KB) problems.push(`site over 20 MB: ${(total / KB / KB).toFixed(1)} MB`);
 for (const n of pages) for (const m of read(n).matchAll(/<video\b[^>]*>/g)) if (/autoplay/.test(m[0]) || !/preload="none"/.test(m[0])) problems.push(`${n}: video must not autoplay or preload`);

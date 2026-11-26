@@ -46,7 +46,7 @@ const browser = (src, w) => `<div style="width:${w}px;border-radius:12px;overflo
       <div style="font-size:30px;letter-spacing:.08em;color:#F0A983;font-weight:700">AIoT 導讀</div>
       <div style="font-size:60px;font-weight:800;line-height:1.25;margin-top:18px">一筆感測資料，<br>從現場走到決策</div>
       <div style="font-size:25px;line-height:1.7;margin-top:26px;color:#BFD1D3">感測、通訊、平台、資安到智慧製造，<br>用互動實驗與圖解一路走完。</div>
-      <div style="display:flex;gap:34px;margin-top:46px">${[['15', '章'], ['25', '互動實驗'], ['102', '張圖解'], ['214', '題練習']].map(([n, t]) => `<div><div style="font-size:52px;font-weight:800;line-height:1">${n}</div><div style="font-size:20px;color:#BFD1D3;margin-top:8px">${t}</div></div>`).join('')}</div>
+      <div style="display:flex;gap:34px;margin-top:46px">${[['15', '章'], ['25', '互動實驗'], ['102', '張圖解'], ['224', '題練習']].map(([n, t]) => `<div><div style="font-size:52px;font-weight:800;line-height:1">${n}</div><div style="font-size:20px;color:#BFD1D3;margin-top:8px">${t}</div></div>`).join('')}</div>
     </div>
     <div style="position:absolute;left:640px;top:96px">${browser(png(shot.lab), 880)}</div>
     <div style="position:absolute;left:1290px;top:330px">${phone(png(shot.chapter), 250)}</div>

@@ -195,7 +195,7 @@
       if (!step) {
         const cmp = compare(scen.id, win);
         const heads = scen.steps.map((s, i) => '<th>' + (i + 1) + '</th>').join('');
-        end.innerHTML = '<p class="lab-say"><b>這個情境的重點：</b>' + esc(scen.lesson) + '</p><p class="small">同一情境換成其他防護（時間窗 ' + win + ' 秒）：</p><div class="tblwrap" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>防護</th>' + heads + '<th>門最後</th></tr></thead><tbody>' +
+        end.innerHTML = '<p class="lab-say"><b>這個情境的重點：</b>' + esc(scen.lesson) + '</p><p class="small">同一情境換成其他防護（時間窗 ' + win + ' 秒）：</p><div class="tblwrap wide" tabindex="0" role="region" aria-label="表格，可左右捲動"><table><thead><tr><th>防護</th>' + heads + '<th>門最後</th></tr></thead><tbody>' +
           cmp.map(c => '<tr><th>' + esc(c.name) + '</th>' + c.outcomes.map(o => '<td>' + (o ? OUTCOME[o] : '—') + '</td>').join('') + '<td>' + (c.door === 'open' ? '開著' : '上鎖') + '</td></tr>').join('') + '</tbody></table></div>';
       }
     }
@@ -213,7 +213,7 @@
     function restart(s) { if (s) scen = s; idx = 0; last = ''; draw(); }
     guessBtns.forEach(b => b.onclick = () => advance(b.dataset.g));
     go.onclick = () => advance(null);
-    reset.onclick = () => { restart(); guessBtns[0].focus(); };
+    reset.onclick = () => { restart(); (scen.steps[0].kind === 'event' ? go : guessBtns[0]).focus(); };
     $$('[data-s]', el).forEach(b => b.onclick = () => restart(SCENARIOS[+b.dataset.s]));
     $$('input[name="rp-mode"]', el).forEach(i => i.onchange = () => { modeIdx = +i.value; last = ''; draw(); });
     const range = q('#rp-win'), out = q('output[for="rp-win"]');

@@ -26,7 +26,11 @@
 - 純邏輯函式放前面，`module.exports` 匯出給測試用；`if (typeof document === 'undefined') return;` 之後才碰 DOM，並用 `AIOTLab.register('實驗名', el => {...})` 註冊。工具 `AIOTLab.esc / $$ / radios / slider` 見 `static/assets/labs-core.js`。實驗名全站唯一，以章 id 開頭最安全（例如 `s2-23-oee`）。
 - 實驗不能依賴外部函式庫、不能連網、不能 `alert/confirm`、不用 localStorage。開啟時就顯示有意義的狀態，不可一開啟就預先完成挑戰。
 - 第一行是 `<h3>實驗：…</h3>`，接一句操作說明。使用者輸入經 `esc`。控制項要能用鍵盤操作、有 label。
-- 樣式用現成 class：`lab-form lab-field seg chips lab-say lab-input lab-err lab-slider rank topics tasks task guess lanes linkbtn row btn ghost small muted`。圖用 inline SVG，外層 `<div class="lab-viz">`，形狀與文字 class 同 SPEC.md 的 svg（box acc ok bad warn soft ln la t tb ts th tc ta mk），不寫顏色值；互動中改變屬性時可用 `setAttribute` 改座標。不要新增 CSS；真的不夠用就在回報中提出。寬度要適應 375px 手機，不可造成橫向捲動。
+- 樣式用現成 class：`lab-form lab-field seg chips lab-say lab-input lab-err lab-slider rank topics tasks task guess lanes linkbtn row btn ghost small muted`。
+  - 手機上第一個 `.lab-say` 會釘在畫面底部，只放結果本身（一兩行）；算式或建議放在緊接其後的 `<p class="lab-say lab-calc">` 或 `lab-tip`，看起來是同一個框，但跟著頁面捲動（例：s2-23 回收期、s2-21 電池）。
+  - 判斷題的每一題用 `.tasks`，作答後在它加上 `ok` 或 `bad`，選項與說明框會變成綠或紅（例：s1-25 CIA）。
+  - 句子裡要指圖上的顏色時，用 `<i class="key acc"></i>`、`<i class="key warn"></i>` 小色塊，不要寫「（藍）（黃）」：深色模式的顏色不同。
+  - 實驗裡的表格：4 欄以上包 `<div class="tblwrap wide" tabindex="0" role="region" aria-label="表格，可左右捲動">`，手機上保留表頭並固定第一欄。圖用 inline SVG，外層 `<div class="lab-viz">`，形狀與文字 class 同 SPEC.md 的 svg（box acc ok bad warn soft ln la t tb ts th tc ta mk），不寫顏色值；互動中改變屬性時可用 `setAttribute` 改座標。不要新增 CSS；真的不夠用就在回報中提出。寬度要適應 375px 手機，不可造成橫向捲動。
 - 要教的取捨或限制，用一句話寫在介面上（如「排序只看這四個條件」）。簡化模型要明說是簡化。
 - 測試用 `node` 跑，assert 關鍵邏輯與邊界值；數值要手算核對。
 

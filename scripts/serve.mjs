@@ -7,7 +7,7 @@ const port = +process.argv[2] || 8799;
 createServer(async (req, res) => {
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^[\\/]+/, '');
   try {
-    const body = await readFile(join('dist', path || 'index.html'));
-    res.writeHead(200, {'Content-Type': TYPES[extname(path)] || 'application/octet-stream'}).end(body);
+    const file = path || 'index.html', body = await readFile(join('dist', file));
+    res.writeHead(200, {'Content-Type': TYPES[extname(file)] || 'application/octet-stream'}).end(body);
   } catch { res.writeHead(404).end('not found'); }
 }).listen(port, '127.0.0.1');

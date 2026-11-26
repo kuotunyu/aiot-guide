@@ -25,6 +25,7 @@
 - 每個關鍵字只有一個家：只列在教它的那一章的 `terms`，而且要出現在那章看得見的文字裡（build.py 會檢查）；其他章用到時會自動出現說明小窗，不必再列。
 - 改到 `content/site.json` 的考試規則時，對照當年度簡章。內容有實質更新就改 `updated`。
 - 來源網址要實際開過，並確認內容真的支持該章敘述。
+- 新增一章：`content/<章>.json`；`content/site.json` 的 `subjects`（放進哪個主題）與 `chapters`；`content/questions-<章>.json`（`lesson`、`edits`、`add`）；有實驗再加 `static/assets/labs/<章>.js` 與 `tests/labs-<章>.test.js`。e2e 的章節清單從 `site.json` 讀，不必另外改。
 
 ## 驗收
 

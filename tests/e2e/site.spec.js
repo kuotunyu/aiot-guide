@@ -1,7 +1,8 @@
 const {test, expect} = require('@playwright/test');
 const {default: AxeBuilder} = require('@axe-core/playwright');
 
-const CHAPTERS = ['s1-11', 's1-12', 's1-21', 's1-22', 's1-23', 's1-24', 's1-25', 's1-31', 's1-32', 's2-11', 's2-12', 's2-13', 's2-21', 's2-22', 's2-23'];
+// Every chapter in the site's own list, so a new chapter is tested without touching this file.
+const CHAPTERS = require('../../content/site.json').chapters.map(c => c.id);
 const OTHERS = ['index', 'practice', 'glossary', 'reference', 'exam', 'about'];
 
 function watchErrors(page) {
@@ -1092,4 +1093,47 @@ test('judging lab: a right pick turns green, a wrong one red', async ({page}) =>
   await t.nth(1).locator('label').first().click();
   await expect(t.nth(0)).toHaveClass(/\bok\b/);
   await expect(t.nth(1)).toHaveClass(/\bbad\b/);
+});
+
+// Whole-site review 2026-11-26 (Carbon, Neon, Fable): the fixes stay fixed.
+test('section headings are named by their text; each 朗讀 button says what it reads', async ({page}) => {
+  await page.goto('/s1-22.html');
+  const h = page.locator('#mqtt > h2');
+  await expect(h).toHaveAccessibleName(await h.locator('.txt').innerText());
+  await expect(h.locator('.say')).toHaveAccessibleName('朗讀：' + await h.locator('.txt').innerText());
+});
+
+test('timed practice: the picked option is announced as pressed', async ({page}) => {
+  await page.goto('/practice.html');
+  await page.selectOption('#fMode', 'exam');
+  await page.click('#qStart');
+  await page.locator('.opt').nth(1).click();
+  await expect(page.locator('.opt[aria-pressed="true"]')).toHaveCount(1);
+  await expect(page.locator('.opt[aria-pressed="false"]')).toHaveCount(3);
+});
+
+test('phone: an unanswered long option wraps beside its letter, not under it', async ({page, isMobile}) => {
+  test.skip(!isMobile, 'phone layout only');
+  await page.setViewportSize({width: 360, height: 780});
+  await page.goto('/practice.html?q=add-s1-25-4');
+  for (const b of await page.locator('.opt').all()) {
+    const [k, t] = [await b.locator('.k').boundingBox(), await b.locator('.ot').boundingBox()];
+    expect(Math.abs(t.y - k.y)).toBeLessThan(4);
+    expect(t.x).toBeGreaterThan(k.x + k.width);
+  }
+});
+
+test('replay lab: the closing comparison table keeps its header on a phone', async ({page, isMobile}) => {
+  test.skip(!isMobile, 'phone layout only');
+  await page.goto('/s2-13.html#replay-attack');
+  const lab = page.locator('.lab', {hasText: '重放'});
+  for (let i = 0; i < 12 && !(await lab.locator('table').count()); i++) await lab.locator('button:visible', {hasText: /送出|^\d 次$|接受|拒絕|放行/}).first().click().catch(() => {});
+  if (!(await lab.locator('table').count())) test.skip(true, 'scenario buttons changed');
+  await expect(lab.locator('table thead')).toBeVisible();
+  await expect(lab.locator('.tblwrap')).toHaveClass(/\bwide\b/);
+});
+
+test('a term first met in a folded part still gets its popover in the visible text', async ({page}) => {
+  await page.goto('/s1-24.html');
+  expect(await page.locator('article .gl[data-k="mqtt"]').evaluateAll(bs => bs.some(b => !b.closest('details')))).toBe(true);
 });

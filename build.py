@@ -96,7 +96,8 @@ def figure(svg, caption, where, steps=None, start=1, loop=False, svgm=None):
     # A step figure: parts marked data-s="2 3" show only at those steps; the rest always show.
     n = len(steps)
     used = steps_used(svg)
-    if not used or max(used) > n or min(used) < 1 or not 1 <= start <= n:
+    # site.css shows steps 1–8 (.stepfig[data-cur="1"] … [data-cur="8"]); a ninth would never appear.
+    if not used or max(used) > n or min(used) < 1 or not 1 <= start <= n or n > 8:
         problems.append(f'step figure in {where}: data-s {sorted(used)} vs {n} steps, start {start}')
     items = ''.join(f'<li{" class=on" if i + 1 == start else ""}>{e(t)}</li>' for i, t in enumerate(steps))
     ctl = f'<div class="stepctl noread" hidden><button type="button" class="btn ghost" data-d="-1">上一步</button><span class="stepn">{start} / {n}</span><button type="button" class="btn ghost" data-d="1">下一步</button></div>'
@@ -247,6 +248,11 @@ def table(t, where):
 
 
 SAY = '<button type="button" class="say" data-say-card>朗讀</button>'
+
+
+def say_h2(sid, text):
+    # A section heading with its own 朗讀 button: the heading is named by its text alone, and each button says which part it reads.
+    return f'<h2 aria-labelledby="h-{sid}"><span class="txt" id="h-{sid}">{text}</span><button type="button" class="say" data-say-card aria-label="朗讀：{text}">朗讀</button></h2>'
 GUIDE_NOTE = '<p class="small muted noread">括號「指引 p.N」是官方指引的寫法。</p>'
 
 
@@ -268,9 +274,10 @@ def chapter(cid):
     w = cid
     sections = ''
     link, used = linker(cid)
+    folded = []
     for k, s in enumerate(c['sections']):
         where = f'{w} section {k + 1}'
-        sections += f'<section id="{e(s["id"])}" data-read class="{"first" if k == 0 else ""}"><h2><span class="txt">{e(s["h"])}</span>{SAY}</h2>'
+        sections += f'<section id="{e(s["id"])}" data-read class="{"first" if k == 0 else ""}">{say_h2(e(s["id"]), e(s["h"]))}'
         if s.get('predict'):
             pr = s['predict']
             sections += f'<details class="pr" data-say="{e("先想一想。" + pr["q"] + "。答案：" + pr["a"])}"><summary><span class="prk">先想一想</span>{e(pr["q"])}</summary><p>{e(pr["a"])}</p></details>'
@@ -296,8 +303,11 @@ def chapter(cid):
         if s.get('video'):
             sections += video(s['video'])
         if s.get('more'):
-            sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>{link(clean(s["more"]["body"], where))}</details>'
+            # Linked after every section's visible text, so a term first met in a folded part still gets its popover where it is shown.
+            folded.append(clean(s["more"]["body"], where))
+            sections += f'<details class="more"><summary>{e(s["more"]["label"])}</summary>\x00{len(folded) - 1}\x00</details>'
         sections += '</section>'
+    sections = re.sub(r'\x00(\d+)\x00', lambda m: link(folded[int(m[1])]), sections)
     toc = ''.join(f'<a href="#{e(s["id"])}">{e(s["h"])}</a>' for s in c['sections'])
     # The contents column on wide screens shows only the topic before a full-width colon; the full heading is its title.
     toc_short = ''.join(f'<a href="#{e(s["id"])}" title="{e(s["h"])}">{e(s["h"].split("：")[0])}</a>' if '：' in s['h'] else f'<a href="#{e(s["id"])}">{e(s["h"])}</a>' for s in c['sections'])
@@ -353,9 +363,9 @@ def chapter(cid):
 {prereq}{bridge}
 {sections}
 <section id="keypoints" data-read><div class="keys"><h2>重點整理</h2><ul>{keys}</ul></div><p class="small noread noprint"><a href="reference.html#r-{cid}">本章速查卡</a></p><div class="pits"><h2>容易混淆的地方</h2>{GUIDE_NOTE if '指引 p.' in pits else ''}<ul>{pits}</ul></div></section>
-<section id="examples" data-read><h2><span class="txt">例題：怎麼想</span>{SAY}</h2>{exs}</section>
-<section id="check" data-read><h2><span class="txt">自我檢查</span>{SAY}</h2><div class="flgrid">{chk}</div></section>
-<section id="terms" class="hasfold" data-read>{SAY}<details class="more fold" data-wide><summary><h2><span class="txt">{e(UI["terms"].format(n=len(c["terms"])))}</span></h2></summary><div class="termgrid">{terms}</div>{guide}</details></section>
+<section id="examples" data-read>{say_h2("examples", "例題：怎麼想")}{exs}</section>
+<section id="check" data-read>{say_h2("check", "自我檢查")}<div class="flgrid">{chk}</div></section>
+<section id="terms" class="hasfold" data-read>{SAY.replace('data-say-card>', 'data-say-card aria-label="朗讀：本章關鍵字">')}<details class="more fold" data-wide><summary><h2><span class="txt">{e(UI["terms"].format(n=len(c["terms"])))}</span></h2></summary><div class="termgrid">{terms}</div>{guide}</details></section>
 {sources}
 <nav class="pager noprint" aria-label="章節切換">{pager}</nav>
 </article>
@@ -529,7 +539,7 @@ def load_questions():
         out.append({k: q[k] for k in ('id', 'subject', 'lesson', 'q', 'o', 'a', 'e', 'sec', 'w', 'tip', 'conf', 'fig', 'figcap', 'loop') if k in q})
     print(f'questions: {len(out)} kept, {edited} edited, {dropped} dropped')
     for q in out:
-        for m in BANNED.finditer(q['q'] + q['e']):
+        for m in BANNED.finditer(' '.join([q['q'], q['e'], *q['o'], *q.get('w', []), q.get('tip', ''), q.get('figcap', '')])):
             problems.append(f"banned wording {m[0]!r} in question {q['id']}")
     return out
 
@@ -732,7 +742,7 @@ def glossary():
     main = f'''<main id="main" class="wrap page gloss"><h1>關鍵字</h1>
 <div class="gside"><div class="gctl"><div class="formgrid"><label for="gq">搜尋<input id="gq" type="search" placeholder="MQTT、遲滯、OEE" aria-describedby="gcount"></label><label for="gs">科目<select id="gs"><option value="">兩科</option>{opts}</select></label><div class="seg gview jsonly" role="group" aria-label="呈現方式">{views}</div><span class="small muted" id="gcount" role="status"></span></div>
 </div><nav class="gchips" aria-label="跳到章節">{chips}</nav></div>
-<div class="gbody"><div id="gch">{groups}</div><div class="glist" id="gaz" hidden></div><div class="confs" id="gconf" hidden>{conf}</div></div></main>'''
+<div class="gbody"><div id="gch">{groups}</div><div class="glist" id="gaz" hidden></div><div class="confs" id="gconf" hidden><h2 class="sr">易混淆的概念</h2>{conf}</div></div></main>'''
     page('glossary.html', '關鍵字', main, f'{len(TERMS)} 個物聯網與 AIoT 關鍵字的白話解釋，依章節整理，並對照容易混淆的概念。')
     print('glossary terms:', len(TERMS), 'confusable groups:', len(groups_c))
 
@@ -781,7 +791,7 @@ def reference():
         blocks += f'<h2>{e(sub["name"])}</h2><div class="refgrid">{cards}</div>'
     pages = '、'.join(f'{CH[x]["code"]} p.{CH[x]["guidePages"][0]}–{CH[x]["guidePages"][1]}（{CH[x]["guideQuiz"]}）' for x in ORDER if CH[x].get('guidePages'))
     guide = f'''<h2 id="guide">指引差異</h2><div class="pits gdiff"><p class="small muted noread">「指引 p.N」是官方指引 PDF 第 N 頁的寫法；作答依題目條件判斷。</p>
-<ul>{diffs}</ul><details class="more noread"><summary>頁段對照</summary><p class="small">各章在指引的頁段，括號內是評量題開始的頁：{pages}。</p></details><p class="small muted">指引評量答案代號與解析不一致：p.154 第 7、8 題，以解析文字為準。</p></div>'''
+<ul>{diffs}</ul><details class="more noread"><summary>頁段對照</summary><p class="small">各章在指引的頁段，括號內是評量題開始的頁：{pages}。</p></details><p class="small muted">指引評量答案代號與解析不一致：p.154 第 5、7、8 題，以解析文字為準（第 5 題解析講的紅外線是選項 A，代號卻印成 B）。</p></div>'''
     # One part at a time: site.js shows the part the tab or address points at. Without JS, and in print, all three parts follow one another.
     tabs = '<nav class="rtabs noprint" aria-label="速查內容"><a href="#formulas" data-part="formulas">公式</a><a href="#guide" data-part="guide">指引差異</a><a href="#chapters" data-part="chapters">各章重點</a></nav>'
     chips = f'<nav class="gchips" aria-label="跳到章節">{chips}</nav>'
